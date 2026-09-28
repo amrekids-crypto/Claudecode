@@ -521,7 +521,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
         <button class="pp-btn" id="ppSnd">Звук: вкл</button>
       </div>
     </div>
-    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp2"><button class="pp-mini" id="ppPetBtn" hidden></button><button class="pp-mini pp-profbtn" id="ppProf" title="Профиль: альбом, достижения, аватар, питомец"><canvas id="ppAvatar" width="64" height="64"></canvas><span>Профиль</span></button></div></div>
+    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp2"><button class="pp-mini" id="ppPetBtn" hidden></button></div></div>
     <div class="pp-ov" id="ppOv" hidden></div>
   </div>
 </section>
@@ -1942,7 +1942,9 @@ function drawFace(L,cv,ov){
   // shoulders
   const shw=(F.build==='wide'?31:F.build==='thin'?25:29)-(L.g==='f'?3:0);for(let y=44;y<64;y++){const dy=y-44,RR=F.rsh?9:5;const w=F.rsh?(dy<RR?Math.round(16+(shw-16)*Math.sqrt(1-Math.pow((RR-dy-1)/RR,2))):shw):Math.min(shw,17+dy*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1);if(dy===1)R(32-w+3,y,w*2-7,1,CO2)}
 
-  if(L.insp){R(5,45,11,3,'#c9a24a');R(48,45,11,3,'#c9a24a');R(5,47,11,1,'#8a6a2a');R(10,52,8,5,'#8a2a24');R(12,54,4,1,'#c9a24a');R(42,52,6,6,'#b8923a');R(43,53,4,4,'#d8bf63')}
+  if(L.insp){const wAt=y=>{const dy=y-44,RR=F.rsh?9:5;return F.rsh?(dy<RR?Math.round(16+(shw-16)*Math.sqrt(1-Math.pow((RR-dy-1)/RR,2))):shw):Math.min(shw,17+dy*4)};
+    const ew=Math.min(11,Math.max(7,shw-19)),w1=wAt(48)-1;R(32-w1,47,ew,3,'#c9a24a');R(32+w1-ew,47,ew,3,'#c9a24a');R(32-w1,49,ew,1,'#8a6a2a');R(32+w1-ew,49,ew,1,'#8a6a2a');
+    const w2=wAt(54);R(32-w2+4,52,7,5,'#8a2a24');R(32-w2+6,54,3,1,'#c9a24a');R(32+w2-11,52,6,6,'#b8923a');R(32+w2-10,53,4,4,'#d8bf63')}
   // neck
   const nw=F.build==='thin'?4:F.build==='wide'?6:5;R(32-nw-1,37,nw*2+2,9,OL);R(32-nw,37,nw*2,9,sd);R(32-nw,37,nw*2,3,s2);R(32+nw-3,40,2,6,s2);R(32-nw,44,nw*2,1,s3);if(F.age==='o'){R(30,41,1,4,s2);R(34,41,1,4,s2)}if(L.g==='m'&&F.age!=='y')R(31,41,2,2,s)
   {const SH=PM(F.shirt||L.shirt,.2),SH1=shade(SH,.75),SH2=shade(SH,1.15),nk=F.neck||'collar';
@@ -3232,7 +3234,7 @@ function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;
 $('#ppSnd').onclick=()=>{SFX.on=!SFX.on;if(!SFX.on)SFX.amb(false);store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
 $('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',e=>{if(QS.onClick){QS.onClick(qsToLogical(e));return}ppShoot(e)});
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
-$('#ppProf').onclick=()=>{SFX.click();ppProfile()};$('#ppPetBtn').onclick=()=>{if(!PP.pet)return;if(!PP.pet.fed){if(PP.cash<petInfo().food){toast('Не хватает денег на корм','','#e05a4a');return}petFeed()}else petPet()};
+$('#ppPetBtn').onclick=()=>{if(!PP.pet)return;if(!PP.pet.fed){if(PP.cash<petInfo().food){toast('Не хватает денег на корм','','#e05a4a');return}petFeed()}else petPet()};
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
   if(b.dataset.oi!=null||b.dataset.os!=null)ppOrderClick(b);else if(b.id==='ppOReset'){const c=PD.cur;c.pool=shuffle(c.rows.map((_,i)=>i));c.seq=[];ppRenderOrder()}else if(b.id==='ppBSubmit')ppBuildSubmit();else if(b.id==='ppOSubmit')ppOrderSubmit();else if(b.id==='ppOFSubmit')ppOFSubmit();else if(b.dataset.si!=null)ppSortPick(b);else if(b.id==='ppSSubmit')ppSortSubmit();else if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.claim)ppClaim(b.dataset.claim==='arrest');else if(b.dataset.sarrest)ppSuspectArrest();else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
 $('#ppDesk').addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.v!=null&&PD&&PD.cur&&PD.cur.vals)PD.cur.vals[t.dataset.v]=t.value});
