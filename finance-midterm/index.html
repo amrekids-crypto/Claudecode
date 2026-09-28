@@ -35,7 +35,9 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .brand{font-weight:700;letter-spacing:.01em;display:flex;align-items:baseline;gap:8px}
 .brand small{font-weight:500;color:var(--muted);font-size:12px;font-family:var(--mono)}
 nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
-nav.tabs button{font:inherit;font-size:14px;font-weight:500;border:1px solid transparent;background:none;color:var(--muted);padding:6px 12px;border-radius:6px;cursor:pointer}
+nav.tabs button{font:inherit;font-size:13.5px;font-weight:500;border:1px solid transparent;background:none;color:var(--muted);padding:6px 10px;border-radius:6px;cursor:pointer}
+@media (max-width:1400px){.brand small{display:none}}
+body.mixwide .topin{max-width:none}
 nav.tabs button[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--line)}
 nav.tabs button:hover{color:var(--ink)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -210,9 +212,11 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .pp-chip.right,.pp-chip.sel.right{background:#c9d3a6;border-color:var(--pp-green);color:#243016;opacity:1}
 .pp-chip.wrongpick,.pp-chip.sel.wrongpick{background:#e8bcae;border-color:var(--pp-red);color:#4a1d18;text-decoration:line-through;opacity:1}
 .pp-chip[disabled]{opacity:.85;cursor:default}
-.pp-sortrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dotted #8f8360}
-.pp-sortrow b{font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:600;min-width:200px;flex:1 1 200px}
-.pp-sortrow .pp-chip{font-size:12px;padding:3px 6px}
+.pp-sortrow{display:grid;grid-template-columns:minmax(170px,1fr) auto;gap:4px 12px;align-items:center;padding:6px 0;border-bottom:1px dotted #8f8360}
+.pp-sortrow b{font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:600}
+.pp-sortrow .chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.pp-sortrow .pp-chip{font-size:12px;padding:3px 7px;white-space:nowrap}
+@media (max-width:700px){.pp-sortrow{grid-template-columns:1fr}.pp-sortrow .chips{justify-content:flex-start}}
 
 .pp-prev{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:#23211a;border:3px solid #15130f;padding:10px}
 .pp-prev>div{display:flex;flex-direction:column;align-items:center;gap:4px;color:#d3c9a6}
@@ -224,6 +228,7 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .pp-item.previewing{outline:3px solid #e0b64a;outline-offset:-3px}
 .pp-sw .sw{display:block;height:34px;border:2px solid #15130f;background-size:cover}
 .pp-card{max-width:760px}
+table.lbt tr.me td{background:var(--accent-soft);font-weight:600}
 .pp-bq{border-top:2px dashed #8f8360;padding-top:6px;margin-top:6px}
 .pp-opt.sel{border:2px solid #3a2e21;background:#e6ddbd;box-shadow:inset 3px 0 0 #3a2e21}
 table.pp-form td.badv{color:var(--pp-red);font-weight:700}
@@ -314,6 +319,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
       <button role="tab" data-tab="quiz">Тесты</button>
       <button role="tab" data-tab="cards">Карточки</button>
       <button role="tab" data-tab="sheet">Шпаргалка</button>
+      <button role="tab" data-tab="lb">Лидерборд</button>
     </nav>
   </div>
 </header>
@@ -371,6 +377,22 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
     <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div></div>
     <div class="pp-ov" id="ppOv" hidden></div>
   </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="section" id="tab-lb" hidden>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Режим МИКС · все игроки</span><h1>Глобальный лидерборд</h1></div>
+  <p id="lbStatus" style="max-width:80ch"></p>
+  <div class="statbar" id="lbMe"></div>
+  <div class="panel row">
+    <label for="lbNick" style="font-weight:600">Твой ник</label>
+    <input id="lbNick" maxlength="24" autocomplete="off" placeholder="например, FinanceKing" style="font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 200px">
+    <button class="btn primary" id="lbSave">Сохранить и отправить</button>
+    <button class="btn" id="lbRefresh">Обновить</button>
+    <span class="muted" id="lbMsg" style="flex-basis:100%;font-size:13.5px"></span>
+  </div>
+  <div class="panel tw"><table class="simple lbt" id="lbTable"></table></div>
+  <p class="muted" style="font-size:13.5px">Очки = 100 × рекорд медалей + 25 × лучший день + 5 × все верные ответы. Результат обновляется после каждого дня в МИКСе.</p>
 </section>
 
 <!-- BUILD -->
@@ -479,8 +501,8 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if
 document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ai-txt'))e.target.select()});
 
 /* ---------- tabs ---------- */
-const TABS=['home','build','mix','place','quiz','cards','sheet'];
-function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();window.scrollTo(0,0)}
+const TABS=['home','build','mix','lb','place','quiz','cards','sheet'];
+function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
 /* =====================================================
@@ -1963,7 +1985,7 @@ function sortTask(){
   else if(v==='IS'){cats=CATS.IS;items=shuffle(ITEMS.filter(i=>i.s==='IS')).slice(0,8).map(i=>[i.n,i.c]);title='Income statement: разложи статьи по категориям'}
   else if(v==='CF'){cats=['Operating','Investing','Financing'];items=shuffle(CLS_CF).slice(0,8).map(([a,b])=>[a,b.split(' ')[0]]);title='Cash flow: разложи операции по разделам'}
   else{const M={BS:'Balance sheet',IS:'Income statement',RE:'Retained earnings',CF:'Cash flows only'};cats=Object.values(M);items=shuffle(ITEMS).slice(0,8).map(i=>[i.n,M[i.s]]);title='В какой отчёт идёт каждая строка?'}
-  return{kind:'sort',title,cats,items,fee:cats.length>=5?8:7,pick:{}}}
+  const note=v==='IS'?'Non-operating = interest, gains, losses. Subtotal = строки-итоги (GP, EBIT, EBT, NI, EPS).':v==='ST'?'CF only = строка есть только в Statement of cash flows.':'';return{kind:'sort',title,cats,items,note,fee:cats.length>=5?8:7,pick:{}}}
 function ofillTask(){const g=pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1);
   return{kind:'ofill',doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
 function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Нажми на уже поставленную строку, чтобы вернуть её.</p>
@@ -1982,6 +2004,7 @@ function ppOrderSubmit(){const c=PD.cur;const ok=orderOK(c);
   c.stage=2;$('#ppPaper .ord').innerHTML=`<p class="pp-q" style="margin:4px 0">Порядок верный. Теперь заполни суммы. В Cash Flow оттоки с минусом.</p><table class="pp-form">${c.seq.map((i,k)=>`<tr><td>${esc(c.rows[i][0])}</td><td><input id="ppIn${k}" data-i="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(c.rows[i][0])}"></td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppOFSubmit">Подать ($${c.fee})</button></div>`;const f=$('#ppIn0');if(f)f.focus()}
 function ppOFSubmit(){const c=PD.cur,d=c.doc;let ok=0;c.seq.forEach((i,k)=>{const el=$('#ppIn'+k);const n=parseNum(el.value);const v=c.rows[i][2];const good=n!==null&&(d.signed?Math.abs(n-v)<=1:Math.abs(Math.abs(n)-Math.abs(v))<=1);el.disabled=true;el.classList.add(good?'ok':'bad');if(good)ok++;else el.insertAdjacentHTML('afterend',`<span class="fix">${fmt(v)}</span>`)});
   $('#ppOFSubmit').disabled=true;const all=ok===c.seq.length;ppFinish(all,`Верно ${ok} из ${c.seq.length} сумм. ${d.x}`,`Объясни по шагам, как заполнить: ${d.title}. Данные: ${d.given}`,all?c.fee:ok,all?'':'<p>Правильные суммы показаны под полями. За каждую верную $1.</p>')}
+const SHORTC={'Non-current assets':'Non-current','Current liabilities':'Current liab.','Long-term liabilities':'Long-term liab.','Stockholders\u2019 equity':'Equity','Cost of goods sold':'COGS','Operating expenses':'Operating exp.','Non-operating items (interest, gains, losses)':'Non-operating','Subtotal / result line':'Subtotal','Retained earnings':'RE statement','Cash flows only':'CF only'};
 function ppSortPick(b){const c=PD.cur;const i=+b.dataset.si;c.pick[i]=b.dataset.sc;document.querySelectorAll(`#ppPaper [data-si="${i}"]`).forEach(x=>x.classList.toggle('sel',x===b));$('#ppSSubmit').disabled=Object.keys(c.pick).length<c.items.length}
 function ppSortSubmit(){const c=PD.cur;let ok=0;c.items.forEach((it,i)=>{const good=c.pick[i]===it[1];if(good)ok++;document.querySelectorAll(`#ppPaper [data-si="${i}"]`).forEach(x=>{x.disabled=true;if(x.dataset.sc===it[1])x.classList.add('right');else if(x.dataset.sc===c.pick[i])x.classList.add('wrongpick')})});
   $('#ppSSubmit').disabled=true;const all=ok===c.items.length;ppFinish(all,`Верно ${ok} из ${c.items.length}.\n`+c.items.map(it=>`${it[0]} → ${it[1]}`).join('\n'),`Объясни, почему эти статьи относятся к таким категориям:\n${c.items.map(it=>it[0]+' → '+it[1]).join('\n')}`,all?c.fee:0,all?'':'<p>Нужно разложить все статьи без ошибок.</p>');document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
@@ -2115,7 +2138,7 @@ function ppRenderTask(){
   else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
     h=`<div class="pp-paper" id="ppPaper">${ppHead('Где статья')}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?'Step 1 of 2: which statement?':`Step 2 of 2: ${esc(STMTS[it.s])} — which category?`}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
   else if(c.kind==='order'||c.kind==='ofill'){h=`<div class="pp-paper" id="ppPaper">${ppHead(c.kind==='order'?'Порядок строк · $'+c.fee:'Порядок + заполнение · $'+c.fee)}<p class="pp-q"><b>${esc(c.kind==='order'?c.tpl.n:c.doc.title)}</b></p>${c.kind==='ofill'?`<div class="pp-given">${esc(c.doc.given)}</div>`:''}<div class="ord"></div></div>`;$('#ppDesk').innerHTML=h;ppRenderOrder();return}
-  else if(c.kind==='sort'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Категории · $'+c.fee)}<p class="pp-q"><b>${esc(c.title)}</b></p>${c.items.map((it,i)=>`<div class="pp-sortrow"><b>${esc(it[0])}</b>${c.cats.map(ct=>`<button class="pp-chip" data-si="${i}" data-sc="${esc(ct)}">${esc(ct)}</button>`).join('')}</div>`).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSSubmit" disabled>Подать</button></div></div>`}
+  else if(c.kind==='sort'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Категории · $'+c.fee)}<p class="pp-q"><b>${esc(c.title)}</b></p>${c.note?`<p class="pp-q" style="font-size:12.5px;margin:0 0 4px">${esc(c.note)}</p>`:''}${c.items.map((it,i)=>`<div class="pp-sortrow"><b>${esc(it[0])}</b><span class="chips">${c.cats.map(ct=>`<button class="pp-chip" data-si="${i}" data-sc="${esc(ct)}" title="${esc(ct)}">${esc(SHORTC[ct]||ct)}</button>`).join('')}</span></div>`).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSSubmit" disabled>Подать</button></div></div>`}
   else if(c.kind==='bundle'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Пакет: '+c.qs.length+' вопроса')}<p class="pp-q"><b>Все ответы верны → $${ppBundleFee(c.qs.length)}. Хоть одна ошибка → $0.</b></p>${c.qs.map((q,i)=>{const order=(q.o===TF||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));return`<div class="pp-bq" data-bq="${i}"><p class="pp-q" style="white-space:pre-line"><b>${i+1}.</b> ${esc(q.q.replace(/^True or False:\s*/,q.o===TF?'True or False: ':''))}</p><div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-b="${i}" data-bk="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div></div>`}).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmitB" disabled>Подать ответы</button></div></div>`}
   else if(c.kind==='audit'){const a=c.au;h=`<div class="pp-paper" id="ppPaper">${ppHead('Проверка документа')}<p class="pp-q" style="margin-top:4px"><b>Что произошло (со слов посетителя):</b></p><div class="pp-given">${esc(a.story)}</div><p class="pp-q"><b>Его ${esc(a.title)}:</b></p><table class="pp-form">${a.labels.map((l,i)=>`<tr><td>${esc(l)}</td><td>${fmt(a.th[i])}</td></tr>`).join('')}</table><p class="pp-q" style="font-size:13px">Сверь с условием. Всё верно → одобри. Есть ошибка → арестуй. Верное решение +$15, неверное −$15 из зарплаты.</p><textarea class="ai-txt" rows="2" placeholder="Черновик для расчётов" aria-label="Черновик"></textarea><div class="pp-stamps"><button class="pp-stamp t" data-audit="ok">ОДОБРИТЬ</button><button class="pp-stamp f" data-audit="arrest">АРЕСТОВАТЬ</button></div></div>`}
   else{const d=c.doc;h=`<div class="pp-paper" id="ppPaper">${ppHead('Документ')}<p class="pp-q" style="margin-top:4px"><b>${esc(d.title)}</b></p><div class="pp-given">${esc(d.given)}</div><table class="pp-form">${d.rows.map((r,i)=>`<tr><td>${esc(r[0])}</td><td>${r[2]?`<span>${fmt(r[1])}</span>`:`<input id="ppIn${i}" data-i="${i}" inputmode="decimal" autocomplete="off" aria-label="${esc(r[0])}">`}</td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmit">Подать документ</button></div></div>`}
@@ -2273,7 +2296,7 @@ function ppSummary(){
    <table class="pp-is"><tr class="h"><td>Balance sheet</td><td></td></tr>${row('Cash',PP.cash)}${row('Office equipment',eq.cost)}${row('− Accum. depreciation',-(eq.acc+dep))}${row('Total assets',ta,'sub')}${row('Common stock (стартовый капитал)',PP.capital)}${row('Retained earnings',reEnd)}${row('Total L & E',PP.capital+reEnd,'sub')}</table>
    </div>
    ${broke?'<p><b>Cash ушёл в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn red" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
-  PP.best=Math.max(PP.best||0,d);PD=null;
+  PP.best=Math.max(PP.best||0,d);if(typeof lbRecordDay==='function')lbRecordDay(PD,d,PP.medals.length);PD=null;
   if(broke){$('#ppAgain').onclick=()=>{PP=ppNorm({best:PP.best});ppSave();ppDayIntro()}}
   else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
   ppSave();ppBar();
@@ -2293,6 +2316,37 @@ $('#ppReset').onclick=()=>{PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro()};
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
+
+/* =====================================================
+   GLOBAL LEADERBOARD (Supabase REST; local fallback)
+   Fill LB_CONFIG (or define window.LB_CONFIG before this script)
+   ===================================================== */
+const LB_CONFIG=Object.assign({supabaseUrl:'',supabaseKey:'',table:'leaderboard'},window.LB_CONFIG||{});
+const LB={online:!!(LB_CONFIG.supabaseUrl&&LB_CONFIG.supabaseKey)};
+function lbPid(){let id=store.get('pid',null);if(!id){id=(crypto.randomUUID?crypto.randomUUID():'p'+Date.now().toString(36)+Math.random().toString(36).slice(2));store.set('pid',id)}return id}
+function lbStats(){const L=store.get('life',{answered:0,correct:0,earned:0,bestDay:0,bestMedals:0});return L}
+function lbScore(L){return Math.round((L.bestMedals||0)*100+(L.bestDay||0)*25+(L.correct||0)*5)}
+function lbRow(){const L=lbStats();return{player_id:lbPid(),name:(store.get('nick','')||'').slice(0,24),score:lbScore(L),best_day:L.bestDay||0,medals:L.bestMedals||0,correct:L.correct||0,answered:L.answered||0,earned:Math.round(L.earned||0),updated_at:new Date().toISOString()}}
+async function lbFetch(){if(!LB.online)return null;const u=`${LB_CONFIG.supabaseUrl.replace(/\/$/,'')}/rest/v1/${LB_CONFIG.table}?select=player_id,name,score,best_day,medals,correct,answered&order=score.desc&limit=50`;
+  const r=await fetch(u,{headers:{apikey:LB_CONFIG.supabaseKey,Authorization:'Bearer '+LB_CONFIG.supabaseKey}});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function lbSubmit(){if(!LB.online)return false;const row=lbRow();if(!row.name)return false;
+  const r=await fetch(`${LB_CONFIG.supabaseUrl.replace(/\/$/,'')}/rest/v1/${LB_CONFIG.table}?on_conflict=player_id`,{method:'POST',headers:{apikey:LB_CONFIG.supabaseKey,Authorization:'Bearer '+LB_CONFIG.supabaseKey,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});if(!r.ok)throw new Error('HTTP '+r.status);return true}
+function lbRecordDay(pd,day,medals){const L=lbStats();L.answered=(L.answered||0)+pd.tasks.length;L.correct=(L.correct||0)+pd.correct;L.earned=(L.earned||0)+Math.max(0,pd.fees);L.bestDay=Math.max(L.bestDay||0,day);L.bestMedals=Math.max(L.bestMedals||0,medals);store.set('life',L);if(LB.online&&store.get('nick',''))lbSubmit().catch(()=>{})}
+async function renderLB(){
+  const L=lbStats(),me=lbRow();
+  $('#lbStatus').innerHTML=LB.online?'<span class="chip ok">Глобальный рейтинг подключён</span>':'<span class="chip warn">Офлайн</span> Глобальный рейтинг заработает, когда игра будет размещена на Lovable с Supabase (здесь, в артефакте, внешние запросы заблокированы). Пока видны только твои результаты.';
+  $('#lbMe').innerHTML=`<div class="stat"><span class="eyebrow">Очки</span><b>${me.score}</b></div><div class="stat"><span class="eyebrow">Лучший день</span><b>${me.best_day}</b></div><div class="stat"><span class="eyebrow">Медалей (рекорд)</span><b>${me.medals}</b></div><div class="stat"><span class="eyebrow">Точность</span><b>${L.answered?Math.round(L.correct/L.answered*100)+'%':'—'}</b></div>`;
+  const tb=$('#lbTable');
+  if(!LB.online){tb.innerHTML=`<tr><th>#</th><th>Игрок</th><th>Очки</th><th>День</th><th>Медали</th><th>Точность</th></tr><tr><td>1</td><td>${esc(me.name||'Ты')}</td><td class="num">${me.score}</td><td class="num">${me.best_day}</td><td class="num">${me.medals}</td><td class="num">${L.answered?Math.round(L.correct/L.answered*100)+'%':'—'}</td></tr>`;return}
+  tb.innerHTML='<tr><td colspan="6" class="muted">Загрузка…</td></tr>';
+  try{const rows=await lbFetch();tb.innerHTML=`<tr><th>#</th><th>Игрок</th><th>Очки</th><th>День</th><th>Медали</th><th>Точность</th></tr>`+rows.map((r,i)=>`<tr class="${r.player_id===me.player_id?'me':''}"><td>${i+1}</td><td>${esc(r.name||'—')}</td><td class="num">${r.score}</td><td class="num">${r.best_day}</td><td class="num">${r.medals}</td><td class="num">${r.answered?Math.round(r.correct/r.answered*100)+'%':'—'}</td></tr>`).join('')||'<tr><td colspan="6">Пока пусто. Будь первым!</td></tr>'}
+  catch(e){tb.innerHTML=`<tr><td colspan="6">Не удалось загрузить рейтинг (${esc(e.message)}). Проверь адрес и ключ Supabase.</td></tr>`}
+}
+$('#lbNick').value=store.get('nick','');
+$('#lbSave').onclick=async()=>{const n=$('#lbNick').value.trim().slice(0,24);store.set('nick',n);if(!n){$('#lbMsg').textContent='Введи ник.';return}
+  if(!LB.online){$('#lbMsg').textContent='Ник сохранён. Отправка в глобальный рейтинг станет доступна на Lovable.';renderLB();return}
+  $('#lbMsg').textContent='Отправляю…';try{await lbSubmit();$('#lbMsg').textContent='Результат отправлен. Дальше он обновляется сам после каждого дня в МИКСе.';renderLB()}catch(e){$('#lbMsg').textContent='Ошибка отправки: '+e.message}};
+$('#lbRefresh').onclick=renderLB;
 
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
