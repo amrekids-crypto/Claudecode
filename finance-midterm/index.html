@@ -240,7 +240,8 @@ table.pp-form td.okv{color:var(--pp-green)}
 .pp-btn[disabled]{opacity:.4;cursor:default}
 .pp-btn.horn{background:#b8913b;box-shadow:inset -3px -3px 0 #7d5f22,inset 3px 3px 0 #e2c071}
 .pp-btn.red{background:#a3453a;color:#f3e6cf;box-shadow:inset -3px -3px 0 #6e2a22,inset 3px 3px 0 #cf7465}
-.pp-desk{background:var(--pp-desk);background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.13) 46px 48px);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.pp-desk>*{flex-shrink:0}
+.pp-desk{background:var(--pp-desk);background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.13) 46px 48px);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative;overflow-x:hidden;overflow-y:auto}
 .pp-desk.lit{background-image:radial-gradient(ellipse at 30% 0%,rgba(255,214,140,.22),transparent 60%),repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.13) 46px 48px)}
 .pp-paper{background:var(--pp-paper);color:var(--pp-ink);border:3px solid var(--pp-line);box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:12px 16px 16px;position:relative;max-width:860px}
 .pp-paper h4{margin:0 0 6px;font-size:16px;font-weight:400;letter-spacing:.06em;border-bottom:2px solid var(--pp-ink);padding-bottom:4px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -2125,8 +2126,9 @@ function ppFinish(right,expl,ai,fee,extra){
   $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
   if(right){PD.correct++;PD.fees+=fee;PP.cash+=fee;ppTalk(c.role,pick(PPX.THANKS))}else{PD.wrong++;if(fee>0){PD.fees+=fee;PP.cash+=fee}ppTalk(c.role,pick(PPX.ANGRY))}
   $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$${fee} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b>${extra||''}<p>${esc(expl)}</p><p>${fee>0?`Частичная оплата: $${fee}.`:'Оплата не получена.'}</p>${aiBox(ai)}</div>`);
-  ppSave();ppBar();const dk=$('#ppDesk'),last=dk.lastElementChild;if(last)setTimeout(()=>last.scrollIntoView({block:'nearest',behavior:'smooth'}),60);
+  ppSave();ppBar();setTimeout(ppScrollDesk,60);
 }
+function ppScrollDesk(){const dk=$('#ppDesk'),last=dk.lastElementChild;if(!last)return;document.querySelectorAll('#pp,.pp-main').forEach(e=>e.scrollTop=0);const top=Math.max(0,last.offsetTop-140);if(top>dk.scrollTop)dk.scrollTo({top,behavior:'smooth'})}
 function ppFee(){return PP.event==='fair'?6:PPX.FEE}
 function ppAnswerQ(k){
   const q=PD.cur.q,right=k===q.a;const paper=$('#ppPaper');
@@ -2190,7 +2192,7 @@ function ppAudit(arrest){
     $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${arrest?'АРЕСТ':'ОДОБРЕНО'}</div>`);
     if(right){PD.correct++;PD.fees+=15;PP.cash+=15;setTimeout(()=>{SFX.ok();setTimeout(SFX.coin,220)},90)}else{PD.wrong++;PD.deduct+=15;PP.cash-=15;setTimeout(SFX.bad,90)}
     if(!arrest)ppTalk(c.role,hasErr?'Хе-хе. Спасибо за печать!':'Спасибо, что поверили.');
-    setTimeout(()=>{const l=$('#ppDesk').lastElementChild;if(l)l.scrollIntoView({block:'nearest',behavior:'smooth'})},80);
+    setTimeout(ppScrollDesk,80);
     $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${arrest?'НАРУШИТЕЛЬ ЗАДЕРЖАН':'ВЕРНОЕ ОДОБРЕНИЕ'}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${arrest?'АРЕСТ БЕЗ ОСНОВАНИЙ':'ПРОПУЩЕНА ОШИБКА'}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
     ppSave();ppBar()};
   if(arrest){PD.state='anim';ppBar();ppArrestAnim(finish)}else finish();
