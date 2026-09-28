@@ -390,6 +390,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
   .shop-note{display:none}
   .shop-top h3{font-size:18px}
 }
+#ppDesk.answered :is(#ppOReset,#ppBSubmit,#ppOSubmit,#ppOFSubmit,#ppSSubmit,#ppSubmitB,#ppSubmit){display:none}
 </style>
 
 <header class="top">
@@ -2393,7 +2394,7 @@ async function ppCall(){
 }
 function ppHead(label){return`<h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>${esc(label)}</span></h4>`}
 function ppRenderTask(){
-  const c=PD.cur;let h='';
+  $('#ppDesk').classList.remove('answered');const c=PD.cur;let h='';
   if(c.kind==='q'){const q=c.q,tf=q.o===TF;const order=(tf||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));
     h=`<div class="pp-paper" id="ppPaper">${ppHead(TOPICS[q.t]||'Вопрос')}<p class="pp-q" style="white-space:pre-line">${esc(q.q.replace(/^True or False:\s*/,''))}</p>${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:`<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}${c.suspect?`<p class="pp-q" style="font-size:12.5px;margin:10px 0 4px">Посетитель сам предлагает ответы. Если ни один не подходит, это подлог: арестуй (+$15, а если зря, то −$15).</p><div class="pp-stamps"><button class="pp-stamp f" data-sarrest="1">АРЕСТОВАТЬ</button></div>`:''}</div>`}
   else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
@@ -2407,7 +2408,7 @@ function ppRenderTask(){
   $('#ppDesk').innerHTML=h;
 }
 function ppFinish(right,expl,ai,fee,extra){
-  const c=PD.cur;PD.state='done';ppUnfreeze();setTimeout(()=>{if(right){SFX.ok();if(fee>0)setTimeout(SFX.coin,220)}else{SFX.bad();if(fee>0)setTimeout(SFX.coin,300)}},90);ppThunk();
+  const c=PD.cur;PD.state='done';ppUnfreeze();$('#ppDesk').classList.add('answered');setTimeout(()=>{if(right){SFX.ok();if(fee>0)setTimeout(SFX.coin,220)}else{SFX.bad();if(fee>0)setTimeout(SFX.coin,300)}},90);ppThunk();
   $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
   if(right){PD.correct++;PD.fees+=fee;PP.cash+=fee;ppTalk(c.role,pick(PPX.THANKS))}else{PD.wrong++;if(fee>0){PD.fees+=fee;PP.cash+=fee}ppTalk(c.role,pick(PPX.ANGRY))}
   $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$${fee} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b>${extra||''}<p>${esc(expl)}</p><p>${fee>0?`Частичная оплата: $${fee}.`:'Оплата не получена.'}</p>${aiBox(ai)}</div>`);
@@ -2635,7 +2636,7 @@ async function ppRandomEvent(){if(!PD||PD.evCount>=2||PD.idx<0||(window.__forceE
 function ppSuspectArrest(){
   const c=PD.cur,q=c.q,right=q.a<0;document.querySelectorAll('#ppPaper button').forEach(b=>{b.disabled=true;if(!right&&+b.dataset.k===q.a)b.classList.add('right')});
   const expl=right?`Ни один вариант не был верным. Верный ответ: ${q.orig.o[q.orig.a]}. ${q.x||''}`:`Верный вариант был среди ответов: ${q.o[q.a]}. ${q.x||''}`;
-  const finish=()=>{PD.state='done';ppUnfreeze();ppThunk();
+  const finish=()=>{PD.state='done';ppUnfreeze();$('#ppDesk').classList.add('answered');ppThunk();
     $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">АРЕСТ</div>`);
     if(right){PD.correct++;PD.fees+=15;PP.cash+=15;setTimeout(()=>{SFX.ok();setTimeout(SFX.coin,220)},90)}else{PD.wrong++;PD.deduct+=15;PP.cash-=15;setTimeout(SFX.bad,90)}
     setTimeout(ppScrollDesk,80);
@@ -2649,7 +2650,7 @@ function ppAudit(arrest){
   const rows=document.querySelectorAll('#ppPaper table.pp-form tr');a.labels.forEach((l,i)=>{const td=rows[i].children[1];if(Math.abs(a.th[i]-a.ok[i])>.5){td.classList.add('badv');td.insertAdjacentHTML('beforeend',`<span class="fix">верно: ${fmt(a.ok[i])}</span>`)}else td.classList.add('okv')});
   const expl=hasErr?`В документе ошибка. ${a.why}`:'Документ верный, все строки сходятся с условием.';
   const ai=`Проверь по шагам этот документ (${a.title}) и объясни, есть ли в нём ошибка и какая. Я студент 1 курса, Managerial Finance (Gitman).\nУсловие: ${a.story}\nДокумент посетителя: ${a.labels.map((l,i)=>l+' = '+fmt(a.th[i])).join('; ')}`;
-  const finish=()=>{PD.state='done';ppUnfreeze();ppThunk();
+  const finish=()=>{PD.state='done';ppUnfreeze();$('#ppDesk').classList.add('answered');ppThunk();
     $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${arrest?'АРЕСТ':'ОДОБРЕНО'}</div>`);
     if(right){PD.correct++;PD.fees+=15;PP.cash+=15;setTimeout(()=>{SFX.ok();setTimeout(SFX.coin,220)},90)}else{PD.wrong++;PD.deduct+=15;PP.cash-=15;setTimeout(SFX.bad,90)}
     if(!arrest)ppTalk(c.role,hasErr?'Хе-хе. Спасибо за печать!':'Спасибо, что поверили.');
