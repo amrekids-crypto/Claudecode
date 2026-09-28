@@ -1867,6 +1867,10 @@ function sTone(f,d,type='square',v=.06,f2=null,delay=0){try{const a=sfxCtx(),t=a
 function sNoise(d,v,lp=4000,hp=0,delay=0){try{const a=sfxCtx(),t=a.currentTime+delay,n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource();s.buffer=b;let node=s;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;node.connect(f);node=f;if(hp){const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;node.connect(h);node=h}const g=a.createGain();g.gain.value=v;node.connect(g).connect(a.destination);s.start(t)}catch(e){}}
 const SJ=(x,p=.07)=>x*(1+(Math.random()*2-1)*p),SV=arr=>arr[Math.floor(Math.random()*arr.length)]();
 function sMuf(f,d,type='square',v=.06,f2=null,delay=0,lp=900){try{const a=sfxCtx(),t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl).connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+function sChoir(notes,dur,delay=0,vol=.05){try{const a=sfxCtx(),t=a.currentTime+delay,out=a.createGain();out.gain.setValueAtTime(.0001,t);const V2=vol*7;out.gain.linearRampToValueAtTime(V2,t+Math.min(1.2,dur*.35));out.gain.setValueAtTime(V2,t+dur-.9);out.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  const dl=a.createDelay(1);dl.delayTime.value=.23;const fb=a.createGain();fb.gain.value=.38;const wet=a.createGain();wet.gain.value=.45;out.connect(a.destination);out.connect(dl);dl.connect(fb).connect(dl);dl.connect(wet).connect(a.destination);
+  const forms=[[800,1.0],[1150,.6],[2900,.25]];const bank=forms.map(([fq,g])=>{const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fq;bp.Q.value=9;const gg=a.createGain();gg.gain.value=g*3.2;bp.connect(gg).connect(out);return bp});
+  notes.forEach(n=>{for(let v=0;v<3;v++){const o=a.createOscillator();o.type='sawtooth';o.frequency.value=n*(1+(v-1)*.006);const lfo=a.createOscillator(),lg=a.createGain();lfo.frequency.value=4.6+v*.4+Math.random()*.3;lg.gain.value=n*.012;lfo.connect(lg).connect(o.frequency);const vg=a.createGain();vg.gain.value=.12/notes.length;o.connect(vg);bank.forEach(b=>vg.connect(b));o.start(t);lfo.start(t);o.stop(t+dur+.1);lfo.stop(t+dur+.1)}})}catch(e){}}
 Object.assign(SFX,{
   next(){SV([
     ()=>{sMuf(SJ(98),.42,'sawtooth',.09,null,0,700);sMuf(SJ(147),.42,'square',.03,null,0,600);sNoise(.05,.08,1200,200)},
@@ -2558,16 +2562,16 @@ const ARRESTS=[
    ds.forEach(d=>{d.y=d.gy;d.bark=true});p.dogs=ds}},
  {n:'holy',title:'Небесная кара',desc:'Иисус спускается в луче солнца, обращает нарушителя в прах и исчезает во вспышке света.',price:35,line:'Небеса открываются…',async run(p){p.sp=0;p.tx=p.x;p.run=false;
    const bx=Math.round(p.x+34),beam={t:'beam',x:bx,w:0,al:0,bot:Math.round(p.y+30)};QS.actors.push(beam);
-   const ch=[261.6,329.6,392,523.3,659.3];ch.forEach((fq,i)=>sMuf(fq,5.5,'sine',.035,null,i*.18,2200));ch.slice(0,3).forEach((fq,i)=>sMuf(fq*2,5,'triangle',.012,null,.4+i*.2,3000));
+   const ch=[261.6,329.6,392,523.3];ch.forEach((fq,i)=>sMuf(fq,3,'sine',.02,null,i*.18,2200));
    ppTalk('Бюро','Над улицей расходятся облака. Сверху бьёт луч солнца…');await tick(()=>{beam.w=Math.min(46,beam.w+2);beam.al=Math.min(.45,beam.al+.02);return beam.w>=46});
-   const J={t:'jesus',x:bx-14,y:-70};QS.actors.push(J);p.faceL=false;p.dir=1;
+   const J={t:'jesus',x:bx-14,y:-70};QS.actors.push(J);sChoir([130.8,261.6,329.6,392],2.6,0,.06);sChoir([174.6,261.6,349.2,440],2.4,2.3,.06);sChoir([130.8,261.6,329.6,392,523.3],3.4,4.5,.065);p.faceL=false;p.dir=1;
    await tick(()=>{J.y+=Math.max(.8,(p.y-26-J.y)*.06);if(QS.tick%3===0)QS.fx.push({t:'spark',x:Math.round(bx+rint(-20,20)),y:Math.round(J.y+rint(0,50)),ttl:6,c:'#fff3b0'});return J.y>=p.y-27});
    popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);J.arms=true;ppTalk('Голос с небес','Сын мой… ты неправильно посчитал отчётность.');await sleep(1600);
    ppTalk(PD.cur.role,'Я… я просто округлил…');await sleep(1100);J.arms=false;J.point=true;ppTalk('Голос с небес','Прах еси, и в прах возвратишься.');await sleep(700);
    QS.flash=3;shakePP();sNoise(1.2,.35,5000,400);sMuf(80,1.4,'sine',.3,30,0,300);for(let i=0;i<30;i++)QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-10,10)),y:Math.round(p.y+rint(0,28)),ttl:6+i%10,c:i%3?'#fff3b0':'#9a968c'});
    p.run=false;p.moving=false;p.lying=true;p.ash=true;p.tx=p.x;p.ty=p.y;popText('ПУФ!',Math.round(p.x+6),Math.round(p.y-2),'#fff3b0',18);
    for(let i=0;i<14;i++){QS.actors.push({t:'smoke',x:p.x+rint(0,14),y:p.y+rint(4,26),life:1});await sleep(40)}await sleep(900);
-   J.point=false;J.arms=true;ppTalk('Голос с небес','Аминь.');sMuf(400,1.6,'sine',.05,2400,0,4000);sMuf(600,1.6,'triangle',.03,3000,.1,4000);
+   J.point=false;J.arms=true;ppTalk('Голос с небес','Аминь.');sChoir([174.6,349.2,440,523.3],1.6,0,.05);sChoir([130.8,261.6,329.6,392,523.3],2.8,1.4,.06);sMuf(400,1.6,'sine',.05,2400,0,4000);sMuf(600,1.6,'triangle',.03,3000,.1,4000);
    let k=0;await tick(()=>{k++;J.glow=k*1.3;J.y-=k*.25;if(k%2===0)for(let q=0;q<4;q++){const an=Math.random()*Math.PI*2,r=rint(6,40);QS.fx.push({t:'spark',x:Math.round(bx+Math.cos(an)*r),y:Math.round(J.y+50+Math.sin(an)*r),ttl:5+q,c:q%2?'#fff3b0':'#ffffff'})}if(k===16)J.gone=true;return k>=22});
    QS.flash=3;sNoise(.5,.2,9000,3000);for(let i=0;i<24;i++){const an=i/24*Math.PI*2;QS.fx.push({t:'spark',x:Math.round(bx+Math.cos(an)*34),y:Math.round(p.y-10+Math.sin(an)*20),ttl:8,c:'#ffffff'})}
    QS.actors=QS.actors.filter(a=>a!==J);await tick(()=>{beam.w=Math.max(0,beam.w-3);beam.al=Math.max(0,beam.al-.03);return beam.w<=0});QS.actors=QS.actors.filter(a=>a!==beam);ppTalk('Бюро','Остался только прах. Полиция, заберите.')}},
