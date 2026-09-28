@@ -1809,43 +1809,50 @@ function drawFace(L,cv,ov){
   if(!cv&&FACE.tv){drawTV($('#ppFace'),FACE.tv);return}
   if(QS.soot&&L)L=sootL(L);
   const c=cv||$('#ppFace'),x=c.getContext('2d'),R=P(x);const WN=PPX.WINS[(ov&&ov.win)||PP.win]||PPX.WINS.green;
-  R(0,0,64,64,WN[1]);for(let i=2;i<64;i+=8)R(i,0,2,54,WN[2]);R(0,0,64,3,WN[3]);
+  R(0,0,64,64,WN[1]);for(let yy=6;yy<54;yy+=5)R(0,yy,64,1,WN[2]);R(0,0,64,3,WN[3]);
   if(WN[5]){[[6,8],[20,4],[40,10],[52,5],[30,14],[12,20],[48,22],[58,30],[4,34]].forEach(([a,b],i)=>R(a,b,1,1,(QS.tick+i)%20<14?'#e8e4c8':'#8a8870'));R(46,6,6,6,'#e8e2c0');R(48,6,4,4,WN[1])}
   if(WN[4]){const C=WN[4];for(let i=0;i<10;i++){R(i,3,1,51,i%3===0?shade(C,.75):C);R(63-i,3,1,51,i%3===0?shade(C,.75):C)}R(0,3,64,4,shade(C,1.1));R(0,7,64,1,shade(C,.7));R(8,30,3,3,'#c9a24a');R(53,30,3,3,'#c9a24a')}
   R(0,54,64,10,'#4a3624');R(0,54,64,2,'#6a4e34');R(0,62,64,2,'#2e2014');
   if(!L){R(20,20,24,14,'#555a48');R(22,22,20,2,'#4c5140');return}
-  const s=L.skin,sd=shade(s,.8),sl=shade(s,1.08),hd=shade(L.hair,.75);
+  const PM=(c,t=.32)=>{const a=parseInt(c.slice(1),16),b=0x566474;const m=(sh)=>Math.round(((a>>sh)&255)*(1-t)+((b>>sh)&255)*t);return'#'+((1<<24)|(m(16)<<16)|(m(8)<<8)|m(0)).toString(16).slice(1)};
+  const s=PM(L.skin),sd=shade(s,.8),sl=shade(s,1.16),s2=shade(s,.6),s3=shade(s,.42),OL='#15120f',hd=shade(PM(L.hair),.7);
   const ph=((L.skin.charCodeAt(2)||0)*7+(L.coat.charCodeAt(3)||0)*3)%53,tk=QS.tick+ph,blink=tk%53<2||(tk%197>=6&&tk%197<8),bob=Math.floor(tk/9)%2,talk=!cv&&Date.now()<FACE.talkUntil&&Math.floor(QS.tick/2)%2===0;
   x.save();x.translate(0,bob);
-  if(L.style==='long'&&!L.hat){for(let y=16;y<=50;y++){const hw=15-(y>41?Math.round((y-41)*1.4):0);if(hw>0){R(32-hw,y,hw*2,1,L.hair);R(32-hw,y,2,1,hd)}}}
-  // coat & shoulders
-  R(6,46,52,18,L.coat);R(6,46,52,2,shade(L.coat,1.15));R(6,48,4,16,shade(L.coat,.8));R(54,48,4,16,shade(L.coat,.8));
-  for(let i=0;i<9;i++){R(24+i,46+i,1,1,shade(L.coat,.7));R(39-i,46+i,1,1,shade(L.coat,.7))}
-  R(26,46,12,8,L.shirt);for(let i=0;i<6;i++){R(26+i,46+i,6-i>0?1:0,1,L.shirt)}
-  if(L.tie){R(31,47,3,2,L.tie);R(30,49,5,6,L.tie);R(31,55,3,1,shade(L.tie,.8))}
-  if(L.insp){R(6,46,10,3,'#e0b64a');R(48,46,10,3,'#e0b64a');R(10,52,8,5,'#a3302a');R(12,54,4,1,'#e0b64a');R(42,52,6,6,'#c9a24a');R(43,53,4,4,'#e8cf73')}
+  const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);
+  const HW=[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,12,12,11,11,10,9,9,8,7,6,5,3];const hwAt=y=>y<11||y>44?0:HW[y-11];
+  if(L.style==='long'&&!L.hat){for(let y=15;y<=52;y++){const hw=15-(y>42?Math.round((y-42)*1.3):0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32-hw,y,2,1,H1);R(32+hw-3,y,3,1,H1);if(y%3===0)R(32-hw+3,y,1,1,H2)}}}
+  // shoulders: boxy uniform-like coat with collar
+  for(let y=44;y<64;y++){const w=Math.min(29,17+(y-44)*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1)}R(15,45,34,1,CO2);
+  R(25,44,14,9,L.shirt);for(let i=0;i<8;i++){R(25+i,44+i,1,1,CO1);R(38-i,44+i,1,1,CO1);R(24+i,45+i,1,1,CO);R(39-i,45+i,1,1,CO)}R(26,44,12,1,shade(L.shirt,.8));
+  if(L.tie){R(31,46,3,2,shade(L.tie,.8));R(30,48,5,7,L.tie);R(31,48,1,6,shade(L.tie,1.2));R(31,55,3,1,shade(L.tie,.7))}
+  if(L.insp){R(5,45,11,3,'#c9a24a');R(48,45,11,3,'#c9a24a');R(5,47,11,1,'#8a6a2a');R(10,52,8,5,'#8a2a24');R(12,54,4,1,'#c9a24a');R(42,52,6,6,'#b8923a');R(43,53,4,4,'#d8bf63')}
   // neck
-  R(26,38,12,9,sd);R(26,44,12,2,shade(s,.7));
-  // head (ellipse)
-  for(let y=12;y<=44;y++){const t=(y-27)/16.5;let hw=Math.round(13.5*Math.sqrt(Math.max(0,1-t*t)));if(y>36)hw=Math.round(hw*(1-(y-36)*0.035));if(hw<=0)continue;R(32-hw,y,hw*2,1,s);R(32+hw-3,y,3,1,sd);R(32-hw,y,1,1,sl)}
-  R(16,26,3,8,s);R(45,26,3,8,sd);R(17,28,1,4,sd);
+  R(26,37,12,9,OL);R(27,37,10,9,sd);R(27,37,10,3,s2);R(35,40,2,6,s2);R(27,44,10,1,s3);
+  // head
+  for(let y=10;y<=45;y++){const hw=y===10?5:y===45?2:hwAt(y);if(hw<=0)continue;R(32-hw-1,y,hw*2+2,1,OL)}
+  for(let y=11;y<=44;y++){const hw=hwAt(y);R(32-hw,y,hw*2,1,s);if(y>=13){R(32+hw-4,y,2,1,sd);R(32+hw-2,y,2,1,s2);R(32-hw,y,1,1,sl)}}
+  R(16,25,3,9,OL);R(17,26,2,7,sd);R(18,27,1,4,s2);R(45,25,3,9,OL);R(45,26,2,7,s2);R(45,27,1,4,s3);
+  R(21,32,4,2,sd);R(40,32,5,2,s2);R(22,33,2,1,s2);R(29,43,6,1,sd);R(31,41,3,1,sl);R(24,39,2,3,sd);R(38,38,3,4,s2);
+  if(L.old){R(24,15,16,1,sd);R(26,17,12,1,sd);R(22,30,4,1,s2);R(38,30,4,1,s2);R(26,36,1,4,s2);R(37,36,1,4,s3)}
   // hair
-  const H=L.hair;
-  if(L.hat!=='scarf'&&(L.style!=='bald'||L.hat)){for(let y=9;y<=20;y++){const t=Math.min(1,Math.abs(y-22)/13);const hw=Math.round(15.5*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw,y,hw*2,1,H);R(32-hw,y,1,1,hd)}}R(17,20,3,8,H);R(44,20,3,8,H);R(20,20,11,2,H);R(33,20,11,2,H);R(27,11,10,1,shade(H,1.22))}
-  
-  if(L.style==='curly'){for(let i=0;i<7;i++)R(18+i*4,9+(i%2),4,3,H)}
-  if(L.style==='bun'&&!L.hat){R(27,4,10,6,H);R(26,5,12,4,H);R(28,4,8,1,shade(H,1.2))}
-  // brows, eyes
-  R(23,24,7,1+L.brow,hd);R(35,24,7,1+L.brow,hd);
-  R(23,27,7,3,'#efe8dc');R(35,27,7,3,'#efe8dc');R(26,27,3,3,'#2a1f18');R(38,27,3,3,'#2a1f18');R(27,27,1,1,'#fff');R(39,27,1,1,'#fff');R(23,30,7,1,sd);R(35,30,7,1,sd);
-  if(blink){R(23,27,7,3,s);R(35,27,7,3,s);R(23,29,7,1,shade(s,.6));R(35,29,7,1,shade(s,.6))}
-  if(L.glasses){x.strokeStyle='#1b1914';x.lineWidth=1;x.strokeRect(21.5,25.5,10,6);x.strokeRect(33.5,25.5,10,6);R(31,27,3,1,'#1b1914');R(17,27,4,1,'#1b1914');R(44,27,3,1,'#1b1914')}
-  // nose, mouth
-  R(31,29,2,7,sd);R(30,35,5,2,shade(s,.72));R(29,35,1,1,sd);
-  if(L.beard){for(let y=36;y<=44;y++){const hw=Math.round(12-(y-36)*1.1);if(hw>0)R(32-hw,y,hw*2,1,H)}R(28,39,8,2,shade(s,.6))}
-  else{R(28,40,8,2,'#8a4a3a');R(28,40,8,1,'#6a3228');R(29,42,6,1,sd)}
-  if(talk){R(28,39,8,4,'#3a1a14');R(29,39,6,1,'#efe8dc');R(29,42,6,1,'#a3504a')}
-  if(L.stache)R(26,37,12,2,H);
+  if(L.hat!=='scarf'&&(L.style!=='bald'||L.hat)){for(let y=8;y<=21;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round(15*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
+    R(17,19,3,9,H);R(16,19,1,9,OL);R(44,19,3,9,H1);R(47,19,1,9,OL);R(20,20,24,2,H);R(20,21,24,1,H1);R(29,20,1,2,H1);R(24,10,14,1,H2)}
+  else if(L.style==='bald'&&!L.hat){R(24,12,10,2,sl);R(26,11,6,1,sl)}
+  if(L.style==='curly'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
+  if(L.style==='bun'&&!L.hat){R(26,3,12,7,OL);R(27,4,10,6,H);R(28,4,8,1,H2);R(35,5,2,4,H1)}
+  // brows, eye sockets, eyes
+  R(22,24,8,5,sd);R(35,24,8,5,s2);R(22,24,8,1,s2);R(35,24,8,1,s3);
+  const bw=1+L.brow;R(22,22,8,bw,hd);R(35,22,8,bw,hd);R(28,22+bw,2,1,hd);R(35,22+bw,2,1,hd);
+  if(blink){R(23,26,6,2,sd);R(36,26,6,2,s2);R(23,27,6,1,s3);R(36,27,6,1,s3)}
+  else{R(23,26,6,2,'#d0ccc0');R(36,26,6,2,'#c4c0b4');R(25,26,2,2,OL);R(38,26,2,2,OL);R(25,26,1,1,'#e8e8e0');R(23,28,6,1,s2);R(36,28,6,1,s3);if(L.g==='f'){R(22,25,2,1,OL);R(42,25,2,1,OL)}}
+  if(L.glasses){x.strokeStyle='#15120f';x.lineWidth=1;x.strokeRect(21.5,24.5,9,5);x.strokeRect(34.5,24.5,9,5);R(30,26,5,1,'#15120f');R(17,26,4,1,'#15120f');R(44,26,3,1,'#15120f');R(22,25,2,1,'rgba(255,255,255,.35)');R(35,25,2,1,'rgba(255,255,255,.3)')}
+  // nose
+  R(31,25,1,8,sl);R(33,26,1,8,sd);R(30,33,5,2,s);R(29,34,2,1,s3);R(34,34,2,1,s3);R(30,35,5,1,s2);R(27,34,1,4,sd);R(37,34,1,4,s2);
+  // mouth
+  if(L.beard){for(let y=35;y<=45;y++){const hw=Math.round(13-(y-35)*1.2);if(hw>0){R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(28,38,8,1,s3);R(29,39,6,1,shade(s,.7))}
+  else{const lip=L.g==='f'?'#7a4a44':s2;R(29,37,6,1,sd);R(28,38,8,1,s3);R(29,39,6,1,lip);R(30,40,4,1,sd)}
+  if(talk){R(28,37,8,3,'#1e100c');R(29,37,6,1,'#c8c0b0');R(29,39,6,1,'#5a2a24')}
+  if(L.stache){R(27,36,10,2,H);R(27,37,10,1,H1)}
   // hats
   const C=L.hatc;
   if(L.hat==='cap'){R(17,7,30,9,C);R(17,7,30,2,shade(C,1.25));R(14,15,36,3,shade(C,.8))}
