@@ -239,6 +239,14 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .pp-item.previewing{outline:3px solid #e0b64a;outline-offset:-3px}
 .pp-sw .sw{display:block;height:34px;border:2px solid #15130f;background-size:cover}
 .pp-card{max-width:760px}
+.pp-ov.ov-shop{align-items:stretch;padding:14px}
+.pp-card.shop{max-width:1280px;height:100%;display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:16px;overflow:hidden}
+.shop-l{display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0}
+.shop-l .pp-prev{flex-direction:column;align-items:center}
+.shop-l #ppPrevOffice{width:100%;max-width:400px;height:auto}
+.shop-r{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:8px;padding-right:8px;border-left:3px dashed #8f8360;padding-left:14px}
+.shop-r>p{margin-top:6px}
+@media (max-width:820px){.pp-card.shop{grid-template-columns:1fr;height:auto;overflow:visible}.shop-r{overflow:visible;border-left:none;padding-left:0}.pp-ov.ov-shop{align-items:flex-start}}
 table.lbt tr.me td{background:var(--accent-soft);font-weight:600}
 .pp-evb{position:absolute;left:50%;top:34px;transform:translateX(-50%);z-index:2;font-size:16px;color:#1b1914;background:#e0b64a;padding:2px 10px;border:3px solid #15130f;animation:tsBlink .6s steps(2) infinite;pointer-events:none}
 .pp-window.splat::before{content:"";position:absolute;z-index:2;left:30%;top:22%;width:34%;height:30%;background:radial-gradient(circle at 40% 40%,#f4f4ec 0 30%,#d8d8cc 31% 45%,transparent 46%),radial-gradient(circle at 70% 70%,#ececE0 0 18%,transparent 19%),radial-gradient(circle at 25% 80%,#e8e8dc 0 14%,transparent 15%);pointer-events:none}
@@ -327,7 +335,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
     <nav class="tabs" role="tablist" id="tabs">
       <button role="tab" data-tab="home" aria-selected="true">Главная</button>
       <button role="tab" data-tab="build">Отчёты</button>
-      <button role="tab" data-tab="mix">МИКС</button>
+      <button role="tab" data-tab="mix">Игра</button>
       <button role="tab" data-tab="place">Где статья?</button>
       <button role="tab" data-tab="quiz">Тесты</button>
       <button role="tab" data-tab="cards">Карточки</button>
@@ -344,14 +352,14 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
   <div class="hero">
     <span class="eyebrow">Подготовка к мидтерму · без компьютера, только ручка и калькулятор</span>
     <h1>Научиться собирать четыре отчёта руками и закрыть теорию</h1>
-    <p class="muted">Лектор сказал: решишь задачу уровня FMA Corporation, значит пройдёшь. Поэтому главный раздел здесь «Отчёты». Мидтерм по силлабусу покрывает темы 1–7: финансовая система, отчёты, financial ratios, анализ отчётов, time value of money, ставки и risk &amp; return, short-term financial management. Всё это есть в тестах, карточках, шпаргалке и режиме МИКС.</p>
+    <p class="muted">Лектор сказал: решишь задачу уровня FMA Corporation, значит пройдёшь. Поэтому главный раздел здесь «Отчёты». Мидтерм по силлабусу покрывает темы 1–7: финансовая система, отчёты, financial ratios, анализ отчётов, time value of money, ставки и risk &amp; return, short-term financial management. Всё это есть в тестах, карточках, шпаргалке и Игре.</p>
   </div>
   <div class="statbar" id="homeStats"></div>
   <h2>План на 3–4 недели</h2>
   <div class="plan">
     <div class="panel"><span class="eyebrow">Неделя 1</span><h3>Теория и структура</h3><ul class="clean"><li>Шпаргалка: все блоки</li><li>Тесты: Intro, Forms, Institutions, Markets</li><li>Карточки каждый день по 15 минут</li><li>Задача «Classroom Template» (IS, RE, BS)</li></ul></div>
     <div class="panel"><span class="eyebrow">Неделя 2</span><h3>FMA целиком</h3><ul class="clean"><li>FMA 2020: сначала с подсказками</li><li>Потом без подсказок, на бумаге, с таймером</li><li>Тесты: Statements и Cash Flow</li></ul></div>
-    <div class="panel"><span class="eyebrow">Неделя 3</span><h3>Темы 3–7</h3><ul class="clean"><li>Шпаргалка: ratios, DuPont, TVM, risk &amp; return, short-term mgmt</li><li>Тесты по этим темам + МИКС с галочками «Темы 3–7»</li><li>Генератор FMA-задач: ещё 3 штуки</li></ul></div>
+    <div class="panel"><span class="eyebrow">Неделя 3</span><h3>Темы 3–7</h3><ul class="clean"><li>Шпаргалка: ratios, DuPont, TVM, risk &amp; return, short-term mgmt</li><li>Тесты по этим темам + Игра с галочками «Темы 3–7»</li><li>Генератор FMA-задач: ещё 3 штуки</li></ul></div>
     <div class="panel"><span class="eyebrow">Последние дни</span><h3>Режим экзамена</h3><ul class="clean"><li>«Экзамен-микс»: 30 вопросов подряд</li><li>Одна генерированная задача на время</li><li>Повтори только ошибки</li></ul></div>
   </div>
   <div class="panel stack">
@@ -367,7 +375,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 
 <!-- MIX -->
 <section class="section" id="tab-mix" hidden>
-  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Бюро финансовой отчётности</h1><span class="muted" style="font-size:13px">Режим МИКС · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppReset" style="margin-left:auto">Начать игру заново</button></div>
+  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Бюро финансовой отчётности</h1><span class="muted" style="font-size:13px">Игра · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppReset" style="margin-left:auto">Начать игру заново</button></div>
   <div class="pp" id="pp">
     <div class="pp-top"><canvas id="ppQueue" width="480" height="120" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div><div class="pp-event" id="ppEvent"></div></div>
     <div class="pp-main">
@@ -394,7 +402,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 
 <!-- LEADERBOARD -->
 <section class="section" id="tab-lb" hidden>
-  <div class="stack" style="gap:4px"><span class="eyebrow">Режим МИКС · все игроки</span><h1>Глобальный лидерборд</h1></div>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Игра · все игроки</span><h1>Глобальный лидерборд</h1></div>
   <p id="lbStatus" style="max-width:80ch"></p>
   <div class="statbar" id="lbMe"></div>
   <div class="panel row">
@@ -405,7 +413,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
     <span class="muted" id="lbMsg" style="flex-basis:100%;font-size:13.5px"></span>
   </div>
   <div class="panel tw"><table class="simple lbt" id="lbTable"></table></div>
-  <p class="muted" style="font-size:13.5px">Очки = 100 × рекорд медалей + 25 × лучший день + 5 × все верные ответы. Результат обновляется после каждого дня в МИКСе.</p>
+  <p class="muted" style="font-size:13.5px">Очки = 100 × рекорд медалей + 25 × лучший день + 5 × все верные ответы. Результат обновляется после каждого дня в Игре.</p>
 </section>
 
 <!-- BUILD -->
@@ -1698,12 +1706,14 @@ const PPX={
     doc:'Считай сверху вниз. Вычитаемые строки пиши положительными, кроме Cash Flow (там отток с минусом).'},
   FEE:5,RENT:12,FOOD:6,HEAT:4,BONUS:10,FINE:15,
 };
-function ppNorm(p){p=p||{};return Object.assign({win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
+function ppNorm(p){p=p||{};return Object.assign({candy:0,win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
 let PP=ppNorm(store.get('pp',null));
 let PD=null,ppLoop=null;
 const ppSave=()=>store.set('pp',PP);
 const has=id=>!!PP.owned[id];
 const ppRank=()=>{let r=PPX.RANKS[0][1];PPX.RANKS.forEach(([m,n])=>{if(PP.medals.length>=m)r=n});return r};
+function itemBV(id){const it=PPX.SHOP.find(s=>s.id===id),d=PP.owned[id];if(!it||d==null)return 0;return it.p-it.p/10*Math.min(10,Math.max(0,PP.day-d))}
+function salePrice(id){return Math.max(1,Math.round(itemBV(id)))}
 function equip(day){let cost=0,acc=0,dep=0;Object.entries(PP.owned).forEach(([id,d])=>{const it=PPX.SHOP.find(s=>s.id===id);if(!it)return;cost+=it.p;const per=it.p/10;const used=Math.min(10,Math.max(0,day-d));acc+=per*used;if(day>=d&&day<d+10)dep+=per});return{cost,acc,net:cost-acc,dep}}
 
 /* ---------- pixel art ---------- */
@@ -2036,7 +2046,7 @@ function ppBuildSubmit(){const c=PD.cur,d=c.doc;const rows=c.rows;const real=row
   missing.forEach(i=>lines.push(`Не хватает строки: ${rows[i][0]} = ${fmt(rows[i][2])}`));
   document.querySelectorAll('#ppPaper .bld button,#ppPaper .bld input').forEach(x=>x.disabled=true);
   const all=orderGood&&vOk>=real.length-1;const fee=all?c.fee:(orderGood?vOk:0);
-  const right=real.slice().sort((a,b)=>rows[a][1]-rows[b][1]).map((i,k)=>`${k+1}. ${rows[i][0]} = ${fmt(rows[i][2])}`).join('\n');
+  const right=groupMarked(real.slice().sort((a,b)=>rows[a][1]-rows[b][1]).map(i=>({label:rows[i][0],g:rows[i][1],extra:' = '+fmt(rows[i][2])})));
   ppFinish(all,(orderGood&&vOk===real.length-1?'⚠ Одна сумма неверная (показана красным). Ошибка в одном пункте засчитывается без штрафа, но запомни её.\n':'')+lines.join('\n')+'\n\nПравильный документ (строки одной категории можно менять местами):\n'+right,`Объясни по шагам, как составить этот документ (${d.title}) и почему строки идут в таком порядке. Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}`,fee,all?'':`<p>${orderGood?`Структура верная, сумм верно ${vOk} из ${real.length}: $1 за каждую.`:'Структура документа неверная: лишние, пропущенные или переставленные строки.'}</p>`);
   document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
 
@@ -2059,7 +2069,11 @@ function ppOrderClick(b){const c=PD.cur;if(c._drag){c._drag=false;return}if(b.da
 function orderOK(c){const got=c.seq.map(i=>c.rows[i][1]);const exp=c.rows.map(r=>r[1]).slice().sort((a,b)=>a-b);return got.every((g,i)=>g===exp[i])}
 function orderDiff(c){const exp=c.rows.map(r=>r[1]).slice().sort((a,b)=>a-b);const names=g=>c.rows.filter(r=>r[1]===g).map(r=>r[0]);
   return 'Твой порядок:\n'+c.seq.map((i,k)=>{const ok=c.rows[i][1]===exp[k];return `${k+1}. ${c.rows[i][0]} ${ok?'✓':'✗  здесь должна быть: '+names(exp[k]).join(' / ')}`}).join('\n')}
-function correctOrderText(c){const seen=[];return c.rows.slice().sort((a,b)=>a[1]-b[1]).map((r,i)=>`${i+1}. ${r[0]}`).join('\n')}
+function groupMarked(list){/* list: [{label, g, extra}] sorted by group; marks lines of one category */
+  const w=Math.max(...list.map(x=>(x.label+(x.extra||'')).length))+2;
+  return list.map((x,i)=>{const same=list.filter(y=>y.g===x.g);let tag='';if(same.length>1){const k=same.indexOf(x);tag=k===0?'┐ одна категория, порядок любой':k===same.length-1?'┘':'│'}
+    return `${String(i+1).padStart(2)}. ${(x.label+(x.extra||'')).padEnd(w)}${tag}`}).join('\n')}
+function correctOrderText(c){return groupMarked(c.rows.slice().sort((a,b)=>a[1]-b[1]).map(r=>({label:r[0],g:r[1]})))}
 function ppOrderSubmit(){const c=PD.cur;const ok=orderOK(c);
   if(c.kind==='order'){ppFinish(ok,(ok?'Порядок верный.\n'+correctOrderText(c):orderDiff(c)+'\n\nПравильный порядок (строки одной группы, например отдельные расходы, можно менять местами между собой):\n'+correctOrderText(c)),`Объясни, почему строки отчёта «${c.tpl.n}» идут именно в таком порядке:\n${correctOrderText(c)}\nЯ студент 1 курса, Managerial Finance (Gitman).`,ok?c.fee:0,ok?'':'<p>Порядок строк неверный.</p>');document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
   if(!ok){ppFinish(false,orderDiff(c)+'\n\nПравильный порядок (строки одной группы, например отдельные расходы, можно менять местами между собой):\n'+correctOrderText(c),`Объясни порядок строк и как посчитать этот документ: ${c.doc.given}`,0,'<p>Порядок неверный, до заполнения не дошло.</p>');document.querySelectorAll('#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
@@ -2107,7 +2121,7 @@ function ppBar(){
 }
 function ppTalk(who,text){$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
 function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=Math.floor(PD.min%60);$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
-function ppOverlay(html){const o=$('#ppOv');o.innerHTML=`<div class="pp-card">${html}</div>`;o.hidden=false;o.scrollTop=0}
+function ppOverlay(html,cls){const o=$('#ppOv');o.className='pp-ov'+(cls?' ov-'+cls:'');o.innerHTML=`<div class="pp-card${cls?' '+cls:''}">${html}</div>`;o.hidden=false;o.scrollTop=0}
 function ppCloseOv(){$('#ppOv').hidden=true}
 function ppThunk(){SFX.stamp();return;try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.setValueAtTime(140,a.currentTime);o.frequency.exponentialRampToValueAtTime(50,a.currentTime+.09);g.gain.setValueAtTime(.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.13)}catch(e){}}
 function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
@@ -2115,7 +2129,7 @@ function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
 /* ---------- day flow ---------- */
 function ppDayIntro(){
   PD=null;drawFace(null);$('#ppDesk').innerHTML='';ppTalk('Бюро','Окошко закрыто.');$('#ppClock').textContent='06:00';
-  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0};ppSave()}
+  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0,saleCash:0,saleBV:0};ppSave()}
   const ev=ppEvent();$('#ppEvent').textContent=ev.t;
   const n=Math.min(4+PP.day,10);const heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
@@ -2137,13 +2151,15 @@ function drawBoothMini(cv,color){const x=cv.getContext('2d'),R=P(x);R(0,0,90,70,
 function ppShop(prev){
   prev=prev||{};
   const own=Object.assign({},PP.owned);if(prev.item)own[prev.item]=1;
-  const card=(attr,id,title,price,sub,img,owned,dis,cls='')=>`<div class="pp-item${owned?' owned':''}" data-prev="${attr}:${id}" tabindex="0">${img?`<img class="pp-thumb" src="${img}" alt="">`:''}<b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}${owned?'<small><b style="font-size:14px">✓ есть</b></small>':`<button class="pp-btn ${cls}" data-${attr}="${id}" ${dis?'disabled':''}>$${price}</button>`}</div>`;
+  const card=(attr,id,title,price,sub,img,owned,dis,cls='')=>`<div class="pp-item${owned?' owned':''}" data-prev="${attr}:${id}" tabindex="0">${img?`<img class="pp-thumb" src="${img}" alt="">`:''}<b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}${owned?(attr==='buy'?`<small>✓ есть · остаточная стоимость $${fmt(itemBV(id),1)}</small><button class="pp-btn" data-sell="${id}">Продать за $${salePrice(id)}</button>`:'<small><b style="font-size:14px">✓ есть</b></small>'):`<button class="pp-btn ${cls}" data-${attr}="${id}" ${dis?'disabled':''}>$${price}</button>`}</div>`;
   const items=PPX.SHOP.map(s=>card('buy',s.id,s.n,s.p,s.d,officeThumb(s.id),has(s.id),PP.cash<s.p)).join('');
   const sw=(attr,obj,cur,price,wide)=>Object.entries(obj).map(([k,[n,c]])=>`<div class="pp-item pp-sw${cur===k?' owned':''}" data-prev="${attr}:${k}" tabindex="0"><span class="sw" style="background:${c}"></span><b>${esc(n)}</b>${cur===k?'<small><b style="font-size:14px">✓ сейчас</b></small>':`<button class="pp-btn" data-${attr}="${k}" ${PP.cash<price?'disabled':''}>$${price}</button>`}</div>`).join('');
-  ppOverlay(`<h3>МАГАЗИН ОФИСА</h3><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)} · наведи на товар, чтобы примерить</p>
+  const keepScroll=document.querySelector('#ppOv .shop-r')?document.querySelector('#ppOv .shop-r').scrollTop:0;
+  ppOverlay(`<div class="shop-l"><h3>МАГАЗИН ОФИСА</h3><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)}<br>наведи на товар справа, чтобы примерить</p>
    <div class="pp-prev"><div><canvas id="ppPrevOffice" width="160" height="100"></canvas><small>Офис</small></div><div><div id="ppPrevDesk" class="pp-prevdesk"><span class="pp-prevpaper"></span></div><small>Стол</small></div><div><canvas id="ppPrevWin" width="64" height="64"></canvas><small>Окошко</small></div><div class="wide"><canvas id="ppPrevStreet" width="480" height="120"></canvas><small>Улица и будка</small></div></div>
    <p class="mono" style="font-size:12.5px">Мебель и техника — <b>capital expenditure</b>: investing outflow в Cash Flow, Office equipment в балансе, в IS только depreciation (1/10 цены в день). Покраска и стол — <b>repairs expense</b>. Таймстоп и пистолет — <b>supplies expense</b>.</p>
-   <p>Декор и техника</p><div class="pp-shop">${items}</div>
+   <button class="pp-btn horn" id="ppShopBack">Назад</button></div>
+   <div class="shop-r"><p>Декор и техника</p><div class="pp-shop">${items}</div>
    <p>Стены · $10</p><div class="pp-shop">${sw('wall',PPX.WALLS,PP.wall,10)}</div>
    <p>Стол · $12</p><div class="pp-shop">${sw('desk',PPX.DESKS,PP.desk,12)}</div>
    <p>Будка · $12</p><div class="pp-shop">${sw('booth',PPX.BOOTHS,PP.booth,12)}</div>
@@ -2151,8 +2167,9 @@ function ppShop(prev){
    <p>Улица · $20</p><div class="pp-shop">${sw('street',Object.fromEntries(Object.entries(PPX.STREETS).map(([k,v])=>[k,[v.n,`linear-gradient(${v.sky[4]} 0 45%,${v.wall} 45% 70%,${v.path} 70%)`]])),PP.street,20)}</div>
    <p>Расходники</p><div class="pp-shop">
      <div class="pp-item"><b>Таймстоп</b><small>Часы стоят, пока не закончишь с текущим посетителем.</small><small>У тебя: ${PP.ts||0}</small><button class="pp-btn" data-ts="1" ${PP.cash<8?'disabled':''}>$8</button></div>
-     <div class="pp-item"><b>Пистолет</b><small>Вечером выстрели в инспектора. Попал: проверки нет, он лежит день, потом приходит с охраной и щитами.</small><small>У тебя: ${PP.gun||0}</small><button class="pp-btn red" data-gun="1" ${PP.cash<25?'disabled':''}>$25</button></div></div>
-   <button class="pp-btn horn" id="ppShopBack">Назад</button>`);
+     <div class="pp-item"><b>Пистолет</b><small>Вечером выстрели в инспектора. Попал: проверки нет, он лежит день, потом приходит с охраной и щитами.</small><small>У тебя: ${PP.gun||0}</small><button class="pp-btn red" data-gun="1" ${PP.cash<25?'disabled':''}>$25</button></div>
+     <div class="pp-item"><b>Конфеты для инспектора</b><small>На ближайшей проверке инспектор добрее: медаль с 70% вместо 80%, штраф только ниже 50%. Тратится автоматически.</small><small>У тебя: ${PP.candy||0}</small><button class="pp-btn" data-candy="1" ${PP.cash<15?'disabled':''}>$15</button></div></div></div>`,'shop');
+  const sr=document.querySelector('#ppOv .shop-r');if(sr)sr.scrollTop=keepScroll;
   const sample=PD&&PD.cur?PD.cur.look:(ppShop.look||(ppShop.look=newLook()));const renderPrev=pv=>{const o=Object.assign({},PP.owned);let wall=PP.wall,desk=PP.desk,booth=PP.booth,win=PP.win,street=PP.street;if(pv){const [a,k]=pv.split(':');if(a==='buy')o[k]=1;if(a==='wall')wall=k;if(a==='desk')desk=k;if(a==='booth')booth=k;if(a==='win')win=k;if(a==='street')street=k}
     drawOffice($('#ppPrevOffice'),{owned:o,wall});$('#ppPrevDesk').style.background=(PPX.DESKS[desk]||PPX.DESKS.oak)[1];drawFace(sample,$('#ppPrevWin'),{win});qsDraw($('#ppPrevStreet'),{street,booth,noPeople:1});
     document.querySelectorAll('#ppOv [data-prev]').forEach(el=>el.classList.toggle('previewing',el.dataset.prev===pv))};
@@ -2167,6 +2184,8 @@ function ppShop(prev){
   $('#ppOv').querySelectorAll('[data-street]').forEach(b=>b.onclick=()=>buy(20,()=>{PP.street=b.dataset.street;PP.pending.repairs+=20}));
   $('#ppOv').querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>buy(8,()=>{PP.ts=(PP.ts||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+8}));
   $('#ppOv').querySelectorAll('[data-gun]').forEach(b=>b.onclick=()=>buy(25,()=>{PP.gun=(PP.gun||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+25}));
+  $('#ppOv').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const id=b.dataset.sell;if(!PP.owned[id])return;const bv=itemBV(id),pr=salePrice(id);delete PP.owned[id];PP.cash+=pr;PP.pending.saleCash=(PP.pending.saleCash||0)+pr;PP.pending.saleBV=(PP.pending.saleBV||0)+bv;ppSave();SFX.coin();ppBar();drawOffice();ppShop()});
+  $('#ppOv').querySelectorAll('[data-candy]').forEach(b=>b.onclick=()=>buy(15,()=>{PP.candy=(PP.candy||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+15}));
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
@@ -2367,13 +2386,15 @@ function ppHint(){const c=PD&&PD.cur;if(!c||PD.state!=='asking'||PD.hinted||c.ki
 function ppBook(){const c=PD&&PD.cur;if(!c)return;const tk=c.kind==='q'?c.q.t:c.kind;ppTalk('Справочник',PPX.RULES[tk]||PPX.RULES.stmt)}
 function ppVerdict(){
   const n=PD.tasks.length,acc=PD.correct/n;
-  const hi=PP.event==='audit'?.9:.8;let verdict,bonus=0,fine=0,medal=null;
+  const candy=(PP.candy||0)>0?.1:0;if(candy)PP.candy--;
+  const hi=(PP.event==='audit'?.9:.8)-candy;let verdict,bonus=0,fine=0,medal=null;
   if(acc>=hi){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=PP.event==='audit'?20:PPX.BONUS;verdict='medal'}
-  else if(acc>=.6)verdict='warn';else{fine=PPX.FINE;PP.fines++;verdict='fine'}
+  else if(acc>=.6-candy)verdict='warn';else{fine=PPX.FINE;PP.fines++;verdict='fine'}
+  PD.candyUsed=!!candy;
   PD.bonus=bonus;PD.fine=fine;
   const lines={medal:`Налоговая инспекция. Проверил ваши записи: ${PD.correct} из ${n} верно. Книги в порядке. Вручаю вам «${medal&&medal[0]}» и премию $${bonus}. Повесьте на стену.`,
     warn:`Налоговая инспекция. ${PD.correct} из ${n} верно. Есть нарушения. В этот раз без штрафа, но медали не будет.`,
-    fine:`Налоговая инспекция! ${PD.correct} из ${n} верно. Это недопустимо. Штраф $${fine}. Выучите справочник к завтрашнему дню.`}[verdict];
+    fine:`Налоговая инспекция! ${PD.correct} из ${n} верно. Это недопустимо. Штраф $${fine}. Выучите справочник к завтрашнему дню.`}[verdict]+(candy?' (Инспектор съел твои конфеты и проверял мягче: пороги ниже на 10%.)':'');
   ppTalk('Налоговый инспектор',lines);drawOffice();({medal:SFX.fanfare,warn:SFX.bad,fine:SFX.sad})[verdict]();
   $('#ppDesk').innerHTML=`<div class="${verdict==='fine'?'pp-cite':'pp-paper'}"><b style="display:block;letter-spacing:.06em">${verdict==='medal'?'АКТ ПРОВЕРКИ · НАГРАЖДЕНИЕ':verdict==='warn'?'АКТ ПРОВЕРКИ · ПРЕДУПРЕЖДЕНИЕ':'АКТ ПРОВЕРКИ · ШТРАФ'}</b><p class="pp-q">${esc(lines)}</p><button class="pp-btn horn" id="ppSum">Итоги дня</button></div>`;
   $('#ppSum').onclick=ppSummary;ppBar();ppSave();
@@ -2419,10 +2440,13 @@ function ppShoot(ev){
 function ppSummary(){
   const d=PP.day,eq=equip(d),heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   const rev=PD.fees,rent=PPX.RENT,food=PPX.FOOD,rep=PP.pending.repairs,hints=PD.hints,dep=eq.dep;
-  const ded=PD.deduct||0,sup=PP.pending.supplies||0;const opex=rent+food+heat+rep+hints+dep+ded+sup,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
+  const ded=PD.deduct||0,sup=PP.pending.supplies||0;const opex=rent+food+heat+rep+hints+dep+ded+sup,ebit=rev-opex;
+  const proceeds=PP.pending.saleCash||0,soldBV=PP.pending.saleBV||0,gain=proceeds-soldBV;
+  const ni=ebit+PD.bonus-PD.fine+gain;
   const begCash=PP.beg.cash,begNet=PP.beg.net,capex=PP.pending.capex;
-  PP.cash=begCash+ni+dep-capex;
-  const endNet=begNet+capex-dep,reBeg=begCash+begNet-PP.capital,reEnd=reBeg+ni,ta=PP.cash+endNet;
+  const cfo=ni+dep-gain,cfi=-capex+proceeds;
+  PP.cash=begCash+cfo+cfi;
+  const endNet=begNet+capex-dep-soldBV,reBeg=begCash+begNet-PP.capital,reEnd=reBeg+ni,ta=PP.cash+endNet;
   const f1=v=>Number.isInteger(v)?fmt(v):fmt(v,1);
   const row=(l,v,cls='')=>`<tr class="${cls}${v<0?' neg':''}"><td>${l}</td><td>${v<0?'('+f1(-v)+')':f1(v)}</td></tr>`;
   const broke=PP.cash<0;
@@ -2430,10 +2454,10 @@ function ppSummary(){
    <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>
    <div class="pp-sumgrid">
    <table class="pp-is"><tr class="h"><td>Income statement</td><td></td></tr>
-   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска, стол)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}${sup?row('Supplies (таймстопы, пистолеты)',-sup):''}
-   ${row('Operating profit (EBIT)',ebit,'sub')}${row('Other income: премия',PD.bonus)}${row('Other expense: штраф',-PD.fine)}${row('Net income',ni,'sub')}</table>
+   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска, стол)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}${sup?row('Supplies (расходники)',-sup):''}
+   ${row('Operating profit (EBIT)',ebit,'sub')}${row('Other income: премия',PD.bonus)}${row('Other expense: штраф',-PD.fine)}${proceeds?row(gain>=0?'Gain on sale of equipment':'Loss on sale of equipment',gain):''}${row('Net income',ni,'sub')}</table>
    <table class="pp-is"><tr class="h"><td>Retained earnings</td><td></td></tr>${row('Beginning RE',reBeg)}${row('+ Net income',ni)}${row('− Dividends',0)}${row('Ending RE',reEnd,'sub')}
-   <tr class="h"><td>Cash flows</td><td></td></tr>${row('Net income',ni)}${row('+ Depreciation',dep)}${row('CFO',ni+dep,'sub')}${row('CFI: office equipment',-capex)}${row('Net change in cash',ni+dep-capex,'sub')}${row('Cash, end of day',PP.cash)}</table>
+   <tr class="h"><td>Cash flows</td><td></td></tr>${row('Net income',ni)}${row('+ Depreciation',dep)}${proceeds&&gain?row('− Gain on sale (non-cash)',-gain):''}${row('CFO',cfo,'sub')}${capex?row('CFI: purchase of equipment',-capex):''}${proceeds?row('CFI: sale of equipment',proceeds):''}${!capex&&!proceeds?row('CFI',0):''}${row('Net change in cash',cfo+cfi,'sub')}${row('Cash, end of day',PP.cash)}</table>
    <table class="pp-is"><tr class="h"><td>Balance sheet</td><td></td></tr>${row('Cash',PP.cash)}${row('Office equipment',eq.cost)}${row('− Accum. depreciation',-(eq.acc+dep))}${row('Total assets',ta,'sub')}${row('Common stock (стартовый капитал)',PP.capital)}${row('Retained earnings',reEnd)}${row('Total L & E',PP.capital+reEnd,'sub')}</table>
    </div>
    ${broke?'<p><b>Cash ушёл в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn red" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
@@ -2487,7 +2511,7 @@ async function renderLB(){
 $('#lbNick').value=store.get('nick','');
 $('#lbSave').onclick=async()=>{const n=$('#lbNick').value.trim().slice(0,24);store.set('nick',n);if(!n){$('#lbMsg').textContent='Введи ник.';return}
   if(!LB.online){$('#lbMsg').textContent='Ник сохранён. Отправка в глобальный рейтинг станет доступна на Lovable.';renderLB();return}
-  $('#lbMsg').textContent='Отправляю…';try{await lbSubmit();$('#lbMsg').textContent='Результат отправлен. Дальше он обновляется сам после каждого дня в МИКСе.';renderLB()}catch(e){$('#lbMsg').textContent='Ошибка отправки: '+e.message}};
+  $('#lbMsg').textContent='Отправляю…';try{await lbSubmit();$('#lbMsg').textContent='Результат отправлен. Дальше он обновляется сам после каждого дня в Игре.';renderLB()}catch(e){$('#lbMsg').textContent='Ошибка отправки: '+e.message}};
 $('#lbRefresh').onclick=renderLB;
 
 /* ---------- init ---------- */
