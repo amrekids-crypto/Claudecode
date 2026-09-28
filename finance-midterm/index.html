@@ -530,6 +530,18 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 <section class="section" id="tab-lb" hidden>
   <div class="stack" style="gap:4px"><span class="eyebrow">Игра · все игроки</span><h1>Глобальный лидерборд</h1></div>
   <p id="lbStatus" style="max-width:80ch"></p>
+  <div class="panel" id="cloudBox">
+    <div class="row" style="justify-content:space-between;align-items:baseline"><b>Аккаунт и облачное сохранение</b><span class="muted" id="cloudState" style="font-size:13.5px"></span></div>
+    <p class="muted" style="font-size:13.5px;margin:6px 0 10px;max-width:80ch">В аккаунт сохраняется всё: прогресс игры, профиль и внешность инспектора, питомец, альбом, достижения, тесты и карточки. Войди с тем же ником и PIN на другом устройстве, и прогресс подтянется. Ник аккаунта используется и в лидерборде.</p>
+    <div class="row" id="cloudForm">
+      <input id="cloudName" maxlength="24" autocomplete="username" placeholder="Ник" style="font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 160px">
+      <input id="cloudPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password" placeholder="PIN, 4–12 цифр" style="font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 160px">
+      <button class="btn primary" id="cloudLogin">Войти или создать</button>
+    </div>
+    <div class="row" id="cloudIn" hidden><button class="btn primary" id="cloudSaveNow">Сохранить сейчас</button><button class="btn" id="cloudLoadNow">Загрузить из облака</button><button class="btn" id="cloudOut">Выйти</button></div>
+    <div class="row" id="cloudPick" hidden><span id="cloudPickTxt" style="flex-basis:100%"></span><button class="btn primary" id="cloudUseCloud">Взять из облака</button><button class="btn" id="cloudUseLocal">Оставить это устройство</button></div>
+    <span class="muted" id="cloudMsg" style="display:block;margin-top:6px;font-size:13.5px"></span>
+  </div>
   <div class="statbar" id="lbMe"></div>
   <div class="panel row">
     <label for="lbNick" style="font-weight:600">Твой ник</label>
@@ -631,7 +643,7 @@ const $=s=>document.querySelector(s);
 const fmt=(n,d=0)=>{if(n===null||n===undefined||isNaN(n))return'';const neg=n<0;const s=Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return (neg?'-':'')+s};
 const money=n=>(n<0?'-$':'$')+fmt(Math.abs(n));
 const pct=x=>(Math.round(x*1000)/10)+'%';
-const store={get(k,d){try{const v=localStorage.getItem('fmt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('fmt_'+k,JSON.stringify(v))}catch(e){}}};
+const store={get(k,d){try{const v=localStorage.getItem('fmt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('fmt_'+k,JSON.stringify(v));if(k!=='cloud'&&k!=='tab')window.__cloudDirty=true}catch(e){}}};
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -3631,6 +3643,48 @@ $('#lbSave').onclick=async()=>{const n=$('#lbNick').value.trim().slice(0,24);sto
   if(!LB.online){$('#lbMsg').textContent='Ник сохранён. Отправка в глобальный рейтинг станет доступна на Lovable.';renderLB();return}
   $('#lbMsg').textContent='Отправляю…';try{await lbSubmit();$('#lbMsg').textContent='Результат отправлен. Дальше он обновляется сам после каждого дня в Игре.';renderLB()}catch(e){$('#lbMsg').textContent='Ошибка отправки: '+e.message}};
 $('#lbRefresh').onclick=renderLB;
+
+/* ---------- cloud save (Supabase RPC: cloud_login / cloud_save / cloud_load) ---------- */
+const CLOUD={pending:null,busy:false,skip:['cloud','tab']};
+function cloudRpc(fn,body,keep){const b=JSON.stringify(body);return fetch(`${LB_CONFIG.supabaseUrl.replace(/\/$/,'')}/rest/v1/rpc/${fn}`,{method:'POST',keepalive:!!keep&&b.length<60000,headers:{apikey:LB_CONFIG.supabaseKey,Authorization:'Bearer '+LB_CONFIG.supabaseKey,'Content-Type':'application/json'},body:b})
+  .then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&(j.message||j.hint))||('HTTP '+r.status));return j})}
+function cloudKeys(){const ks=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('fmt_')&&!CLOUD.skip.includes(k.slice(4)))ks.push(k)}}catch(e){}return ks}
+function cloudCollect(){const d={};cloudKeys().forEach(k=>{try{d[k.slice(4)]=localStorage.getItem(k)}catch(e){}});return d}
+function cloudHasData(d){return !!d&&['pp','meta','life','qstats','known','wrong'].some(k=>k in d)}
+function cloudSummary(d){try{const pp=JSON.parse(d.pp||'null'),m=JSON.parse(d.meta||'null');return `день ${pp&&pp.day||1}, сбережения $${pp?Math.round(pp.cash):0}, альбом ${m?Object.keys(m.album||{}).length:0}, достижений ${m?Object.keys(m.ach||{}).length:0}`}catch(e){return 'нет данных'}}
+function cloudSetAcct(a){store.set('cloud',a);store.set('nick',a.name);store.set('pid',a.player_id)}
+function cloudApply(data,a,t){try{cloudKeys().forEach(k=>localStorage.removeItem(k));Object.entries(data||{}).forEach(([k,v])=>{if(typeof v==='string'&&!CLOUD.skip.includes(k))localStorage.setItem('fmt_'+k,v)})}catch(e){}
+  cloudSetAcct(Object.assign({},a,{syncedAt:t?Date.parse(t):Date.now(),savedAt:Date.now()}));window.__cloudDirty=false;location.reload()}
+async function cloudSave(keep){const a=store.get('cloud',null);if(!LB.online||!a||CLOUD.busy)return false;CLOUD.busy=true;window.__cloudDirty=false;
+  try{const r=await cloudRpc('cloud_save',{p_token:a.token,p_data:cloudCollect()},keep);a.syncedAt=Date.parse(r.updated_at)||Date.now();a.savedAt=Date.now();store.set('cloud',a);cloudUI();return true}
+  catch(e){window.__cloudDirty=true;if(/bad_token/.test(e.message)){try{localStorage.removeItem('fmt_cloud')}catch(_){}cloudUI('Сессия устарела, войди заново.')}else cloudUI('Не удалось сохранить: '+e.message);return false}finally{CLOUD.busy=false}}
+function cloudUI(msg){const a=store.get('cloud',null),t=a&&a.savedAt?new Date(a.savedAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'';
+  $('#cloudForm').hidden=!!a||!!CLOUD.pending;$('#cloudIn').hidden=!a;$('#cloudPick').hidden=!CLOUD.pending;
+  $('#cloudState').textContent=!LB.online?'офлайн':a?`вошёл как ${a.name}${t?' · сохранено в '+t:''}`:'вход не выполнен';
+  if(!LB.online&&msg==null)msg='Аккаунты заработают, когда игра будет размещена на Lovable с Supabase. Пока прогресс хранится только в этом браузере.';
+  if(msg!=null)$('#cloudMsg').textContent=msg;const ni=$('#lbNick');if(ni){ni.disabled=!!a;if(a)ni.value=a.name}}
+$('#cloudLogin').onclick=async()=>{if(!LB.online)return cloudUI();const name=$('#cloudName').value.trim(),pin=$('#cloudPin').value.trim();
+  if(!name)return cloudUI('Введи ник.');if(!/^\d{4,12}$/.test(pin))return cloudUI('PIN: от 4 до 12 цифр.');cloudUI('Вхожу…');
+  try{const r=await cloudRpc('cloud_login',{p_name:name,p_pin:pin,p_player_id:lbPid()});
+    if(r.error==='bad_pin')return cloudUI('Неверный PIN для этого ника. Если ник не твой, выбери другой.');$('#cloudPin').value='';
+    const a={token:r.token,name:r.name,player_id:r.player_id},local=cloudCollect();
+    if(r.created||!cloudHasData(r.data)){cloudSetAcct(a);await cloudSave();lbSubmit().catch(()=>{});renderLB();return cloudUI(r.created?'Аккаунт создан. Прогресс с этого устройства сохранён в облако.':'Вход выполнен. Прогресс сохранён в облако.')}
+    if(!cloudHasData(local))return cloudApply(r.data,a,r.updated_at);
+    CLOUD.pending={a,data:r.data,t:r.updated_at};$('#cloudPickTxt').textContent=`В облаке: ${cloudSummary(r.data)}. На этом устройстве: ${cloudSummary(local)}. Какой прогресс оставить?`;cloudUI('')}
+  catch(e){cloudUI(/locked/.test(e.message)?'Слишком много неверных PIN. Попробуй через 15 минут.':/bad_name/.test(e.message)?'Ник должен быть от 1 до 24 символов.':'Ошибка входа: '+e.message)}};
+$('#cloudUseCloud').onclick=()=>{const p=CLOUD.pending;if(p)cloudApply(p.data,p.a,p.t)};
+$('#cloudUseLocal').onclick=async()=>{const p=CLOUD.pending;if(!p)return;CLOUD.pending=null;cloudSetAcct(p.a);await cloudSave();lbSubmit().catch(()=>{});renderLB();cloudUI('Прогресс этого устройства сохранён в облако.')};
+$('#cloudSaveNow').onclick=async()=>{if(await cloudSave())cloudUI('Сохранено.')};
+$('#cloudLoadNow').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно? Прогресс на этом устройстве заменится';return}
+  const a=store.get('cloud',null);if(!a)return;try{const r=await cloudRpc('cloud_load',{p_token:a.token});cloudApply(r.data,a,r.updated_at)}catch(err){cloudUI('Не удалось загрузить: '+err.message)}};
+$('#cloudOut').onclick=async()=>{if(window.__cloudDirty)await cloudSave();try{localStorage.removeItem('fmt_cloud')}catch(e){}cloudUI('Ты вышел. Прогресс на этом устройстве остался.')};
+setInterval(()=>{if(window.__cloudDirty)cloudSave()},20000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&window.__cloudDirty)cloudSave(true)});
+window.addEventListener('pagehide',()=>{if(window.__cloudDirty)cloudSave(true)});
+(async()=>{const a=store.get('cloud',null);if(!LB.online||!a)return;
+  try{const r=await cloudRpc('cloud_load',{p_token:a.token});const t=Date.parse(r.updated_at)||0;if(t>(a.syncedAt||0)+1000&&cloudHasData(r.data))return cloudApply(r.data,a,r.updated_at)}
+  catch(e){if(/bad_token/.test(e.message)){try{localStorage.removeItem('fmt_cloud')}catch(_){}cloudUI('Сессия устарела, войди заново.')}}})();
+window.__cloudDirty=false;cloudUI();
 
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
