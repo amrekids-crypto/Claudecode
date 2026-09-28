@@ -2570,7 +2570,7 @@ function makeTasks(n,ev){
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
-  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&Math.random()<.1)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
+  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
@@ -3299,9 +3299,9 @@ const ALBUM=[
  ['wheel','В коляске','Его не хочется арестовывать',L=>L.sp==='wheel','Приехал раньше всех. Пандуса у будки так и нет.'],
  ['kippah','В кипе','Встречается нечасто',L=>L.hat==='kippah','Пришёл уточнить один пункт договора. Уточняет третий час.'],
  ['hasid','Хасид','Чёрная шляпа и пейсы',L=>L.hat==='hasid','Спорит о каждой запятой в договоре и всегда оказывается прав.'],
- ['flag_pride','С радужным флагом','Флаг несёт каждый 10-й',L=>L.flag==='pride','Радуга на флаге, красный цвет в балансе.'],
- ['flag_ua','С флагом Украины','Флаг несёт каждый 10-й',L=>L.flag==='ua','Пришёл с флагом даже за справкой о доходах.'],
- ['flag_ps','С флагом Палестины','Флаг несёт каждый 10-й',L=>L.flag==='ps','Держит флаг крепче, чем свой бюджет.'],
+ ['flag_pride','С радужным флагом','Флаг носят только те, кого можно арестовать',L=>L.flag==='pride','Радуга на флаге, красный цвет в балансе.'],
+ ['flag_ua','С флагом Украины','Флаг носят только те, кого можно арестовать',L=>L.flag==='ua','Пришёл с флагом даже за справкой о доходах.'],
+ ['flag_ps','С флагом Палестины','Флаг носят только те, кого можно арестовать',L=>L.flag==='ps','Держит флаг крепче, чем свой бюджет.'],
  ['catgirl','Кошкодевочка','Очень редкая гостья',L=>!!L.catgirl,'Мяу. Требует оплату рыбой. Бухгалтерия в замешательстве.'],
  ['biden','Джо Байден','Знаменитость, приходит редко',L=>L.celeb==='biden','Вышел не в ту дверь и оказался в очереди. Остался из вежливости.'],
  ['hitler','Адольф Гитлер','Знаменитость, приходит редко',L=>L.celeb==='hitler','Не прошёл в академию художеств. Теперь не может пройти даже проверку отчёта о движении денежных средств.'],
