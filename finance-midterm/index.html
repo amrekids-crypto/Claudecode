@@ -240,6 +240,8 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .pp-sw .sw{display:block;height:34px;border:2px solid #15130f;background-size:cover}
 .pp-card{max-width:760px}
 table.lbt tr.me td{background:var(--accent-soft);font-weight:600}
+.pp-evb{position:absolute;left:50%;top:34px;transform:translateX(-50%);z-index:2;font-size:16px;color:#1b1914;background:#e0b64a;padding:2px 10px;border:3px solid #15130f;animation:tsBlink .6s steps(2) infinite;pointer-events:none}
+.pp-window.splat::before{content:"";position:absolute;z-index:2;left:30%;top:22%;width:34%;height:30%;background:radial-gradient(circle at 40% 40%,#f4f4ec 0 30%,#d8d8cc 31% 45%,transparent 46%),radial-gradient(circle at 70% 70%,#ececE0 0 18%,transparent 19%),radial-gradient(circle at 25% 80%,#e8e8dc 0 14%,transparent 15%);pointer-events:none}
 .pp-bq{border-top:2px dashed #8f8360;padding-top:6px;margin-top:6px}
 .pp-opt.sel{border:2px solid #3a2e21;background:#e6ddbd;box-shadow:inset 3px 0 0 #3a2e21}
 table.pp-form td.badv{color:var(--pp-red);font-weight:700}
@@ -1791,7 +1793,7 @@ function drawBlood(R,x,y){R(x+1,y+27,18,2,'#5a100c');R(x+4,y+26,12,1,'#7a1a14');
 function qsResize(){const c=$('#ppQueue');if(!c)return;const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
 window.addEventListener('resize',()=>{if(!$('#tab-mix').hidden)qsResize()});
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<QS.W){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
-function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:92,tx:0,ty:92,state:'q'}));QS.car=null;QS.fx=[];QS.decals=[];qsTargets()}
+function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:92,tx:0,ty:92,state:'q'}));QS.car=null;QS.fx=[];QS.decals=[];QS.actors=[];QS.onClick=null;qsTargets()}
 function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=352-k*20;p.ty=92;k++}else if(p.state==='booth'){p.tx=382;p.ty=92}else if(p.state==='gone'){p.tx=-QS.OX-40;p.ty=110}})}
 const COP=()=>({g:'m',skin:pick(SKIN),hair:'#1f1812',coat:'#1c2a44',shirt:'#c8d0d8',style:'short',hat:'police',hatc:'#1c2a44',tie:'#1a1a1a',beard:false,stache:Math.random()<.3,glasses:false});
 const GUARD=()=>({g:'m',skin:pick(SKIN),hair:'#1f1812',coat:'#2c3238',shirt:'#3a4046',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true});
@@ -1864,13 +1866,16 @@ function qsDraw(cv,ov){
   QS.decals.forEach(d=>drawBlood(R,d.x,d.y));
   if(ov&&ov.noPeople){x.setTransform(1,0,0,1,0,-20);if(ST.snow)for(let i=0;i<50;i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0);return}
   if(PP.downed){drawBlood(R,Math.round(PP.downed.x),Math.round(PP.downed.y));drawLying(R,Math.round(PP.downed.x),Math.round(PP.downed.y),INSPECTOR)}
-  if(QS.car)drawCar(R,Math.round(QS.car.x),QS.car.y-4,QS.car.dir,QS.tick);
+  QS.people.forEach(p=>{if(p.hide||!p.lying)return;const px=Math.round(p.x);if(p.bag){R(px,Math.round(p.y)+22,28,6,'#15130f');R(px+2,Math.round(p.y)+23,24,1,'#3a3a40');R(px+26,Math.round(p.y)+22,3,3,'#8a8a92')}else drawLying(R,px,Math.round(p.y),p.look)});
+  if(QS.car)drawCar(R,Math.round(QS.car.x),QS.car.y-4+(QS.car.bump||0),QS.car.dir,QS.tick);
   QS.people.slice().sort((a,b)=>(a.y||92)-(b.y||92)).forEach(p=>{if(p.hide)return;const px=Math.round(p.x),py=Math.round((p.y==null?92:p.y)+(p.jy||0)+(p.kneel?5:0));if(px<-OX-14||px>490)return;
-    if(p.lying){drawLying(R,px,Math.round(p.y),p.look);return}
+    if(p.lying)return;
     const Rm=p.dir<0?(x0,y0,w,h,cc)=>R(2*px+12-x0-w,y0,w,h,cc):R;drawPerson(Rm,px,py,p.look,p.run?QS.tick:Math.floor(QS.tick/2),p.moving);
     if(p.shield){Rm(px+11,py+3,4,21,'#5a6068');Rm(px+11,py+3,1,21,'#a8b0b8');Rm(px+12,py+9,2,3,'#e0b64a')}});
   QS.fx.forEach(f=>{if(f.t==='line')qsLine(R,f.x1,f.y1,f.x2,f.y2,f.ttl%2?'#fff3b0':'#e0b64a');else if(f.t==='spark'){const r=6-Math.min(5,f.ttl);R(f.x-1,f.y-1,3,3,f.c);R(f.x-r,f.y,1,1,f.c);R(f.x+r,f.y,1,1,f.c);R(f.x,f.y-r,1,1,f.c);R(f.x,f.y+r,1,1,f.c)}});
   x.setTransform(1,0,0,1,0,0);
+  if(QS.actors&&QS.actors.length&&!(ov&&ov.noPeople)){x.setTransform(1,0,0,1,OX,-20);QS.actors.forEach(a=>drawActor(R,a));x.setTransform(1,0,0,1,0,0)}
+  if(QS.flash&&!(ov&&ov.noPeople)){x.fillStyle=QS.flash%2?'rgba(255,255,240,.7)':'rgba(255,255,255,.35)';x.fillRect(0,0,W,120)}
   if(ST.snow){x.setTransform(1,0,0,1,0,-20);for(let i=0;i<Math.round(W/8);i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0)}
 }
 function ppAnimate(){
@@ -1881,6 +1886,8 @@ function ppAnimate(){
   QS.people.forEach(p=>{if(p.run&&p.moving&&QS.tick%2===0){QS.fx.push({t:'spark',x:Math.round(p.x+(p.dir<0?10:1)),y:Math.round(p.y+27),ttl:3,c:'#6a6254'});if(QS.tick%4===0)SFX.step()}});
   if(QS.car){if(QS.car.sp)QS.car.x+=QS.car.sp*QS.car.dir;moving=true}
   if(QS.fx.length){QS.fx=QS.fx.filter(f=>--f.ttl>0);moving=true}
+  if(QS.actors&&QS.actors.length){moving=true;QS.actors.forEach(a=>{if(a.t==='smoke'){a.y-=.5;a.life-=.04}});QS.actors=QS.actors.filter(a=>a.t!=='smoke'||a.life>0)}
+  if(QS.flash){QS.flash--;moving=true}
   if(moving||QS.tick%6===0||PP.street==='snow')qsDraw();
   if(QS.tick%5===0)drawOffice();
 }
@@ -2028,9 +2035,9 @@ function ppBuildSubmit(){const c=PD.cur,d=c.doc;const rows=c.rows;const real=row
     const pos=placedReal.indexOf(i);const posOk=r[1]===exp[pos];lines.push(`${k+1}. ${r[0]}: ${c.vals[i]||'—'} ${good?'✓':'✗ верно '+fmt(r[2])}${posOk?'':'  (не на своём месте)'}`)});
   missing.forEach(i=>lines.push(`Не хватает строки: ${rows[i][0]} = ${fmt(rows[i][2])}`));
   document.querySelectorAll('#ppPaper .bld button,#ppPaper .bld input').forEach(x=>x.disabled=true);
-  const all=orderGood&&vOk===real.length;const fee=all?c.fee:(orderGood?vOk:0);
+  const all=orderGood&&vOk>=real.length-1;const fee=all?c.fee:(orderGood?vOk:0);
   const right=real.slice().sort((a,b)=>rows[a][1]-rows[b][1]).map((i,k)=>`${k+1}. ${rows[i][0]} = ${fmt(rows[i][2])}`).join('\n');
-  ppFinish(all,lines.join('\n')+'\n\nПравильный документ (строки одной категории можно менять местами):\n'+right,`Объясни по шагам, как составить этот документ (${d.title}) и почему строки идут в таком порядке. Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}`,fee,all?'':`<p>${orderGood?`Структура верная, сумм верно ${vOk} из ${real.length}: $1 за каждую.`:'Структура документа неверная: лишние, пропущенные или переставленные строки.'}</p>`);
+  ppFinish(all,(orderGood&&vOk===real.length-1?'⚠ Одна сумма неверная (показана красным). Ошибка в одном пункте засчитывается без штрафа, но запомни её.\n':'')+lines.join('\n')+'\n\nПравильный документ (строки одной категории можно менять местами):\n'+right,`Объясни по шагам, как составить этот документ (${d.title}) и почему строки идут в таком порядке. Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}`,fee,all?'':`<p>${orderGood?`Структура верная, сумм верно ${vOk} из ${real.length}: $1 за каждую.`:'Структура документа неверная: лишние, пропущенные или переставленные строки.'}</p>`);
   document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
 
 function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
@@ -2058,7 +2065,7 @@ function ppOrderSubmit(){const c=PD.cur;const ok=orderOK(c);
   if(!ok){ppFinish(false,orderDiff(c)+'\n\nПравильный порядок (строки одной группы, например отдельные расходы, можно менять местами между собой):\n'+correctOrderText(c),`Объясни порядок строк и как посчитать этот документ: ${c.doc.given}`,0,'<p>Порядок неверный, до заполнения не дошло.</p>');document.querySelectorAll('#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
   c.stage=2;$('#ppPaper .ord').innerHTML=`<p class="pp-q" style="margin:4px 0">Порядок верный. Теперь заполни суммы. В Cash Flow оттоки с минусом.</p><table class="pp-form">${c.seq.map((i,k)=>`<tr><td>${esc(c.rows[i][0])}</td><td><input id="ppIn${k}" data-i="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(c.rows[i][0])}"></td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppOFSubmit">Подать ($${c.fee})</button></div>`;const f=$('#ppIn0');if(f)f.focus()}
 function ppOFSubmit(){const c=PD.cur,d=c.doc;let ok=0;c.seq.forEach((i,k)=>{const el=$('#ppIn'+k);const n=parseNum(el.value);const v=c.rows[i][2];const good=n!==null&&(d.signed?Math.abs(n-v)<=1:Math.abs(Math.abs(n)-Math.abs(v))<=1);el.disabled=true;el.classList.add(good?'ok':'bad');if(good)ok++;else el.insertAdjacentHTML('afterend',`<span class="fix">${fmt(v)}</span>`)});
-  $('#ppOFSubmit').disabled=true;const all=ok===c.seq.length;ppFinish(all,`Верно ${ok} из ${c.seq.length} сумм. ${d.x}`,`Объясни по шагам, как заполнить: ${d.title}. Данные: ${d.given}`,all?c.fee:ok,all?'':'<p>Правильные суммы показаны под полями. За каждую верную $1.</p>')}
+  $('#ppOFSubmit').disabled=true;const all=ok>=c.seq.length-1;ppFinish(all,(ok===c.seq.length-1?'⚠ Одна сумма неверная (показана красным). Ошибка в одном пункте засчитывается без штрафа, но запомни её.\n':'')+`Верно ${ok} из ${c.seq.length} сумм. ${d.x}`,`Объясни по шагам, как заполнить: ${d.title}. Данные: ${d.given}`,all?c.fee:ok,all?'':'<p>Правильные суммы показаны под полями. За каждую верную $1.</p>')}
 const SHORTC={'Non-current assets':'Non-current','Current liabilities':'Current liab.','Long-term liabilities':'Long-term liab.','Stockholders\u2019 equity':'Equity','Cost of goods sold':'COGS','Operating expenses':'Operating exp.','Non-operating items (interest, gains, losses)':'Non-operating','Subtotal / result line':'Subtotal','Retained earnings':'RE statement','Cash flows only':'CF only'};
 function ppSortPick(b){const c=PD.cur;const i=+b.dataset.si;c.pick[i]=b.dataset.sc;document.querySelectorAll(`#ppPaper [data-si="${i}"]`).forEach(x=>x.classList.toggle('sel',x===b));$('#ppSSubmit').disabled=Object.keys(c.pick).length<c.items.length}
 function ppSortSubmit(){const c=PD.cur;let ok=0;c.items.forEach((it,i)=>{const good=c.pick[i]===it[1];if(good)ok++;document.querySelectorAll(`#ppPaper [data-si="${i}"]`).forEach(x=>{x.disabled=true;if(x.dataset.sc===it[1])x.classList.add('right');else if(x.dataset.sc===c.pick[i])x.classList.add('wrongpick')})});
@@ -2174,6 +2181,7 @@ function ppTick(){if(!PD||PD.frozen||PD.state!=='asking'||$('#tab-mix').hidden||
 async function ppCall(){
   if(!PD||(PD.state!=='idle'&&PD.state!=='done'))return;
   if(PD.idx>=0&&QS.people[PD.idx])QS.people[PD.idx].state='gone';
+  if(PD.idx>=0&&PD.idx<PD.tasks.length-1){qsTargets();await ppRandomEvent();if(!PD||PD.state==='over')return}
   PD.idx++;SFX.next();
   if(PD.idx>=PD.tasks.length){qsTargets();drawFace(null);ppEndDay();return}
   const p=QS.people[PD.idx];p.state='booth';qsTargets();
@@ -2181,7 +2189,7 @@ async function ppCall(){
   if(Math.abs(p.x-p.tx)>24){p.run=true;p.sp=Math.max(4.5,Math.abs(p.tx-p.x)/28);PD.state='arriving';drawFace(null);ppTalk('Бюро','Посетитель бежит к окошку…');
     $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>…</span></h4><p class="pp-q">Посетитель бежит к окошку. Часы стоят.</p></div>`;ppBar();
     await until(()=>near(p),9000);p.run=false;p.sp=2.2}
-  PD.state='asking';SFX.paper();
+  PD.state='asking';SFX.paper();if(Math.random()<.5)document.querySelector('.pp-window').classList.remove('splat');
   drawFace(c.look);const tk=c.kind==='q'?c.q.t:c.kind;if(c.kind==='bundle')c.bsel={};ppTalk(c.role,pick(PPX.OPEN[tk]||['Добрый день. Вот мой документ.']));
   ppRenderTask();ppBar();
 }
@@ -2226,9 +2234,9 @@ function ppAnswerPlace(v){
 function ppSubmitDoc(){
   const d=PD.cur.doc;let ok=0,tot=0;const per=PP.event==='docs'?3:2;
   d.rows.forEach((r,i)=>{if(r[2])return;tot++;const el=$('#ppIn'+i);const n=parseNum(el.value);const o=r[3]||{};const tol=o.tol??1;const tl=Math.max(tol,o.rel?Math.abs(r[1])*o.rel:0);const sg=d.signed||o.signed;const good=n!==null&&(sg?Math.abs(n-r[1])<=tl:Math.abs(Math.abs(n)-Math.abs(r[1]))<=tl);el.disabled=true;el.classList.add(good?'ok':'bad');if(good)ok++;else el.insertAdjacentHTML('afterend',`<span class="fix">${fmt(r[1],o.dec||0)}</span>`)});
-  $('#ppSubmit').disabled=true;const right=ok===tot;
+  $('#ppSubmit').disabled=true;const miss=tot-ok,right=miss<=1;
   const ai=`Объясни по шагам, как заполнить этот документ (${d.title}). Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}\nСтроки: ${d.rows.map(r=>r[0]).join('; ')}\nПравильные ответы: ${d.rows.map(r=>r[0]+' = '+fmt(r[1],(r[3]||{}).dec||0)).join('; ')}`;
-  ppFinish(right,`Верно ${ok} из ${tot} полей. ${d.x}`,ai,ok*per,right?'':`<p>Правильные значения показаны красным под полями.</p>`);
+  ppFinish(right,(miss===1?'⚠ Одна сумма неверная (показана красным). Ошибка в одном пункте засчитывается без штрафа, но запомни её.\n':'')+`Верно ${ok} из ${tot} полей. ${d.x}`,ai,right?tot*per:ok*per,right?'':`<p>Правильные значения показаны красным под полями.</p>`);
 }
 function ppBundleFee(k){return ppFee()*k+3*(k-1)}
 function ppPickB(b){const c=PD.cur,i=+b.dataset.b;c.bsel[i]=+b.dataset.bk;document.querySelectorAll(`#ppPaper .pp-opt[data-b="${i}"]`).forEach(x=>x.classList.toggle('sel',x===b));$('#ppSubmitB').disabled=Object.keys(c.bsel).length<c.qs.length}
@@ -2244,23 +2252,100 @@ function ppSubmitBundle(){
   document.querySelectorAll('#ppDesk .pp-good p, #ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');
 }
 function ppSiren(){try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain();o.type='square';const t=a.currentTime;[0,.2,.4,.6].forEach((d,i)=>o.frequency.setValueAtTime(i%2?560:760,t+d));g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.8);o.connect(g).connect(a.destination);o.start();o.stop(t+.82)}catch(e){}}
-function ppArrestAnim(cb){
+/* =====================================================
+   CHAOS: arrest executions, police clean-up, random events
+   ===================================================== */
+const HERO={g:'m',skin:'#e3b98f',hair:'#3f2a1a',coat:'#56664a',shirt:'#d8d0c0',style:'short',hat:'cap',hatc:'#3a3a30',tie:'#8a2a22',beard:false,stache:false,glasses:false};
+const THIEF={g:'m',skin:'#cf9d70',hair:'#1a1a1a',coat:'#1e1e22',shirt:'#3a3a40',style:'short',hat:'cap',hatc:'#15130f',beard:false,stache:false,glasses:false};
+QS.actors=[];QS.flash=0;
+function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;
+  if(a.t==='heli'){R(x,y+4,30,11,'#3a4a34');R(x+2,y+5,26,2,'#4a5c42');R(x+20,y+5,8,6,'#8ab0c8');R(x-16,y+7,18,3,'#3a4a34');R(x-18,y+3,3,7,'#3a4a34');R(x+4,y+17,22,1,'#15130f');R(x+8,y+15,1,2,'#15130f');R(x+22,y+15,1,2,'#15130f');R(x+14,y+1,2,3,'#15130f');const rl=t%2?30:14;R(x+15-rl,y,rl*2,1,'#9a9a8a');if(t%2)R(x-19,y+1,3,8,'#9a9a8a');R(x+26,y+13,4,1,'#15130f')}
+  else if(a.t==='rock'){R(x,y,3,3,'#7a7a74');R(x,y,1,1,'#aaa')}
+  else if(a.t==='laser'){qsLine(R,a.x1,a.y1,Math.round(a.x),Math.round(a.y),t%2?'#ff2a2a':'#c01a1a');R(x-1,y-1,3,3,'#ff4a4a')}
+  else if(a.t==='anvil'){R(x+2,y,12,3,'#3a3c40');R(x,y+3,16,3,'#4a4c52');R(x+5,y+6,6,3,'#3a3c40');R(x+2,y+9,12,2,'#2a2c30');R(x+1,y+3,14,1,'#6a6c72')}
+  else if(a.t==='shadow'){R(x,y,a.w,2,'rgba(0,0,0,.45)')}
+  else if(a.t==='bolt'){let px=a.x,py=20;const c=t%2?'#fff8c8':'#e0f4ff';while(py<a.y){const nx=px+rint(-6,6),ny=Math.min(a.y,py+rint(6,12));qsLine(R,px,py,nx,ny,c);qsLine(R,px+1,py,nx+1,ny,c);px=nx;py=ny}}
+  else if(a.t==='dog'){const f=Math.floor(t/2)%2;R(x,y+2,12,5,'#6a4a2a');R(x+10,y,5,5,'#6a4a2a');R(x+14,y+2,2,2,'#3a2a1a');R(x+12,y+1,1,1,'#15130f');R(x+11,y-1,2,2,'#4a3218');R(x-3,y+2,3,1,'#6a4a2a');R(x+1+f,y+7,2,3,'#4a3218');R(x+8-f,y+7,2,3,'#4a3218');if(a.bark&&t%6<3){R(x+17,y-2,1,1,'#e0d8c0');R(x+19,y-4,1,1,'#e0d8c0')}}
+  else if(a.t==='rocket'){R(x,y,9,3,'#c8c8c0');R(x+8,y,2,3,'#a3302a');R(x-2,y-1,2,5,'#7a7a74');R(x-5,y,3,3,t%2?'#ffb040':'#ff6020');R(x-7,y+1,2,1,'#ffe080')}
+  else if(a.t==='boom'){const r=a.r;for(let i=0;i<24;i++){const an=i/24*Math.PI*2;R(Math.round(x+Math.cos(an)*r),Math.round(y+Math.sin(an)*r*.7),3,3,i%3?'#ff8a20':'#ffe060')}R(x-r/3,y-r/4,r*.66,r*.5,'rgba(255,200,80,.5)')}
+  else if(a.t==='smoke'){R(x,y,4,4,'rgba(80,80,80,.6)');R(x+2,y-2,3,3,'rgba(110,110,110,.5)')}
+  else if(a.t==='ufo'){R(x+6,y,12,4,'#8ab0c8');R(x,y+4,24,4,'#9a9aa8');R(x+2,y+8,20,2,'#6a6a78');for(let i=0;i<4;i++)R(x+3+i*5,y+5,2,2,(t+i)%4<2?'#7fe08a':'#ffe060');if(a.beam){const g='rgba(127,224,138,.28)';for(let yy=y+10;yy<a.beam;yy+=2){const w=8+Math.round((yy-y)/5);R(x+12-w/2,yy,w,2,g)}}}
+  else if(a.t==='coin'){R(x,y,4,4,t%4<2?'#e0b64a':'#f3d884');R(x+1,y+1,2,2,'#9b7424')}
+  else if(a.t==='pigeon'){const f=Math.floor(t/2)%2;R(x,y+2,6,3,'#8a8a92');R(x+5,y+1,3,3,'#9a9aa2');R(x+7,y+2,1,1,'#e0a030');R(x+1,y+(f?0:4),4,2,'#6a6a72')}
+  else if(a.t==='poop'){R(x,y,2,2,'#e8e8e0')}
+}
+function kill(p,color){p.run=false;p.moving=false;p.lying=true;p.tx=p.x;p.ty=p.y;QS.decals.push({x:Math.round(p.x),y:Math.round(p.y)});for(let k=0;k<7;k++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(0,14)),y:Math.round(p.y+rint(12,26)),ttl:6+k,c:color||'#a3201a'});SFX.crash()}
+const tick=fn=>until(fn,9000);
+const ARRESTS=[
+ {n:'heli',line:'Вызываю вертолёт!',async run(p){const h={t:'heli',x:-QS.OX-40,y:22};QS.actors.push(h);sTone(90,1.8,'sawtooth',.03,90);
+   const hs=Math.max(7,Math.abs(p.x+18-h.x)/22);await tick(()=>{const tx=p.x+18;h.x+=Math.sign(tx-h.x)*Math.min(Math.abs(tx-h.x),hs);return Math.abs(tx-h.x)<2});p.sp=1.2;
+   for(let i=0;i<8;i++){h.x=p.x+18;QS.fx.push({t:'line',x1:Math.round(h.x+28),y1:Math.round(h.y+14),x2:Math.round(p.x+6+rint(-2,2)),y2:Math.round(p.y+rint(8,24)),ttl:2});sNoise(.08,.25,2500);await sleep(90)}
+   kill(p);await sleep(300);await tick(()=>{h.x+=6;h.y-=1.5;return h.y<-20});QS.actors=QS.actors.filter(a=>a!==h)}},
+ {n:'rock',line:'Клерк выходит из будки с камнем…',async run(p){QS.door=1;const me={look:HERO,x:452,y:92,tx:418,ty:92,state:'x',sp:3};QS.people.push(me);await tick(()=>near(me));me.dir=-1;me.faceL=true;p.sp=1.4;
+   const r={t:'rock',x:me.x,y:me.y+10};QS.actors.push(r);const x0=r.x,y0=r.y;let k=0;SFX.click();
+   await tick(()=>{k++;const f=k/12;r.x=x0+(p.x+4-x0)*f;r.y=y0+(p.y+4-y0)*f-Math.sin(f*Math.PI)*28;return k>=12});QS.actors=QS.actors.filter(a=>a!==r);kill(p);ppTalk('Клерк','В яблочко.');
+   me.faceL=false;me.tx=458;await tick(()=>near(me));me.hide=true;QS.door=0}},
+ {n:'sniper',line:'Снайпер на крыше.',async run(p){const l={t:'laser',x1:QS.W-QS.OX+10,y1:20,x:p.x,y:p.y};QS.actors.push(l);p.sp=2;
+   for(let i=0;i<14;i++){l.x=p.x+6;l.y=p.y+4;await sleep(80)}QS.flash=2;ppGunshot();kill(p);QS.actors=QS.actors.filter(a=>a!==l)}},
+ {n:'anvil',line:'Сверху что-то летит…',async run(p){p.sp=1;const s={t:'shadow',x:p.x-1,y:p.y+27,w:4},a={t:'anvil',x:p.x-1,y:-20};QS.actors.push(s,a);
+   await tick(()=>{s.x=p.x-1;a.x=p.x-1;s.w=Math.min(16,s.w+1);a.y+=4;return a.y>=p.y+16});kill(p,'#a3201a');for(let i=0;i<6;i++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(-4,18)),y:Math.round(p.y+26),ttl:6,c:'#8a8270'});QS.flash=1;
+   p.anvil=a;QS.actors=QS.actors.filter(x=>x!==s)}},
+ {n:'bolt',line:'Небеса против мошенников.',async run(p){p.sp=1.5;await sleep(400);const b={t:'bolt',x:p.x+6,y:p.y+14};QS.actors.push(b);QS.flash=3;sNoise(.6,.5,5000);sTone(60,.5,'sawtooth',.2,30);
+   await sleep(300);QS.actors=QS.actors.filter(a=>a!==b);p.look=Object.assign({},p.look,{coat:'#1a1a1a',skin:'#3a3430',hair:'#15130f'});kill(p,'#e0b64a');for(let i=0;i<5;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,16),y:p.y+14-i*3,life:1})}},
+ {n:'dog',line:'Спустить собаку!',async run(p){const d={t:'dog',x:470,y:116};QS.actors.push(d);sTone(300,.15,'square',.05,200);
+   await tick(()=>{d.x-=6.5;if(d.x<p.x+26)d.y=116-Math.sin((p.x+26-d.x)/26*Math.PI)*10;return d.x<=p.x+6});d.y=116;kill(p);d.bark=true;sTone(420,.1,'square',.05,300);sTone(420,.1,'square',.05,300,.2);p.dog=d}},
+ {n:'rocket',line:'Запуск ракеты по нарушителю.',async run(p){p.sp=1.5;const r={t:'rocket',x:QS.W-QS.OX,y:24};QS.actors.push(r);sNoise(1,.08,1200);
+   await tick(()=>{const dx=p.x+4-r.x,dy=p.y+14-r.y,dd=Math.hypot(dx,dy);r.x+=dx/dd*10;r.y+=dy/dd*10;QS.actors.push({t:'smoke',x:r.x+6,y:r.y,life:1});return dd<10});
+   QS.actors=QS.actors.filter(a=>a!==r);const b={t:'boom',x:p.x+6,y:p.y+16,r:4};QS.actors.push(b);kill(p);ppGunshot();sNoise(.8,.6,700);const pp=$('#pp');pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake');
+   await tick(()=>{b.r+=3;return b.r>26});QS.actors=QS.actors.filter(a=>a!==b)}}
+];
+async function policeCleanup(p){
+  const car={x:-QS.OX-70,y:118,dir:1,sp:0};QS.car=car;ppSiren();SFX.engine();ppTalk('Полиция','Финансовая полиция. Разойдись!');
+  const over=()=>car.x+46>p.x&&car.x<p.x+28;
+  car.sp=Math.max(7,(p.x+30-car.x)/26);await tick(()=>{if(car.x>p.x-60)car.sp=Math.min(car.sp,6);car.bump=over()?(QS.tick%2?-2:0):0;return car.x>p.x+30});car.sp=0;car.bump=0;SFX.crash();await sleep(350);
+  car.dir=1;car.sp=-4;sTone(1000,.15,'square',.03);sTone(1000,.15,'square',.03,null,.3);await tick(()=>{car.bump=over()?(QS.tick%2?-2:0):0;return car.x<=p.x-50});car.sp=0;car.bump=0;SFX.crash();await sleep(300);
+  if(p.anvil){QS.actors=QS.actors.filter(a=>a!==p.anvil)}if(p.dog){p.dog.bark=false}
+  const cops=[0,1].map(i=>{const c={look:COP(),x:car.x+20+i*6,y:108,tx:i?p.x+30:p.x-12,ty:108,state:'x',sp:2.8};QS.people.push(c);return c});
+  await tick(()=>cops.every(near));cops[1].dir=-1;cops[1].faceL=true;await sleep(250);p.bag=true;sNoise(.4,.08,3000,800);ppTalk('Полиция','Пакуем.');await sleep(500);
+  p.hide=true;cops.forEach(c=>{c.faceL=false;c.tx=car.x+22});await tick(()=>cops.every(near));cops.forEach(c=>c.hide=true);
+  if(p.dog){const d=p.dog;await tick(()=>{d.x+=14;return d.x>QS.W-QS.OX+10});QS.actors=QS.actors.filter(a=>a!==d)}
+  car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null;QS.actors=QS.actors.filter(a=>a.t!=='smoke')}
+async function ppArrestAnim(cb){
   const p=QS.people[PD.idx];const win=document.querySelector('.pp-window');
   let bars=win.querySelector('.bars');if(!bars){bars=document.createElement('div');bars.className='bars';bars.innerHTML='<span>АРЕСТОВАН</span>';win.appendChild(bars)}
   bars.classList.remove('on');void bars.offsetWidth;bars.classList.add('on');ppSiren();ppTalk(PD.cur.role,'Нет! Я не пойду!');
   if(!p){setTimeout(cb,1200);return}
-  p.state='x';p.ty=110;p.tx=-QS.OX+30;p.sp=3.4;
-  const car={x:-QS.OX-70,y:118,dir:1,sp:0};QS.car=car;const cops=[];let phase='run',t=0;
-  const iv=setInterval(()=>{t++;
-    if(phase==='run'&&t>6){car.sp=8;phase='chase';ppSiren();SFX.engine()}
-    else if(phase==='chase'&&car.x+46>=p.x-1){phase='hit';t=0;car.sp=0;p.lying=true;p.tx=p.x;p.ty=p.y;p.moving=false;SFX.crash();QS.decals.push({x:Math.round(p.x),y:Math.round(p.y)});for(let k=0;k<5;k++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(0,14)),y:Math.round(p.y+rint(14,26)),ttl:6+k,c:'#a3201a'});ppTalk('Полиция','Стоять! Финансовая полиция!');
-      [0,1].forEach(i=>{const cop={look:COP(),x:car.x+20+i*8,y:108,tx:i?p.x+30:p.x-14,ty:108,state:'x',sp:2.6};QS.people.push(cop);cops.push(cop)})}
-    else if(phase==='hit'&&cops.every(near)&&t>4){phase='carry';t=0;cops[1].faceL=true;cops[1].dir=-1}
-    else if(phase==='carry'&&t>7){p.hide=true;cops.forEach(c=>{c.tx=car.x+22;c.faceL=false});phase='back'}
-    else if(phase==='back'&&cops.every(near)){cops.forEach(c=>c.hide=true);car.dir=-1;car.sp=7;phase='drive';t=0;SFX.engine();ppSiren();ppTalk('Полиция','Увозим. Хорошего дня, клерк.')}
-    if((phase==='drive'&&car.x<-QS.OX-80)||t>160){clearInterval(iv);QS.car=null;p.hide=true;cops.forEach(c=>c.hide=true);drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()}
-  },80);
+  p.state='x';p.ty=110;p.tx=-QS.OX+20;p.sp=3.2;p.run=true;await sleep(900);
+  const v=window.__forceArrest!=null?ARRESTS[window.__forceArrest]:pick(ARRESTS);ppTalk('Бюро',v.line);
+  try{await v.run(p);await sleep(400);await policeCleanup(p)}catch(e){}
+  p.hide=true;QS.actors=[];QS.car=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb();
 }
+/* ---------- random events between visitors ---------- */
+function banner(t){const top=document.querySelector('.pp-top');let b=top.querySelector('.pp-evb');if(!b){b=document.createElement('div');b.className='pp-evb';top.appendChild(b)}b.textContent=t;b.hidden=!t}
+const EVENTS=[
+ {n:'thief',async run(){const th={look:THIEF,x:QS.W-QS.OX-10,y:104,tx:-QS.OX-40,ty:104,state:'x',sp:Math.max(3.2,(QS.W+30)/70),run:true,dir:-1};QS.people.push(th);ppTalk('Посетитель','Держи вора! Он украл мой кошелёк!');banner('КЛИКНИ ПО ВОРУ: +$5');sTone(900,.1,'square',.04);
+   let caught=false;QS.onClick=L=>{if(L.x>=th.x-4&&L.x<=th.x+16&&L.y>=th.y-4&&L.y<=th.y+30&&!caught){caught=true;th.run=false;th.lying=true;th.tx=th.x;th.ty=th.y;SFX.crash();PP.cash+=5;PD.fees+=5;SFX.coin();ppTalk('Бюро','Вор споткнулся! Награда $5.');ppBar();ppSave()}};
+   await tick(()=>caught||th.x<=-QS.OX-30);QS.onClick=null;banner('');if(caught){await sleep(1200);th.lying=false;th.sp=Math.max(3,(th.x+QS.OX+40)/40);th.run=false;th.tx=-QS.OX-40;await tick(()=>th.x<=-QS.OX-30)}else ppTalk('Бюро','Вор сбежал.');th.hide=true}},
+ {n:'ufo',async run(){const cand=QS.people.map((p,i)=>[p,i]).filter(([p,i])=>i>PD.idx&&p.state==='q');if(!cand.length)return;const [v,j]=cand[cand.length-1];
+   const u={t:'ufo',x:v.x-6,y:-14};QS.actors.push(u);ppTalk('Бюро','Что это над очередью?!');sTone(200,2.2,'sine',.05,800);
+   await tick(()=>{u.y+=2;return u.y>=26});u.beam=v.y+28;await sleep(500);v.faceL=true;
+   await tick(()=>{v.y-=2;v.ty=v.y;return v.y<30});v.hide=true;u.beam=0;await tick(()=>{u.y-=3;u.x+=4;return u.y<-20});QS.actors=QS.actors.filter(a=>a!==u);
+   PD.tasks.splice(j,1);QS.people.splice(j,1);qsTargets();ppTalk('Бюро','Инопланетяне забрали посетителя. Минус один в очереди.')}},
+ {n:'money',async run(){ppTalk('Бюро','С неба сыплются монеты! Собирай кликами: $1 за штуку.');banner('КЛИКАЙ ПО МОНЕТАМ');const coins=[];for(let i=0;i<8;i++){const c={t:'coin',x:rint(-QS.OX+20,360),y:rint(-20,10),vy:rint(20,35)/10,land:rint(108,132)};coins.push(c);QS.actors.push(c)}
+   let got=0;QS.onClick=L=>{const c=coins.find(c=>!c.got&&Math.abs(L.x-c.x-2)<7&&Math.abs(L.y-c.y-2)<7);if(c){c.got=true;QS.actors=QS.actors.filter(a=>a!==c);got++;PP.cash+=1;PD.fees+=1;SFX.coin();ppBar()}};
+   const t0=Date.now();await tick(()=>{coins.forEach(c=>{if(c.y<c.land)c.y+=c.vy});return Date.now()-t0>5500||got===8});QS.onClick=null;banner('');coins.forEach(c=>{QS.actors=QS.actors.filter(a=>a!==c)});ppTalk('Бюро',`Собрано монет: ${got}.`);ppSave()}},
+ {n:'pigeon',async run(){const g={t:'pigeon',x:-QS.OX,y:24};QS.actors.push(g);ppTalk('Бюро','Голубь летит к будке…');let dropped=false;
+   const gs=Math.max(5,(QS.W+10)/45);await tick(()=>{g.x+=gs;if(!dropped&&g.x>=400){dropped=true;QS.actors.push({t:'poop',x:g.x,y:g.y+6,vy:3});sTone(700,.2,'triangle',.04,200)}QS.actors.forEach(a=>{if(a.t==='poop')a.y+=3});return g.x>QS.W-QS.OX+10});
+   QS.actors=QS.actors.filter(a=>a!==g&&a.t!=='poop');document.querySelector('.pp-window').classList.add('splat');ppTalk('Бюро','Голубь нагадил прямо на окошко. Фу.')}},
+ {n:'fight',async run(){const q=QS.people.filter((p,i)=>i>PD.idx&&p.state==='q'&&!p.hide);if(q.length<2)return;const a=q[0],b=q[1];ppTalk('Бюро','В очереди драка!');
+   for(let i=0;i<4;i++){b.x+=3;await sleep(120);b.x-=3;sNoise(.08,.3,700);QS.fx.push({t:'spark',x:Math.round(a.x+2),y:Math.round(a.y+6),ttl:4,c:'#f3e6a0'});await sleep(150)}
+   a.lying=true;QS.decals.push({x:Math.round(a.x),y:Math.round(a.y)});SFX.crash();ppTalk('Бюро','Один уже лежит. Очередь двигается дальше.');await sleep(1600);a.lying=false}},
+ {n:'quake',async run(){ppTalk('Бюро','ЗЕМЛЕТРЯСЕНИЕ!');sNoise(1.6,.4,200);const pp=$('#pp');for(let i=0;i<4;i++){pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake');await sleep(320)}
+   const q=QS.people.filter(p=>p.state==='q'&&!p.hide);q.forEach(p=>p.lying=true);await sleep(1200);q.forEach(p=>p.lying=false);ppTalk('Бюро','Все встали и отряхнулись. Работаем дальше.')}}
+];
+async function ppRandomEvent(){if(!PD||PD.evCount>=2||PD.idx<0||(window.__forceEvent==null&&Math.random()>0.22))return;PD.evCount=(PD.evCount||0)+1;const prev=PD.state;PD.state='event';ppBar();
+  try{await (window.__forceEvent!=null?EVENTS[window.__forceEvent]:pick(EVENTS)).run()}catch(e){}QS.onClick=null;banner('');PD.state=prev;ppBar()}
+
 function ppAudit(arrest){
   const c=PD.cur,a=c.au,hasErr=!!a.why;const right=arrest===hasErr;
   document.querySelectorAll('#ppPaper [data-audit]').forEach(b=>b.disabled=true);
@@ -2363,7 +2448,7 @@ function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;
   try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.type='sawtooth';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(60,t+.9);g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+1);o.connect(g).connect(a.destination);o.start();o.stop(t+1.02)}catch(e){}
   setTimeout(()=>pp.classList.add('frozen'),350);setTimeout(()=>fx.remove(),1500);ppTalk('Таймстоп','Часы стоят, пока ты не закончишь с этим посетителем.');ppBar()}
 $('#ppSnd').onclick=()=>{SFX.on=!SFX.on;store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
-$('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',ppShoot);
+$('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',e=>{if(QS.onClick){QS.onClick(qsToLogical(e));return}ppShoot(e)});
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
   if(b.dataset.oi!=null||b.dataset.os!=null)ppOrderClick(b);else if(b.id==='ppOReset'){const c=PD.cur;c.pool=shuffle(c.rows.map((_,i)=>i));c.seq=[];ppRenderOrder()}else if(b.id==='ppBSubmit')ppBuildSubmit();else if(b.id==='ppOSubmit')ppOrderSubmit();else if(b.id==='ppOFSubmit')ppOFSubmit();else if(b.dataset.si!=null)ppSortPick(b);else if(b.id==='ppSSubmit')ppSortSubmit();else if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
