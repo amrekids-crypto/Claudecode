@@ -1,6 +1,6 @@
 <title>Finance Midterm Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Tiny5&display=swap">
 <style>
 :root{
   --bg:#EEF2F0; --paper:#FFFFFF; --ink:#15231E; --muted:#5A6B64; --line:#D3DDD8; --line2:#E4EBE7;
@@ -142,69 +142,92 @@ table.simple th{background:var(--line2);font-weight:600}
   table.ledger td.val{width:130px}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.aibox{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.ai-lab{font-size:13px;color:var(--muted);font-weight:600}
+.ai-txt{font:13px/1.45 var(--mono);width:100%;resize:vertical;padding:8px 10px;border:1px dashed var(--accent);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+a.btn{text-decoration:none;display:inline-block}
 /* ===== MIX MODE: bureau game (own pixel style) ===== */
-#tab-mix{--pp-bg:#1c1a16;--pp-wall:#4a4838;--pp-wall2:#393829;--pp-desk:#5b4431;--pp-desk2:#43311f;--pp-paper:#d8cead;--pp-paper2:#c8bd98;--pp-ink:#3a2e21;--pp-red:#a3302a;--pp-green:#557538;--pp-pink:#e6b9b3;--pp-text:#d3c9a6;--pp-dim:#8d866a;--pp-gold:#d6a93c;--pp-line:#15130f}
-.pp{background:var(--pp-bg);color:var(--pp-text);font-family:"Pixelify Sans","Press Start 2P",ui-monospace,monospace;border:4px solid var(--pp-line);box-shadow:0 0 0 4px var(--pp-wall2);image-rendering:pixelated;display:flex;flex-direction:column;gap:0;user-select:none;position:relative}
-.pp canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+#tab-mix{--pp-bg:#1c1a16;--pp-wall:#4a4838;--pp-wall2:#393829;--pp-desk:#5b4431;--pp-paper:#d8cead;--pp-paper2:#c8bd98;--pp-ink:#3a2e21;--pp-red:#a3302a;--pp-green:#557538;--pp-pink:#e6b9b3;--pp-text:#d3c9a6;--pp-dim:#8d866a;--pp-gold:#e0b64a;--pp-line:#15130f}
+.pp{background:var(--pp-bg);color:var(--pp-text);font-family:"Tiny5",ui-monospace,monospace;font-size:16px;border:4px solid var(--pp-line);box-shadow:0 0 0 4px var(--pp-wall2);display:flex;flex-direction:column;position:relative;-webkit-font-smoothing:none}
+.pp canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;width:100%;height:auto}
 .pp-top{position:relative;background:#2c2a21;border-bottom:4px solid var(--pp-line)}
-.pp-top canvas{width:100%;height:auto;aspect-ratio:240/60}
-.pp-date{position:absolute;left:8px;top:6px;font-size:13px;color:var(--pp-text);background:rgba(20,18,14,.75);padding:2px 6px}
-.pp-main{display:grid;grid-template-columns:minmax(220px,300px) 1fr;min-height:430px}
-.pp-booth{background:var(--pp-wall);border-right:4px solid var(--pp-line);display:flex;flex-direction:column;gap:10px;padding:10px}
-.pp-wall{min-height:46px;background:var(--pp-wall2);border:3px solid var(--pp-line);display:flex;flex-wrap:wrap;gap:6px;padding:6px;align-items:flex-start}
-.pp-wall .empty{font-size:12px;color:var(--pp-dim)}
-.medal{width:22px;height:34px;position:relative;flex:none}
-.medal::before{content:"";position:absolute;left:6px;top:0;width:10px;height:14px;background:var(--rib,#a3302a);box-shadow:inset 3px 0 0 rgba(255,255,255,.18)}
-.medal::after{content:"";position:absolute;left:2px;top:12px;width:18px;height:18px;background:var(--pp-gold);box-shadow:inset -3px -3px 0 #9b7424,inset 3px 3px 0 #f0cf73;clip-path:polygon(33% 0,67% 0,100% 33%,100% 67%,67% 100%,33% 100%,0 67%,0 33%)}
-.pp-window{background:#6c705b;border:4px solid var(--pp-line);position:relative}
-.pp-window canvas{width:100%;height:auto;aspect-ratio:1}
-.pp-clock{font-size:20px;background:#12110d;color:#e0b64a;border:3px solid var(--pp-line);padding:2px 8px;text-align:center;letter-spacing:.08em}
-.pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:15px;line-height:1.35;min-height:78px}
-.pp-talk .who{color:#e0b64a;display:block;font-size:13px}
-.pp-btn{font:inherit;font-size:15px;cursor:pointer;background:#7b7155;color:#1b1914;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:8px 12px;text-transform:uppercase;letter-spacing:.04em}
-.pp-btn:hover{filter:brightness(1.08)}
-.pp-btn:active{box-shadow:inset 3px 3px 0 #574f3a}
-.pp-btn[disabled]{opacity:.45;cursor:default;filter:none}
+.pp-date,.pp-event{position:absolute;top:6px;background:rgba(20,18,14,.85);padding:2px 8px;font-size:16px;line-height:1.2}
+.pp-date{left:8px;color:var(--pp-gold)} .pp-event{right:8px;max-width:60%;text-align:right}
+.pp-main{display:grid;grid-template-columns:minmax(230px,300px) 1fr;min-height:520px}
+.pp-booth{background:var(--pp-wall);border-right:4px solid var(--pp-line);display:flex;flex-direction:column;gap:8px;padding:10px}
+.pp-window{border:4px solid var(--pp-line);background:#5f6452}
+.pp-clockrow{display:flex;gap:8px;align-items:stretch}
+.pp-clock{font-size:24px;background:#12110d;color:var(--pp-gold);border:3px solid var(--pp-line);padding:2px 8px;letter-spacing:.06em;line-height:1.2}
+.pp-rank{flex:1;background:#23211a;border:3px solid var(--pp-line);padding:3px 8px;font-size:16px;line-height:1.1;display:flex;align-items:center;color:var(--pp-text)}
+.pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:16px;line-height:1.3;min-height:84px}
+.pp-talk .who{color:var(--pp-gold);display:block}
+.pp-office{border:4px solid var(--pp-line)}
+.pp-btn{font:inherit;font-size:16px;cursor:pointer;background:#7b7155;color:#1b1914;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:7px 12px;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+.pp-btn:hover:not([disabled]){filter:brightness(1.1)}
+.pp-btn:active:not([disabled]){box-shadow:inset 3px 3px 0 #574f3a}
+.pp-btn[disabled]{opacity:.4;cursor:default}
 .pp-btn.horn{background:#b8913b;box-shadow:inset -3px -3px 0 #7d5f22,inset 3px 3px 0 #e2c071}
-.pp-desk{background:var(--pp-desk);background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.12) 46px 48px);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-.pp-paper{background:var(--pp-paper);color:var(--pp-ink);border:3px solid var(--pp-line);box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:14px 16px;position:relative;max-width:560px;transform:rotate(-.6deg)}
-.pp-paper h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;border-bottom:2px solid var(--pp-ink);padding-bottom:4px;display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.pp-btn.red{background:#a3453a;color:#f3e6cf;box-shadow:inset -3px -3px 0 #6e2a22,inset 3px 3px 0 #cf7465}
+.pp-desk{background:var(--pp-desk);background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.13) 46px 48px);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.pp-desk.lit{background-image:radial-gradient(ellipse at 30% 0%,rgba(255,214,140,.22),transparent 60%),repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.13) 46px 48px)}
+.pp-paper{background:var(--pp-paper);color:var(--pp-ink);border:3px solid var(--pp-line);box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:12px 16px 16px;position:relative;max-width:600px}
+.pp-paper h4{margin:0 0 6px;font-size:16px;font-weight:400;letter-spacing:.06em;border-bottom:2px solid var(--pp-ink);padding-bottom:4px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .pp-q{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14.5px;line-height:1.5;margin:8px 0 10px}
+.pp-given{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;line-height:1.5;background:var(--pp-paper2);padding:8px 10px;border:2px dashed #8f8360;margin-bottom:10px}
 .pp-opts{display:flex;flex-direction:column;gap:6px}
-.pp-opt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;text-align:left;background:var(--pp-paper2);color:var(--pp-ink);border:2px dashed #8f8360;padding:6px 8px;cursor:pointer;position:relative}
+.pp-opt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;text-align:left;background:var(--pp-paper2);color:var(--pp-ink);border:2px dashed #8f8360;padding:6px 8px;cursor:pointer}
 .pp-opt:hover:not([disabled]){background:#e6ddbd;border-style:solid}
 .pp-opt[disabled]{cursor:default}
 .pp-opt.gone{opacity:.25;text-decoration:line-through}
 .pp-opt.right{border:2px solid var(--pp-green);background:#c9d3a6}
 .pp-opt.wrongpick{border:2px solid var(--pp-red);background:#e2b7a6}
 .pp-stamps{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px}
-.pp-stamp{font:inherit;font-size:20px;padding:10px 18px;cursor:pointer;border:4px solid var(--pp-line);color:#f0e8cc;letter-spacing:.1em;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.15)}
+.pp-stamp{font:inherit;font-size:24px;padding:8px 18px;cursor:pointer;border:4px solid var(--pp-line);color:#f0e8cc;letter-spacing:.1em;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.15)}
 .pp-stamp.t{background:var(--pp-green)} .pp-stamp.f{background:var(--pp-red)}
 .pp-stamp[disabled]{opacity:.5;cursor:default}
-.ink{position:absolute;right:14px;top:34px;font-family:"Pixelify Sans",monospace;font-size:26px;letter-spacing:.12em;padding:4px 12px;border:4px solid currentColor;transform:rotate(-12deg);opacity:.85;pointer-events:none;animation:inkin .18s ease-out}
+table.pp-form{border-collapse:collapse;width:100%;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px}
+table.pp-form td{padding:3px 4px;border-bottom:1px dotted #8f8360}
+table.pp-form td:last-child{text-align:right;white-space:nowrap}
+table.pp-form input{font:inherit;width:118px;text-align:right;background:#efe6c8;color:var(--pp-ink);border:2px solid #8f8360;padding:2px 6px}
+table.pp-form input.ok{border-color:var(--pp-green);background:#d3dcb2} table.pp-form input.bad{border-color:var(--pp-red);background:#ecc3b6}
+table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
+.ink{position:absolute;right:14px;top:30px;font-family:"Tiny5",monospace;font-size:32px;letter-spacing:.1em;padding:2px 12px;border:4px solid currentColor;transform:rotate(-12deg);opacity:.85;pointer-events:none;animation:inkin .18s ease-out}
 .ink.ok{color:var(--pp-green)} .ink.no{color:var(--pp-red)}
 @keyframes inkin{from{transform:rotate(-12deg) scale(1.8);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:.85}}
-.pp-cite{background:var(--pp-pink);color:#4a1d18;border:3px solid var(--pp-line);padding:10px 12px;max-width:520px;font-size:13.5px;box-shadow:5px 5px 0 rgba(0,0,0,.35);transform:rotate(.8deg);animation:print .35s steps(6)}
-.pp-cite b{display:block;font-size:14px;letter-spacing:.08em;border-bottom:2px dashed #4a1d18;margin-bottom:6px;padding-bottom:3px}
-.pp-cite p{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;line-height:1.45}
-.pp-good{background:#c9d3a6;color:#243016;border:3px solid var(--pp-line);padding:8px 12px;max-width:520px;font-size:13.5px;box-shadow:5px 5px 0 rgba(0,0,0,.35)}
-.pp-good p{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;line-height:1.45}
+.pp-cite,.pp-good{border:3px solid var(--pp-line);padding:10px 12px;max-width:600px;font-size:16px;box-shadow:5px 5px 0 rgba(0,0,0,.35)}
+.pp-cite{background:var(--pp-pink);color:#4a1d18;animation:print .35s steps(6)} .pp-good{background:#c9d3a6;color:#243016}
+.pp-cite b,.pp-good b{display:block;font-weight:400;letter-spacing:.06em;border-bottom:2px dashed currentColor;margin-bottom:6px;padding-bottom:3px}
+.pp-cite p,.pp-good p{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;line-height:1.45;margin-top:4px}
+.pp .aibox .ai-lab{color:inherit;font-family:"Tiny5",monospace;font-size:16px;font-weight:400}
+.pp .aibox .ai-txt{background:rgba(255,255,255,.35);border-color:currentColor;color:inherit;font-size:12.5px}
+.pp .aibox .btn{font-family:"IBM Plex Sans",system-ui,sans-serif;background:#f4efdf;color:#2a241b;border-color:#15130f}
 @keyframes print{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
-.pp-bar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:#2a281f;border-top:4px solid var(--pp-line);padding:8px 12px;font-size:15px}
-.pp-bar span b{color:#e0b64a;font-weight:500}
-.pp-ov{position:absolute;inset:0;background:rgba(14,13,10,.92);display:flex;align-items:center;justify-content:center;padding:16px;z-index:3;overflow:auto}
-.pp-card{background:var(--pp-paper);color:var(--pp-ink);border:4px solid var(--pp-line);box-shadow:8px 8px 0 #000;padding:18px 20px;max-width:460px;width:100%;display:flex;flex-direction:column;gap:10px}
-.pp-card h3{font-family:"Pixelify Sans",monospace;font-size:24px;font-weight:600;letter-spacing:.06em;text-align:center}
-.pp-card p{font-size:15px;line-height:1.4}
-.pp-card .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
-.pp-is{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;width:100%;border-collapse:collapse}
-.pp-is td{padding:2px 0}.pp-is td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.pp-bar{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:#2a281f;border-top:4px solid var(--pp-line);padding:8px 12px}
+.pp-bar span b{color:var(--pp-gold);font-weight:400}
+.pp-bar .grp{display:flex;gap:8px;flex-wrap:wrap}
+.pp-ov{position:absolute;inset:0;background:rgba(14,13,10,.93);display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;z-index:3;overflow:auto}
+.pp-card{background:var(--pp-paper);color:var(--pp-ink);border:4px solid var(--pp-line);box-shadow:8px 8px 0 #000;padding:16px 18px;max-width:600px;width:100%;display:flex;flex-direction:column;gap:10px}
+.pp-card h3{font-family:"Tiny5",monospace;font-size:24px;font-weight:400;letter-spacing:.06em;text-align:center}
+.pp-card p{font-size:16px;line-height:1.3}
+.pp-card .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;line-height:1.45}
+.pp-title{font-size:48px;text-align:center;letter-spacing:.1em;line-height:1}
+.pp-sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 18px}
+.pp-is{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;width:100%;border-collapse:collapse}
+.pp-is td{padding:1px 0}.pp-is td:last-child{text-align:right;font-variant-numeric:tabular-nums;padding-left:8px}
 .pp-is tr.sub td{border-top:2px solid var(--pp-ink);font-weight:600}
 .pp-is tr.neg td:last-child{color:var(--pp-red)}
-.pp-is tr.h td{padding-top:8px;font-weight:600;letter-spacing:.05em}
+.pp-is tr.h td{padding-top:6px;font-family:"Tiny5",monospace;font-size:16px;letter-spacing:.04em}
 .pp-card .pp-btn{align-self:center}
-.pp-title{font-size:34px;text-align:center;letter-spacing:.12em;color:var(--pp-ink)}
-@media (max-width:640px){.pp-main{grid-template-columns:1fr}.pp-booth{border-right:none;border-bottom:4px solid var(--pp-line);display:grid;grid-template-columns:110px 1fr;grid-template-areas:"win talk" "clock talk" "wall wall" "btn btn"}.pp-window{grid-area:win}.pp-clock{grid-area:clock;font-size:16px}.pp-talk{grid-area:talk}.pp-wall{grid-area:wall}.pp-booth .horn{grid-area:btn}.pp-paper{transform:none}}
+.pp-topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 12px;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px}
+.pp-topics label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.pp-topics input{accent-color:#557538;width:16px;height:16px}
+.pp-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.pp-item{background:var(--pp-paper2);border:2px solid #8f8360;padding:8px;display:flex;flex-direction:column;gap:4px}
+.pp-item b{font-weight:400;font-size:16px}
+.pp-item small{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;line-height:1.35}
+.pp-item .pp-btn{font-size:16px;padding:4px 8px;align-self:flex-start}
+.pp-item.owned{border-style:solid;border-color:var(--pp-green)}
+@media (max-width:680px){.pp-main{grid-template-columns:1fr}.pp-booth{border-right:none;border-bottom:4px solid var(--pp-line);display:grid;grid-template-columns:120px 1fr;grid-template-areas:"win talk" "clock talk" "off off" "btn btn"}.pp-window{grid-area:win}.pp-clockrow{grid-area:clock;flex-direction:column}.pp-clock{font-size:16px}.pp-talk{grid-area:talk}.pp-office{grid-area:off}.pp-booth .horn{grid-area:btn}.pp-rank{font-size:16px}.pp-event{position:static;display:block;max-width:none;text-align:left}}
 @media (prefers-reduced-motion: reduce){.ink,.pp-cite{animation:none}}
 </style>
 
@@ -230,14 +253,14 @@ table.simple th{background:var(--line2);font-weight:600}
   <div class="hero">
     <span class="eyebrow">Подготовка к мидтерму · без компьютера, только ручка и калькулятор</span>
     <h1>Научиться собирать четыре отчёта руками и закрыть теорию</h1>
-    <p class="muted">Лектор сказал: решишь задачу уровня FMA Corporation, значит пройдёшь. Поэтому главный раздел здесь «Отчёты». Тесты и карточки закрывают теорию: сферы финансов, формы бизнеса, финансовые институты и рынки, сами отчёты.</p>
+    <p class="muted">Лектор сказал: решишь задачу уровня FMA Corporation, значит пройдёшь. Поэтому главный раздел здесь «Отчёты». Мидтерм по силлабусу покрывает темы 1–7: финансовая система, отчёты, financial ratios, анализ отчётов, time value of money, ставки и risk &amp; return, short-term financial management. Всё это есть в тестах, карточках, шпаргалке и режиме МИКС.</p>
   </div>
   <div class="statbar" id="homeStats"></div>
   <h2>План на 3–4 недели</h2>
   <div class="plan">
     <div class="panel"><span class="eyebrow">Неделя 1</span><h3>Теория и структура</h3><ul class="clean"><li>Шпаргалка: все блоки</li><li>Тесты: Intro, Forms, Institutions, Markets</li><li>Карточки каждый день по 15 минут</li><li>Задача «Classroom Template» (IS, RE, BS)</li></ul></div>
     <div class="panel"><span class="eyebrow">Неделя 2</span><h3>FMA целиком</h3><ul class="clean"><li>FMA 2020: сначала с подсказками</li><li>Потом без подсказок, на бумаге, с таймером</li><li>Тесты: Statements и Cash Flow</li></ul></div>
-    <div class="panel"><span class="eyebrow">Неделя 3</span><h3>Новые цифры</h3><ul class="clean"><li>Генератор FMA-задач: минимум 5 штук</li><li>Цель: все три отчёта за 35–40 минут</li><li>Тест «Классификация статей» до 90%+</li></ul></div>
+    <div class="panel"><span class="eyebrow">Неделя 3</span><h3>Темы 3–7</h3><ul class="clean"><li>Шпаргалка: ratios, DuPont, TVM, risk &amp; return, short-term mgmt</li><li>Тесты по этим темам + МИКС с галочками «Темы 3–7»</li><li>Генератор FMA-задач: ещё 3 штуки</li></ul></div>
     <div class="panel"><span class="eyebrow">Последние дни</span><h3>Режим экзамена</h3><ul class="clean"><li>«Экзамен-микс»: 30 вопросов подряд</li><li>Одна генерированная задача на время</li><li>Повтори только ошибки</li></ul></div>
   </div>
   <div class="panel stack">
@@ -253,20 +276,20 @@ table.simple th{background:var(--line2);font-weight:600}
 
 <!-- MIX -->
 <section class="section" id="tab-mix" hidden>
-  <div class="stack" style="gap:4px"><span class="eyebrow">Режим МИКС · все темы вперемешку</span><h1>Бюро финансовой отчётности</h1><p class="muted" style="max-width:70ch">Ты клерк в будке бюро. Каждый день к окошку приходят люди со своими вопросами. Штампуй правильные ответы и зарабатывай. Вечером приходит налоговый инспектор: вешает медаль на стену или выписывает штраф. В конце дня видишь свой Income Statement за этот день.</p></div>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Режим МИКС · все типы заданий вперемешку</span><h1>Бюро финансовой отчётности</h1><p class="muted" style="max-width:72ch">Ты клерк в будке бюро. К окошку приходят люди: вопросы из тестов, карточки, «куда записать статью», мини-документы, которые нужно заполнить руками. Вечером приходит налоговый инспектор. На заработок можно обставить офис, и каждая покупка честно попадает в твой баланс и cash flow.</p></div>
   <div class="pp" id="pp">
-    <div class="pp-top"><canvas id="ppQueue" width="240" height="60" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div></div>
+    <div class="pp-top"><canvas id="ppQueue" width="480" height="140" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div><div class="pp-event" id="ppEvent"></div></div>
     <div class="pp-main">
       <div class="pp-booth">
-        <div class="pp-window"><canvas id="ppFace" width="32" height="32" aria-label="Посетитель"></canvas></div>
-        <div class="pp-clock" id="ppClock">06:00</div>
+        <div class="pp-window"><canvas id="ppFace" width="64" height="64" aria-label="Посетитель"></canvas></div>
+        <div class="pp-clockrow"><div class="pp-clock" id="ppClock">06:00</div><div class="pp-rank" id="ppRank"></div></div>
         <div class="pp-talk" id="ppTalk" aria-live="polite"></div>
-        <div class="pp-wall" id="ppWall" title="Медали от налоговой"></div>
+        <div class="pp-office"><canvas id="ppOffice" width="160" height="100" aria-label="Офис"></canvas></div>
         <button class="pp-btn horn" id="ppNext">Следующий!</button>
       </div>
       <div class="pp-desk" id="ppDesk"></div>
     </div>
-    <div class="pp-bar"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span><button class="pp-btn" id="ppHint" style="font-size:13px;padding:5px 10px">50/50 · $2</button></div>
+    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp"><button class="pp-btn" id="ppHint">50/50 · $2</button><button class="pp-btn" id="ppBook" hidden>Справочник</button></div></div>
     <div class="pp-ov" id="ppOv" hidden></div>
   </div>
   <p class="muted" style="font-size:13.5px">Прогресс сохраняется в этом браузере. <button class="btn small" id="ppReset">Начать игру заново</button></p>
@@ -362,9 +385,20 @@ const fmt=(n,d=0)=>{if(n===null||n===undefined||isNaN(n))return'';const neg=n<0;
 const money=n=>(n<0?'-$':'$')+fmt(Math.abs(n));
 const pct=x=>(Math.round(x*1000)/10)+'%';
 const store={get(k,d){try{const v=localStorage.getItem('fmt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('fmt_'+k,JSON.stringify(v))}catch(e){}}};
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function parseNum(s){if(s==null)return null;s=String(s).trim();if(!s)return null;let neg=false;if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}s=s.replace(/[$\s,]/g,'').replace(/−/g,'-');if(s.startsWith('-')){neg=!neg;s=s.slice(1)}const n=parseFloat(s);if(isNaN(n))return null;return neg?-n:n}
+
+
+/* ---------- ask AI about a question ---------- */
+function aiPromptQ(q,picked){const opts=q.o.map((o,i)=>'ABCD'[i]+') '+o).join('\n');
+  return `Объясни простыми словами, почему в этом вопросе правильный ответ именно такой${picked!=null&&picked!==q.a?', и почему мой ответ неверный':''}. Я студент 1 курса, предмет Managerial Finance (учебник Gitman).\n\nВопрос: ${q.q}\n${q.o===TF?'':'Варианты:\n'+opts+'\n'}${picked!=null?'Мой ответ: '+q.o[picked]+'\n':''}Правильный ответ: ${q.o[q.a]}`}
+function aiBox(text){const enc=encodeURIComponent(text);
+  return `<div class="aibox"><label class="ai-lab" for="aiTxt${aiBox.n=(aiBox.n||0)+1}">Не понял? Спроси у нейросети:</label><textarea id="aiTxt${aiBox.n}" class="ai-txt" rows="3" readonly>${esc(text)}</textarea><div class="row"><a class="btn small" href="https://claude.ai/new?q=${enc}" target="_blank" rel="noopener">Открыть в Claude</a><a class="btn small" href="https://gemini.google.com/app" target="_blank" rel="noopener" data-copy="${esc(text)}">Открыть Gemini (текст скопируется)</a></div></div>`}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if(!a)return;const t=a.getAttribute('data-copy');try{navigator.clipboard.writeText(t).catch(()=>{})}catch(err){}const ta=a.closest('.aibox')&&a.closest('.aibox').querySelector('textarea');if(ta){ta.focus();ta.select()}});
+document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ai-txt'))e.target.select()});
 
 /* ---------- tabs ---------- */
 const TABS=['home','build','mix','place','quiz','cards','sheet'];
@@ -651,123 +685,127 @@ const Q=[
 // ---- intro ----
 {t:'intro',q:'Which discipline provides the financial manager with financial data such as income statements, balance sheets, and statements of cash flows?',o:['Economics','Accounting','Psychology','Statistics'],a:1,x:'Слайд «Input of other disciplines»: Accounting provides financial data in various forms.'},
 {t:'intro',q:'According to the lecture, which discipline tries to explain the irrational behaviour of financial market participants?',o:['Economics','Statistics','Psychology','Accounting'],a:2,x:'Psychology (поведенческие финансы).'},
-{t:'intro',q:'According to the lecture, which discipline tries to quantify risks and the probability of negative events?',o:['Statistics','Psychology','Accounting','Law'],a:0,x:'Statistics квантифицирует риск и вероятность негативных событий.'},
-{t:'intro',q:'Finance links economic theory with',o:['the numbers of accounting.','marketing research.','human resources.','production planning.'],a:0,x:'Слайд лекции: Finance links economic theory with the numbers of accounting.'},
-{t:'intro',q:'The primary emphasis of the financial manager (unlike the accountant) is on',o:['accrual-based profits.','cash flows.','tax records.','bookkeeping.'],a:1,x:'Бухгалтер работает по accrual basis (начисления), финансовый менеджер смотрит на cash flows (реальные деньги) и принимает решения.'},
-{t:'intro',q:'Accountants recognize revenue at the point of sale and expenses when incurred. This is called the',o:['cash basis.','accrual basis.','market basis.','tax basis.'],a:1,x:'Accrual basis. Финансисты используют cash basis — считают деньги, когда они реально пришли или ушли.'},
-{t:'intro',q:'By the 1930s, financial practices mostly revolved around',o:['risk-return relationships and portfolio management.','preservation of capital, reorganization of troubled corporations, and bankruptcy.','capital structure theory and dividend policy.','hedging with derivatives.'],a:1,x:'Эпоха Великой депрессии: сохранение капитала, реорганизация, банкротства.'},
-{t:'intro',q:'By the mid-1950s finance became more analytical. Which topic belongs to this period?',o:['Bankruptcy of railroads','Capital structure theory and dividend policy','Emergence of finance from economics','Cryptocurrency'],a:1,x:'С 1950-х: финансовый капитал покупает реальный капитал, управление cash и запасами, capital structure theory, dividend policy.'},
-{t:'intro',q:'The recent focus of finance has been on',o:['preservation of capital.','separating finance from economics.','risk-return relationships, portfolio management and hedging.','bookkeeping standards.'],a:2,x:'Сейчас: risk-return, максимизация доходности при данном риске, хеджирование, портфели.'},
+{t:'intro',q:'According to the lecture, which discipline tries to quantify risks and the probability of negative events?',o:['Statistics','Psychology','Accounting','Economics'],a:0,x:'Statistics квантифицирует риск и вероятность негативных событий.'},
+{t:'intro',q:'According to the lecture, finance links economic theory with',o:['the numbers of accounting.','the methods of marketing.','the rules of corporate law.','the tools of statistics.'],a:0,x:'Слайд лекции: Finance links economic theory with the numbers of accounting.'},
+{t:'intro',q:'Unlike the accountant, the financial manager places primary emphasis on',o:['accrual-based profits.','cash flows.','tax records.','sales volume.'],a:1,x:'Бухгалтер работает по accrual basis (начисления), финансовый менеджер смотрит на cash flows (реальные деньги) и принимает решения.'},
+{t:'intro',q:'Accountants recognize revenue at the point of sale and expenses when incurred. This is called the',o:['cash basis.','accrual basis.','market basis.','tax basis.'],a:1,x:'Accrual basis. Финансисты смотрят на cash basis — когда деньги реально пришли или ушли.'},
+{t:'intro',q:'By the 1930s, financial practices mostly revolved around',o:['risk-return relationships and portfolio theory.','preservation of capital and bankruptcy issues.','capital structure theory and dividend policy.','hedging with new derivative products.'],a:1,x:'Эпоха Великой депрессии: сохранение капитала, реорганизация проблемных компаний, банкротства.'},
+{t:'intro',q:'By the mid-1950s finance became more analytical. Which topic belongs to this period?',o:['Reorganization of bankrupt railroads','Capital structure theory and dividend policy','Separation of finance from economics','Hedging with complex derivative products'],a:1,x:'С 1950-х: финансовый капитал покупает реальный капитал, управление cash и запасами, capital structure theory, dividend policy.'},
+{t:'intro',q:'According to the lecture, the recent focus of finance has been on',o:['preservation of capital in hard times.','separation of finance from economics.','risk-return and portfolio management.','reorganization of troubled companies.'],a:2,x:'Сейчас: risk-return, максимизация доходности при данном риске, хеджирование, портфели.'},
 {t:'intro',q:'Deciding "when to issue new stocks and bonds" is an example of a',o:['financing decision.','investment decision.','marketing decision.','production decision.'],a:0,x:'Как привлечь деньги — financing decision. «Куда вложить» и «заменять ли старый актив» — investment decisions.'},
 {t:'intro',q:'Deciding "whether or not to replace an old asset" is an example of a(n)',o:['financing decision.','investment decision.','dividend decision.','accounting decision.'],a:1,x:'Investment decision: во что вкладывать деньги (левая сторона баланса).'},
-{t:'intro',q:'The goal of the financial manager, according to Gitman, is to',o:['maximize profit.','maximize the wealth of the firm’s owners (share price).','minimize risk.','maximize sales.'],a:1,x:'Цель — максимизация богатства акционеров (цены акции). Максимизация прибыли игнорирует время, cash flows и риск.'},
-{t:'intro',q:'Profit maximization is not the best goal because it ignores',o:['the timing of returns, cash flows, and risk.','revenues.','costs.','taxes only.'],a:0,x:'Три недостатка profit maximization по Gitman: timing, cash flows (прибыль ≠ деньги), risk.'},
-{t:'intro',q:'The conflict between the goals of a firm’s owners and its managers is called the',o:['agency problem.','liquidity problem.','double taxation.','free-rider problem.'],a:0,x:'Agency problem: менеджеры (агенты) могут действовать в своих интересах, а не акционеров.'},
-{t:'intro',q:'Which field of finance are you studying in this course?',o:['Public finance','Corporate/Managerial/Business finance','Personal finance','International finance'],a:1,x:'Слайд «Fields of finance»: Corporate/Managerial/Business Finance — you are studying!'},
+{t:'intro',q:'According to Gitman, the goal of the financial manager is to',o:['maximize the firm’s accounting profit.','maximize the wealth of the owners.','minimize the risk of the business.','maximize the firm’s total sales.'],a:1,x:'Цель — максимизация богатства акционеров (цены акции). Максимизация прибыли игнорирует время, cash flows и риск.'},
+{t:'intro',q:'Profit maximization is not the best goal of the firm because it ignores',o:['timing, cash flows and risk.','revenues, costs and taxes.','sales, assets and liabilities.','dividends, debt and equity.'],a:0,x:'Три недостатка profit maximization по Gitman: timing, cash flows (прибыль ≠ деньги), risk.'},
+{t:'intro',q:'The conflict between the goals of a firm’s owners and its managers is called the',o:['agency problem.','liquidity problem.','double taxation.','free-rider problem.'],a:0,x:'Agency problem: менеджеры (агенты) могут действовать в своих интересах, а не в интересах акционеров.'},
+{t:'intro',q:'According to the lecture, which field of finance are you studying in this course?',o:['Public finance','Managerial finance','Personal finance','International finance'],a:1,x:'Слайд «Fields of finance»: Corporate/Managerial/Business Finance — you are studying!'},
 {t:'intro',q:'Which of the following is NOT listed among the fields of finance in the lecture?',o:['Public Finance','Risk Management','Asset Valuation','Cost Accounting'],a:3,x:'Поля: Corporate, Financial Services/Banking, Personal, Public, International, Investment Management, Asset Valuation, Risk Management.'},
-{t:'intro',q:'Marginal cost-benefit analysis says a financial decision should be made only when',o:['added benefits exceed added costs.','costs are minimized.','the decision increases sales.','accounting profit is positive.'],a:0,x:'Принимаем решение, если marginal benefits > marginal costs.'},
+{t:'intro',q:'Marginal cost-benefit analysis says a financial decision should be made only when',o:['added benefits exceed added costs.','total costs fall below total sales.','the decision increases total sales.','accounting profit becomes positive.'],a:0,x:'Принимаем решение, если marginal benefits > marginal costs.'},
 {t:'intro',q:'True or False: The financial manager’s main job is to collect and present financial data.',o:TF,a:1,x:'False. Это работа бухгалтера. Финансовый менеджер оценивает данные и принимает решения.'},
 
 // ---- forms ----
 {t:'forms',q:'A business owned by one person and operated for his or her own profit is a',o:['partnership.','corporation.','sole proprietorship.','limited partnership.'],a:2,x:'Sole proprietorship (в Литве IĮ).'},
-{t:'forms',q:'The owner of a sole proprietorship has',o:['limited liability.','unlimited liability.','no liability.','liability equal to invested capital.'],a:1,x:'Unlimited liability: личное имущество владельца отвечает по долгам бизнеса.'},
-{t:'forms',q:'Which form of business is a separate legal entity with limited liability for its owners?',o:['Sole proprietorship','General partnership','Corporation','All of the above'],a:2,x:'Corporation (AB, UAB) — отдельное юрлицо, акционеры рискуют только вложенными деньгами.'},
-{t:'forms',q:'A major strength of a sole proprietorship is',o:['easy access to capital.','the owner receives all profits and has independence.','limited liability.','unlimited life.'],a:1,x:'Плюсы: все прибыли владельцу, низкие затраты на создание, доход облагается как личный, независимость, секретность, легко закрыть.'},
-{t:'forms',q:'A major weakness of a corporation is',o:['limited liability.','easy transfer of ownership.','taxes are generally higher because of double taxation.','long life of the firm.'],a:2,x:'Минусы корпорации: double taxation, дорого создать, жёсткое регулирование, нет секретности (раскрытие отчётности).'},
-{t:'forms',q:'"Double taxation" of corporations means that',o:['the corporation pays tax twice a year.','corporate income is taxed, and dividends are taxed again as the owner’s personal income.','both managers and owners pay tax.','taxes are paid in two countries.'],a:1,x:'Сначала налог на прибыль корпорации, потом налог на дивиденды у акционера.'},
-{t:'forms',q:'The members of the board of directors are elected by the',o:['CEO.','creditors.','stockholders.','government.'],a:2,x:'Акционеры голосуют и выбирают совет директоров.'},
-{t:'forms',q:'The ________ is responsible for managing day-to-day operations and carrying out the policies established by the board.',o:['board of directors','president or chief executive officer (CEO)','stockholders','auditor'],a:1,x:'CEO/president ведёт ежедневные операции и выполняет политику, которую установил совет директоров.'},
-{t:'forms',q:'In a limited partnership',o:['all partners have limited liability.','at least one partner has unlimited liability (general partner).','there are no partners.','ownership is traded on an exchange.'],a:1,x:'Хотя бы один general partner с неограниченной ответственностью, остальные — limited partners.'},
+{t:'forms',q:'The owner of a sole proprietorship has',o:['limited liability.','unlimited liability.','no liability at all.','liability equal to capital.'],a:1,x:'Unlimited liability: личное имущество владельца отвечает по долгам бизнеса.'},
+{t:'forms',q:'Which form of business is a separate legal entity with limited liability for its owners?',o:['Sole proprietorship','General partnership','Corporation','Limited partnership'],a:2,x:'Corporation (AB, UAB) — отдельное юрлицо, акционеры рискуют только вложенными деньгами. В limited partnership хотя бы один партнёр отвечает неограниченно.'},
+{t:'forms',q:'A major strength of a sole proprietorship is that',o:['it has easy access to large capital.','the owner keeps all profits and control.','the owner has limited personal liability.','the firm has an unlimited life span.'],a:1,x:'Плюсы: все прибыли владельцу, низкие затраты на создание, налог как с личного дохода, независимость, секретность, легко закрыть.'},
+{t:'forms',q:'A major weakness of a corporation is that',o:['owners have limited liability.','ownership is easy to transfer.','profits are taxed twice.','the firm has an unlimited life.'],a:2,x:'Минусы корпорации: double taxation, дорого создать, жёсткое регулирование, нет секретности.'},
+{t:'forms',q:'"Double taxation" of corporations means that',o:['the corporation files taxes twice a year.','profits are taxed, then dividends taxed again.','both managers and owners pay payroll tax.','the firm pays taxes in two countries.'],a:1,x:'Сначала налог на прибыль корпорации, потом налог на дивиденды у акционера.'},
+{t:'forms',q:'The members of the board of directors are elected by the',o:['CEO.','creditors.','stockholders.','managers.'],a:2,x:'Акционеры голосуют и выбирают совет директоров.'},
+{t:'forms',q:'The ________ is responsible for managing day-to-day operations and carrying out the policies established by the board.',o:['board of directors','CEO / president','stockholders','external auditor'],a:1,x:'CEO/president ведёт ежедневные операции и выполняет политику, которую установил совет директоров.'},
+{t:'forms',q:'In a limited partnership',o:['all partners have limited liability.','at least one partner has unlimited liability.','no partner may manage the business.','ownership is traded on an exchange.'],a:1,x:'Хотя бы один general partner с неограниченной ответственностью, остальные — limited partners.'},
 {t:'forms',q:'Which form of organization is most common by NUMBER of firms, and which dominates by revenue/profits?',o:['Corporations; sole proprietorships','Sole proprietorships; corporations','Partnerships; corporations','Corporations; partnerships'],a:1,x:'Больше всего по количеству — sole proprietorships, но доминируют по выручке корпорации.'},
-{t:'forms',q:'Which is a major strength of a partnership compared with a sole proprietorship?',o:['Limited liability for all partners','Can raise more funds and has greater borrowing capacity','Ownership is easily transferable','No income tax at all'],a:1,x:'Партнёров больше → больше денег и кредитоспособность, больше знаний и навыков.'},
+{t:'forms',q:'A major strength of a partnership compared with a sole proprietorship is',o:['limited liability for all partners','more funds and greater borrowing power','ownership that is easy to transfer','profits that are never taxed'],a:1,x:'Партнёров больше → больше денег и кредитоспособность, больше знаний и навыков. Ответственность остаётся неограниченной.'},
 {t:'forms',q:'In Lithuania, AB and UAB correspond to which legal form?',o:['Sole proprietorship','Partnership','Corporation','Credit union'],a:2,x:'Слайд лекции: Corporation (AB ir UAB). Sole proprietorship = IĮ.'},
-{t:'forms',q:'Which form has the longest (unlimited) life?',o:['Sole proprietorship','Partnership','Corporation','All have the same life'],a:2,x:'Корпорация существует независимо от смены владельцев.'},
+{t:'forms',q:'Which form of business has the longest (unlimited) life?',o:['Sole proprietorship','Partnership','Corporation','Limited partnership'],a:2,x:'Корпорация существует независимо от смены владельцев.'},
 {t:'forms',q:'True or False: Stockholders of a corporation can lose more than their investment if the firm goes bankrupt.',o:TF,a:1,x:'False. Limited liability: максимум теряешь то, что вложил.'},
 {t:'forms',q:'True or False: The board of directors has the ultimate authority to guide corporate affairs and make general policy.',o:TF,a:0,x:'True.'},
+{t:'forms',q:'True or False: A sole proprietorship is the most expensive form of business to organize.',o:TF,a:1,x:'False. Самая дорогая — корпорация. Sole proprietorship самая дешёвая.'},
 
 // ---- institutions ----
 {t:'inst',q:'Which institution accepts both demand (checking) and time (savings) deposits and makes loans directly to borrowers?',o:['Commercial bank','Mutual fund','Pension fund','Insurance company'],a:0,x:'Commercial bank по слайду лекции.'},
-{t:'inst',q:'A savings bank mainly',o:['underwrites stock issues.','holds savings deposits and makes residential real estate loans to individuals.','invests in start-ups.','sets monetary policy.'],a:1,x:'Savings bank: сберегательные депозиты + ипотека физлицам.'},
-{t:'inst',q:'A credit union',o:['deals primarily in transfer of funds between consumers; membership is based on a common bond, such as working for a given employer.','sells insurance policies.','issues government bonds.','trades only derivatives.'],a:0,x:'Кредитный союз: члены связаны общим признаком (работодатель, профессия), деньги переходят между потребителями.'},
+{t:'inst',q:'A savings bank mainly',o:['underwrites new stock and bond issues.','holds savings and makes home loans.','invests equity in young start-ups.','sets the country’s monetary policy.'],a:1,x:'Savings bank: сберегательные депозиты + ипотека физлицам.'},
+{t:'inst',q:'A credit union',o:['serves members who share a common bond.','sells life and property insurance.','issues and manages government bonds.','trades only futures and options.'],a:0,x:'Кредитный союз: члены связаны общим признаком (работодатель, профессия), деньги переходят между потребителями.'},
 {t:'inst',q:'An institution that pools funds of savers and creates a diversified, professionally managed portfolio of securities to achieve a specified investment objective is a',o:['commercial bank.','credit union.','mutual fund.','central bank.'],a:2,x:'Mutual fund (инвестиционный фонд).'},
-{t:'inst',q:'Which of the following is NOT a typical function of an investment bank?',o:['Underwriting (raising capital)','Mergers and acquisitions advice','Accepting checking deposits from households','Proprietary trading'],a:2,x:'Инвест-банк по слайду: underwriting, M&A, brokerage (sale of securities), proprietary trading, research & consulting. Депозиты принимает commercial bank.'},
-{t:'inst',q:'Underwriting by an investment bank means',o:['insuring cars.','helping firms raise capital by issuing (and often buying and reselling) new securities.','auditing financial statements.','granting mortgages.'],a:1,x:'Underwriting = raising capital, размещение нового выпуска.'},
-{t:'inst',q:'Venture capital funds typically',o:['accept deposits.','invest equity in young, high-risk, high-growth firms.','buy only government bonds.','insure against losses.'],a:1,x:'VC вкладывает в стартапы в обмен на долю.'},
+{t:'inst',q:'Which of the following is NOT a typical function of an investment bank?',o:['Underwriting new securities','Advising on mergers','Accepting checking deposits','Proprietary trading'],a:2,x:'Инвест-банк по слайду: underwriting, M&A, brokerage, proprietary trading, research & consulting. Депозиты принимает commercial bank.'},
+{t:'inst',q:'Underwriting by an investment bank means',o:['insuring cars and property against loss.','helping firms raise capital via new issues.','auditing a company’s financial reports.','granting mortgages to home buyers.'],a:1,x:'Underwriting = raising capital, размещение нового выпуска.'},
+{t:'inst',q:'Venture capital funds typically',o:['accept deposits from households.','invest equity in young, risky firms.','buy only government bonds.','insure firms against losses.'],a:1,x:'VC вкладывает в стартапы в обмен на долю.'},
 {t:'inst',q:'Which of the following is a governmental financial entity mentioned in the lecture?',o:['Credit union','Central bank','Brokerage company','Venture capital fund'],a:1,x:'Governmental entities: Treasury, Central Bank, Depositorium.'},
-{t:'inst',q:'A pension fund',o:['collects contributions from employers/employees and invests them to pay retirement benefits.','makes car loans.','sets interest rates.','underwrites IPOs.'],a:0,x:'Пенсионный фонд копит взносы и инвестирует их, чтобы выплачивать пенсии.'},
-{t:'inst',q:'An insurance company obtains funds mainly from',o:['deposits.','premiums paid by policyholders.','central bank loans.','selling shares daily.'],a:1,x:'Страховщик собирает премии, инвестирует их и выплачивает возмещения.'},
-{t:'inst',q:'A brokerage company',o:['matches buyers and sellers of securities and executes trades for clients.','issues money.','accepts time deposits.','regulates banks.'],a:0,x:'Брокер исполняет сделки клиентов за комиссию.'},
-{t:'inst',q:'In the economy as a whole, the NET SUPPLIERS of funds to financial institutions are',o:['businesses.','governments.','individuals (households).','central banks.'],a:2,x:'Gitman: individuals are net suppliers; businesses and governments are net demanders of funds.'},
-{t:'inst',q:'Businesses, as a group, are',o:['net suppliers of funds.','net demanders of funds.','neither suppliers nor demanders.','only suppliers.'],a:1,x:'Фирмы занимают больше, чем сберегают → net demanders.'},
-{t:'inst',q:'Which institution is the one that conducts monetary policy (for Lithuania, within the Eurosystem)?',o:['Commercial bank','Central bank','Mutual fund','Treasury'],a:1,x:'Central bank (Lietuvos bankas в составе Eurosystem, ECB). Treasury (Минфин) управляет госдолгом и бюджетом.'},
+{t:'inst',q:'A pension fund',o:['invests contributions to pay retirements.','makes car and consumer loans to members.','sets short-term interest rates for banks.','underwrites initial public offerings.'],a:0,x:'Пенсионный фонд копит взносы и инвестирует их, чтобы выплачивать пенсии.'},
+{t:'inst',q:'An insurance company obtains funds mainly from',o:['deposits.','premiums.','central bank loans.','share issues.'],a:1,x:'Страховщик собирает премии, инвестирует их и выплачивает возмещения.'},
+{t:'inst',q:'A brokerage company',o:['executes securities trades for clients.','issues the national currency.','accepts long-term time deposits.','regulates and supervises banks.'],a:0,x:'Брокер исполняет сделки клиентов за комиссию.'},
+{t:'inst',q:'In the economy as a whole, the NET SUPPLIERS of funds to financial institutions are',o:['businesses.','governments.','individuals.','central banks.'],a:2,x:'Gitman: individuals are net suppliers; businesses and governments are net demanders of funds.'},
+{t:'inst',q:'Businesses, as a group, are',o:['net suppliers of funds.','net demanders of funds.','neither suppliers nor demanders.','only suppliers of funds.'],a:1,x:'Фирмы занимают больше, чем сберегают → net demanders.'},
+{t:'inst',q:'Which institution conducts monetary policy (for Lithuania, within the Eurosystem)?',o:['Commercial bank','Central bank','Mutual fund','Treasury'],a:1,x:'Central bank (Lietuvos bankas в составе Eurosystem, ECB). Treasury (Минфин) управляет госдолгом и бюджетом.'},
 {t:'inst',q:'True or False: Financial institutions and financial markets are completely independent of each other.',o:TF,a:1,x:'False. Институты активно работают на рынках как покупатели и продавцы бумаг.'},
 {t:'inst',q:'True or False: Venture capital funds, brokerage companies and investment banks are non-depository institutions.',o:TF,a:0,x:'True по слайду лекции «Non-depository».'},
 
 // ---- markets ----
-{t:'mkt',q:'A financial market is best described as',o:['a place where buyers and sellers meet and exchange financial securities/instruments.','an intermediary that accepts deposits.','a government agency.','a place to buy consumer goods.'],a:0,x:'Определение со слайда лекции.'},
+{t:'mkt',q:'A financial market is best described as',o:['a forum where suppliers and demanders trade directly.','an intermediary that accepts deposits and makes loans.','a government agency that supervises all banks.','a place where consumers buy goods and services.'],a:0,x:'Рынок — место прямых сделок. Посредник, который принимает депозиты, — это financial institution.'},
 {t:'mkt',q:'The market where securities are issued for the very first time is the',o:['secondary market.','primary market.','money market.','OTC market.'],a:1,x:'Primary market, например IPO.'},
 {t:'mkt',q:'An initial public offering (IPO) takes place in the',o:['secondary market.','primary market.','forward market.','derivative market.'],a:1,x:'Первое размещение акций для публики — primary market.'},
-{t:'mkt',q:'Securities that are traded between market participants after issue are traded in the',o:['primary market.','secondary market.','money market only.','central bank.'],a:1,x:'Secondary market.'},
-{t:'mkt',q:'Commercial paper is',o:['a long-term corporate bond.','a short-term unsecured promissory note sold by corporations to finance daily operations.','a share of common stock.','a government pension.'],a:1,x:'Слайд: commercial paper sold by corporations to finance daily operations → money market.'},
-{t:'mkt',q:'Which instrument belongs to the money market?',o:['Common stock','Preferred stock','Certificate of deposit with maturity under 12 months','30-year government bond'],a:2,x:'CD до 12 месяцев, commercial paper, T-bills — money market.'},
+{t:'mkt',q:'Securities that are traded between market participants after issue are traded in the',o:['primary market.','secondary market.','money market.','forward market.'],a:1,x:'Secondary market.'},
+{t:'mkt',q:'Commercial paper is',o:['a long-term secured corporate bond.','a short-term unsecured corporate note.','a share of preferred corporate stock.','a long-term government savings bond.'],a:1,x:'Слайд: commercial paper sold by corporations to finance daily operations → money market.'},
+{t:'mkt',q:'Which instrument belongs to the money market?',o:['Common stock','Preferred stock','6-month CD','20-year bond'],a:2,x:'CD до 12 месяцев, commercial paper, T-bills — money market.'},
 {t:'mkt',q:'Which instrument belongs to the capital market?',o:['Treasury bill','Commercial paper','Preferred stock','3-month CD'],a:2,x:'Capital market: common stock, preferred stock, corporate and government bonds.'},
 {t:'mkt',q:'Classifying markets into "money vs. capital" is based on',o:['nature of claims.','maturity.','issuer involvement.','timing.'],a:1,x:'Слайд: Maturity (money vs. capital).'},
-{t:'mkt',q:'Classifying markets into "primary vs. secondary" is based on',o:['issuer involvement.','complexity.','maturity.','nature of claims.'],a:0,x:'Issuer involvement: в primary эмитент получает деньги, в secondary — нет.'},
-{t:'mkt',q:'Classifying markets into "equity vs. debt" is based on',o:['timing.','nature of claims.','complexity.','maturity.'],a:1,x:'Nature of claims: владение (equity) против долга (debt).'},
+{t:'mkt',q:'Classifying markets into "primary vs. secondary" is based on',o:['issuer involvement.','complexity.','maturity of claims.','nature of claims.'],a:0,x:'Issuer involvement: в primary эмитент получает деньги, в secondary — нет.'},
+{t:'mkt',q:'Classifying markets into "equity vs. debt" is based on',o:['timing of delivery.','nature of claims.','complexity.','maturity.'],a:1,x:'Nature of claims: владение (equity) против долга (debt).'},
 {t:'mkt',q:'Classifying markets into "spot vs. forward" is based on',o:['timing.','issuer involvement.','maturity.','complexity.'],a:0,x:'Timing: spot — поставка сразу, forward — в будущем.'},
-{t:'mkt',q:'Options and futures are examples of',o:['simple securities.','derivative securities.','money market instruments.','deposits.'],a:1,x:'Complexity: simple vs. derivative. Деривативы — производные от другого актива.'},
-{t:'mkt',q:'An organized securities exchange (e.g., Nasdaq Vilnius, NYSE) is',o:['an intangible market for unlisted securities.','a tangible secondary market where listed securities are traded.','a primary market only.','a money market.'],a:1,x:'Биржа — осязаемый вторичный рынок для listed securities. OTC — неосязаемый для unlisted.'},
+{t:'mkt',q:'Options and futures are examples of',o:['simple securities.','derivative securities.','money market instruments.','bank deposits.'],a:1,x:'Complexity: simple vs. derivative. Деривативы — производные от другого актива.'},
+{t:'mkt',q:'An organized securities exchange (e.g., Nasdaq Vilnius, NYSE) is',o:['an intangible market for unlisted securities.','a tangible secondary market for listed securities.','a primary market used only for IPOs.','a money market for short-term bank loans.'],a:1,x:'Биржа — осязаемый вторичный рынок для listed securities. OTC — неосязаемый для unlisted.'},
 {t:'mkt',q:'A bond represents',o:['ownership in the firm.','long-term debt of the issuer.','a short-term bank deposit.','an insurance contract.'],a:1,x:'Облигация = долг. Акция = доля собственности.'},
 {t:'mkt',q:'True or False: Treasury bills are traded in the capital market.',o:TF,a:1,x:'False. T-bills краткосрочные → money market.'},
 {t:'mkt',q:'True or False: The issuing firm receives cash from the sale of its shares in the secondary market.',o:TF,a:1,x:'False. Эмитент получает деньги только в primary market. На secondary акции переходят между инвесторами.'},
 {t:'mkt',q:'True or False: Participants in financial markets include public, private and government institutions.',o:TF,a:0,x:'True (слайд Financial Markets).'},
 
 // ---- statements ----
-{t:'stmt',q:'The income statement shows',o:['the firm’s financial position at a point in time.','the firm’s financial performance (revenues and expenses) over a period of time.','only cash receipts.','changes in stockholders’ equity only.'],a:1,x:'IS — за период (год, квартал). Баланс — на дату.'},
-{t:'stmt',q:'The balance sheet presents',o:['a summary of the firm’s financial position at a given point in time.','operating results over a year.','only cash flows.','dividends paid.'],a:0,x:'Snapshot на конкретную дату: Assets = Liabilities + Stockholders’ equity.'},
-{t:'stmt',q:'The statement of retained earnings reconciles',o:['sales and cost of goods sold.','net income and dividends with the change in retained earnings.','assets and liabilities.','cash and marketable securities.'],a:1,x:'Ending RE = Beginning RE + Net income − Dividends.'},
-{t:'stmt',q:'Gross profit equals',o:['Sales − Cost of goods sold','Sales − Operating expenses','EBIT − Interest','Net income + Depreciation'],a:0,x:'Gross profit = Sales − COGS.'},
-{t:'stmt',q:'Operating profit (EBIT) equals',o:['Gross profit − Operating expenses','Sales − COGS','EBT − Taxes','Net income − Dividends'],a:0,x:'EBIT = Gross profit − (S&A + Depreciation + other operating expenses).'},
-{t:'stmt',q:'Where is depreciation shown on the income statement?',o:['Below EBIT, with interest','As an operating expense (above EBIT)','It is not shown','Only in the balance sheet'],a:1,x:'Depreciation — operating expense, стоит до EBIT. В Cash Flow её прибавляют обратно, потому что это non-cash expense.'},
-{t:'stmt',q:'Interest expense is subtracted from ________ to get earnings before taxes.',o:['sales','gross profit','operating profit (EBIT)','net income'],a:2,x:'EBT = EBIT − Interest. Проценты — финансовый, а не операционный расход.'},
-{t:'stmt',q:'Dividends paid to shareholders',o:['are an operating expense on the income statement.','are not an expense; they reduce retained earnings.','increase retained earnings.','are recorded as interest expense.'],a:1,x:'Дивиденды — распределение прибыли, не расход. Идут в Statement of Retained Earnings.'},
-{t:'stmt',q:'Earnings per share (EPS) equals',o:['Net income ÷ total assets','(Net income − Preferred dividends) ÷ Number of common shares outstanding','Dividends ÷ shares authorized','EBIT ÷ shares issued'],a:1,x:'EPS = Earnings available for common stockholders ÷ common shares outstanding (не authorized и не issued).'},
-{t:'stmt',q:'Earnings available for common stockholders equals',o:['Net income − Preferred stock dividends','Net income − Common dividends','EBIT − Taxes','Net income + Depreciation'],a:0,x:'Сначала платим привилегированным акционерам, остальное — обычным.'},
-{t:'stmt',q:'Which is NOT a current asset?',o:['Accounts receivable','Inventory','Marketable securities','Net plant and equipment'],a:3,x:'Net plant & equipment — fixed (non-current) asset.'},
-{t:'stmt',q:'Which is a current liability?',o:['Long-term bonds','Common stock','Notes payable (bank loan due within a year)','Retained earnings'],a:2,x:'Current liabilities: accounts payable, notes payable, accruals (taxes/wages payable), current portion of LTD.'},
+{t:'stmt',q:'The income statement shows the firm’s',o:['financial position at a point in time.','financial performance over a period.','cash receipts and payments only.','changes in owners’ equity only.'],a:1,x:'IS — за период (год, квартал). Баланс — на дату.'},
+{t:'stmt',q:'The balance sheet presents the firm’s',o:['financial position at a point in time.','financial performance over a period.','cash inflows and outflows only.','dividends paid during the year.'],a:0,x:'Snapshot на конкретную дату: Assets = Liabilities + Stockholders’ equity.'},
+{t:'stmt',q:'The statement of retained earnings reconciles',o:['sales with cost of goods sold.','NI and dividends with the change in RE.','total assets with total liabilities.','cash with marketable securities.'],a:1,x:'Ending RE = Beginning RE + Net income − Dividends.'},
+{t:'stmt',q:'Gross profit equals',o:['Sales − Cost of goods sold','Sales − Operating expenses','EBIT − Interest expense','Net income + Depreciation'],a:0,x:'Gross profit = Sales − COGS.'},
+{t:'stmt',q:'Operating profit (EBIT) equals',o:['Gross profit − Operating expenses','Sales − Cost of goods sold − Taxes','Earnings before taxes − Interest','Net income + Interest − Dividends'],a:0,x:'EBIT = Gross profit − (S&A + Depreciation + other operating expenses).'},
+{t:'stmt',q:'Where is depreciation shown on the income statement?',o:['Below EBIT, together with interest','As an operating expense above EBIT','After taxes, just before net income','Only on the balance sheet, not the IS'],a:1,x:'Depreciation — operating expense, стоит до EBIT. В Cash Flow её прибавляют обратно, потому что это non-cash expense.'},
+{t:'stmt',q:'Interest expense is subtracted from ________ to get earnings before taxes.',o:['gross profit','operating profit','net income','sales revenues'],a:1,x:'EBT = EBIT − Interest. Проценты — финансовый, а не операционный расход.'},
+{t:'stmt',q:'Dividends paid to shareholders',o:['are an operating expense on the IS.','are not an expense; they reduce RE.','are added to retained earnings.','are recorded as interest expense.'],a:1,x:'Дивиденды — распределение прибыли, не расход. Идут в Statement of Retained Earnings.'},
+{t:'stmt',q:'Earnings per share (EPS) equals',o:['(NI − Pref. div.) ÷ Shares outstanding','(NI − Common div.) ÷ Shares authorized','(EBIT − Interest) ÷ Shares issued','Net income ÷ Total stockholders’ equity'],a:0,x:'EPS = Earnings available for common stockholders ÷ common shares outstanding (не authorized и не issued).'},
+{t:'stmt',q:'Earnings available for common stockholders equals',o:['Net income − Preferred dividends','Net income − Common dividends','EBIT − Taxes − Interest','Net income + Depreciation'],a:0,x:'Сначала платим привилегированным акционерам, остальное — обычным.'},
+{t:'stmt',q:'Which is NOT a current asset?',o:['Accounts receivable','Inventory','Marketable securities','Net plant & equipment'],a:3,x:'Net plant & equipment — fixed (non-current) asset.'},
+{t:'stmt',q:'Which is a current liability?',o:['Long-term bonds','Common stock','Notes payable','Retained earnings'],a:2,x:'Current liabilities: accounts payable, notes payable, accruals (taxes/wages payable), current portion of LTD.'},
 {t:'stmt',q:'Net fixed assets equal',o:['Gross fixed assets + Accumulated depreciation','Gross fixed assets − Accumulated depreciation','Depreciation expense − Gross fixed assets','Total assets − Current liabilities'],a:1,x:'Net = Gross − Accumulated depreciation. Accumulated depreciation — contra-asset.'},
-{t:'stmt',q:'Assets on the balance sheet are listed in order of',o:['size.','liquidity (most liquid first).','date purchased.','alphabet.'],a:1,x:'Сначала cash, потом marketable securities, AR, inventory, потом fixed assets.'},
+{t:'stmt',q:'Assets on the balance sheet are listed in order of',o:['size.','liquidity.','purchase date.','alphabet.'],a:1,x:'Сначала cash, потом marketable securities, AR, inventory, потом fixed assets.'},
 {t:'stmt',q:'A firm issues 5,000 new common shares with $2 par value at $12 per share. Paid-in capital in excess of par increases by',o:['$10,000','$50,000','$60,000','$12,000'],a:1,x:'5,000 × ($12 − $2) = $50,000. Common stock (par) растёт на 5,000 × $2 = $10,000. Всего деньги $60,000.'},
-{t:'stmt',q:'Treasury stock is',o:['stock issued by the government.','shares that the firm has repurchased; they are issued but not outstanding.','shares authorized but never issued.','preferred stock.'],a:1,x:'Authorized ≥ Issued; Issued = Outstanding + Treasury. Treasury stock уменьшает equity.'},
-{t:'stmt',q:'Retained earnings represent',o:['cash kept in the bank.','the cumulative total of earnings reinvested in the firm since its inception.','money raised from selling stock.','current year’s net income only.'],a:1,x:'RE — накопленная нераспределённая прибыль за всё время. Это НЕ деньги в кассе.'},
-{t:'stmt',q:'The basic balance sheet equation is',o:['Assets = Liabilities − Equity','Assets + Liabilities = Equity','Assets = Liabilities + Stockholders’ equity','Assets = Revenue − Expenses'],a:2,x:'A = L + E. Всегда проверяй его в задаче.'},
-{t:'stmt',q:'Accounts payable represent',o:['money customers owe the firm.','money the firm owes suppliers for purchases on credit.','long-term bank loans.','unpaid dividends only.'],a:1,x:'AP — долги поставщикам. AR — долги клиентов нам.'},
-{t:'stmt',q:'In a US-format income statement, which line comes right after Net income?',o:['Taxes','Preferred stock dividends → Earnings available for common stockholders','Gross profit','Interest expense'],a:1,x:'Шаблон лекции: Net income − Preferred dividends = Earnings available for common stockholders (US only), потом EPS.'},
-{t:'stmt',q:'A land purchase is depreciated',o:['over 10 years.','over 40 years.','never; land is not depreciated.','immediately.'],a:2,x:'Земля не амортизируется.'},
-{t:'stmt',q:'The four key financial statements are',o:['Income statement, Statement of retained earnings, Balance sheet, Statement of cash flows','Budget, Forecast, Tax return, Balance sheet','Income statement, Payroll, Inventory list, Cash book','Balance sheet, Audit report, Tax return, Invoice'],a:0,x:'Четыре ключевых отчёта из лекции.'},
+{t:'stmt',q:'Treasury stock is',o:['stock issued by the national government.','shares the firm repurchased from investors.','shares authorized but never issued.','shares with a preferred dividend claim.'],a:1,x:'Authorized ≥ Issued; Issued = Outstanding + Treasury. Treasury stock уменьшает equity.'},
+{t:'stmt',q:'Retained earnings represent',o:['cash the firm keeps in its bank account.','cumulative earnings reinvested in the firm.','money raised from selling new stock.','net income of the current year only.'],a:1,x:'RE — накопленная нераспределённая прибыль за всё время. Это НЕ деньги в кассе.'},
+{t:'stmt',q:'The basic balance sheet equation is',o:['Assets = Liabilities − Equity','Assets + Liabilities = Equity','Assets = Liabilities + Equity','Assets = Revenue − Expenses'],a:2,x:'A = L + E. Всегда проверяй его в задаче.'},
+{t:'stmt',q:'Accounts payable represent',o:['money customers owe the firm.','money the firm owes its suppliers.','long-term loans from banks.','dividends declared but unpaid.'],a:1,x:'AP — долги поставщикам. AR — долги клиентов нам.'},
+{t:'stmt',q:'In a US-format income statement, which line comes right after Net income?',o:['Income tax expense','Preferred stock dividends','Common stock dividends','Interest expense paid'],a:1,x:'Шаблон лекции: Net income − Preferred dividends = Earnings available for common stockholders (US only), потом EPS.'},
+{t:'stmt',q:'Land owned by the firm is depreciated',o:['over 10 years.','over 40 years.','never.','in the year bought.'],a:2,x:'Земля не амортизируется.'},
+{t:'stmt',q:'The four key financial statements are',o:['Income statement, RE statement, balance sheet, cash flows','Budget, forecast, tax return, balance sheet','Income statement, payroll, inventory list, cash book','Balance sheet, audit report, tax return, invoice'],a:0,x:'Четыре ключевых отчёта из лекции.'},
 {t:'stmt',q:'True or False: Net income is the same as cash flow.',o:TF,a:1,x:'False. Прибыль по accrual basis, в неё входят non-cash статьи (depreciation), продажи в кредит и т.д.'},
 {t:'stmt',q:'True or False: Paid-in capital in excess of par is the amount received above par value when selling stock.',o:TF,a:0,x:'True.'},
+{t:'stmt',q:'True or False: EPS is calculated using the number of shares authorized.',o:TF,a:1,x:'False. Берём shares OUTSTANDING (в руках инвесторов).'},
 
 // ---- cash flow ----
-{t:'cf',q:'The three sections of the statement of cash flows are',o:['current, fixed, and equity.','operating, investing, and financing.','revenue, expense, and profit.','primary, secondary, and OTC.'],a:1,x:'Operating, Investing, Financing.'},
-{t:'cf',q:'Under the indirect method, cash flow from operations starts with',o:['sales.','net income.','EBIT.','cash balance.'],a:1,x:'Начинаем с Net income, прибавляем depreciation, корректируем на изменения оборотного капитала.'},
+{t:'cf',q:'The three sections of the statement of cash flows are',o:['current, fixed, and equity.','operating, investing, financing.','revenue, expense, and profit.','primary, secondary, and OTC.'],a:1,x:'Operating, Investing, Financing.'},
+{t:'cf',q:'Under the indirect method, cash flow from operations starts with',o:['sales.','net income.','gross profit.','cash balance.'],a:1,x:'Начинаем с Net income, прибавляем depreciation, корректируем на изменения оборотного капитала.'},
 {t:'cf',q:'Depreciation is added back in the operating section because it is',o:['a cash inflow.','a non-cash expense.','a financing activity.','an investment.'],a:1,x:'Она уменьшила прибыль, но деньги не ушли.'},
-{t:'cf',q:'An INCREASE in accounts receivable is shown in the operating section as',o:['an addition (source of cash).','a subtraction (use of cash).','an investing inflow.','not shown.'],a:1,x:'Рост актива = использование денег (−). Клиенты ещё не заплатили.'},
-{t:'cf',q:'An INCREASE in accounts payable is',o:['a source of cash (+).','a use of cash (−).','an investing outflow.','a financing outflow.'],a:0,x:'Рост обязательства = источник (+): мы ещё не заплатили поставщику.'},
-{t:'cf',q:'A DECREASE in inventory is',o:['a use of cash.','a source of cash.','a financing activity.','not relevant.'],a:1,x:'Уменьшение актива = источник денег.'},
-{t:'cf',q:'Purchase of new machinery is reported under',o:['operating activities.','investing activities.','financing activities.','not reported.'],a:1,x:'Покупка fixed assets — investing, со знаком минус.'},
-{t:'cf',q:'Payment of cash dividends is reported under',o:['operating activities.','investing activities.','financing activities.','the income statement.'],a:2,x:'Financing, отток.'},
-{t:'cf',q:'Repayment of the principal on a bank loan (notes payable) is reported under',o:['operating activities.','investing activities.','financing activities.','not reported.'],a:2,x:'Погашение основного долга — financing. Проценты уже вошли в Net income (operating).'},
+{t:'cf',q:'In the operating section, an INCREASE in accounts receivable is',o:['subtracted, as customers have not paid yet','added, as credit sales raise net income','shown in investing, as a loan to clients','ignored, as AR is a non-cash asset'],a:0,x:'Рост актива = использование денег (−). Выручка в NI есть, а денег ещё нет.'},
+{t:'cf',q:'In the operating section, an INCREASE in accounts payable is',o:['added, as the firm has not yet paid cash','subtracted, as liabilities reduce assets','subtracted, as the firm bought inventory','added, as the firm received a bank loan'],a:0,x:'Рост обязательства = источник (+): расход/покупка есть, а деньги поставщику ещё не ушли. Банковский кредит — это financing, а не AP.'},
+{t:'cf',q:'In the operating section, a DECREASE in inventory is',o:['subtracted, as inventory is an asset','added, as cash was freed from stock','shown in investing, as an asset sale','ignored, as it is a non-cash item'],a:1,x:'Уменьшение актива = источник денег (+).'},
+{t:'cf',q:'In the operating section, a DECREASE in accounts payable is',o:['added, as the firm owes less money','subtracted, as the firm paid suppliers','shown in financing, as debt repaid','ignored, as it is not an expense'],a:1,x:'Уменьшение обязательства = использование денег (−): заплатили поставщикам.'},
+{t:'cf',q:'Purchase of new machinery is reported under',o:['operating activities.','investing activities.','financing activities.','none; it is not reported.'],a:1,x:'Покупка fixed assets — investing, со знаком минус.'},
+{t:'cf',q:'Payment of cash dividends is reported under',o:['operating activities.','investing activities.','financing activities.','none; it is an expense.'],a:2,x:'Financing, отток.'},
+{t:'cf',q:'Repayment of the principal on a bank loan (notes payable) is reported under',o:['operating activities.','investing activities.','financing activities.','none; it is not reported.'],a:2,x:'Погашение основного долга — financing. Проценты уже вошли в Net income (operating).'},
 {t:'cf',q:'Issuing new common stock for cash is',o:['an operating inflow.','an investing inflow.','a financing inflow.','a financing outflow.'],a:2,x:'Financing, приток.'},
-{t:'cf',q:'In the FMA problem, the conversion of all marketable securities into cash is shown as',o:['an investing inflow (sale of marketable securities).','a financing outflow.','an operating outflow.','it is ignored.'],a:0,x:'Продажа MS = investing inflow. Только так конечный cash в задаче FMA сходится с данным $42,995. (У Gitman есть вариант, где cash и MS считаются вместе, но в этой задаче считаем отдельно.)'},
-{t:'cf',q:'General rule: a decrease in an asset or an increase in a liability/equity is a',o:['use of cash.','source of cash.','non-cash item.','loss.'],a:1,x:'Sources: ↓assets, ↑liabilities, ↑equity, net income, depreciation. Uses: ↑assets, ↓liabilities, ↓equity (dividends, buybacks), net loss.'},
-{t:'cf',q:'Net increase in cash equals',o:['CFO + CFI + CFF','CFO − CFI','Net income + Dividends','Ending cash + Beginning cash'],a:0,x:'Сумма трёх разделов. Beginning cash + Net change = Ending cash (должно совпасть с балансом).'},
-{t:'cf',q:'Why don’t we put the change in retained earnings into the cash flow statement directly?',o:['Because it is already represented by net income (+) and dividends (−).','Because RE is a current asset.','Because RE never changes.','Because it goes to investing.'],a:0,x:'ΔRE = NI − Dividends. NI стоит в operating, dividends в financing.'},
+{t:'cf',q:'In the FMA problem, the conversion of all marketable securities into cash is shown as',o:['an investing inflow.','a financing outflow.','an operating outflow.','nothing; it is ignored.'],a:0,x:'Продажа MS = investing inflow. Только так конечный cash в задаче FMA сходится с данным $42,995.'},
+{t:'cf',q:'General rule: a decrease in an asset or an increase in a liability/equity is a',o:['use of cash.','source of cash.','non-cash item.','operating loss.'],a:1,x:'Sources: ↓assets, ↑liabilities, ↑equity, net income, depreciation. Uses: ↑assets, ↓liabilities, ↓equity (dividends, buybacks), net loss.'},
+{t:'cf',q:'Net increase in cash equals',o:['CFO + CFI + CFF','CFO − CFI − CFF','Net income + Dividends','Ending cash + Beginning cash'],a:0,x:'Сумма трёх разделов. Beginning cash + Net change = Ending cash (должно совпасть с балансом).'},
+{t:'cf',q:'Why don’t we put the change in retained earnings into the cash flow statement directly?',o:['It is already shown via net income and dividends.','Retained earnings is classified as a current asset.','Retained earnings never changes during the year.','It is reported in the investing section instead.'],a:0,x:'ΔRE = NI − Dividends. NI стоит в operating, dividends в financing.'},
 {t:'cf',q:'True or False: Interest paid on bonds is shown as a financing outflow in the FMA-style (Gitman/US) statement of cash flows.',o:TF,a:1,x:'False. Проценты уже вычтены при расчёте Net income, значит они в operating. В financing идёт только погашение основной суммы.'},
 {t:'cf',q:'True or False: A firm can have positive net income but negative cash flow from operations.',o:TF,a:0,x:'True. Например, если резко выросли AR и запасы.'},
+{t:'cf',q:'True or False: An increase in inventory is added to net income in the operating section.',o:TF,a:1,x:'False. Рост запасов — деньги ушли на склад, это минус.'},
 
 // ---- calc ----
-{t:'calc',q:'Sales $500,000; COGS 60% of sales; operating expenses $80,000; interest $20,000; tax rate 25%. Net income =',o:['$75,000','$100,000','$60,000','$45,000'],a:0,x:'COGS = 300,000 → GP = 200,000 → EBIT = 200,000 − 80,000 = 120,000 → EBT = 120,000 − 20,000 = 100,000 → Tax 25% = 25,000 → NI = 75,000.'},
+{t:'calc',q:'Sales $500,000; COGS 60% of sales; operating expenses $80,000; interest $20,000; tax rate 25%. Net income =',o:['$75,000','$100,000','$60,000','$90,000'],a:0,x:'COGS = 300,000 → GP = 200,000 → EBIT = 120,000 → EBT = 100,000 → Tax 25% = 25,000 → NI = 75,000.'},
 {t:'calc',q:'Beginning retained earnings $40,000; net income $25,000; dividends $10,000. Ending retained earnings =',o:['$55,000','$75,000','$65,000','$50,000'],a:0,x:'40,000 + 25,000 − 10,000 = 55,000.'},
 {t:'calc',q:'Net income $30,000; depreciation $12,000; accounts receivable increased by $5,000; inventory decreased by $3,000; accounts payable increased by $4,000. Cash flow from operations =',o:['$44,000','$36,000','$54,000','$38,000'],a:0,x:'30 + 12 − 5 + 3 + 4 = 44 тыс.'},
 {t:'calc',q:'Net income $120,000; preferred dividends $20,000; 50,000 common shares outstanding. EPS =',o:['$2.40','$2.00','$2.80','$1.60'],a:1,x:'(120,000 − 20,000) / 50,000 = $2.00.'},
@@ -775,9 +813,9 @@ const Q=[
 {t:'calc',q:'Accounts receivable were $50,000 and declined by 5%. The new AR and the effect on operating cash flow are',o:['$47,500; +$2,500','$52,500; −$2,500','$47,500; −$2,500','$45,000; +$5,000'],a:0,x:'50,000 × 0.95 = 47,500. Уменьшение актива → +2,500 в CFO.'},
 {t:'calc',q:'A firm pays 10% interest on a $50,000 bank loan for the year and then repays $10,000 of principal on December 31. Interest expense for the year is',o:['$4,000','$5,000','$6,000','$10,000'],a:1,x:'Проценты считаются на остаток, который был весь год: 10% × 50,000 = 5,000. Долг после погашения 40,000.'},
 {t:'calc',q:'The firm issues 2,000 shares of $1 par stock at $10. Effect on the cash flow statement:',o:['+$2,000 financing','+$20,000 financing','+$18,000 investing','+$20,000 operating'],a:1,x:'Деньги 2,000 × $10 = $20,000 в financing. В балансе: CS +2,000, PIC +18,000.'},
-{t:'calc',q:'EBIT $40,000; interest $14,000; tax rate 15%. Net income =',o:['$22,100','$26,000','$34,000','$3,900'],a:0,x:'EBT 26,000; tax 3,900; NI 22,100 (это цифры FMA).'},
-{t:'calc',q:'Total assets $368,495; total liabilities $182,200. Stockholders’ equity =',o:['$186,295','$550,695','$182,200','$168,495'],a:0,x:'E = A − L = 368,495 − 182,200 = 186,295 (FMA 2019).'},
-{t:'calc',q:'Beginning cash $15,000; CFO +$73,800; CFI −$45,000; CFF −$805. Ending cash =',o:['$42,995','$27,995','$57,995','$30,000'],a:0,x:'Net change 27,995; ending cash 15,000 + 27,995 = 42,995 (FMA).'},
+{t:'calc',q:'EBIT $40,000; interest $14,000; tax rate 15%. Net income =',o:['$22,100','$26,000','$34,000','$29,900'],a:0,x:'EBT 26,000; tax 3,900; NI 22,100 (это цифры FMA).'},
+{t:'calc',q:'Total assets $368,495; total liabilities $182,200. Stockholders’ equity =',o:['$186,295','$550,695','$182,200','$176,295'],a:0,x:'E = A − L = 368,495 − 182,200 = 186,295 (FMA 2019).'},
+{t:'calc',q:'Beginning cash $15,000; CFO +$73,800; CFI −$45,000; CFF −$805. Ending cash =',o:['$42,995','$27,995','$57,995','$44,605'],a:0,x:'Net change 27,995; ending cash 15,000 + 27,995 = 42,995 (FMA).'},
 ];
 
 // classification drill (generated)
@@ -889,23 +927,23 @@ ITEMS.forEach(it=>{
 });
 // concept "pair" questions
 Q.push(
-{t:'pairs',q:'Depreciation expense is reported on the ______, while accumulated depreciation is reported on the ______.',o:['balance sheet; income statement','income statement; balance sheet','income statement; statement of retained earnings','cash flow statement; income statement'],a:1,x:'Depreciation expense — износ только за этот год (расход в IS). Accumulated depreciation — сумма износа за все годы, contra-asset в балансе. Каждый год расход из IS прибавляется к накопленной сумме.'},
-{t:'pairs',q:'Accumulated depreciation at the end of the year equals',o:['this year’s depreciation expense only','beginning accumulated depreciation + this year’s depreciation expense','gross fixed assets − depreciation expense','net fixed assets + depreciation expense'],a:1,x:'В FMA: 75,000 + 50,000 = 125,000.'},
-{t:'pairs',q:'Income tax expense vs. income taxes payable:',o:['both are income statement items','expense is on the income statement; payable (unpaid part) is a current liability on the balance sheet','expense is a current liability; payable is on the income statement','payable is part of stockholders’ equity'],a:1,x:'Налог признаётся расходом в IS. Пока не уплачен, та же сумма висит долгом в BS (current liabilities).'},
-{t:'pairs',q:'When a company pays income taxes that were accrued earlier, what happens?',o:['Tax expense increases on the income statement','Taxes payable decreases and cash decreases; the income statement is not affected','Retained earnings increase','Nothing changes on the balance sheet'],a:1,x:'Расход уже был учтён ранее. Оплата только гасит долг: payable ↓ и cash ↓.'},
-{t:'pairs',q:'Accrued expenses as an account are classified as',o:['operating expenses on the income statement','current liabilities on the balance sheet','current assets','stockholders’ equity'],a:1,x:'Сам расход признан в IS, но счёт accrued expenses (ещё не оплаченные расходы) — current liability.'},
-{t:'pairs',q:'Wages earned by employees but not yet paid appear as',o:['wages expense (IS) and wages payable (BS current liability)','only wages expense','only a reduction of cash','prepaid wages (asset)'],a:0,x:'Расход признан в IS; долг сотрудникам — wages payable.'},
-{t:'pairs',q:'A sale made on credit increases',o:['sales (IS) and accounts receivable (BS)','sales and cash','accounts payable and sales','inventory and sales'],a:0,x:'Выручка признаётся сразу (accrual basis), а деньги ещё не пришли → AR.'},
-{t:'pairs',q:'Inventory and cost of goods sold are related because',o:['they are the same account','goods are an asset (inventory) until sold; when sold, their cost moves to COGS on the income statement','COGS is a liability','inventory is shown on the income statement'],a:1,x:'Пока товар на складе — актив в BS. Продали — его стоимость становится расходом COGS в IS.'},
+{t:'pairs',q:'Depreciation expense is reported on the ______, while accumulated depreciation is reported on the ______.',o:['balance sheet; income statement','income statement; balance sheet','income statement; RE statement','cash flow statement; income statement'],a:1,x:'Depreciation expense — износ только за этот год (расход в IS). Accumulated depreciation — сумма износа за все годы, contra-asset в балансе. Каждый год расход из IS прибавляется к накопленной сумме.'},
+{t:'pairs',q:'Accumulated depreciation at the end of the year equals',o:['this year’s depreciation expense only','beginning balance + this year’s expense','gross fixed assets − this year’s expense','net fixed assets + this year’s expense'],a:1,x:'В FMA: 75,000 + 50,000 = 125,000.'},
+{t:'pairs',q:'Income tax expense vs. income taxes payable:',o:['both appear only on the income statement','expense on IS; payable is a current liability','expense on BS; payable is an operating expense','payable is part of stockholders’ equity'],a:1,x:'Налог признаётся расходом в IS. Пока не уплачен, та же сумма висит долгом в BS (current liabilities).'},
+{t:'pairs',q:'When a company pays income taxes that were accrued earlier, what happens?',o:['tax expense on the IS increases again','taxes payable and cash both decrease','retained earnings increase by the payment','cash decreases and tax expense rises'],a:1,x:'Расход уже был учтён ранее. Оплата только гасит долг: payable ↓ и cash ↓.'},
+{t:'pairs',q:'Accrued expenses as an account are classified as',o:['operating expenses on the IS','current liabilities on the BS','current assets on the BS','stockholders’ equity on the BS'],a:1,x:'Сам расход признан в IS, но счёт accrued expenses (ещё не оплаченные расходы) — current liability.'},
+{t:'pairs',q:'Wages earned by employees but not yet paid appear as',o:['wages expense and wages payable','only wages expense on the IS','only a reduction of cash','prepaid wages, a current asset'],a:0,x:'Расход признан в IS; долг сотрудникам — wages payable.'},
+{t:'pairs',q:'A sale made on credit increases',o:['sales and accounts receivable','sales and cash on hand','sales and accounts payable','sales and inventory held'],a:0,x:'Выручка признаётся сразу (accrual basis), а деньги ещё не пришли → AR.'},
+{t:'pairs',q:'Inventory and cost of goods sold are related because',o:['they are two names for one account','inventory becomes COGS once goods are sold','COGS becomes inventory at year end','both are shown on the balance sheet'],a:1,x:'Пока товар на складе — актив в BS. Продали — его стоимость становится расходом COGS в IS.'},
 {t:'pairs',q:'Rent paid in advance for next year is recorded as',o:['rent expense this year','prepaid rent, a current asset','rent payable, a liability','a reduction of equity'],a:1,x:'Услуга ещё не получена → актив (prepaid). Расходом станет в следующем году.'},
-{t:'pairs',q:'A customer pays in advance for goods to be delivered next month. The firm records',o:['revenue now','unearned revenue, a current liability','accounts receivable','inventory increase'],a:1,x:'Фирма должна клиенту товар → обязательство. Выручка признается после поставки.'},
-{t:'pairs',q:'Buying a machine for cash affects the income statement',o:['immediately by the full price','only gradually through depreciation expense over its useful life','never','through interest expense'],a:1,x:'Покупка: PP&E ↑, cash ↓ (investing outflow). В IS расход приходит частями через depreciation.'},
-{t:'pairs',q:'Repaying $10,000 of loan principal is',o:['an expense on the income statement','not an expense: notes payable ↓, cash ↓, financing outflow','an operating outflow','a reduction of retained earnings'],a:1,x:'Расход — только проценты. Возврат основного долга — движение по балансу и financing в Cash Flow.'},
-{t:'pairs',q:'Money received from issuing new common stock is',o:['revenue','a financing inflow and an increase in stockholders’ equity','an operating inflow','a liability'],a:1,x:'Это не выручка: растут common stock (par) и paid-in capital.'},
-{t:'pairs',q:'Dividends declared but not yet paid appear as',o:['an expense on the income statement','a reduction of retained earnings and dividends payable (current liability)','an increase in retained earnings','an operating expense'],a:1,x:'Дивиденды никогда не в IS. Уменьшают RE; пока не выплачены — dividends payable.'},
-{t:'pairs',q:'Net income vs. retained earnings:',o:['they are always equal','net income is for one period (IS); retained earnings is cumulative (BS)','retained earnings is on the income statement','net income is on the balance sheet'],a:1,x:'RE = накопленная сумма всех прибылей минус все дивиденды.'},
-{t:'pairs',q:'Interest expense is classified on the income statement as',o:['an operating expense above EBIT','a non-operating (financial) expense below EBIT, before taxes','part of COGS','a tax'],a:1,x:'EBT = EBIT − Interest.'},
-{t:'pairs',q:'Marketable securities are current assets because',o:['they are long-term investments','they can be converted into cash quickly (within a year)','they are equity of the firm','they are liabilities'],a:1,x:'Высокая ликвидность → current.'},
+{t:'pairs',q:'A customer pays in advance for goods to be delivered next month. The firm records',o:['revenue on the income statement','unearned revenue, a liability','accounts receivable, an asset','an increase in inventory'],a:1,x:'Фирма должна клиенту товар → обязательство. Выручка признается после поставки.'},
+{t:'pairs',q:'Buying a machine for cash affects the income statement',o:['immediately by the full price','gradually through depreciation','never at any point','through interest expense'],a:1,x:'Покупка: PP&E ↑, cash ↓ (investing outflow). В IS расход приходит частями через depreciation.'},
+{t:'pairs',q:'Repaying $10,000 of loan principal is',o:['an expense on the income statement','a financing outflow, not an expense','an operating cash outflow','a reduction of retained earnings'],a:1,x:'Расход — только проценты. Возврат основного долга — движение по балансу и financing в Cash Flow.'},
+{t:'pairs',q:'Money received from issuing new common stock is',o:['revenue on the income statement','a financing inflow and more equity','an operating cash inflow','a new long-term liability'],a:1,x:'Это не выручка: растут common stock (par) и paid-in capital.'},
+{t:'pairs',q:'Dividends declared but not yet paid appear as',o:['an expense on the income statement','lower RE and dividends payable','higher retained earnings','an operating expense on the IS'],a:1,x:'Дивиденды никогда не в IS. Уменьшают RE; пока не выплачены — dividends payable.'},
+{t:'pairs',q:'Net income vs. retained earnings:',o:['they are always equal amounts','NI is for a period; RE is cumulative','RE is shown on the income statement','NI is shown on the balance sheet'],a:1,x:'RE = накопленная сумма всех прибылей минус все дивиденды.'},
+{t:'pairs',q:'Interest expense is classified on the income statement as',o:['operating expense above EBIT','non-operating expense below EBIT','part of cost of goods sold','part of income tax expense'],a:1,x:'EBT = EBIT − Interest.'},
+{t:'pairs',q:'Marketable securities are current assets because',o:['they are held for many years','they can be sold within a year','they are the firm’s own equity','they are a type of liability'],a:1,x:'Высокая ликвидность → current.'},
 {t:'pairs',q:'Amortization is to intangible assets what ______ is to plant & equipment.',o:['interest','depreciation','inventory','dividends'],a:1,x:'Amortization — износ нематериальных активов, depreciation — материальных.'},
 {t:'pairs',q:'True or False: Accumulated depreciation is an expense on the income statement.',o:TF,a:1,x:'False. Это contra-asset в балансе. Расход в IS — depreciation expense за год.'},
 {t:'pairs',q:'True or False: Income taxes payable is part of stockholders’ equity.',o:TF,a:1,x:'False. Это current liability (долг государству).'},
@@ -913,11 +951,170 @@ Q.push(
 {t:'pairs',q:'True or False: Land is depreciated like buildings.',o:TF,a:1,x:'False. Земля не амортизируется.'},
 {t:'pairs',q:'True or False: Treasury stock increases stockholders’ equity.',o:TF,a:1,x:'False. Contra-equity, уменьшает капитал.'},
 );
-TOPICS.place='Где статья: отчёт и категория';TOPICS.pairs='Пары: IS vs BS (почему?)';
+TOPICS.place='Где статья: отчёт и категория';TOPICS.card='Карточка';TOPICS.pairs='Пары: IS vs BS (почему?)';
+
+/* =====================================================
+   SYLLABUS TOPICS 3-7 + household finance
+   ===================================================== */
+Object.assign(TOPICS,{ratio:'Financial ratios',fsa:'Анализ отчётов (DuPont)',tvm:'Time value of money',rr:'Ставки, risk & return',stfm:'Short-term financial mgmt',personal:'Личные финансы'});
+Q.push(
+// ratios
+{t:'ratio',q:'The current ratio is calculated as',o:['Current assets ÷ Current liabilities','Current liabilities ÷ Current assets','(CA − Inventory) ÷ Current liabilities','Total assets ÷ Total liabilities'],a:0,x:'Current ratio = CA / CL. Вариант с вычетом запасов — это quick ratio.'},
+{t:'ratio',q:'The quick (acid-test) ratio excludes ______ from current assets because it is usually the least liquid.',o:['inventory','cash','accounts receivable','marketable securities'],a:0,x:'Quick ratio = (CA − Inventory) / CL.'},
+{t:'ratio',q:'Inventory turnover is calculated as',o:['Cost of goods sold ÷ Inventory','Sales ÷ Total assets','Inventory ÷ Cost of goods sold','Inventory ÷ Current assets'],a:0,x:'Gitman: Inventory turnover = COGS / Inventory. Average age of inventory = 365 / turnover.'},
+{t:'ratio',q:'The average collection period (ACP) equals',o:['Accounts receivable ÷ (Annual sales ÷ 365)','Accounts payable ÷ (Annual purchases ÷ 365)','Inventory ÷ (Cost of goods sold ÷ 365)','Annual sales ÷ (Accounts receivable × 365)'],a:0,x:'ACP = AR / average sales per day. Второй вариант — average payment period.'},
+{t:'ratio',q:'The average payment period (APP) is based on',o:['annual purchases','annual sales','cost of goods sold','operating expenses'],a:0,x:'APP = AP / (Annual purchases / 365). По Gitman purchases часто оценивают как % от COGS.'},
+{t:'ratio',q:'Total asset turnover equals',o:['Sales ÷ Total assets','Total assets ÷ Sales','Net income ÷ Total assets','Sales ÷ Current assets'],a:0,x:'Показывает, сколько продаж приносит каждый доллар активов.'},
+{t:'ratio',q:'The debt ratio is calculated as',o:['Total liabilities ÷ Total assets','Total liabilities ÷ Total equity','Long-term debt ÷ Total equity','Current liabilities ÷ Total assets'],a:0,x:'Debt ratio = Total liabilities / Total assets: какая доля активов профинансирована долгом.'},
+{t:'ratio',q:'The times interest earned ratio equals',o:['EBIT ÷ Interest','Net income ÷ Interest','Interest ÷ EBIT','EBT ÷ Interest'],a:0,x:'TIE = EBIT / Interest: сколько раз операционная прибыль покрывает проценты.'},
+{t:'ratio',q:'The net profit margin is calculated as',o:['Earnings available for common ÷ Sales','Operating profit (EBIT) ÷ Sales','Gross profit ÷ Sales','Earnings available for common ÷ Assets'],a:0,x:'Gitman: Net profit margin = EACS / Sales. EBIT/Sales — operating margin; GP/Sales — gross margin; EACS/TA — ROA.'},
+{t:'ratio',q:'Return on common equity (ROE) equals',o:['Earnings available for common ÷ Common equity','Earnings available for common ÷ Total assets','Operating profit (EBIT) ÷ Common equity','Net sales ÷ Total common stockholders’ equity'],a:0,x:'ROE = EACS / Common stock equity. EACS / TA — это ROA.'},
+{t:'ratio',q:'The price/earnings (P/E) ratio equals',o:['Market price per share ÷ EPS','EPS ÷ Market price per share','Book value per share ÷ Price','Dividends per share ÷ Price'],a:0,x:'P/E показывает, сколько инвесторы платят за $1 прибыли.'},
+{t:'ratio',q:'The market/book (M/B) ratio compares',o:['market price with book value per share','earnings per share with the price','dividends with earnings per share','total assets with total liabilities'],a:0,x:'M/B = Market price per share / Book value per share (common equity / shares outstanding).'},
+{t:'ratio',q:'Ratios that measure the firm’s ability to satisfy its short-term obligations are',o:['liquidity ratios','activity ratios','debt ratios','market ratios'],a:0,x:'Liquidity: current и quick ratio.'},
+{t:'ratio',q:'Activity ratios measure',o:['how fast accounts turn into sales or cash','the ability to pay bills due within a year','how much of the firm is financed by debt','the market value of the firm’s stock'],a:0,x:'Activity: inventory turnover, ACP, APP, total asset turnover.'},
+{t:'ratio',q:'A higher debt ratio indicates',o:['greater financial leverage and risk','lower financial leverage and risk','higher liquidity of current assets','faster collection of receivables'],a:0,x:'Больше долга → больше financial leverage → выше риск (и потенциальная доходность).'},
+{t:'ratio',q:'Gitman groups financial ratios into five categories:',o:['liquidity, activity, debt, profitability, market','current, quick, cash, debt, equity turnover','sales, costs, profit, taxes, dividends','primary, secondary, money, capital, OTC'],a:0,x:'Liquidity, activity, debt, profitability, market ratios.'},
+{t:'ratio',q:'The operating profit margin equals',o:['EBIT ÷ Sales','Gross profit ÷ Sales','EBT ÷ Sales','Net income ÷ Assets'],a:0,x:'Operating margin = Operating profit / Sales.'},
+{t:'ratio',q:'Average age of inventory equals',o:['365 ÷ Inventory turnover','Inventory turnover ÷ 365','Inventory × 365','COGS ÷ 365'],a:0,x:'AAI = 365 / inventory turnover (в днях).'},
+{t:'ratio',q:'True or False: A longer average collection period is always better for the firm.',o:TF,a:1,x:'False. Чем дольше собираем долги клиентов, тем дольше деньги заморожены. Обычно лучше короче (но не ценой потери продаж).'},
+{t:'ratio',q:'True or False: A very high current ratio can signal that too much money is tied up in idle current assets.',o:TF,a:0,x:'True. Слишком высокая ликвидность снижает прибыльность.'},
+// FSA / DuPont
+{t:'fsa',q:'Cross-sectional analysis compares',o:['different firms at the same point in time','one firm’s results over several years','budgeted figures with actual results','the market price with the book value'],a:0,x:'Cross-sectional: сравнение с другими фирмами/отраслью на одну дату. Time-series: одна фирма во времени.'},
+{t:'fsa',q:'Time-series analysis evaluates',o:['a firm’s performance over time','several firms at one point in time','industry averages only','forecasts of future cash flows'],a:0,x:'Динамика одной фирмы по годам.'},
+{t:'fsa',q:'Benchmarking is a type of cross-sectional analysis in which the firm compares itself with',o:['key competitors or best-run firms','its own results from past years','its forecasts for next year','its assets and liabilities'],a:0,x:'Benchmarking — сравнение с лучшими/главными конкурентами.'},
+{t:'fsa',q:'In the DuPont system, ROA equals',o:['Net profit margin × Total asset turnover','Net profit margin × Financial leverage multiplier','Debt ratio × Total asset turnover','Gross margin × Current ratio'],a:0,x:'ROA = (EACS/Sales) × (Sales/TA).'},
+{t:'fsa',q:'In the modified DuPont formula, ROE equals',o:['ROA × Financial leverage multiplier','ROA × Total asset turnover','Net margin × Debt ratio','ROA ÷ Financial leverage multiplier'],a:0,x:'ROE = ROA × FLM, где FLM = Total assets / Common equity.'},
+{t:'fsa',q:'The financial leverage multiplier (FLM) equals',o:['Total assets ÷ Common stock equity','Common stock equity ÷ Total assets','Total liabilities ÷ Total assets','Sales ÷ Common stock equity'],a:0,x:'FLM = TA / Common equity. Чем больше долг, тем больше FLM.'},
+{t:'fsa',q:'Which is a caution when using ratio analysis?',o:['Different accounting methods distort comparisons','Ratios always reveal the cause of a problem','A single ratio is enough to judge a firm','Inflation has no effect on the ratios'],a:0,x:'Ограничения: разные методы учёта, инфляция, сезонность, один коэффициент ничего не решает, ratios показывают симптомы, а не причины.'},
+{t:'fsa',q:'Short-term creditors (e.g., suppliers) are mainly interested in the firm’s',o:['liquidity','market ratios','dividend policy','price/earnings ratio'],a:0,x:'Краткосрочные кредиторы смотрят на ликвидность; акционеры — на риск и доходность; менеджмент — на всё.'},
+{t:'fsa',q:'True or False: Ratio analysis shows symptoms of problems, not necessarily their causes.',o:TF,a:0,x:'True. Отклонение коэффициента — сигнал для дальнейшего анализа.'},
+{t:'fsa',q:'True or False: Comparing financial statements from different dates is a problem only if inflation is zero.',o:TF,a:1,x:'False. Наоборот: инфляция искажает сравнение отчётов разных лет.'},
+// TVM
+{t:'tvm',q:'The value of a present amount at a future date, found by applying compound interest over a period, is its',o:['future value','present value','annuity value','perpetuity value'],a:0,x:'FV = PV × (1 + r)^n.'},
+{t:'tvm',q:'Compound interest is interest earned on',o:['principal and previously earned interest','the original principal amount only','the final amount at maturity only','each annual payment separately'],a:0,x:'Simple interest — только на основную сумму. Compound — «проценты на проценты».'},
+{t:'tvm',q:'The future value of a single amount is',o:['FV = PV × (1 + r)^n','FV = PV ÷ (1 + r)^n','FV = PV × (1 + r × n)','FV = PV × r^n'],a:0,x:'Третий вариант — формула simple interest.'},
+{t:'tvm',q:'The present value of a single future amount is',o:['PV = FV ÷ (1 + r)^n','PV = FV × (1 + r)^n','PV = FV ÷ (1 + r × n)','PV = FV × r ÷ n'],a:0,x:'Дисконтирование: делим на (1 + r)^n.'},
+{t:'tvm',q:'Holding the future amount constant, the higher the discount rate, the present value',o:['is lower','is higher','does not change','doubles'],a:0,x:'PV и ставка связаны обратно.'},
+{t:'tvm',q:'In an annuity due, the payments occur',o:['at the beginning of each period','at the end of each period','only once at the end of the term','at irregular unequal intervals'],a:0,x:'Ordinary annuity — в конце периода; annuity due — в начале.'},
+{t:'tvm',q:'The future value of an annuity due equals the future value of an ordinary annuity multiplied by',o:['(1 + r)','(1 − r)','r','1 ÷ (1 + r)'],a:0,x:'Каждый платёж annuity due работает на один период дольше.'},
+{t:'tvm',q:'The present value of a perpetuity equals',o:['CF ÷ r','CF × r','CF ÷ (1 + r)','CF × (1 + r)'],a:0,x:'Perpetuity — бесконечная аннуитет: PV = CF / r.'},
+{t:'tvm',q:'A mixed stream is a series of',o:['unequal cash flows with no pattern','equal cash flows every period','one single future cash flow','cash flows that last forever'],a:0,x:'Mixed stream: PV считаем по каждому потоку отдельно и складываем.'},
+{t:'tvm',q:'The effective annual rate (EAR) is calculated as',o:['(1 + r/m)^m − 1','(1 + r × m)^m − 1','(1 + r)^m − 1','(1 + r/m)^(1/m) − 1'],a:0,x:'r — nominal annual rate, m — число начислений в год.'},
+{t:'tvm',q:'For compounding more often than once a year, the effective annual rate is',o:['higher than the nominal rate','lower than the nominal rate','equal to the nominal rate','unrelated to the nominal rate'],a:0,x:'Чем чаще начисление, тем выше EAR.'},
+{t:'tvm',q:'The nominal (stated) annual rate is',o:['the contractual rate the lender charges','the rate actually paid after compounding','the rate adjusted for expected inflation','the rate paid on a perpetuity only'],a:0,x:'Gitman: nominal (stated) annual rate — контрактная ставка; EAR — реально уплачиваемая с учётом частоты начисления.'},
+{t:'tvm',q:'Loan amortization refers to',o:['determining equal periodic loan payments','writing off intangible assets over time','reducing inventory levels over time','paying only interest until maturity'],a:0,x:'Равные платежи, которые покрывают проценты и возвращают основную сумму.'},
+{t:'tvm',q:'In an amortized loan, as time passes the interest portion of each payment',o:['decreases','increases','stays the same','drops to zero at once'],a:0,x:'Остаток долга уменьшается → процентная часть падает, а часть в погашение основного долга растёт.'},
+{t:'tvm',q:'$1,000 invested at 10% compounded annually for 2 years grows to',o:['$1,210','$1,200','$1,100','$1,221'],a:0,x:'1,000 × 1.1² = 1,210. $1,200 — simple interest.'},
+{t:'tvm',q:'$1,000 invested at 10% SIMPLE interest for 2 years grows to',o:['$1,200','$1,210','$1,100','$1,221'],a:0,x:'1,000 × (1 + 0.10 × 2) = 1,200.'},
+{t:'tvm',q:'The present value of $100 received every year forever at 5% is',o:['$2,000','$500','$105','$1,905'],a:0,x:'100 / 0.05 = 2,000.'},
+{t:'tvm',q:'The effective annual rate of 12% compounded monthly is closest to',o:['12.68%','12.00%','12.36%','13.00%'],a:0,x:'(1 + 0.12/12)^12 − 1 = 12.68%. 12.36% — это semiannual.'},
+{t:'tvm',q:'True or False: Holding FV and r constant, the present value increases as the number of periods increases.',o:TF,a:1,x:'False. Чем дальше деньги, тем меньше их PV.'},
+{t:'tvm',q:'True or False: With a positive rate, the future value of an annuity due is greater than that of an otherwise identical ordinary annuity.',o:TF,a:0,x:'True: FVA due = FVA ordinary × (1 + r).'},
+// interest rates, risk & return
+{t:'rr',q:'According to Gitman, the nominal rate of interest on a security equals',o:['real rate + inflation premium + risk premium','real rate − inflation premium − risk premium','inflation premium × risk premium','risk-free rate − risk premium'],a:0,x:'r1 = r* + IP + RP1.'},
+{t:'rr',q:'The risk-free rate (e.g., on a T-bill) equals',o:['real rate + inflation premium','real rate + risk premium','inflation premium + risk premium','real rate − inflation premium'],a:0,x:'RF = r* + IP.'},
+{t:'rr',q:'The real rate of interest is',o:['the rate with no inflation and no risk','the rate quoted by commercial banks','the rate that includes all risk premiums','the rate on long-term corporate bonds'],a:0,x:'r* — ставка в идеальном мире без инфляции и риска.'},
+{t:'rr',q:'The term structure of interest rates (yield curve) shows the relationship between',o:['maturity and yield','risk and return','price and EPS','sales and assets'],a:0,x:'Yield curve: доходность vs срок до погашения.'},
+{t:'rr',q:'A "normal" yield curve is',o:['upward sloping','downward sloping','perfectly flat','U-shaped'],a:0,x:'Долгосрочные ставки выше краткосрочных. Inverted — наоборот.'},
+{t:'rr',q:'In finance, risk is best defined as',o:['uncertainty about the actual return','certainty of receiving a return','the expected return of an asset','the total dollar return earned'],a:0,x:'Риск — неопределённость (разброс) будущей доходности.'},
+{t:'rr',q:'The total rate of return on an asset for a period equals',o:['(Cash flow + change in value) ÷ beginning value','(Cash flow + ending value) ÷ change in value','(Ending value − cash flow) ÷ beginning value','(Change in value − cash flow) ÷ ending value'],a:0,x:'r = (Ct + Pt − Pt−1) / Pt−1.'},
+{t:'rr',q:'A risk-averse investor',o:['requires a higher return for more risk','accepts a lower return for more risk','ignores risk when choosing assets','always prefers the riskiest asset'],a:0,x:'Большинство инвесторов risk-averse.'},
+{t:'rr',q:'The standard deviation of returns measures',o:['dispersion around the expected return','the average of the expected returns','the market sensitivity of a stock','the correlation between two assets'],a:0,x:'σ — абсолютная мера риска.'},
+{t:'rr',q:'The coefficient of variation equals',o:['σ ÷ expected return','expected return ÷ σ','σ × expected return','σ squared'],a:0,x:'CV = σ / r̄ — относительный риск; удобно сравнивать активы с разной доходностью.'},
+{t:'rr',q:'Diversification can eliminate',o:['diversifiable (unsystematic) risk','nondiversifiable (market) risk','both market and firm-specific risk','the risk premium on the market'],a:0,x:'Рыночный риск (nondiversifiable) остаётся.'},
+{t:'rr',q:'Beta measures',o:['nondiversifiable (market) risk','diversifiable (firm-specific) risk','total risk of a portfolio','liquidity of an asset'],a:0,x:'β рынка = 1.0.'},
+{t:'rr',q:'According to CAPM, the required return equals',o:['RF + β × (rm − RF)','rm + β × (RF − rm)','β × rm − RF','RF × β + rm'],a:0,x:'Премия за рыночный риск (rm − RF) умножается на β.'},
+{t:'rr',q:'Combining two negatively correlated assets in a portfolio',o:['reduces overall portfolio risk','increases overall portfolio risk','has no effect on portfolio risk','always raises the expected return'],a:0,x:'Отрицательная корреляция сглаживает колебания.'},
+{t:'rr',q:'True or False: An inverted yield curve means long-term rates are lower than short-term rates.',o:TF,a:0,x:'True.'},
+{t:'rr',q:'True or False: Higher-risk investments generally require higher expected returns.',o:TF,a:0,x:'True — risk-return tradeoff.'},
+// short-term financial management
+{t:'stfm',q:'Net working capital equals',o:['current assets − current liabilities','total assets − total liabilities','current assets − inventory','cash − accounts payable'],a:0,x:'NWC = CA − CL.'},
+{t:'stfm',q:'The operating cycle (OC) equals',o:['AAI + ACP','AAI + ACP − APP','ACP − APP','AAI − APP'],a:0,x:'OC = average age of inventory + average collection period.'},
+{t:'stfm',q:'The cash conversion cycle (CCC) equals',o:['AAI + ACP − APP','AAI + ACP','AAI − ACP + APP','ACP − AAI'],a:0,x:'CCC = OC − APP: сколько дней деньги заморожены в операциях.'},
+{t:'stfm',q:'To reduce financing needs, a firm should try to',o:['shorten its cash conversion cycle','lengthen its cash conversion cycle','shorten its payment period','raise its average inventory'],a:0,x:'Быстрее оборачивать запасы, быстрее собирать AR, платить поставщикам как можно позже (без штрафов).'},
+{t:'stfm',q:'An aggressive funding strategy finances',o:['seasonal needs with short-term funds','all needs with long-term funds','permanent needs with short-term only','nothing at all with borrowed money'],a:0,x:'Aggressive: сезонные — short-term, постоянные — long-term. Conservative: всё long-term.'},
+{t:'stfm',q:'A conservative funding strategy finances',o:['all needs with long-term funds','seasonal needs with short-term funds','all needs with short-term funds','only permanent needs with equity'],a:0,x:'Дороже, но безопаснее.'},
+{t:'stfm',q:'Increasing the ratio of current assets to total assets, other things equal,',o:['lowers profitability and lowers risk','raises profitability and raises risk','raises profitability and lowers risk','lowers profitability and raises risk'],a:0,x:'Current assets менее доходны, но снижают риск неплатёжеспособности.'},
+{t:'stfm',q:'The economic order quantity (EOQ) equals',o:['√(2 × S × O ÷ C)','2 × S × O ÷ C','√(S × C ÷ 2 × O)','√(2 × S × C ÷ O)'],a:0,x:'S — годовое потребление, O — стоимость заказа, C — стоимость хранения единицы в год.'},
+{t:'stfm',q:'Under the ABC inventory system, "A" items',o:['need the largest investment and tight control','need the smallest investment and little control','get exactly the same control as others','are ordered only once a year in bulk'],a:0,x:'A — дорогие позиции, строгий контроль; C — дешёвые, простой контроль.'},
+{t:'stfm',q:'The just-in-time (JIT) system aims to',o:['minimize inventory by exact-timed arrivals','keep large safety stocks at all times','order all materials once a year','hold inventory as long as possible'],a:0,x:'Материалы приходят ровно тогда, когда нужны.'},
+{t:'stfm',q:'Credit terms "2/10 net 30" mean',o:['2% off if paid in 10 days, else full in 30','2% interest charged after the 10th day','pay 10% in 2 days and the rest in 30','30% off if paid within the first 10 days'],a:0,x:'Скидка 2% при оплате за 10 дней, иначе полная сумма через 30 дней.'},
+{t:'stfm',q:'Using 365 days, the approximate cost of giving up a 2/10 net 30 cash discount is',o:['37.2%','24.5%','2.0%','18.6%'],a:0,x:'2/98 × 365/20 = 37.2%. Отказ от скидки = очень дорогой кредит.'},
+{t:'stfm',q:'The "five C’s of credit" are',o:['character, capacity, capital, collateral, conditions','cash, credit, cost, capital, control','character, cash, cost, customer, collection','capacity, cost, credit, contract, currency'],a:0,x:'Используются для оценки кредитоспособности клиента.'},
+{t:'stfm',q:'Spontaneous liabilities include',o:['accounts payable and accruals','bank loans and long-term bonds','commercial paper and notes','common and preferred stock'],a:0,x:'Растут сами вместе с продажами.'},
+{t:'stfm',q:'A line of credit is',o:['an agreement on the max a bank will lend','a single loan made for one purpose only','a long-term bond sold to investors','a sale of receivables to a factor'],a:0,x:'Unsecured short-term financing; revolving credit agreement — гарантированная версия.'},
+{t:'stfm',q:'Factoring accounts receivable means',o:['selling receivables to a financial firm','pledging receivables as loan collateral','collecting receivables with discounts','writing off bad receivables as expense'],a:0,x:'Pledging — залог; factoring — продажа.'},
+{t:'stfm',q:'Float refers to',o:['funds sent by a payer but not yet usable by the payee','cash kept in the firm’s own safe overnight','money borrowed from a revolving credit line','the total balance of accounts payable owed'],a:0,x:'Mail float, processing float, clearing float.'},
+{t:'stfm',q:'Commercial paper is a form of',o:['short-term unsecured financing','long-term secured financing','equity financing','trade credit from suppliers'],a:0,x:'Выпускают крупные надёжные компании.'},
+{t:'stfm',q:'True or False: Decreasing the average payment period increases the cash conversion cycle.',o:TF,a:0,x:'True: CCC = AAI + ACP − APP. Меньше APP → больше CCC.'},
+{t:'stfm',q:'True or False: Relaxing credit standards usually reduces sales.',o:TF,a:1,x:'False. Мягкие условия обычно увеличивают продажи, но растут AR и безнадёжные долги.'},
+// household finance
+{t:'personal',q:'A person’s net worth equals',o:['total assets − total liabilities','total income − total expenses','liquid assets − monthly expenses','total assets + total liabilities'],a:0,x:'Personal balance sheet: Assets = Liabilities + Net worth.'},
+{t:'personal',q:'A personal income and expense statement shows',o:['income and spending over a period','assets and debts at a point in time','only the monthly loan payments','only the value of investments'],a:0,x:'Аналог income statement для домохозяйства.'},
+{t:'personal',q:'A cash surplus occurs when',o:['income exceeds expenses for the period','expenses exceed income for the period','assets exceed liabilities at year end','liabilities exceed assets at year end'],a:0,x:'Surplus можно сберегать/инвестировать; deficit покрывают сбережениями или долгом.'},
+{t:'personal',q:'The personal balance sheet equation is',o:['Assets = Liabilities + Net worth','Assets = Income − Expenses','Net worth = Income + Assets','Liabilities = Assets + Net worth'],a:0,x:'То же уравнение, что у фирмы, но вместо equity — net worth.'},
+{t:'personal',q:'Which are liquid assets of a household?',o:['cash, checking and savings accounts','house, car and furniture','stocks held in a retirement plan','a mortgage and a car loan'],a:0,x:'Liquid assets — то, что быстро превращается в деньги без потерь.'},
+{t:'personal',q:'In the early accumulation phase of the financial life cycle, a person typically',o:['builds assets, often using debt','spends most accumulated savings','transfers wealth to their heirs','reaches the highest net worth'],a:0,x:'Молодость: образование, жильё, долги; потом консолидация, затем расходование/передача.'},
+{t:'personal',q:'The savings ratio of a household is usually measured as',o:['savings ÷ after-tax income','savings ÷ total net worth','after-tax income ÷ savings','savings ÷ total liabilities'],a:0,x:'Определения могут немного отличаться у разных авторов; ориентируйся на handouts лектора.'},
+{t:'personal',q:'A debt service ratio compares',o:['monthly debt payments with monthly income','total debt with the value of total assets','total liquid assets with monthly expenses','personal net worth with total debt owed'],a:0,x:'Какая часть дохода уходит на обслуживание долгов.'},
+{t:'personal',q:'True or False: A car loan is a liability on a personal balance sheet, while the car is an asset.',o:TF,a:0,x:'True.'},
+);
+
+/* ---- generated numeric questions (fresh each load) ---- */
+const m2=v=>'$'+fmt(v,2), p2=v=>(v*100).toFixed(2)+'%', x2=v=>fmt(v,2);
+function mcNum(t,q,vals,fmtf,x){const f=vals.map(fmtf);if(new Set(f).size<4)return null;const o=shuffle(f);return{t,q,o,a:o.indexOf(f[0]),x}}
+const GENQ={
+ fv(){const pv=rint(5,50)*100,r=pick([4,5,6,8,10,12])/100,n=rint(3,10);const v=pv*Math.pow(1+r,n);return mcNum('tvm',`You deposit ${m2(pv)} at ${r*100}% compounded annually for ${n} years. Future value =`,[v,pv*(1+r*n),pv*Math.pow(1+r,n-1),pv*Math.pow(1+r,n+1)],m2,`FV = ${fmt(pv)} × (1 + ${r})^${n} = ${m2(v)}. ${m2(pv*(1+r*n))} — это simple interest.`)},
+ pv(){const fv=rint(10,80)*100,r=pick([5,6,8,10,12])/100,n=rint(3,10);const v=fv/Math.pow(1+r,n);return mcNum('tvm',`What is the present value of ${m2(fv)} received in ${n} years if the discount rate is ${r*100}%?`,[v,fv/(1+r*n),fv/Math.pow(1+r,n-1),fv*Math.pow(1-r,n)],m2,`PV = ${fmt(fv)} ÷ (1 + ${r})^${n} = ${m2(v)}.`)},
+ fva(){const c=rint(5,40)*100,r=pick([5,6,8,10])/100,n=rint(4,10);const v=c*(Math.pow(1+r,n)-1)/r;return mcNum('tvm',`You deposit ${m2(c)} at the END of each year for ${n} years at ${r*100}%. Future value of this ordinary annuity =`,[v,v*(1+r),c*n,c*n*(1+r)],m2,`FVA = PMT × [(1 + r)^n − 1] ÷ r = ${m2(v)}. Если платежи в начале года (annuity due), умножаем на (1 + r).`)},
+ fvad(){const c=rint(5,40)*100,r=pick([5,6,8,10])/100,n=rint(4,10);const o=c*(Math.pow(1+r,n)-1)/r,v=o*(1+r);return mcNum('tvm',`You deposit ${m2(c)} at the BEGINNING of each year for ${n} years at ${r*100}%. Future value of this annuity due =`,[v,o,c*n,o/(1+r)],m2,`FVA due = FVA ordinary × (1 + r) = ${m2(o)} × ${1+r} = ${m2(v)}.`)},
+ pva(){const c=rint(5,50)*100,r=pick([5,6,8,10,12])/100,n=rint(4,12);const v=c*(1-Math.pow(1+r,-n))/r;return mcNum('tvm',`What is the present value of ${m2(c)} received at the end of each year for ${n} years at ${r*100}%?`,[v,v*(1+r),c*n,c*n/Math.pow(1+r,n)],m2,`PVA = PMT × [1 − (1 + r)^−n] ÷ r = ${m2(v)}.`)},
+ perp(){const c=rint(2,30)*50,r=pick([4,5,6,8,10])/100;const v=c/r;return mcNum('tvm',`A perpetuity pays ${m2(c)} per year forever. At ${r*100}%, its present value is`,[v,v*(1+r),c*(1+r),c/(1+r)*10],m2,`PV = CF ÷ r = ${fmt(c)} ÷ ${r} = ${m2(v)}.`)},
+ ear(){const r=pick([6,8,9,10,12,15,18])/100,m=pick([2,4,12,365]);const e=Math.pow(1+r/m,m)-1;const alt=m===12?2:12;return mcNum('tvm',`A bank quotes a nominal annual rate of ${r*100}% compounded ${({2:'semiannually',4:'quarterly',12:'monthly',365:'daily'})[m]}. The effective annual rate (EAR) is`,[e,r,Math.pow(1+r/alt,alt)-1,r/m*(m+1)],p2,`EAR = (1 + ${r}/${m})^${m} − 1 = ${p2(e)}.`)},
+ loan(){const L=rint(5,40)*1000,r=pick([5,6,8,10,12])/100,n=rint(3,8);const v=L*r/(1-Math.pow(1+r,-n));return mcNum('tvm',`You borrow ${m2(L)} at ${r*100}% to be repaid in ${n} equal end-of-year payments. The annual payment is`,[v,L/n,L*(1+r*n)/n,L*Math.pow(1+r,n)/n],m2,`PMT = PV × r ÷ [1 − (1 + r)^−n] = ${m2(v)}.`)},
+ mixed(){const r=pick([5,8,10])/100;const cf=[rint(1,9)*100,rint(1,9)*100,rint(1,9)*100];const v=cf.reduce((s,c,i)=>s+c/Math.pow(1+r,i+1),0);return mcNum('tvm',`What is the present value at ${r*100}% of this mixed stream: Year 1 ${m2(cf[0])}, Year 2 ${m2(cf[1])}, Year 3 ${m2(cf[2])}?`,[v,cf[0]+cf[1]+cf[2],v*(1+r),cf.reduce((s,c)=>s+c,0)/Math.pow(1+r,3)],m2,`PV = Σ CFt ÷ (1 + r)^t = ${m2(v)}.`)},
+ ratio(){const ca=rint(40,120)*1000,inv=rint(10,Math.floor(ca/1000*.5))*1000,cl=rint(20,80)*1000;const k=pick(['cur','quick']);const v=k==='cur'?ca/cl:(ca-inv)/cl;return mcNum('ratio',`Current assets ${m2(ca)}, of which inventory ${m2(inv)}; current liabilities ${m2(cl)}. The ${k==='cur'?'current':'quick'} ratio is`,[v,k==='cur'?(ca-inv)/cl:ca/cl,cl/ca,(ca+inv)/cl],x2,k==='cur'?`Current = CA / CL = ${x2(v)}.`:`Quick = (CA − Inventory) / CL = ${x2(v)}.`)},
+ acp(){const s=rint(200,900)*1000,ar=rint(20,120)*1000;const v=ar/(s/365);return mcNum('ratio',`Annual sales ${m2(s)} (all on credit), accounts receivable ${m2(ar)}. Average collection period (365 days) =`,[v,s/ar,ar/(s/360)+3,ar/s*100],v=>x2(v)+' days',`ACP = AR ÷ (Sales/365) = ${x2(v)} days.`)},
+ it(){const cogs=rint(200,800)*1000,inv=rint(20,150)*1000;const v=cogs/inv;return mcNum('ratio',`COGS ${m2(cogs)}, inventory ${m2(inv)}. Inventory turnover =`,[v,inv/cogs*10,365/v,(cogs+inv)/inv],x2,`Turnover = COGS ÷ Inventory = ${x2(v)}; AAI = 365 ÷ ${x2(v)} = ${x2(365/v)} days.`)},
+ roe(){const ni=rint(20,120)*1000,ta=rint(300,900)*1000,eq=rint(Math.round(ta/1000*.3),Math.round(ta/1000*.7))*1000,s=rint(ta/1000,ta/1000*2)*1000;const k=pick(['roe','roa','npm','de']);const V={roe:ni/eq,roa:ni/ta,npm:ni/s,de:(ta-eq)/ta};const alts={roe:[V.roe,V.roa,ni/(ta-eq),V.npm],roa:[V.roa,V.roe,V.npm,ni/(ta-eq)],npm:[V.npm,V.roa,V.roe,s/ta/10],de:[V.de,eq/ta,(ta-eq)/eq,eq/(ta-eq)]}[k];
+   return mcNum(k==='de'?'ratio':'fsa',`Earnings available for common ${m2(ni)}, sales ${m2(s)}, total assets ${m2(ta)}, common equity ${m2(eq)} (the rest is liabilities). ${({roe:'ROE',roa:'ROA',npm:'Net profit margin',de:'Debt ratio'})[k]} =`,alts,p2,({roe:'ROE = EACS ÷ Common equity',roa:'ROA = EACS ÷ Total assets',npm:'Net margin = EACS ÷ Sales',de:'Debt ratio = Total liabilities ÷ Total assets'})[k]+` = ${p2(V[k])}.`)},
+ tie(){const ebit=rint(50,300)*1000,int=rint(5,40)*1000;const v=ebit/int;return mcNum('ratio',`EBIT ${m2(ebit)}, interest expense ${m2(int)}. Times interest earned =`,[v,int/ebit*10,(ebit-int)/int,(ebit+int)/int],v=>x2(v)+'×',`TIE = EBIT ÷ Interest = ${x2(v)}.`)},
+ ccc(){const aai=rint(30,90),acp=rint(20,60),app=rint(15,50);const v=aai+acp-app;return mcNum('stfm',`Average age of inventory ${aai} days, average collection period ${acp} days, average payment period ${app} days. The cash conversion cycle is`,[v,aai+acp,aai+acp+app,acp+app-aai],v=>v+' days',`CCC = AAI + ACP − APP = ${aai} + ${acp} − ${app} = ${v} days. Operating cycle = ${aai+acp}.`)},
+ disc(){const d=pick([1,2,3]),dp=pick([10,15]),N=pick([30,45,60]);const v=d/(100-d)*365/(N-dp);return mcNum('stfm',`Terms ${d}/${dp} net ${N}. Using 365 days, the approximate cost of giving up the cash discount is`,[v,d/100,d/(100-d)*365/N,d/100*365/(N-dp)*.8],p2,`Cost = ${d}/(100 − ${d}) × 365/(${N} − ${dp}) = ${p2(v)}.`)},
+ eoq(){const S=rint(10,80)*100,O=rint(5,30)*10,C=rint(2,10);const v=Math.sqrt(2*S*O/C);return mcNum('stfm',`Annual usage ${fmt(S)} units, order cost ${m2(O)} per order, carrying cost ${m2(C)} per unit per year. EOQ =`,[v,2*S*O/C/100,Math.sqrt(S*O/C),Math.sqrt(2*S*C/O)],v=>fmt(v,0)+' units',`EOQ = √(2 × ${S} × ${O} ÷ ${C}) = ${fmt(v,0)} units.`)},
+ capm(){const rf=pick([2,3,4,5])/100,rm=rf+pick([4,5,6,7])/100,b=pick([0.6,0.8,1.2,1.5,1.8]);const v=rf+b*(rm-rf);return mcNum('rr',`Risk-free rate ${p2(rf)}, market return ${p2(rm)}, beta ${b}. Required return (CAPM) =`,[v,rf+b*rm,b*rm,rm+b*(rm-rf)],p2,`r = RF + β(rm − RF) = ${p2(rf)} + ${b} × ${p2(rm-rf)} = ${p2(v)}.`)},
+ er(){const p=[.25,.5,.25],r=[rint(-5,5),rint(6,14),rint(15,30)].map(x=>x/100);const v=p.reduce((s,pp,i)=>s+pp*r[i],0);return mcNum('rr',`Returns: pessimistic ${p2(r[0])} (prob. 25%), most likely ${p2(r[1])} (50%), optimistic ${p2(r[2])} (25%). Expected return =`,[v,(r[0]+r[1]+r[2])/3+.004,r[1],(r[0]+r[2])/2+.011],p2,`E(r) = Σ p × r = ${p2(v)}.`)},
+ real(){const rs=pick([1,1.5,2,2.5])/100,ip=pick([2,3,4,5])/100,rp=pick([1,2,3])/100;return mcNum('rr',`Real rate ${p2(rs)}, expected inflation premium ${p2(ip)}, risk premium ${p2(rp)}. Nominal rate on this corporate bond =`,[rs+ip+rp,rs+ip,ip+rp,rs+rp],p2,`r = r* + IP + RP = ${p2(rs+ip+rp)}. Risk-free (T-bill) было бы ${p2(rs+ip)}.`)},
+};
+const GENPLAN={fv:2,pv:2,fva:1,fvad:1,pva:2,perp:1,ear:2,loan:2,mixed:1,ratio:2,acp:1,it:1,roe:3,tie:1,ccc:2,disc:1,eoq:1,capm:2,er:1,real:1};
+Object.entries(GENPLAN).forEach(([k,n])=>{let made=0,tries=0;while(made<n&&tries<30){tries++;const q=GENQ[k]();if(q){q.gen=1;Q.push(q);made++}}});
+
+/* ---- doc forms for MIX ---- */
+function docRatio(){const cash=rint(10,40)*1000,ar=rint(20,80)*1000,inv=rint(20,90)*1000,nfa=rint(150,400)*1000,cl=rint(40,120)*1000,ltd=rint(50,200)*1000;const ta=cash+ar+inv+nfa,ca=cash+ar+inv,eq=ta-cl-ltd;if(eq<50000)return docRatio();
+  const s=rint(Math.round(ta/1000*.8),Math.round(ta/1000*2))*1000,cogs=Math.round(s*pick([.55,.6,.65,.7])/1000)*1000,ebit=Math.round(s*pick([.08,.1,.12,.15])/1000)*1000,int=Math.round(ltd*pick([.06,.08,.1])/100)*100,ni=Math.round((ebit-int)*.8);
+  const r=v=>Math.round(v*100)/100;
+  return{t:'ratio',title:'RATIO ANALYSIS',given:`Balance sheet: cash ${$f(cash)}, AR ${$f(ar)}, inventory ${$f(inv)}, net fixed assets ${$f(nfa)}; current liabilities ${$f(cl)}, long-term debt ${$f(ltd)}, common equity ${$f(eq)}. Income: sales ${$f(s)}, COGS ${$f(cogs)}, EBIT ${$f(ebit)}, interest ${$f(int)}, net income ${$f(ni)} (no preferred stock). Answers with 2 decimals; % as a number (12.5 = 12.5%). 365 days.`,
+   rows:[['Current ratio',r(ca/(cl))],['Quick ratio',r((ca-inv)/cl)],['Inventory turnover',r(cogs/inv)],['Average collection period, days',r(ar/(s/365))],['Debt ratio, %',r((cl+ltd)/ta*100)],['Times interest earned',r(ebit/int)],['Net profit margin, %',r(ni/s*100)],['ROE, %',r(ni/eq*100)]].map(x=>[x[0],x[1],0,{rel:.012,tol:.02,dec:2}]),
+   x:`TA = ${fmt(ta)}, CA = ${fmt(ca)}. Current = CA/CL; Quick = (CA − Inv)/CL; Inv. turnover = COGS/Inv; ACP = AR/(Sales/365); Debt ratio = (CL + LTD)/TA; TIE = EBIT/Interest; Net margin = NI/Sales; ROE = NI/Equity.`}}
+function docTVM(){const pv=rint(5,50)*100,r=pick([5,6,8,10])/100,n=rint(3,8),c=rint(5,30)*100,fvv=rint(20,90)*100,rn=pick([8,10,12])/100,m=pick([4,12]);
+  const r2=v=>Math.round(v*100)/100;
+  return{t:'tvm',title:'TIME VALUE WORKSHEET',given:`(a) FV of ${$f(pv)} after ${n} years at ${r*100}% compounded annually. (b) PV of ${$f(fvv)} received in ${n} years at ${r*100}%. (c) PV of an ordinary annuity of ${$f(c)} per year for ${n} years at ${r*100}%. (d) FV of the same annuity if it is an annuity due. (e) EAR (in %) of ${rn*100}% compounded ${m===4?'quarterly':'monthly'}. Round to cents.`,
+   rows:[['(a) Future value',r2(pv*Math.pow(1+r,n))],['(b) Present value',r2(fvv/Math.pow(1+r,n))],['(c) PV of annuity',r2(c*(1-Math.pow(1+r,-n))/r)],['(d) FV of annuity due',r2(c*(Math.pow(1+r,n)-1)/r*(1+r))],['(e) EAR, %',r2((Math.pow(1+rn/m,m)-1)*100)]].map(x=>[x[0],x[1],0,{rel:.004,tol:.02,dec:2}]),
+   x:`FV = PV(1+r)^n; PV = FV/(1+r)^n; PVA = PMT[1 − (1+r)^−n]/r; FVA due = PMT[(1+r)^n − 1]/r × (1+r); EAR = (1 + r/m)^m − 1. Небольшие расхождения из-за таблиц/округления засчитываются.`}}
+function docCCC(){const cogs=rint(300,900)*1000,inv=rint(40,160)*1000,s=rint(Math.round(cogs/1000*1.2),Math.round(cogs/1000*1.8))*1000,ar=rint(30,150)*1000,pur=Math.round(cogs*.7/1000)*1000,ap=rint(20,90)*1000;
+  const r=v=>Math.round(v*100)/100;const aai=365/(cogs/inv),acp=ar/(s/365),app=ap/(pur/365);
+  return{t:'stfm',title:'CASH CONVERSION CYCLE',given:`Sales ${$f(s)}, COGS ${$f(cogs)}, inventory ${$f(inv)}, accounts receivable ${$f(ar)}, accounts payable ${$f(ap)}, annual purchases ${$f(pur)}. 365 days, 2 decimals.`,
+   rows:[['Average age of inventory (AAI), days',r(aai)],['Average collection period (ACP), days',r(acp)],['Average payment period (APP), days',r(app)],['Operating cycle, days',r(aai+acp)],['Cash conversion cycle, days',r(aai+acp-app)]].map(x=>[x[0],x[1],0,{rel:.01,tol:.05,dec:2}]),
+   x:`AAI = 365 ÷ (COGS/Inv) = ${x2(aai)}; ACP = AR ÷ (Sales/365) = ${x2(acp)}; APP = AP ÷ (Purchases/365) = ${x2(app)}; OC = AAI + ACP; CCC = OC − APP = ${x2(aai+acp-app)}.`}}
+function docPersonal(){const cash=rint(1,8)*500,sav=rint(2,20)*500,car=rint(3,15)*1000,home=pick([0,0,rint(80,200)*1000]),inv=rint(0,20)*500,card=rint(0,6)*250,carl=rint(0,Math.round(car/1000))*1000,mort=home?Math.round(home*pick([.5,.7,.8])/1000)*1000:0;
+  const inc=rint(20,60)*100,exp=Math.round(inc*pick([.75,.85,.95,1.05])/10)*10;const ta=cash+sav+car+home+inv,tl=card+carl+mort;
+  return{t:'personal',title:'PERSONAL FINANCIAL STATEMENTS',given:`Cash ${$f(cash)}, savings account ${$f(sav)}, car ${$f(car)}, ${home?'house '+$f(home)+', ':''}investments ${$f(inv)}. Credit card balance ${$f(card)}, car loan ${$f(carl)}${mort?', mortgage '+$f(mort):''}. Monthly after-tax income ${$f(inc)}, monthly expenses ${$f(exp)}.`,
+   rows:[['Liquid assets',cash+sav],['Total assets',ta],['Total liabilities',tl],['Net worth',ta-tl],['Monthly cash surplus (deficit)',inc-exp,0,{signed:1}]],x:`Liquid = cash + savings; Net worth = ${fmt(ta)} − ${fmt(tl)} = ${fmt(ta-tl)}; Surplus = ${fmt(inc)} − ${fmt(exp)} = ${fmt(inc-exp)} (минус = deficit).`}}
 
 /* ---------- quiz engine ---------- */
 const topicSel=$('#quizTopic');
-topicSel.innerHTML=`<option value="exam">Экзамен-микс (30 случайных)</option><option value="wrong">Только мои ошибки</option>`+Object.entries(TOPICS).map(([k,v])=>`<option value="${k}">${v} (${Q.filter(q=>q.t===k).length})</option>`).join('');
+topicSel.innerHTML=`<option value="exam">Экзамен-микс (30 случайных)</option><option value="wrong">Только мои ошибки</option>`+Object.entries(TOPICS).filter(([k])=>Q.some(q=>q.t===k)).map(([k,v])=>`<option value="${k}">${v} (${Q.filter(q=>q.t===k).length})</option>`).join('');
 Q.forEach((q,i)=>q.id=i);
 let QZ=null;
 function startQuiz(){
@@ -943,7 +1140,7 @@ $('#quizBox').addEventListener('click',e=>{
     if(right)QZ.score++;
     const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);
     const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st);
-    $('#qex').innerHTML=`<div class="explain"><b>${right?'Верно.':'Неверно.'}</b> ${esc(q.x)}</div><div class="row" style="margin-top:12px"><button class="btn primary" id="nextQ">Дальше →</button></div>`;
+    $('#qex').innerHTML=`<div class="explain"><b>${right?'Верно.':'Неверно.'}</b> ${esc(q.x)}</div>${aiBox(aiPromptQ(q,k))}<div class="row" style="margin-top:12px"><button class="btn primary" id="nextQ">Дальше →</button></div>`;
     $('#nextQ').onclick=()=>{QZ.i++;renderQ()};$('#nextQ').focus()}
 });
 $('#quizStart').onclick=startQuiz;
@@ -1009,8 +1206,62 @@ const CARDS=[
 ['cf','Financing activities','Borrowing/repaying principal, issuing/repurchasing stock, paying dividends.'],
 ['cf','Final check of cash flow','Beginning cash + Net change (CFO + CFI + CFF) = Ending cash on the balance sheet.'],
 ];
+CARDS.push(
+['ratio','Current ratio','Current assets ÷ Current liabilities. Liquidity ratio.'],
+['ratio','Quick (acid-test) ratio','(Current assets − Inventory) ÷ Current liabilities.'],
+['ratio','Inventory turnover','COGS ÷ Inventory. Average age of inventory = 365 ÷ turnover.'],
+['ratio','Average collection period','Accounts receivable ÷ (Annual sales ÷ 365).'],
+['ratio','Average payment period','Accounts payable ÷ (Annual purchases ÷ 365).'],
+['ratio','Total asset turnover','Sales ÷ Total assets.'],
+['ratio','Debt ratio','Total liabilities ÷ Total assets.'],
+['ratio','Times interest earned','EBIT ÷ Interest expense.'],
+['ratio','Gross / operating / net profit margin','GP ÷ Sales; EBIT ÷ Sales; EACS ÷ Sales.'],
+['ratio','ROA and ROE','ROA = EACS ÷ Total assets; ROE = EACS ÷ Common equity.'],
+['ratio','P/E and M/B ratios','P/E = Price ÷ EPS; M/B = Price ÷ Book value per share.'],
+['ratio','5 groups of ratios','Liquidity, activity, debt, profitability, market.'],
+['fsa','Cross-sectional analysis','Comparing different firms (or industry average) at the same point in time. Benchmarking = vs best competitors.'],
+['fsa','Time-series analysis','Evaluating one firm’s performance over time.'],
+['fsa','DuPont system','ROA = Net margin × Total asset turnover; ROE = ROA × Financial leverage multiplier.'],
+['fsa','Financial leverage multiplier','Total assets ÷ Common stock equity.'],
+['tvm','Future value','FV = PV × (1 + r)^n (compound interest).'],
+['tvm','Present value','PV = FV ÷ (1 + r)^n. Higher r or longer n → lower PV.'],
+['tvm','Simple vs compound interest','Simple: interest on principal only, FV = PV(1 + r·n). Compound: interest on interest.'],
+['tvm','Ordinary annuity vs annuity due','Ordinary: payments at END of period. Due: at BEGINNING; value × (1 + r).'],
+['tvm','FV of ordinary annuity','PMT × [(1 + r)^n − 1] ÷ r.'],
+['tvm','PV of ordinary annuity','PMT × [1 − (1 + r)^−n] ÷ r.'],
+['tvm','Perpetuity','Annuity with infinite life: PV = CF ÷ r.'],
+['tvm','Mixed stream','Unequal cash flows; discount each one separately and add.'],
+['tvm','Nominal vs effective rate','Nominal = stated contractual rate. EAR = (1 + r/m)^m − 1, actually paid/earned.'],
+['tvm','Loan amortization','Equal periodic payments: PMT = PV × r ÷ [1 − (1 + r)^−n]. Interest share falls over time.'],
+['rr','Nominal interest rate','r = r* (real rate) + IP (inflation premium) + RP (risk premium). RF = r* + IP.'],
+['rr','Yield curve','Relation between maturity and yield. Normal = upward sloping; inverted = downward.'],
+['rr','Risk','Uncertainty (variability) of the actual return around the expected return.'],
+['rr','Total rate of return','(Cash flow + change in price) ÷ beginning price.'],
+['rr','Standard deviation & CV','σ = absolute risk; CV = σ ÷ expected return = relative risk.'],
+['rr','Diversifiable vs nondiversifiable risk','Firm-specific risk can be diversified away; market risk (measured by beta) cannot.'],
+['rr','CAPM','r = RF + β × (rm − RF).'],
+['stfm','Net working capital','Current assets − Current liabilities.'],
+['stfm','Operating cycle','AAI + ACP (from buying inventory to collecting cash).'],
+['stfm','Cash conversion cycle','AAI + ACP − APP. Shorter is better.'],
+['stfm','Aggressive vs conservative funding','Aggressive: seasonal needs short-term, permanent long-term. Conservative: everything long-term.'],
+['stfm','EOQ','√(2 × S × O ÷ C): order size that minimizes total inventory cost.'],
+['stfm','ABC system / JIT','ABC: control by value (A = tight). JIT: materials arrive exactly when needed.'],
+['stfm','Credit terms 2/10 net 30','2% discount if paid within 10 days; otherwise full amount in 30 days.'],
+['stfm','Cost of giving up cash discount','CD ÷ (100% − CD) × 365 ÷ N, N = days payment is delayed.'],
+['stfm','5 C’s of credit','Character, capacity, capital, collateral, conditions.'],
+['stfm','Spontaneous liabilities','Accounts payable and accruals: grow with sales automatically.'],
+['stfm','Line of credit / revolving credit','Line: max a bank will lend. Revolving: guaranteed line (commitment fee).'],
+['stfm','Factoring vs pledging','Factoring = selling receivables. Pledging = using them as loan collateral.'],
+['stfm','Float','Funds sent by a payer but not yet usable by the payee (mail, processing, clearing float).'],
+['personal','Net worth','Total assets − Total liabilities (personal balance sheet).'],
+['personal','Personal income & expense statement','Income and spending over a period; surplus or deficit.'],
+['personal','Liquid assets','Cash and near-cash: checking, savings, money market accounts.'],
+['personal','Financial life cycle','Accumulation (build assets, debt) → consolidation → spending/gifting.'],
+);
+
 ITEMS.forEach(it=>CARDS.push(['place',it.n,it.full+'. '+it.x]));
 const cardTopics={all:'Все темы',place:'Где статья',intro:'Finance',forms:'Формы бизнеса',inst:'Институты',mkt:'Рынки',stmt:'Отчёты',cf:'Cash flow'};
+Object.assign(cardTopics,{ratio:'Коэффициенты',fsa:'Анализ отчётов',tvm:'Time value',rr:'Risk & return',stfm:'Short-term mgmt',personal:'Личные финансы'});
 $('#cardTopic').innerHTML=Object.entries(cardTopics).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 let CD={list:[],i:0,flip:false};
 function buildDeck(){const t=$('#cardTopic').value,known=store.get('known',{});CD.list=shuffle(CARDS.filter(c=>(t==='all'||c[0]===t)&&(!$('#cardOnlyUnknown').checked||!known[c[1]])));CD.i=0;CD.flip=false;renderCard()}
@@ -1163,6 +1414,44 @@ Beginning cash + Net change = Ending cash</div>
 <li>Финансовый менеджер: ключевая роль decision making; фокус на cash flows. Бухгалтер: accrual basis, сбор и представление данных.</li>
 <li>Решения компании: куда инвестировать, менять ли старый актив (investment); когда выпускать акции и облигации (financing); платить ли дивиденды (dividend).</li></ul>`],
 ];
+SHEET.push(
+['Financial ratios (тема 3)',`<div class="tw"><table class="simple"><tr><th>Группа</th><th>Коэффициент</th><th>Формула</th></tr>
+<tr><td rowspan="2">Liquidity</td><td>Current ratio</td><td>CA ÷ CL</td></tr><tr><td>Quick ratio</td><td>(CA − Inventory) ÷ CL</td></tr>
+<tr><td rowspan="5">Activity</td><td>Inventory turnover</td><td>COGS ÷ Inventory</td></tr><tr><td>Average age of inventory</td><td>365 ÷ Inventory turnover</td></tr><tr><td>Average collection period</td><td>AR ÷ (Sales ÷ 365)</td></tr><tr><td>Average payment period</td><td>AP ÷ (Purchases ÷ 365)</td></tr><tr><td>Total asset turnover</td><td>Sales ÷ Total assets</td></tr>
+<tr><td rowspan="3">Debt</td><td>Debt ratio</td><td>Total liabilities ÷ Total assets</td></tr><tr><td>Times interest earned</td><td>EBIT ÷ Interest</td></tr><tr><td>Fixed-payment coverage</td><td>(EBIT + Lease) ÷ [Interest + Lease + (Principal + Pref. div.) × 1/(1 − T)]</td></tr>
+<tr><td rowspan="6">Profitability</td><td>Gross profit margin</td><td>Gross profit ÷ Sales</td></tr><tr><td>Operating profit margin</td><td>EBIT ÷ Sales</td></tr><tr><td>Net profit margin</td><td>EACS ÷ Sales</td></tr><tr><td>EPS</td><td>EACS ÷ Shares outstanding</td></tr><tr><td>ROA</td><td>EACS ÷ Total assets</td></tr><tr><td>ROE</td><td>EACS ÷ Common stock equity</td></tr>
+<tr><td rowspan="2">Market</td><td>P/E</td><td>Price per share ÷ EPS</td></tr><tr><td>M/B</td><td>Price per share ÷ (Common equity ÷ Shares outstanding)</td></tr></table></div>
+<p class="muted">EACS = earnings available for common stockholders = NI − preferred dividends. Gitman использует 365 дней.</p>`],
+['Анализ отчётов и DuPont (тема 4)',`<ul class="clean"><li><b>Cross-sectional</b>: сравнение с другими фирмами/отраслью на одну дату; <b>benchmarking</b> — с лучшими конкурентами.</li><li><b>Time-series</b>: одна фирма во времени. <b>Combined analysis</b>: оба подхода вместе.</li><li>Кто смотрит: кредиторы — ликвидность и долг; акционеры — риск и доходность; менеджмент — всё.</li><li>Ограничения: ratios показывают симптомы, не причины; один коэффициент не решает; разные методы учёта, сезонность, инфляция, аудированность данных.</li></ul>
+<div class="skel">ROA = Net profit margin × Total asset turnover
+    = (EACS ÷ Sales) × (Sales ÷ Total assets)
+ROE = ROA × Financial leverage multiplier (FLM)
+FLM = Total assets ÷ Common stock equity</div>`],
+['Time value of money (темы 5–6)',`<div class="skel">Simple interest:   FV = PV × (1 + r × n)
+Compound:          FV = PV × (1 + r)^n        PV = FV ÷ (1 + r)^n
+Ordinary annuity:  FVA = PMT × [(1 + r)^n − 1] ÷ r
+                   PVA = PMT × [1 − (1 + r)^−n] ÷ r
+Annuity due:       FVA_due = FVA × (1 + r)    PVA_due = PVA × (1 + r)
+Perpetuity:        PV = CF ÷ r
+Mixed stream:      PV = Σ CF_t ÷ (1 + r)^t
+m times per year:  FV = PV × (1 + r/m)^(m × n)
+EAR:               (1 + r/m)^m − 1           continuous: e^r − 1
+Loan payment:      PMT = PV × r ÷ [1 − (1 + r)^−n]</div>
+<ul class="clean"><li>Выше ставка или дольше срок → FV растёт, PV падает.</li><li>Ordinary annuity: платёж в КОНЦЕ периода; annuity due: в НАЧАЛЕ.</li><li>Nominal (stated) rate — по договору; EAR — реально с учётом частоты начисления. Чем чаще начисление, тем выше EAR.</li><li>Амортизация кредита: процентная часть платежа падает, часть основного долга растёт.</li></ul>`],
+['Ставки, risk & return (тема 5)',`<div class="skel">Nominal rate:  r = r* + IP + RP      Risk-free: RF = r* + IP
+Total return:  r = (C_t + P_t − P_t−1) ÷ P_t−1
+Expected:      E(r) = Σ p_i × r_i
+Risk:          σ = √Σ (r_i − E(r))² × p_i     CV = σ ÷ E(r)
+CAPM:          r = RF + β × (r_m − RF)</div>
+<ul class="clean"><li>Yield curve: normal (вверх), inverted (вниз), flat.</li><li>Risk-averse: за больший риск требует большую доходность.</li><li>Diversifiable (unsystematic) риск убирается диверсификацией; nondiversifiable (market) измеряется β.</li><li>Отрицательная корреляция активов снижает риск портфеля.</li></ul>`],
+['Short-term financial management (тема 7)',`<div class="skel">Net working capital = CA − CL
+Operating cycle     = AAI + ACP
+Cash conversion     = AAI + ACP − APP
+EOQ                 = √(2 × S × O ÷ C)
+Cost of giving up cash discount = CD ÷ (100% − CD) × 365 ÷ N</div>
+<ul class="clean"><li>↑ CA/TA → ↓ прибыльность, ↓ риск. ↑ CL/TA → ↑ прибыльность, ↑ риск.</li><li>Aggressive funding: сезонное short-term, постоянное long-term. Conservative: всё long-term.</li><li>Запасы: ABC (A = строгий контроль), EOQ, reorder point, JIT.</li><li>Дебиторка: credit standards, 5 C's (character, capacity, capital, collateral, conditions), credit terms (2/10 net 30), collection policy.</li><li>Деньги: float (mail, processing, clearing); ускоряем поступления, замедляем платежи.</li><li>Spontaneous liabilities: AP и accruals. Unsecured: line of credit, revolving credit agreement, commercial paper. Secured: pledging и factoring дебиторки, inventory loans.</li></ul>`],
+['Личные финансы (household finance)',`<ul class="clean"><li>Personal balance sheet: Assets = Liabilities + <b>Net worth</b>.</li><li>Personal income &amp; expense statement: доходы и расходы за период → cash surplus или deficit.</li><li>Liquid assets: cash, checking, savings. Real/personal property: жильё, машина. Liabilities: кредитки, car loan, mortgage.</li><li>Частые личные коэффициенты (определения у авторов немного различаются, сверяйся с handouts): savings ratio = savings ÷ income; debt service ratio = debt payments ÷ income; liquidity ratio = liquid assets ÷ monthly expenses.</li><li>Financial life cycle: accumulation → consolidation → spending/gifting.</li></ul>`]);
+
 $('#sheetBox').innerHTML=SHEET.map(([t,b],i)=>`<details class="sheet"${i===0?' open':''}><summary>${t}</summary><div class="body">${b}</div></details>`).join('');
 
 /* ---------- home stats ---------- */
@@ -1206,7 +1495,7 @@ $('#placeBox').addEventListener('click',e=>{
   if(b.dataset.v!==it.c)return;
   document.querySelectorAll('#placeBox .opt').forEach(o=>{o.disabled=true;if(o.dataset.v===it.c)o.classList.add('correct')});
   const pm=store.get('place',{});pm[it.n]=pm[it.n]||{ok:0,bad:0};if(PG.firstTry){pm[it.n].ok++;pm[it.n].bad=Math.max(0,pm[it.n].bad-1);PG.streak++}else{pm[it.n].bad++;PG.streak=0}store.set('place',pm);
-  $('#pgex').innerHTML=`<div class="explain"><b>${PG.firstTry?'Верно с первой попытки.':'Правильно, но с ошибкой — статья добавлена в «Мои ошибки».'}</b> ${esc(it.full)}.<br>${esc(it.x)}</div><div class="row" style="margin-top:12px"><button class="btn primary" id="pgNext">Дальше →</button></div>`;
+  $('#pgex').innerHTML=`<div class="explain"><b>${PG.firstTry?'Верно с первой попытки.':'Правильно, но с ошибкой — статья добавлена в «Мои ошибки».'}</b> ${esc(it.full)}.<br>${esc(it.x)}</div>${aiBox(`Объясни простыми словами, почему статья «${it.n}» относится к: ${it.full}. Как она связана с другими отчётами (IS, BS, RE, Cash Flow)? Я студент 1 курса, Managerial Finance (Gitman).`)}<div class="row" style="margin-top:12px"><button class="btn primary" id="pgNext">Дальше →</button></div>`;
   $('#pgNext').onclick=()=>{PG.i++;PG.step=1;PG.firstTry=true;pgRender()};$('#pgNext').focus();
 },true);
 $('#placeFilter').onchange=pgBuild;
@@ -1218,189 +1507,402 @@ pgBuild();
    MIX MODE: bureau game
    ===================================================== */
 const PPX={
-  ROLES:['Пекарь','Фермерша','Студент 1 курса','Владелица кафе','Таксист','Пенсионерка-инвестор','Стартапер','Стажёр-бухгалтер','Рыбак','Кассир банка','Строитель','Цветочница','Сантехник','Блогерша','Учитель','Хозяин автомойки'],
+  ROLES:['Пекарь','Фермерша','Студент 1 курса','Владелица кафе','Таксист','Пенсионерка-инвестор','Стартапер','Стажёр-бухгалтер','Рыбак','Кассир банка','Строитель','Цветочница','Сантехник','Блогерша','Учитель','Хозяин автомойки','Библиотекарь','Почтальон'],
   OPEN:{
     mini:['Препод дал мини-тест, а я забыл ответ.','Это было на мини-тесте. Что правильно?'],
-    intro:['Хочу понять, чем вообще занимаются финансисты.','Мой сын пошёл учиться на финансы. Объясните вот это.'],
+    intro:['Хочу понять, чем вообще занимаются финансисты.','Мой сын учится на финансах. Объясните вот это.'],
     forms:['Хочу открыть свой бизнес. Какая форма лучше?','Мы с другом открываем фирму. Вопрос по форме бизнеса.'],
     inst:['Куда мне нести свои сбережения?','Банк прислал бумагу, не понимаю, кто есть кто.'],
     mkt:['Хочу купить акции. Вопрос про рынки.','На бирже что-то непонятное. Помогите.'],
     stmt:['Бухгалтер уволился, а отчёты нужны к пятнице.','Налоговая требует отчёты. Помогите с балансом.'],
     cf:['Прибыль есть, а денег на счёте нет. Как так?','Составляю cash flow. Куда это писать?'],
-    calc:['Посчитайте, пожалуйста, у меня калькулятор сломался.','Цифры не сходятся. Проверьте расчёт.'],
+    calc:['Посчитайте, пожалуйста, калькулятор сломался.','Цифры не сходятся. Проверьте расчёт.'],
     cls:['Куда записать эту операцию?','У меня строка в бумагах. Какой раздел?'],
     place:['У меня в бумагах есть строка. Куда её записать?','Не знаю, в какой отчёт это ставить.'],
-    pairs:['Одна и та же вещь и в IS, и в BS? Объясните.','Почему это в двух отчётах сразу?']},
-  THANKS:['Спасибо! Держите плату.','Ох, теперь понятно. Спасибо!','Вы мне очень помогли.','Слава балансу!'],
-  ANGRY:['Кажется, вы ошиблись...','Мой бухгалтер сказал бы иначе.','Хм. Я на вас пожалуюсь.','Это точно правильно?'],
+    pairs:['Одна и та же вещь и в IS, и в BS? Объясните.','Почему это в двух отчётах сразу?'],
+    card:['Слышал умное слово на собрании. Что оно значит?','Проверьте, правильно ли я понимаю термин.'],
+    doc:['Заполните, пожалуйста, форму. Я сам не умею.','Мне нужен готовый документ к вечеру.','Бухгалтер в отпуске. Заполните отчёт?']},
+  THANKS:['Спасибо! Держите плату.','Теперь понятно. Спасибо!','Вы мне очень помогли.','Слава балансу!','Отличная работа, клерк.'],
+  ANGRY:['Кажется, вы ошиблись...','Мой бухгалтер сказал бы иначе.','Хм. Я на вас пожалуюсь.','Это точно правильно?','Налоговая об этом узнает.'],
   MEDALS:[['Орден Сбалансированного Баланса','#a3302a'],['Медаль Accrual Basis','#3f6d8c'],['Крест Cash Flow','#557538'],['Звезда Retained Earnings','#7a4b8c'],['Знак отличия EBIT','#a36a2a'],['Орден Двойной Записи','#2f6a63'],['Медаль Money Market','#8c3f5c'],['Крест Capital Market','#4d5a8c']],
+  RANKS:[[0,'Стажёр'],[1,'Клерк 3-го разряда'],[3,'Клерк 2-го разряда'],[5,'Клерк 1-го разряда'],[8,'Старший клерк'],[12,'Главный бухгалтер'],[18,'Министр финансов']],
+  SHOP:[
+    {id:'lamp',n:'Настольная лампа',p:20,d:'Тёплый свет над столом.'},
+    {id:'plant',n:'Фикус',p:10,d:'Живое растение в углу.'},
+    {id:'poster',n:'Плакат «A = L + E»',p:10,d:'Главное уравнение на стене.'},
+    {id:'clock',n:'Настенные часы',p:10,d:'Показывают время смены.'},
+    {id:'radio',n:'Радио',p:20,d:'Играет что-то бодрое.'},
+    {id:'cat',n:'Кот Дебет',p:30,d:'Спит на полке. Приносит удачу.'},
+    {id:'coffee',n:'Кофемашина',p:30,d:'Время смены идёт на 1/3 медленнее.'},
+    {id:'calc',n:'Калькулятор',p:20,d:'Подсказка 50/50 стоит $1 вместо $2.'},
+    {id:'heater',n:'Обогреватель',p:40,d:'Отопление $1 в день вместо $4.'},
+    {id:'book',n:'Справочник',p:20,d:'Кнопка с правилами по теме вопроса.'}],
+  WALLS:{olive:['Оливковые','#4a4838'],green:['Зелёные','#3c5040'],red:['Бордовые','#5a3634'],blue:['Синие','#3a4658']},
+  EVENTS:[
+    {id:'normal',t:'Обычный день.',w:5},
+    {id:'fair',t:'Ярмарка в городе: $6 за верный ответ.',w:2},
+    {id:'cold',t:'Мороз: отопление стоит вдвое дороже.',w:2},
+    {id:'audit',t:'Неделя аудита: медаль только за 90%+, зато премия $20.',w:2},
+    {id:'docs',t:'День документов: минимум 2 формы, $3 за каждое поле.',w:2}],
+  RULES:{
+    intro:'Finance = art and science of managing money. Фин. менеджер: decision making, фокус на cash flows. Бухгалтер: accrual basis, данные. Цель: max shareholder wealth.',
+    forms:'Sole prop: unlimited liability, дёшево. Partnership: трудно передать долю. Corporation: limited liability, легко передать акции, double taxation, дорого создать. Board = ultimate authority; CEO = day-to-day.',
+    inst:'Depository: commercial bank, savings bank, credit union. Non-depository: VC, brokerage, investment bank. Individuals = net suppliers of funds.',
+    mkt:'Money market ≤ 1 год (T-bills, CP, CDs). Capital market > 1 год (stocks, bonds). Primary = новый выпуск, secondary = перепродажа. OTC = unlisted.',
+    stmt:'Sales − COGS = GP − OpEx = EBIT − Interest = EBT − Taxes = NI. EPS = (NI − pref div) / shares outstanding. A = L + E. RE end = RE beg + NI − Div.',
+    cf:'CFO: NI + Dep − ↑активов + ↑обязательств. CFI: покупка/продажа активов. CFF: кредиты, акции, дивиденды. Проценты — внутри NI.',
+    calc:'Порядок: GP → EBIT → EBT → Taxes → NI. Проценты считаются на остаток долга до погашения.',
+    cls:'BS: остатки на дату. IS: доходы и расходы за период. CF: движение денег (operating / investing / financing).',
+    place:'BS: активы, обязательства, капитал. IS: доходы и расходы за период. RE: начальная RE, NI, дивиденды. «Payable» = долг, «expense» = расход в IS, «prepaid» = актив.',
+    pairs:'Expense в IS = за период. Payable/accrued в BS = ещё не оплачено. Accumulated = накоплено за все годы.',
+    mini:'Смотри ключевые слова: short-term → money market; ultimate authority → board; transferable ownership → corporation.',
+    card:'Вспомни определение из лекции и отбрось варианты из других тем.',
+    ratio:'Liquidity: CA/CL, (CA−Inv)/CL. Activity: COGS/Inv, AR/(Sales/365), AP/(Purch/365), Sales/TA. Debt: TL/TA, EBIT/Interest. Profit: EACS/Sales, EACS/TA, EACS/Equity. Market: P/E, M/B.',
+    fsa:'Cross-sectional = разные фирмы на одну дату; time-series = одна фирма во времени. ROA = margin × TATO; ROE = ROA × (TA/Equity).',
+    tvm:'FV = PV(1+r)^n; PV = FV/(1+r)^n; FVA = PMT[(1+r)^n−1]/r; PVA = PMT[1−(1+r)^−n]/r; due ×(1+r); perpetuity CF/r; EAR = (1+r/m)^m − 1.',
+    rr:'r = r* + IP + RP; RF = r* + IP. CV = σ/E(r). CAPM: RF + β(rm − RF). Диверсификация убирает только unsystematic risk.',
+    stfm:'OC = AAI + ACP; CCC = OC − APP. Aggressive: сезонное short-term. EOQ = √(2SO/C). Cost of giving up discount = CD/(100−CD) × 365/N.',
+    personal:'Net worth = assets − liabilities. Surplus = income − expenses. Liquid assets = cash + checking + savings.',
+    doc:'Считай сверху вниз. Вычитаемые строки пиши положительными, кроме Cash Flow (там отток с минусом).'},
   FEE:5,RENT:12,FOOD:6,HEAT:4,BONUS:10,FINE:15,
 };
-let PP=store.get('pp',null)||{day:1,cash:40,medals:[],fines:0,best:0};
-let PD=null; // day state
-let ppTimer=null;
+function ppNorm(p){p=p||{};return Object.assign({day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0},beg:null},p)}
+let PP=ppNorm(store.get('pp',null));
+let PD=null,ppLoop=null;
 const ppSave=()=>store.set('pp',PP);
-const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const pick=a=>a[Math.floor(Math.random()*a.length)];
+const has=id=>!!PP.owned[id];
+const ppRank=()=>{let r=PPX.RANKS[0][1];PPX.RANKS.forEach(([m,n])=>{if(PP.medals.length>=m)r=n});return r};
+function equip(day){let cost=0,acc=0,dep=0;Object.entries(PP.owned).forEach(([id,d])=>{const it=PPX.SHOP.find(s=>s.id===id);if(!it)return;cost+=it.p;const per=it.p/10;const used=Math.min(10,Math.max(0,day-d));acc+=per*used;if(day>=d&&day<d+10)dep+=per});return{cost,acc,net:cost-acc,dep}}
 
-/* ---- pixel sprites ---- */
-const SKIN=['#e8c29a','#d9a877','#b9855a','#8d5b3a','#f0d2b0','#c8946a'];
-const HAIR=['#2a1d14','#5a3a20','#8a5a2a','#c9a24a','#7a7a74','#a8412a','#1a1a1a','#d8d0c0'];
-const SHIRT=['#5b6b4a','#6a4a3a','#4a5a6b','#7a6a4a','#5a4a6a','#8a3a32','#3f5a52','#6b6b5a'];
-function newLook(){return{skin:pick(SKIN),hair:pick(HAIR),shirt:pick(SHIRT),hat:Math.random()<.3?pick(['#3a3a30','#5a3a24','#2d3b4a']):null,stache:Math.random()<.25,glasses:Math.random()<.2,long:Math.random()<.35}}
-const INSPECTOR={skin:'#d9b08a',hair:'#1a1a1a',shirt:'#3b3d3a',hat:'#23241f',band:'#a3302a',stache:true,glasses:false,long:false,insp:true};
-function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;r=Math.max(0,Math.min(255,Math.round(r*f)));g=Math.max(0,Math.min(255,Math.round(g*f)));b=Math.max(0,Math.min(255,Math.round(b*f)));return'#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}
-function drawFace(look){
-  const c=$('#ppFace'),x=c.getContext('2d');const R=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
-  R(0,0,32,32,'#6c705b');R(0,26,32,6,'#5a5e4b');for(let i=0;i<32;i+=4)R(i,0,1,26,'#646853');
-  if(!look){R(0,0,32,32,'#6c705b');R(12,12,8,8,'#5f6350');return}
-  const s=look.skin,sd=shade(s,.82);
-  if(look.long)R(8,8,16,16,look.hair);
-  R(5,25,22,7,look.shirt);R(5,25,22,1,shade(look.shirt,1.2));
-  if(look.insp){R(13,25,6,7,'#d8d0c0');R(15,26,2,6,'#a3302a');R(5,27,3,2,'#e0b64a');R(24,27,3,2,'#e0b64a')}
-  else{R(13,25,6,2,shade(look.shirt,.7))}
-  R(13,21,6,4,sd);
-  R(10,7,12,15,s);R(9,9,1,11,s);R(22,9,1,11,s);R(11,21,10,1,s);R(21,9,1,12,sd);
-  R(10,6,12,3,look.hair);R(9,7,2,5,look.hair);R(21,7,2,5,look.hair);
-  R(12,12,3,1,shade(look.hair,.9));R(17,12,3,1,shade(look.hair,.9));
-  R(12,14,2,1,'#1b1914');R(18,14,2,1,'#1b1914');R(12,13,2,1,'#f0e8d8');R(18,13,2,1,'#f0e8d8');
-  if(look.glasses){R(11,13,4,3,'rgba(30,30,30,.0)');x.strokeStyle='#1b1914';x.lineWidth=1;x.strokeRect(11.5,12.5,4,3);x.strokeRect(16.5,12.5,4,3);R(15,13,2,1,'#1b1914')}
-  R(15,15,2,3,sd);
-  if(look.stache)R(13,18,6,1,look.insp?'#1a1a1a':look.hair);
-  R(14,19,4,1,shade(s,.6));
-  if(look.hat){R(8,4,16,4,look.hat);R(6,7,20,2,shade(look.hat,.8));if(look.band)R(8,6,16,1,look.band);if(look.insp){R(15,4,2,2,'#e0b64a')}}
+/* ---------- pixel art ---------- */
+const SKIN=['#f0d0ac','#e3b98f','#cf9d70','#b07a50','#8a5a38','#6b432a'];
+const HAIR=['#1f1812','#3f2a1a','#6a4526','#9a6a34','#c9a24a','#8a8a82','#b0442c','#e0d8c8'];
+const COAT=['#56664a','#6a4a3a','#44566a','#7a6a48','#5a4a6a','#843a32','#3c5a52','#62624f','#4f4f5f'];
+function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const c=v=>Math.max(0,Math.min(255,Math.round(v*f)));return'#'+((1<<24)|(c(r)<<16)|(c(g)<<8)|c(b)).toString(16).slice(1)}
+function newLook(){return{skin:pick(SKIN),hair:pick(HAIR),coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:pick(['short','short','long','bald','bun','curly']),hat:Math.random()<.3?pick(['cap','fedora','scarf']):null,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:Math.random()<.18,stache:Math.random()<.22,glasses:Math.random()<.22,tie:Math.random()<.4?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:Math.random()<.5?1:0}}
+const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
+function P(ctx){return(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}}
+function drawFace(L){
+  const c=$('#ppFace'),x=c.getContext('2d'),R=P(x);
+  R(0,0,64,64,'#5f6452');for(let i=2;i<64;i+=8)R(i,0,2,54,'#585d4b');R(0,0,64,3,'#4a4e3f');
+  R(0,54,64,10,'#4a3624');R(0,54,64,2,'#6a4e34');R(0,62,64,2,'#2e2014');
+  if(!L){R(20,20,24,14,'#555a48');R(22,22,20,2,'#4c5140');return}
+  const s=L.skin,sd=shade(s,.8),sl=shade(s,1.08),hd=shade(L.hair,.75);
+  if(L.style==='long'&&!L.hat){R(15,18,34,32,L.hair);R(15,18,2,32,hd)}
+  // coat & shoulders
+  R(6,46,52,18,L.coat);R(6,46,52,2,shade(L.coat,1.15));R(6,48,4,16,shade(L.coat,.8));R(54,48,4,16,shade(L.coat,.8));
+  for(let i=0;i<9;i++){R(24+i,46+i,1,1,shade(L.coat,.7));R(39-i,46+i,1,1,shade(L.coat,.7))}
+  R(26,46,12,8,L.shirt);for(let i=0;i<6;i++){R(26+i,46+i,6-i>0?1:0,1,L.shirt)}
+  if(L.tie){R(31,47,3,2,L.tie);R(30,49,5,6,L.tie);R(31,55,3,1,shade(L.tie,.8))}
+  if(L.insp){R(6,46,10,3,'#e0b64a');R(48,46,10,3,'#e0b64a');R(10,52,8,5,'#a3302a');R(12,54,4,1,'#e0b64a');R(42,52,6,6,'#c9a24a');R(43,53,4,4,'#e8cf73')}
+  // neck
+  R(26,38,12,9,sd);R(26,44,12,2,shade(s,.7));
+  // head (ellipse)
+  for(let y=12;y<=44;y++){const t=(y-27)/16.5;let hw=Math.round(13.5*Math.sqrt(Math.max(0,1-t*t)));if(y>36)hw=Math.round(hw*(1-(y-36)*0.035));if(hw<=0)continue;R(32-hw,y,hw*2,1,s);R(32+hw-3,y,3,1,sd);R(32-hw,y,1,1,sl)}
+  R(16,26,3,8,s);R(45,26,3,8,sd);R(17,28,1,4,sd);
+  // hair
+  const H=L.hair;
+  if(L.style!=='bald'||L.hat){for(let y=10;y<=19;y++){const t=(y-27)/16.5;const hw=Math.round(14.5*Math.sqrt(Math.max(0,1-t*t)));R(32-hw,y,hw*2,1,H)}R(18,19,3,8,H);R(43,19,3,8,H);R(20,19,8,2,H);R(36,19,8,2,H);R(22,11,20,1,shade(H,1.2))}
+  else{R(18,22,3,6,H);R(43,22,3,6,H)}
+  if(L.style==='curly'){for(let i=0;i<7;i++)R(18+i*4,9+(i%2),4,3,H)}
+  if(L.style==='bun'&&!L.hat){R(27,4,10,7,H);R(28,4,8,1,shade(H,1.2))}
+  // brows, eyes
+  R(23,24,7,1+L.brow,hd);R(35,24,7,1+L.brow,hd);
+  R(23,27,7,3,'#efe8dc');R(35,27,7,3,'#efe8dc');R(26,27,3,3,'#2a1f18');R(38,27,3,3,'#2a1f18');R(27,27,1,1,'#fff');R(39,27,1,1,'#fff');R(23,30,7,1,sd);R(35,30,7,1,sd);
+  if(L.glasses){x.strokeStyle='#1b1914';x.lineWidth=1;x.strokeRect(21.5,25.5,10,6);x.strokeRect(33.5,25.5,10,6);R(31,27,3,1,'#1b1914');R(17,27,4,1,'#1b1914');R(44,27,3,1,'#1b1914')}
+  // nose, mouth
+  R(31,29,2,7,sd);R(30,35,5,2,shade(s,.72));R(29,35,1,1,sd);
+  if(L.beard){for(let y=36;y<=44;y++){const hw=Math.round(12-(y-36)*1.1);if(hw>0)R(32-hw,y,hw*2,1,H)}R(28,39,8,2,shade(s,.6))}
+  else{R(28,40,8,2,'#8a4a3a');R(28,40,8,1,'#6a3228');R(29,42,6,1,sd)}
+  if(L.stache)R(26,37,12,2,H);
+  // hats
+  const C=L.hatc;
+  if(L.hat==='cap'){R(17,7,30,9,C);R(17,7,30,2,shade(C,1.25));R(14,15,36,3,shade(C,.8))}
+  if(L.hat==='fedora'){R(19,5,26,11,C);R(19,12,26,2,'#1a1a1a');R(10,15,44,3,shade(C,.85));R(22,5,20,2,shade(C,1.2))}
+  if(L.hat==='scarf'){R(15,9,34,12,C);R(15,19,4,20,C);R(45,19,4,20,C);R(18,10,28,2,shade(C,1.25));R(26,40,12,6,C);for(let i=0;i<5;i++)R(18+i*6,13,2,2,shade(C,1.4))}
+  if(L.hat==='officer'){R(16,6,32,10,C);R(16,13,32,3,'#a3302a');R(12,16,40,3,'#15130f');R(29,8,6,5,'#e0b64a');R(30,9,4,3,'#f3dc8a');R(18,6,28,2,shade(C,1.4))}
 }
-/* queue scene */
-const QS={people:[],t:0};
-function qsSetup(n){QS.people=[];for(let i=0;i<n;i++)QS.people.push({look:newLook(),x:20+i*-11,tx:0,state:'q'});qsTargets()}
-function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=150-k*11;k++}else if(p.state==='booth'){p.tx=196}else if(p.state==='gone'){p.tx=260}})}
+/* queue scene 480x140 */
+const QS={people:[],tick:0,bld:null};
+function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<480){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
+function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-20-i*18,tx:0,state:'q',step:0}));qsTargets()}
+function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=372-k*20;k++}else if(p.state==='booth')p.tx=404;else if(p.state==='gone')p.tx=520})}
+function drawPerson(R,px,py,L,frame){
+  R(px-1,py+27,14,2,'rgba(0,0,0,.35)');
+  const c=L.coat,cd=shade(c,.75);
+  const lg=frame%2;R(px+2,py+20,3,7-lg,'#2a2620');R(px+7,py+20,3,6+lg,'#2a2620');R(px+1,py+26-lg,4,2,'#15130f');R(px+7,py+25+lg,4,2,'#15130f');
+  R(px+1,py+10,10,11,c);R(px+1,py+10,2,11,shade(c,1.12));R(px+9,py+10,2,11,cd);R(px+5,py+10,2,4,L.shirt||'#d8d0c0');
+  R(px,py+11,2,8,cd);R(px+10,py+11,2,8,cd);R(px,py+18,2,2,L.skin);R(px+10,py+18,2,2,L.skin);
+  R(px+3,py+8,6,2,shade(L.skin,.8));R(px+2,py+2,8,7,L.skin);R(px+8,py+2,2,7,shade(L.skin,.85));R(px+3,py+5,1,1,'#1b1914');R(px+7,py+5,1,1,'#1b1914');
+  if(L.style!=='bald'){R(px+2,py+1,8,3,L.hair);R(px+2,py+1,1,5,L.hair)}
+  if(L.style==='long')R(px+1,py+2,2,8,L.hair);
+  if(L.hat==='officer'){R(px+1,py,10,3,'#23241f');R(px+1,py+2,10,1,'#a3302a');R(px,py+3,12,1,'#15130f')}
+  else if(L.hat){R(px+1,py,10,3,L.hatc);R(px,py+2,12,1,shade(L.hatc,.8))}
+}
 function qsDraw(){
-  const c=$('#ppQueue');if(!c)return;const x=c.getContext('2d');const R=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
-  R(0,0,240,60,'#3a382c');R(0,0,240,14,'#2a2920');for(let i=0;i<240;i+=6)R(i,12,3,2,'#4a4838');
-  R(0,44,240,16,'#2f2d23');for(let i=0;i<240;i+=16)R(i,47,8,1,'#3a382c');
-  for(let i=0;i<240;i+=20){R(i,14,2,10,'#1c1a16')}R(0,16,240,1,'#1c1a16');R(0,21,240,1,'#1c1a16');
-  R(204,8,34,40,'#4a4838');R(202,6,38,4,'#23211a');R(206,20,12,12,'#6c705b');R(207,21,10,10,'#5a5e4b');R(222,24,12,24,'#23211a');R(220,6,4,4,'#a3302a');
-  R(40,30,150,1,'#262419');
-  QS.people.forEach(p=>{const px=Math.round(p.x),py=32;if(px<-10||px>250)return;const L=p.look;
-    R(px,py,5,3,L.hair);R(px,py+2,5,3,L.skin);R(px-1,py+5,7,6,L.shirt);R(px,py+11,2,2,'#1c1a16');R(px+3,py+11,2,2,'#1c1a16');if(L.hat)R(px-1,py-1,7,2,L.hat)});
+  const c=$('#ppQueue');if(!c)return;const x=c.getContext('2d'),R=P(x);qsInitBld();
+  const sky=['#1b1a16','#1f1e19','#23221c','#27261f','#2b2a22'];sky.forEach((col,i)=>R(0,i*8,480,8,col));
+  QS.bld.forEach(b=>{R(b.x,40-b.h,b.w,b.h,'#191814');R(b.x,40-b.h,b.w,1,'#23221c');b.win.forEach(([wx,wy,lit])=>R(b.x+wx,40-b.h+wy,3,3,lit?'#8a7a3a':'#26251f'))});
+  R(0,40,480,30,'#3d3b30');for(let yy=42;yy<70;yy+=5)for(let xx=(yy/5%2)*8;xx<480;xx+=16)R(xx,yy,15,4,'#434135');R(0,40,480,2,'#2a291f');
+  for(let xx=6;xx<480;xx+=32){R(xx,24,3,18,'#1c1a16');R(xx+1,24,1,18,'#2c2a22')}
+  for(let xx=0;xx<480;xx+=4){R(xx,27+((xx/4)%2),2,1,'#6a6a5a');R(xx,33+((xx/4+1)%2),2,1,'#6a6a5a')}
+  R(0,70,480,70,'#34322a');for(let yy=74;yy<140;yy+=10)R(0,yy,480,1,'#2e2c24');for(let xx=0;xx<480;xx+=24)R(xx+((xx/24)%2)*12,74,1,66,'#2e2c24');
+  R(0,98,480,22,'#3b392f');R(0,98,480,1,'#44423a');R(0,119,480,1,'#2a281f');
+  for(let xx=40;xx<=360;xx+=40){R(xx,86,3,14,'#6a6254');R(xx-1,85,5,2,'#8a8270')}for(let xx=40;xx<360;xx+=2)R(xx,89+Math.round(Math.sin((xx%40)/40*Math.PI)*2),2,1,'#8a2a22');
+  R(378,30,3,70,'#23211a');R(372,28,15,5,'#23211a');R(374,33,11,3,'#e0c070');x.fillStyle='rgba(224,192,112,.08)';x.beginPath();x.moveTo(374,36);x.lineTo(350,100);x.lineTo(410,100);x.lineTo(386,36);x.fill();
+  R(398,38,80,86,'#4d4b3b');R(398,38,2,86,'#5a5846');R(476,38,2,86,'#3a3829');R(392,30,92,10,'#2a2820');R(392,38,92,3,'#1c1a16');
+  R(404,58,34,26,'#15130f');R(406,60,30,22,'#8a8e6a');R(406,60,30,4,'#a8ac84');R(420,60,2,22,'#15130f');R(404,82,34,4,'#6a5a44');
+  R(446,64,26,60,'#1c1a16');R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a');
+  R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
+  R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
+  QS.people.forEach(p=>{const px=Math.round(p.x);if(px<-14||px>490)return;drawPerson(R,px,92,p.look,p.moving?Math.floor(QS.tick/3):0)});
 }
-function qsLoop(){let moving=false;QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.4){p.x+=Math.sign(d)*Math.min(Math.abs(d),1.6);moving=true}else p.x=p.tx});qsDraw();if(moving)requestAnimationFrame(qsLoop)}
-const qsKick=()=>{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){QS.people.forEach(p=>p.x=p.tx);qsDraw()}else requestAnimationFrame(qsLoop)};
+function ppAnimate(){
+  if($('#tab-mix').hidden)return;
+  QS.tick++;let moving=false;
+  QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.5){p.x+=Math.sign(d)*Math.min(Math.abs(d),2.2);p.moving=true;moving=true}else{p.x=p.tx;p.moving=false}});
+  if(moving||QS.tick%6===0)qsDraw();
+  if(QS.tick%5===0)drawOffice();
+}
 
-/* ---- ui helpers ---- */
-function ppBar(){$('#ppCash').textContent=(PP.cash<0?'-$':'$')+Math.abs(PP.cash);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?`${PD.correct}/${PD.clients.length}`:'—';$('#ppDate').textContent=`ДЕНЬ ${PP.day}`;
-  const w=$('#ppWall');w.innerHTML=PP.medals.length?PP.medals.map(m=>`<span class="medal" style="--rib:${m[1]}" title="${esc(m[0])} (день ${m[2]})"></span>`).join(''):'<span class="empty">Стена пуста. Заработай медаль.</span>';
-  const canHint=PD&&PD.state==='asking'&&!PD.hinted&&PD.cur&&PD.cur.q.o.length===4;$('#ppHint').disabled=!canHint;
-  $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'));}
+/* office wall 160x100 */
+function drawOffice(){
+  const c=$('#ppOffice');if(!c)return;const x=c.getContext('2d'),R=P(x);const W=(PPX.WALLS[PP.wall]||PPX.WALLS.olive)[1];const t=QS.tick;
+  R(0,0,160,100,W);for(let i=0;i<160;i+=20){R(i,0,1,84,shade(W,.85));R(i+1,0,1,84,shade(W,1.07))}
+  R(0,84,160,16,'#3a2a1c');R(0,84,160,2,'#5a4430');for(let i=4;i<160;i+=18)R(i,88,12,1,'#2e2116');
+  R(88,60,70,4,'#5b4431');R(88,60,70,1,'#7a5c42');R(92,64,3,6,'#3a2a1c');R(150,64,3,6,'#3a2a1c');
+  // calendar
+  R(136,30,18,20,'#d8cead');R(136,30,18,5,'#a3302a');R(138,31,2,2,'#15130f');R(150,31,2,2,'#15130f');x.fillStyle='#3a2e21';x.font='8px Tiny5, monospace';x.textAlign='center';x.fillText(String(PP.day),145,46);
+  // medals
+  const M=PP.medals;const max=18;M.slice(0,max).forEach((m,i)=>{const mx=6+(i%6)*13,my=6+Math.floor(i/6)*22;R(mx+2,my,7,9,m[1]);R(mx+2,my,2,9,shade(m[1],1.3));R(mx+5,my,1,9,shade(m[1],.7));R(mx+1,my+9,9,9,'#c9a24a');R(mx+2,my+8,7,1,'#c9a24a');R(mx+2,my+18,7,1,'#9b7424');R(mx+8,my+10,2,7,'#9b7424');R(mx+2,my+10,2,2,'#f0d488');R(mx+4,my+12,3,3,'#e0b64a')});
+  if(M.length>max){x.fillStyle='#e0b64a';x.textAlign='left';x.fillText('+'+(M.length-max),6,76)}
+  if(!M.length){x.fillStyle=shade(W,1.35);x.textAlign='left';x.fillText('место для медалей',6,14)}
+  if(has('poster')){R(90,6,40,30,'#d8cead');R(90,6,40,2,'#a3302a');R(90,34,40,2,'#a3302a');x.fillStyle='#3a2e21';x.textAlign='center';x.font='8px Tiny5, monospace';x.fillText('A=L+E',110,25)}
+  if(has('clock')){const cx=128,cy=52;R(cx-6,cy-6,12,12,'#15130f');R(cx-5,cy-5,10,10,'#e8dfc4');const m=PD?PD.min:360;const hA=(m/60%12)/12*Math.PI*2,mA=(m%60)/60*Math.PI*2;x.strokeStyle='#15130f';x.lineWidth=1;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.round(Math.sin(hA)*3),cy-Math.round(Math.cos(hA)*3));x.moveTo(cx,cy);x.lineTo(cx+Math.round(Math.sin(mA)*4),cy-Math.round(Math.cos(mA)*4));x.stroke()}
+  if(has('radio')){R(96,50,18,10,'#6a4a2a');R(97,51,8,8,'#3a2a1c');for(let i=0;i<4;i++)R(98+i*2,52,1,6,'#6a4a2a');R(107,52,5,2,'#e0b64a');R(108,56,3,3,'#d8cead');R(112,46,1,4,'#8a8270');if(t%20<10){R(100,42-(t%10)/3,2,3,'#e0d8c0');R(102,41-(t%10)/3,1,2,'#e0d8c0')}}
+  if(has('book')){R(116,50,4,10,'#8a2a22');R(120,51,3,9,'#2a3a6a');R(123,49,4,11,'#3a5a2a')}
+  if(has('cat')){const tl=(t%24)<12?0:1;R(134,53,16,7,'#2a2622');R(134,51,6,4,'#2a2622');R(134,49,2,2,'#2a2622');R(138,49,2,2,'#2a2622');R(135,52,1,1,'#e0b64a');R(149,56+tl,6,2,'#2a2622');R(154,54+tl*2,2,3,'#2a2622');R(140,54,6,1,'#3a342e')}
+  if(has('plant')){R(4,74,14,10,'#8a4a2a');R(4,74,14,2,'#a85a34');const lv=[[10,48],[6,54],[14,56],[4,62],[16,64],[9,58],[12,66],[7,68]];lv.forEach(([lx,ly],i)=>{R(lx,ly,5,3,i%2?'#4a7a3a':'#5f8f45');R(lx+1,ly+3,1,4,'#3a5a2a')});R(10,58,1,16,'#3a5a2a')}
+  if(has('heater')){R(22,72,30,12,'#8a8270');R(22,72,30,2,'#aaa28e');for(let i=0;i<5;i++)R(25+i*5,75,3,7,t%16<8?'#d8542a':'#b8442a')}
+  if(has('coffee')){R(58,68,16,16,'#2a2622');R(58,68,16,3,'#44403a');R(61,73,10,4,'#15130f');R(64,78,4,4,'#d8cead');R(65,79,2,2,'#5a3a24');if(t%12<6)R(65,75,1,2,'#c8c0b0')}
+  if(has('lamp')){R(78,60,3,24,'#2a2622');R(74,82,11,2,'#2a2622');R(72,56,14,6,'#6a5a3a');R(72,61,14,1,'#e0c070');x.fillStyle='rgba(255,210,130,.12)';x.beginPath();x.moveTo(72,62);x.lineTo(60,84);x.lineTo(98,84);x.lineTo(86,62);x.fill()}
+  if(has('calc')){R(40,86,12,8,'#44403a');R(41,87,10,2,'#9ab07a');for(let i=0;i<3;i++)R(41+i*4,90,2,2,'#d8cead')}
+}
+
+/* ---------- task builders ---------- */
+function cardTask(pl){
+  const pool=pl||CARDS.filter(c=>c[0]!=='place');const c=pick(pool);const rev=Math.random()<.5;
+  const near=(arr,len,f)=>shuffle(arr.slice().sort((a,b)=>Math.abs(f(a).length-len)-Math.abs(f(b).length-len)).slice(0,6)).slice(0,3);
+  let q,o;
+  if(!rev){const d=near(pool.filter(x=>x!==c),c[2].length,x=>x[2]).map(x=>x[2]);o=shuffle([c[2],...d]);q=`Which description matches the term "${c[1]}"?`}
+  else{const same=pool.filter(x=>x!==c&&x[0]===c[0]);const d=near(same.length>=3?same:pool.filter(x=>x!==c),c[1].length,x=>x[1]).map(x=>x[1]);o=shuffle([c[1],...d]);q=`Which term matches this description?\n"${c[2]}"`}
+  return{t:'card',q,o,a:o.indexOf(rev?c[1]:c[2]),x:`${c[1]} — ${c[2]}`};
+}
+const $f=n=>'$'+fmt(n);
+function docIS(){let S,cp,opx,int,tax,gp,ebit;do{S=rint(12,40)*10000;cp=pick([50,55,60,65,70]);opx=rint(4,14)*5000;int=rint(1,8)*1000;tax=pick([15,20,25]);gp=S*(100-cp)/100;ebit=gp-opx}while(ebit<int+5000);
+  const cogs=S*cp/100,ebt=ebit-int,tx=ebt*tax/100,ni=ebt-tx;
+  return{title:'INCOME STATEMENT',given:`Sales ${$f(S)}. Cost of goods sold = ${cp}% of sales. Operating expenses ${$f(opx)}. Interest expense ${$f(int)}. Tax rate ${tax}%.`,
+    rows:[['Sales',S,1],['Less: Cost of goods sold',cogs],['Gross profit',gp],['Less: Operating expenses',opx,1],['Operating profit (EBIT)',ebit],['Less: Interest expense',int,1],['Earnings before taxes',ebt],['Less: Taxes',tx],['Net income',ni]],x:`COGS = ${cp}% × ${fmt(S)} = ${fmt(cogs)}; GP = ${fmt(gp)}; EBIT = ${fmt(gp)} − ${fmt(opx)} = ${fmt(ebit)}; EBT = ${fmt(ebt)}; Taxes = ${tax}% × ${fmt(ebt)} = ${fmt(tx)}; NI = ${fmt(ni)}.`}}
+function docRE(){const beg=rint(20,90)*1000,ni=rint(15,70)*1000,pd=rint(0,5)*1000,cd=rint(2,15)*1000,sh=pick([10000,20000,25000,40000,50000]);const end=beg+ni-pd-cd,eac=ni-pd,eps=Math.round(eac/sh*100)/100;
+  return{title:'STATEMENT OF RETAINED EARNINGS',given:`Retained earnings at the beginning of the year ${$f(beg)}. Net income ${$f(ni)}. Preferred dividends ${$f(pd)}, common dividends ${$f(cd)}. Common shares outstanding: ${fmt(sh)}.`,
+    rows:[['Beginning retained earnings',beg,1],['Plus: Net income',ni,1],['Less: Total dividends',pd+cd],['Ending retained earnings',end],['Earnings available for common',eac],['EPS ($, 2 decimals)',eps,0,{tol:.011,dec:2}]],x:`Dividends = ${fmt(pd)} + ${fmt(cd)} = ${fmt(pd+cd)}; Ending RE = ${fmt(beg)} + ${fmt(ni)} − ${fmt(pd+cd)} = ${fmt(end)}; EAC = ${fmt(ni)} − ${fmt(pd)} = ${fmt(eac)}; EPS = ${fmt(eac)} ÷ ${fmt(sh)} = ${eps.toFixed(2)}.`}}
+function docBS(){let v;do{v={cash:rint(5,30),ar:rint(10,50),inv:rint(15,70),gpe:rint(80,250),ad:0,ap:rint(10,40),np:rint(5,40),bonds:rint(20,90),cs:rint(10,40),pic:rint(5,40)};v.ad=rint(10,Math.floor(v.gpe*.6));Object.keys(v).forEach(k=>v[k]*=1000)}while(v.cash+v.ar+v.inv+v.gpe-v.ad-v.ap-v.np-v.bonds-v.cs-v.pic<5000);
+  const tca=v.cash+v.ar+v.inv,nfa=v.gpe-v.ad,ta=tca+nfa,tcl=v.ap+v.np,tl=tcl+v.bonds,re=ta-tl-v.cs-v.pic;
+  const acc=shuffle([['Accounts payable',v.ap],['Cash',v.cash],['Bonds payable (long-term)',v.bonds],['Inventory',v.inv],['Common stock',v.cs],['Accounts receivable',v.ar],['Gross plant & equipment',v.gpe],['Notes payable (short-term)',v.np],['Accumulated depreciation',v.ad],['Paid-in capital in excess of par',v.pic]]);
+  return{title:'BALANCE SHEET',given:'Accounts (in random order): '+acc.map(a=>`${a[0]} ${$f(a[1])}`).join('; ')+'. Retained earnings are unknown.',
+    rows:[['Total current assets',tca],['Net plant & equipment',nfa],['Total assets',ta],['Total current liabilities',tcl],['Total liabilities',tl],['Retained earnings (plug)',re],['Total liabilities & equity',ta]],x:`CA = ${fmt(v.cash)} + ${fmt(v.ar)} + ${fmt(v.inv)} = ${fmt(tca)}; Net P&E = ${fmt(v.gpe)} − ${fmt(v.ad)} = ${fmt(nfa)}; TA = ${fmt(ta)}; CL = ${fmt(tcl)}; TL = ${fmt(tl)}; RE = TA − TL − CS − PIC = ${fmt(re)}.`}}
+function docCF(){const ni=rint(10,60)*1000,dep=rint(3,20)*1000;const ar0=rint(20,60)*1000,ar1=ar0+rint(-8,8)*1000,in0=rint(20,80)*1000,in1=in0+rint(-10,12)*1000,ap0=rint(10,40)*1000,ap1=ap0+rint(-6,8)*1000;
+  const dAR=ar0-ar1,dIn=in0-in1,dAP=ap1-ap0,cfo=ni+dep+dAR+dIn+dAP;
+  return{title:'CASH FLOW FROM OPERATIONS',signed:1,given:`Net income ${$f(ni)}. Depreciation ${$f(dep)}. Accounts receivable: beginning ${$f(ar0)}, ending ${$f(ar1)}. Inventory: beginning ${$f(in0)}, ending ${$f(in1)}. Accounts payable: beginning ${$f(ap0)}, ending ${$f(ap1)}. Use minus for outflows.`,
+    rows:[['Net income',ni,1],['Depreciation',dep],['Change in accounts receivable',dAR],['Change in inventory',dIn],['Change in accounts payable',dAP],['Cash flow from operations',cfo]],x:`AR ${ar1>ar0?'вырос → минус':'упал → плюс'} (${fmt(dAR)}); Inventory ${in1>in0?'вырос → минус':'упал → плюс'} (${fmt(dIn)}); AP ${ap1>ap0?'вырос → плюс':'упал → минус'} (${fmt(dAP)}); CFO = ${fmt(cfo)}.`}}
+function docStock(){const n=rint(1,10)*1000,par=pick([1,2,5]),price=par+rint(3,20);
+  return{title:'STOCK ISSUE RECORD',given:`The firm issues ${fmt(n)} new common shares with $${par} par value at $${price} per share.`,
+    rows:[['Cash received (financing inflow)',n*price],['Increase in common stock (par)',n*par],['Increase in paid-in capital in excess of par',n*(price-par)]],x:`Cash = ${fmt(n)} × $${price} = ${fmt(n*price)}; CS = ${fmt(n)} × $${par} = ${fmt(n*par)}; PIC = ${fmt(n)} × ($${price} − $${par}) = ${fmt(n*(price-par))}.`}}
+const DOCS=[['stmt',docIS],['stmt',docRE],['stmt',docBS],['cf',docCF],['stmt',docStock],['ratio',docRatio],['fsa',docRatio],['tvm',docTVM],['stfm',docCCC],['personal',docPersonal],['calc',docIS]];
+
+function ppPickQs(n,exclude,topics){
+  const wrong=store.get('wrong',{});let pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t)&&!exclude.has(q.id));if(pool.length<n)pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t));const weak=shuffle(pool.filter(q=>wrong[q.t+'|'+q.q]));
+  const byTopic={};pool.forEach(q=>{(byTopic[q.t]=byTopic[q.t]||[]).push(q)});
+  const out=[];const used=new Set();const nWeak=Math.min(weak.length,Math.floor(n/3));for(let i=0;i<nWeak;i++){out.push(weak[i]);used.add(weak[i].id)}
+  const tks=shuffle(Object.keys(byTopic));let k=0;while(out.length<n&&k<800&&tks.length){const t=tks[k%tks.length];const q=pick(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
+  return out;
+}
+const MIXT=[['mini','Мини-тест из класса'],['intro','Finance и фин. менеджер'],['forms','Формы бизнеса'],['inst','Фин. институты'],['mkt','Фин. рынки'],['stmt','Отчёты: IS, BS, RE'],['cf','Cash flow'],['calc','Задачи на счёт'],['cls','Классификация статей'],['pairs','Пары IS vs BS'],['place','Где статья (2 шага)'],['card','Карточки-термины'],['ratio','Financial ratios'],['fsa','Анализ отчётов, DuPont'],['tvm','Time value of money'],['rr','Ставки, risk & return'],['stfm','Short-term fin. mgmt'],['personal','Личные финансы']];
+function ppTopics(){const t=PP.topics&&PP.topics.length?PP.topics:MIXT.map(x=>x[0]);return new Set(t)}
+function makeTasks(n,ev){
+  const T=ppTopics();
+  const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
+  const canPlace=T.has('place'),canCard=T.has('card');
+  const qTopics=[...T].filter(t=>!['place','card'].includes(t));
+  let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):Math.max(1,Math.round(n*.18))):0;
+  let nPlace=canPlace?Math.max(1,Math.round(n*.18)):0,nCard=canCard?Math.max(1,Math.round(n*.15)):0;
+  let nQ=Math.max(0,n-nDoc-nPlace-nCard);
+  const seen=new Set(store.get('ppSeen',[]));
+  const qs=qTopics.length?ppPickQs(nQ,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
+  let miss=nQ-qs.length;while(miss-->0){if(docs.length)nDoc++;else if(canCard)nCard++;else if(canPlace)nPlace++}
+  const t=[];qs.forEach(q=>t.push({kind:'q',q}));
+  const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
+  for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
+  for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
+  for(let i=0;i<nDoc;i++)t.push({kind:'doc',doc:pick(docs)()});
+  return shuffle(t).map(x=>Object.assign(x,{look:newLook(),role:pick(PPX.ROLES)}));
+}
+/* ---------- ui helpers ---------- */
+function ppBar(){
+  $('#ppCash').textContent=(PP.cash<0?'-$':'$')+fmt(Math.abs(PP.cash),PP.cash%1?1:0);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?`${PD.correct}/${PD.tasks.length}`:'—';$('#ppDate').textContent=`ДЕНЬ ${PP.day}`;$('#ppRank').textContent=ppRank();
+  const cur=PD&&PD.cur;const canHint=PD&&PD.state==='asking'&&!PD.hinted&&cur&&cur.kind==='q'&&cur.q.o.length===4;$('#ppHint').disabled=!canHint;$('#ppHint').textContent=`50/50 · $${has('calc')?1:2}`;
+  $('#ppBook').hidden=!has('book');$('#ppBook').disabled=!(PD&&PD.state==='asking');
+  $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'));
+  $('#ppDesk').classList.toggle('lit',has('lamp'));
+}
 function ppTalk(who,text){$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
-function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=PD.min%60;$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
-function ppOverlay(html){const o=$('#ppOv');o.innerHTML=`<div class="pp-card">${html}</div>`;o.hidden=false}
+function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=Math.floor(PD.min%60);$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
+function ppOverlay(html){const o=$('#ppOv');o.innerHTML=`<div class="pp-card">${html}</div>`;o.hidden=false;o.scrollTop=0}
 function ppCloseOv(){$('#ppOv').hidden=true}
-function ppThunk(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=ppThunk.ctx||(ppThunk.ctx=new A());const o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.setValueAtTime(140,a.currentTime);o.frequency.exponentialRampToValueAtTime(50,a.currentTime+.09);g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.13)}catch(e){}}
+function ppThunk(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=ppThunk.ctx||(ppThunk.ctx=new A());const o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.setValueAtTime(140,a.currentTime);o.frequency.exponentialRampToValueAtTime(50,a.currentTime+.09);g.gain.setValueAtTime(.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.13)}catch(e){}}
+function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
 
-/* ---- day flow ---- */
+/* ---------- day flow ---------- */
 function ppDayIntro(){
   PD=null;drawFace(null);$('#ppDesk').innerHTML='';ppTalk('Бюро','Окошко закрыто.');$('#ppClock').textContent='06:00';
-  const n=Math.min(4+PP.day,10);
+  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0};ppSave()}
+  const ev=ppEvent();$('#ppEvent').textContent=ev.t;
+  const n=Math.min(4+PP.day,10);const heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
-   <p class="mono" style="text-align:center">Посетителей сегодня: ${n}<br>Плата за верный ответ: $${PPX.FEE}<br>Вечером: аренда $${PPX.RENT}, еда $${PPX.FOOD}, отопление $${PPX.HEAT}</p>
-   <p style="font-size:13.5px">Правила инспекции: 80%+ верных → медаль и премия $${PPX.BONUS}. Меньше 60% → штраф $${PPX.FINE}. Смена до 18:00. Если сбережения уйдут в минус, бюро закроют.</p>
-   <button class="pp-btn horn" id="ppGo">Открыть окошко</button>`);
-  $('#ppGo').onclick=ppStartDay;ppBar();
+   <p style="text-align:center">${esc(ev.t)}</p>
+   <p class="mono" style="text-align:center">Посетителей: ${n} · плата за верный ответ $${PP.event==='fair'?6:PPX.FEE}<br>Вечером: аренда $${PPX.RENT}, еда $${PPX.FOOD}, отопление $${heat}<br>Сбережения сейчас: $${fmt(PP.cash)}</p>
+   <p class="mono">Инспекция: ${PP.event==='audit'?'90%+':'80%+'} верных → медаль и премия $${PP.event==='audit'?20:PPX.BONUS}; меньше 60% → штраф $${PPX.FINE}. Смена до 18:00, после ответа часы стоят, пока не позовёшь следующего.</p>
+   <p>Темы на сегодня:</p>
+   <div class="pp-topics" id="ppTopicBox">${MIXT.map(([k,l])=>`<label><input type="checkbox" value="${k}" ${ppTopics().has(k)?'checked':''}> ${esc(l)}</label>`).join('')}</div>
+   <div class="row"><button class="pp-btn" data-tp="all">Все</button><button class="pp-btn" data-tp="none">Ничего</button><button class="pp-btn" data-tp="t12">Темы 1–2</button><button class="pp-btn" data-tp="t37">Темы 3–7</button></div>
+   <div class="row" style="justify-content:center"><button class="pp-btn" id="ppShopBtn">Магазин офиса</button><button class="pp-btn horn" id="ppGo">Открыть окошко</button></div>`);
+  const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave()};
+  tb.addEventListener('change',syncT);
+  $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
+  $('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;ppStartDay()};$('#ppShopBtn').onclick=ppShop;ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
-function ppPickQs(n){
-  const wrong=store.get('wrong',{});const weak=shuffle(Q.filter(q=>wrong[q.t+'|'+q.q]));
-  const byTopic={};Q.forEach(q=>{(byTopic[q.t]=byTopic[q.t]||[]).push(q)});
-  const out=[];const used=new Set();
-  const nWeak=Math.min(weak.length,Math.floor(n/3));for(let i=0;i<nWeak;i++){out.push(weak[i]);used.add(weak[i].id)}
-  const topics=shuffle(Object.keys(byTopic));let k=0;
-  while(out.length<n&&k<500){const t=topics[k%topics.length];const q=pick(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
-  return shuffle(out);
+function ppShop(){
+  const it=PPX.SHOP.map(s=>{const own=has(s.id);return`<div class="pp-item${own?' owned':''}"><b>${esc(s.n)}</b><small>${esc(s.d)}</small><small>Цена $${s.p} · амортизация $${s.p/10}/день, 10 дней</small>${own?'<small><b style="font-size:14px">Куплено</b></small>':`<button class="pp-btn" data-buy="${s.id}" ${PP.cash<s.p?'disabled':''}>Купить $${s.p}</button>`}</div>`}).join('');
+  const walls=Object.entries(PPX.WALLS).map(([k,[n,c]])=>`<button class="pp-btn" data-wall="${k}" style="background:${c};color:#e8dfc4" ${PP.wall===k||PP.cash<10?'disabled':''}>${n}${PP.wall===k?' ✓':''}</button>`).join(' ');
+  ppOverlay(`<h3>МАГАЗИН ОФИСА</h3><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)}</p>
+   <p class="mono">Мебель и техника — это <b>capital expenditure</b>: в Cash Flow это investing outflow, в балансе Office equipment, а в Income Statement попадает только depreciation (1/10 цены в день). Покраска стен — это <b>repairs expense</b>: сразу расход в IS.</p>
+   <div class="pp-shop">${it}</div>
+   <p>Покраска стен · $10 (расход)</p><div class="row">${walls}</div>
+   <button class="pp-btn horn" id="ppShopBack">Назад</button>`);
+  $('#ppOv').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const s=PPX.SHOP.find(x=>x.id===b.dataset.buy);if(PP.cash<s.p)return;PP.cash-=s.p;PP.owned[s.id]=PP.day;PP.pending.capex+=s.p;ppSave();drawOffice();ppShop();ppBar()});
+  $('#ppOv').querySelectorAll('[data-wall]').forEach(b=>b.onclick=()=>{if(PP.cash<10)return;PP.cash-=10;PP.wall=b.dataset.wall;PP.pending.repairs+=10;ppSave();drawOffice();ppShop();ppBar()});
+  $('#ppShopBack').onclick=ppDayIntro;
 }
 function ppStartDay(){
   ppCloseOv();const n=Math.min(4+PP.day,10);
-  PD={clients:ppPickQs(n).map(q=>({q,look:newLook(),role:pick(PPX.ROLES)})),idx:-1,correct:0,wrong:0,hints:0,min:360,state:'idle',cur:null,hinted:false,startCash:PP.cash};
-  qsSetup(n);QS.people.forEach((p,i)=>p.look=PD.clients[i].look);qsTargets();QS.people.forEach(p=>p.x=p.tx-40);qsKick();
+  PD={tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
+  qsSetup(PD.tasks.map(t=>t.look));
   ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>БЮРО ФИН. ОТЧЁТНОСТИ</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
-  clearInterval(ppTimer);ppTimer=setInterval(ppTick,1000);ppBar();
+  ppBar();
 }
-function ppTick(){if(!PD||PD.state==='over'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=3;ppClock();if(PD.min>=1080){ppTalk('Бюро','18:00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
+function ppTick(){if(!PD||PD.state!=='asking'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=has('coffee')?2:3;ppClock();if(PD.min>=1080){ppTalk('Бюро','18:00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
 function ppCall(){
-  if(!PD)return;if(PD.state!=='idle'&&PD.state!=='done')return;
+  if(!PD||(PD.state!=='idle'&&PD.state!=='done'))return;
   if(PD.idx>=0&&QS.people[PD.idx])QS.people[PD.idx].state='gone';
   PD.idx++;
-  if(PD.idx>=PD.clients.length){qsTargets();qsKick();drawFace(null);ppEndDay();return}
-  QS.people[PD.idx].state='booth';qsTargets();qsKick();
-  const c=PD.clients[PD.idx];PD.cur=c;PD.hinted=false;PD.state='asking';
-  drawFace(c.look);ppTalk(c.role,pick(PPX.OPEN[c.q.t]||['Добрый день. Вот мой документ.']));
-  ppRenderDoc();ppBar();
+  if(PD.idx>=PD.tasks.length){qsTargets();drawFace(null);ppEndDay();return}
+  QS.people[PD.idx].state='booth';qsTargets();
+  const c=PD.tasks[PD.idx];PD.cur=c;PD.hinted=false;PD.state='asking';PD.step=1;
+  drawFace(c.look);const tk=c.kind==='q'?c.q.t:c.kind;ppTalk(c.role,pick(PPX.OPEN[tk]||['Добрый день. Вот мой документ.']));
+  ppRenderTask();ppBar();
 }
-function ppRenderDoc(){
-  const c=PD.cur,q=c.q;const tf=q.o===TF;
-  const order=(tf||q.t==='mini'||q.o.some(x=>/above/.test(x)))?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));c.order=order;
-  $('#ppDesk').innerHTML=`<div class="pp-paper" id="ppPaper"><h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>${esc(TOPICS[q.t]||'')}</span></h4>
-   <p class="pp-q">${esc(q.q.replace(/^True or False:\s*/,''))}</p>
-   ${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:
-   `<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}</div>`;
+function ppHead(label){return`<h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>${esc(label)}</span></h4>`}
+function ppRenderTask(){
+  const c=PD.cur;let h='';
+  if(c.kind==='q'){const q=c.q,tf=q.o===TF;const order=(tf||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));
+    h=`<div class="pp-paper" id="ppPaper">${ppHead(TOPICS[q.t]||'Вопрос')}<p class="pp-q" style="white-space:pre-line">${esc(q.q.replace(/^True or False:\s*/,''))}</p>${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:`<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}</div>`}
+  else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
+    h=`<div class="pp-paper" id="ppPaper">${ppHead('Где статья')}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?'Step 1 of 2: which statement?':`Step 2 of 2: ${esc(STMTS[it.s])} — which category?`}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
+  else{const d=c.doc;h=`<div class="pp-paper" id="ppPaper">${ppHead('Документ')}<p class="pp-q" style="margin-top:4px"><b>${esc(d.title)}</b></p><div class="pp-given">${esc(d.given)}</div><table class="pp-form">${d.rows.map((r,i)=>`<tr><td>${esc(r[0])}</td><td>${r[2]?`<span>${fmt(r[1])}</span>`:`<input id="ppIn${i}" data-i="${i}" inputmode="decimal" autocomplete="off" aria-label="${esc(r[0])}">`}</td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmit">Подать документ</button></div></div>`}
+  $('#ppDesk').innerHTML=h;
 }
-function ppAnswer(k){
-  if(!PD||PD.state!=='asking')return;const c=PD.cur,q=c.q;const right=k===q.a;PD.state='done';ppThunk();
-  const paper=$('#ppPaper');paper.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.classList.contains('pp-opt')){if(+b.dataset.k===q.a)b.classList.add('right');else if(+b.dataset.k===k)b.classList.add('wrongpick')}});
-  paper.insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
-  const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);
-  const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st);
-  const corr=q.o[q.a];
-  if(right){PD.correct++;PP.cash+=PPX.FEE;ppTalk(c.role,pick(PPX.THANKS));$('#ppDesk').insertAdjacentHTML('beforeend',`<div class="pp-good"><b>+$${PPX.FEE} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(q.x)}</p></div>`)}
-  else{PD.wrong++;ppTalk(c.role,pick(PPX.ANGRY));$('#ppDesk').insertAdjacentHTML('beforeend',`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b><p>Верный ответ: ${esc(corr)}</p><p>${esc(q.x)}</p><p>Оплата не получена.</p></div>`)}
-  PD.min=Math.min(1080,PD.min+rint(20,45));ppClock();ppSave();ppBar();
+function ppFinish(right,expl,ai,fee,extra){
+  const c=PD.cur;PD.state='done';ppThunk();
+  $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
+  if(right){PD.correct++;PD.fees+=fee;PP.cash+=fee;ppTalk(c.role,pick(PPX.THANKS))}else{PD.wrong++;if(fee>0){PD.fees+=fee;PP.cash+=fee}ppTalk(c.role,pick(PPX.ANGRY))}
+  $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$${fee} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b>${extra||''}<p>${esc(expl)}</p><p>${fee>0?`Частичная оплата: $${fee}.`:'Оплата не получена.'}</p>${aiBox(ai)}</div>`);
+  ppSave();ppBar();
 }
-function ppHint(){if(!PD||PD.state!=='asking'||PD.hinted)return;const q=PD.cur.q;if(q.o.length!==4)return;PD.hinted=true;PD.hints++;PP.cash-=2;
-  const wrongs=shuffle([0,1,2,3].filter(k=>k!==q.a)).slice(0,2);document.querySelectorAll('#ppPaper .pp-opt').forEach(b=>{if(wrongs.includes(+b.dataset.k)){b.classList.add('gone');b.disabled=true}});ppTalk('Справочник','Два неверных варианта вычеркнуты. −$2.');ppSave();ppBar()}
+function ppFee(){return PP.event==='fair'?6:PPX.FEE}
+function ppAnswerQ(k){
+  const q=PD.cur.q,right=k===q.a;const paper=$('#ppPaper');
+  paper.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.classList.contains('pp-opt')){if(+b.dataset.k===q.a)b.classList.add('right');else if(+b.dataset.k===k)b.classList.add('wrongpick')}});
+  if(q.id!=null){const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st)}
+  ppFinish(right,q.x,aiPromptQ(q,k),right?ppFee():0,right?'':`<p>Верный ответ: ${esc(q.o[q.a])}</p>`);
+}
+function ppAnswerPlace(v){
+  const it=PD.cur.it;const paper=$('#ppPaper');
+  if(PD.step===1&&v===it.s){PD.step=2;ppRenderTask();return}
+  const right=PD.step===2&&v===it.c;
+  paper.querySelectorAll('.pp-opt').forEach(b=>{b.disabled=true;const ok=PD.step===1?b.dataset.p===it.s:b.dataset.p===it.c;if(ok)b.classList.add('right');else if(b.dataset.p===v)b.classList.add('wrongpick')});
+  const pm=store.get('place',{});pm[it.n]=pm[it.n]||{ok:0,bad:0};if(right)pm[it.n].ok++;else pm[it.n].bad++;store.set('place',pm);
+  ppFinish(right,`${it.full}. ${it.x}`,`Объясни простыми словами, почему статья «${it.n}» относится к: ${it.full}. Как она связана с другими отчётами? Я студент 1 курса, Managerial Finance (Gitman).`,right?ppFee():0,right?'':`<p>Верно: ${esc(it.full)}</p>`);
+}
+function ppSubmitDoc(){
+  const d=PD.cur.doc;let ok=0,tot=0;const per=PP.event==='docs'?3:2;
+  d.rows.forEach((r,i)=>{if(r[2])return;tot++;const el=$('#ppIn'+i);const n=parseNum(el.value);const o=r[3]||{};const tol=o.tol??1;const tl=Math.max(tol,o.rel?Math.abs(r[1])*o.rel:0);const sg=d.signed||o.signed;const good=n!==null&&(sg?Math.abs(n-r[1])<=tl:Math.abs(Math.abs(n)-Math.abs(r[1]))<=tl);el.disabled=true;el.classList.add(good?'ok':'bad');if(good)ok++;else el.insertAdjacentHTML('afterend',`<span class="fix">${fmt(r[1],o.dec||0)}</span>`)});
+  $('#ppSubmit').disabled=true;const right=ok===tot;
+  const ai=`Объясни по шагам, как заполнить этот документ (${d.title}). Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}\nСтроки: ${d.rows.map(r=>r[0]).join('; ')}\nПравильные ответы: ${d.rows.map(r=>r[0]+' = '+fmt(r[1],(r[3]||{}).dec||0)).join('; ')}`;
+  ppFinish(right,`Верно ${ok} из ${tot} полей. ${d.x}`,ai,ok*per,right?'':`<p>Правильные значения показаны красным под полями.</p>`);
+}
+function ppHint(){const c=PD&&PD.cur;if(!c||PD.state!=='asking'||PD.hinted||c.kind!=='q'||c.q.o.length!==4)return;const q=c.q;const cost=has('calc')?1:2;PD.hinted=true;PD.hints+=cost;PP.cash-=cost;
+  const wrongs=shuffle([0,1,2,3].filter(k=>k!==q.a)).slice(0,2);document.querySelectorAll('#ppPaper .pp-opt').forEach(b=>{if(wrongs.includes(+b.dataset.k)){b.classList.add('gone');b.disabled=true}});ppTalk('Справочник',`Два неверных варианта вычеркнуты. −$${cost}.`);ppSave();ppBar()}
+function ppBook(){const c=PD&&PD.cur;if(!c)return;const tk=c.kind==='q'?c.q.t:c.kind;ppTalk('Справочник',PPX.RULES[tk]||PPX.RULES.stmt)}
 function ppEndDay(){
-  if(!PD||PD.state==='over')return;PD.state='over';clearInterval(ppTimer);
-  const n=PD.clients.length,acc=PD.correct/n;drawFace(INSPECTOR);
-  let verdict,bonus=0,fine=0,medal=null;
-  if(acc>=.8){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=PPX.BONUS;verdict='medal'}
+  if(!PD||PD.state==='over')return;PD.state='over';
+  const n=PD.tasks.length,acc=PD.correct/n;drawFace(INSPECTOR);
+  QS.people.push({look:INSPECTOR,x:-20,tx:404,state:'insp'});
+  const hi=PP.event==='audit'?.9:.8;let verdict,bonus=0,fine=0,medal=null;
+  if(acc>=hi){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=PP.event==='audit'?20:PPX.BONUS;verdict='medal'}
   else if(acc>=.6)verdict='warn';else{fine=PPX.FINE;PP.fines++;verdict='fine'}
   PD.bonus=bonus;PD.fine=fine;
   const lines={medal:`Налоговая инспекция. Проверил ваши записи: ${PD.correct} из ${n} верно. Книги в порядке. Вручаю вам «${medal&&medal[0]}» и премию $${bonus}. Повесьте на стену.`,
-    warn:`Налоговая инспекция. ${PD.correct} из ${n} верно. Есть нарушения. В этот раз без штрафа, но медали не будет. Assets должны равняться Liabilities + Equity.`,
-    fine:`Налоговая инспекция! ${PD.correct} из ${n} верно. Это недопустимо. Штраф $${fine}. Выучите шпаргалку к завтрашнему дню.`}[verdict];
-  ppTalk('Налоговый инспектор',lines);
-  $('#ppDesk').innerHTML=`<div class="${verdict==='fine'?'pp-cite':'pp-paper'}" style="transform:none"><b style="display:block;letter-spacing:.08em">${verdict==='medal'?'АКТ ПРОВЕРКИ · НАГРАЖДЕНИЕ':verdict==='warn'?'АКТ ПРОВЕРКИ · ПРЕДУПРЕЖДЕНИЕ':'АКТ ПРОВЕРКИ · ШТРАФ'}</b><p class="pp-q">${esc(lines)}</p><button class="pp-btn horn" id="ppSum">Итоги дня</button></div>`;
+    warn:`Налоговая инспекция. ${PD.correct} из ${n} верно. Есть нарушения. В этот раз без штрафа, но медали не будет.`,
+    fine:`Налоговая инспекция! ${PD.correct} из ${n} верно. Это недопустимо. Штраф $${fine}. Выучите справочник к завтрашнему дню.`}[verdict];
+  ppTalk('Налоговый инспектор',lines);drawOffice();
+  $('#ppDesk').innerHTML=`<div class="${verdict==='fine'?'pp-cite':'pp-paper'}"><b style="display:block;letter-spacing:.06em">${verdict==='medal'?'АКТ ПРОВЕРКИ · НАГРАЖДЕНИЕ':verdict==='warn'?'АКТ ПРОВЕРКИ · ПРЕДУПРЕЖДЕНИЕ':'АКТ ПРОВЕРКИ · ШТРАФ'}</b><p class="pp-q">${esc(lines)}</p><button class="pp-btn horn" id="ppSum">Итоги дня</button></div>`;
   $('#ppSum').onclick=ppSummary;ppBar();ppSave();
 }
 function ppSummary(){
-  const n=PD.clients.length,rev=PD.correct*PPX.FEE,opx=PPX.RENT+PPX.FOOD+PPX.HEAT,hints=PD.hints*2;
-  const ebit=rev-opx-hints,ni=ebit+PD.bonus-PD.fine;
-  const beg=PD.startCash;PP.cash=beg+ni;const end=PP.cash;
-  const row=(l,v,cls='')=>`<tr class="${cls}${v<0?' neg':''}"><td>${l}</td><td>${v<0?'('+Math.abs(v)+')':v}</td></tr>`;
-  const broke=end<0;
-  ppOverlay(`<h3>ИТОГИ ДНЯ ${PP.day}</h3>
-   <p class="mono" style="font-size:13px;text-align:center">Income Statement клерка, $</p>
-   <table class="pp-is">
-   ${row(`Revenue: плата (${PD.correct} × $${PPX.FEE})`,rev)}
-   <tr class="h"><td>Operating expenses</td><td></td></tr>
-   ${row('  Rent (аренда)',-PPX.RENT)}${row('  Food (еда)',-PPX.FOOD)}${row('  Heat (отопление)',-PPX.HEAT)}${hints?row('  Справочник 50/50',-hints):''}
-   ${row('Operating profit (EBIT)',ebit,'sub')}
-   ${row('Other income: премия инспектора',PD.bonus)}
-   ${row('Other expense: штраф налоговой',-PD.fine)}
-   ${row('Net income',ni,'sub')}
-   <tr class="h"><td>Statement of retained earnings</td><td></td></tr>
-   ${row('Beginning savings',beg)}${row('+ Net income',ni)}${row('Ending savings',end,'sub')}
-   </table>
-   <p style="font-size:13.5px">Верных ответов: ${PD.correct} из ${n}. ${PD.wrong?'Ошибки попали в «Только мои ошибки» во вкладке Тесты.':'Без единой ошибки!'}</p>
-   ${broke?'<p><b>Сбережения ушли в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn horn" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
-  PP.best=Math.max(PP.best||0,PP.day);
-  if(broke){$('#ppAgain').onclick=()=>{PP={day:1,cash:40,medals:[],fines:0,best:PP.best};ppSave();ppDayIntro()}}
+  const d=PP.day,eq=equip(d),heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
+  const rev=PD.fees,rent=PPX.RENT,food=PPX.FOOD,rep=PP.pending.repairs,hints=PD.hints,dep=eq.dep;
+  const opex=rent+food+heat+rep+hints+dep,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
+  const begCash=PP.beg.cash,begNet=PP.beg.net,capex=PP.pending.capex;
+  PP.cash=begCash+ni+dep-capex;
+  const endNet=begNet+capex-dep,reBeg=begCash+begNet-PP.capital,reEnd=reBeg+ni,ta=PP.cash+endNet;
+  const f1=v=>Number.isInteger(v)?fmt(v):fmt(v,1);
+  const row=(l,v,cls='')=>`<tr class="${cls}${v<0?' neg':''}"><td>${l}</td><td>${v<0?'('+f1(-v)+')':f1(v)}</td></tr>`;
+  const broke=PP.cash<0;
+  ppOverlay(`<h3>ИТОГИ ДНЯ ${d}</h3>
+   <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>
+   <div class="pp-sumgrid">
+   <table class="pp-is"><tr class="h"><td>Income statement</td><td></td></tr>
+   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}
+   ${row('Operating profit (EBIT)',ebit,'sub')}${row('Other income: премия',PD.bonus)}${row('Other expense: штраф',-PD.fine)}${row('Net income',ni,'sub')}</table>
+   <table class="pp-is"><tr class="h"><td>Retained earnings</td><td></td></tr>${row('Beginning RE',reBeg)}${row('+ Net income',ni)}${row('− Dividends',0)}${row('Ending RE',reEnd,'sub')}
+   <tr class="h"><td>Cash flows</td><td></td></tr>${row('Net income',ni)}${row('+ Depreciation',dep)}${row('CFO',ni+dep,'sub')}${row('CFI: office equipment',-capex)}${row('Net change in cash',ni+dep-capex,'sub')}${row('Cash, end of day',PP.cash)}</table>
+   <table class="pp-is"><tr class="h"><td>Balance sheet</td><td></td></tr>${row('Cash',PP.cash)}${row('Office equipment',eq.cost)}${row('− Accum. depreciation',-(eq.acc+dep))}${row('Total assets',ta,'sub')}${row('Common stock (стартовый капитал)',PP.capital)}${row('Retained earnings',reEnd)}${row('Total L & E',PP.capital+reEnd,'sub')}</table>
+   </div>
+   ${broke?'<p><b>Cash ушёл в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn red" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
+  PP.best=Math.max(PP.best||0,d);PD=null;
+  if(broke){$('#ppAgain').onclick=()=>{PP=ppNorm({best:PP.best});ppSave();ppDayIntro()}}
   else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
-  PD=null;ppSave();ppBar();
+  ppSave();ppBar();
 }
-$('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;
-$('#ppDesk').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b&&!b.disabled)ppAnswer(+b.dataset.k)});
-$('#ppReset').onclick=()=>{clearInterval(ppTimer);PP={day:1,cash:40,medals:[],fines:0,best:PP.best||0};ppSave();ppDayIntro()};
-qsSetup(6);QS.people.forEach(p=>p.x=p.tx);qsDraw();ppDayIntro();
+$('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
+$('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
+$('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.pp-form input')){const n=$('#ppIn'+(+e.target.dataset.i+1));if(n&&!n.disabled)n.focus();else ppSubmitDoc()}});
+$('#ppReset').onclick=()=>{PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro()};
+setInterval(ppTick,1000);setInterval(ppAnimate,80);
+qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
 
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
