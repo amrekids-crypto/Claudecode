@@ -1820,7 +1820,7 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=[L.skin,L.hair
     stubble:L.g==='m'&&rnd()<.3,blush:L.g==='f'&&rnd()<.4,earring:L.g==='f'&&rnd()<.4,bags:rnd()<.25,lids:rnd()<.2,chin:rnd()<.3};
   f.narrow=f.build==='wide'&&rnd()<.5?0:rnd()<.1?0:pk([1,2,2]);f.neck=L.tie||L.insp?'collar':pk(['v','crew','collar','turtle','open','crew','v']);f.pend=f.neck!=='turtle'&&f.neck!=='collar'&&rnd()<.12;f.pc=pk(['#c8a84a','#b8b8c0','#c8a84a']);f.gc=pk(['#a8304a','#3a6aa8','#3a8a5a','#e8e4d8']);
   f.shirt=L.tie||L.insp||L.payot?L.shirt:pk(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0','#8a9aa8','#a8584a','#5a6a4a','#d8c070','#3a3a44','#e8e4dc','#7a5a8a','#4a6a8a']);
-  f.clean=rnd()<.5;if(f.clean){f.freckles=false;f.mole=null;f.scar=0;f.stubble=false;f.bags=false;f.chin=false;f.cheek=f.cheek==='hollow'?'normal':f.cheek}
+  f.rsh=L.g==='f'||rnd()<.5;f.clean=rnd()<.5;if(f.clean){f.freckles=false;f.mole=null;f.scar=0;f.stubble=false;f.bags=false;f.chin=false;f.cheek=f.cheek==='hollow'?'normal':f.cheek}
   if(f.age==='y'){f.bags=false;f.stubble=f.stubble&&rnd()<.5}
   f.pretty=!L.insp&&L.hat!=='police'&&L.hat!=='helmet'&&!L.old&&!L.sp&&rnd()<.25;
   if(f.pretty){const fm=L.g==='f';Object.assign(f,{clean:true,scar:0,bags:false,lids:false,ears:0,freckles:fm&&rnd()<.15,mole:rnd()<.3?(fm?[40,35]:[24,36]):null,
@@ -1844,10 +1844,10 @@ function drawFace(L,cv,ov){
   const ph=((L.skin.charCodeAt(2)||0)*7+(L.coat.charCodeAt(3)||0)*3)%53,tk=QS.tick+ph,blink=tk%53<2||(tk%197>=6&&tk%197<8),bob=Math.floor(tk/9)%2,talk=!cv&&Date.now()<FACE.talkUntil&&Math.floor(QS.tick/2)%2===0;
   x.save();x.translate(0,bob);
   const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);const F=faceOf(L),LS=F.long?'long':L.style,d=F.narrow||0;
-  let HW=FACES[F.shape].map(v=>Math.max(2,v-(v>4?d:0)));if(F.age==='o')for(let i=26;i<32;i++)HW[i]+=1;if(F.age==='y')for(let i=28;i<34;i++)HW[i]=Math.max(2,HW[i]-1);const hwAt=y=>y<11||y>44?0:HW[y-11];
+  let HW=FACES[F.shape].map(v=>Math.max(2,v-Math.round(d*Math.min(1,v/8))));if(F.age==='o')for(let i=26;i<32;i++)HW[i]+=1;if(F.age==='y')for(let i=28;i<34;i++)HW[i]=Math.max(2,HW[i]-1);const hwAt=y=>y<11||y>44?0:HW[y-11];
   if(LS==='long'&&!L.hat){const bw=16-d;for(let y=15;y<=50;y++){const hw=bw-(y>44?(y-44)*2:0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H1);R(32-hw+1,y,2,1,H)}}}
   // shoulders
-  const shw=F.build==='wide'?31:F.build==='thin'?25:29;for(let y=44;y<64;y++){const w=Math.min(shw,17+(y-44)*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1)}R(15,45,34,1,CO2);
+  const shw=(F.build==='wide'?31:F.build==='thin'?25:29)-(L.g==='f'?3:0);for(let y=44;y<64;y++){const dy=y-44,RR=F.rsh?9:5;const w=F.rsh?(dy<RR?Math.round(16+(shw-16)*Math.sqrt(1-Math.pow((RR-dy-1)/RR,2))):shw):Math.min(shw,17+dy*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1);if(dy===1)R(32-w+3,y,w*2-7,1,CO2)}
 
   if(L.insp){R(5,45,11,3,'#c9a24a');R(48,45,11,3,'#c9a24a');R(5,47,11,1,'#8a6a2a');R(10,52,8,5,'#8a2a24');R(12,54,4,1,'#c9a24a');R(42,52,6,6,'#b8923a');R(43,53,4,4,'#d8bf63')}
   // neck
@@ -1920,7 +1920,7 @@ function drawFace(L,cv,ov){
     [[14,10,54],[15,8,56],[16,9,55]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(14,10,54,C);row(15,8,56,C1);row(16,9,55,C3);R(12,14,12,1,C2);row(15,8,11,C3);row(15,53,56,C3)}
   if(L.hat==='scarf'){for(let y=6;y<=21;y++){const t=(y-27)/21;const hw=Math.round(17*Math.sqrt(Math.max(0,1-t*t)));row(y,32-hw-1,32+hw+1,OL);row(y,32-hw,32+hw,C);R(32-hw,y,2,1,C2);R(32+hw-3,y,3,1,C1)}
     for(let y=20;y<=45;y++){const fw=hwAt(y),l=Math.min(19,32-fw),r=Math.max(45,32+fw);R(14,y,6,1,OL);R(15,y,4,1,C);R(15,y,1,1,C2);R(44,y,6,1,OL);R(45,y,4,1,C1);if(y>=24){R(19,y,Math.max(0,32-fw-19),1,C1);R(32+fw,y,Math.max(0,45-32-fw),1,C3);if(fw>0&&fw<13){R(32-fw-1,y,1,1,OL);R(32+fw,y,1,1,OL)}}}R(19,20,26,1,C1);R(20,21,24,1,C3);
-    for(let i=0;i<5;i++){R(20+i*5,11+(i%2)*3,2,2,C2);R(22+i*5,15-(i%2)*2,1,1,C1)}R(22,43,20,4,OL);R(23,43,18,3,C);R(29,46,7,4,OL);R(30,46,5,3,C1);R(23,43,18,1,C2)}
+    for(let i=0;i<5;i++){R(20+i*5,11+(i%2)*3,2,2,C2);R(22+i*5,15-(i%2)*2,1,1,C1)}for(let y=42;y<=56;y++){const hw=Math.min(15,7+Math.round((y-42)*.9));R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,C);R(32-hw,y,2,1,C2);R(32+hw-3,y,3,1,C1);if(y>44&&y%3===0){R(28-Math.floor((y-44)/3),y,2,1,C1);R(35+Math.floor((y-44)/3),y,2,1,C3)}}R(30,43,4,3,OL);R(31,43,2,2,C2);R(24,42,16,1,C3)}
   if(L.hat==='kippah'){[[7,26,38],[8,24,40],[9,23,41]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(7,26,38,C);row(8,24,40,C);row(9,23,41,C1);R(27,7,6,1,C2);R(25,8,3,1,C2)}
   if(L.hat==='hasid'){const K='#15130f',K1='#26241f',K2='#3a3832';brimShade(16,18,46);for(let y=0;y<=11;y++){row(y,18,46,OL);row(y,19,45,y<2?K1:K)}R(20,1,8,1,K2);R(19,9,26,2,K1);row(9,19,45,'#0c0b09');
     [[12,7,57],[13,6,58],[14,7,57]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(12,7,57,K1);row(13,6,58,K);row(14,7,57,K);R(10,12,14,1,K2);if(L.payot){const PY='#1c1814',PY1='#2e2822';for(let k=0;k<12;k++){R(16+(k%3===1?1:0),19+k,3,1,k%3?PY:PY1);R(45-(k%3===1?1:0),19+k,3,1,PY)}}}
