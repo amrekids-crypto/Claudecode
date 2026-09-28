@@ -1811,25 +1811,55 @@ const SFX={on:store.get('sfx',true)};
 function sfxCtx(){if(!SFX.on)throw 0;const A=window.AudioContext||window.webkitAudioContext;if(!A)throw 0;if(!ppThunk.ctx)ppThunk.ctx=new A();if(ppThunk.ctx.state==='suspended')ppThunk.ctx.resume();return ppThunk.ctx}
 function sTone(f,d,type='square',v=.06,f2=null,delay=0){try{const a=sfxCtx(),t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
 function sNoise(d,v,lp=4000,hp=0,delay=0){try{const a=sfxCtx(),t=a.currentTime+delay,n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource();s.buffer=b;let node=s;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;node.connect(f);node=f;if(hp){const h=a.createBiquadFilter();h.type='highpass';h.frequency.value=hp;node.connect(h);node=h}const g=a.createGain();g.gain.value=v;node.connect(g).connect(a.destination);s.start(t)}catch(e){}}
+const SJ=(x,p=.07)=>x*(1+(Math.random()*2-1)*p),SV=arr=>arr[Math.floor(Math.random()*arr.length)]();
+function sMuf(f,d,type='square',v=.06,f2=null,delay=0,lp=900){try{const a=sfxCtx(),t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain(),fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl).connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 Object.assign(SFX,{
-  next(){sTone(660,.16,'triangle',.09);sTone(523,.28,'triangle',.09,null,.17);sNoise(.3,.02,2500,600)},
-  step(){sNoise(.035,.05,900,120)},
-  paper(){sNoise(.14,.07,5000,1800);sNoise(.1,.05,4000,1500,.1)},
-  stamp(){sNoise(.07,.35,380);sTone(95,.1,'sine',.25,45)},
-  ok(){[523,659,784].forEach((f,i)=>sTone(f,.16,'triangle',.07,null,i*.07))},
-  bad(){sTone(165,.3,'sawtooth',.06,110);sTone(158,.3,'sawtooth',.05,104,.03)},
-  coin(){sTone(1318,.07,'square',.035);sTone(1760,.22,'square',.035,null,.07);sNoise(.05,.04,8000,4000,.02)},
-  fanfare(){[[523,.12],[659,.12],[784,.12],[1047,.4]].reduce((t,[f,d])=>{sTone(f,d,'square',.05,null,t);sTone(f/2,d,'triangle',.05,null,t);return t+d*.9},0)},
-  sad(){[392,370,349,311].forEach((f,i)=>sTone(f,i===3?.7:.3,'sawtooth',.05,i===3?260:null,i*.3))},
-  buy(){SFX.coin();sNoise(.12,.08,3000,800,.12);sTone(2093,.3,'sine',.04,null,.2)},
-  click(){sTone(1900,.025,'square',.02)},
-  engine(){sTone(70,1.4,'sawtooth',.05,55);sTone(105,1.4,'square',.02,80)},
-  crash(){sNoise(.5,.6,900);sTone(70,.35,'sine',.35,30);sNoise(.3,.2,6000,2500,.05)},
+  next(){SV([
+    ()=>{sMuf(SJ(98),.42,'sawtooth',.09,null,0,700);sMuf(SJ(147),.42,'square',.03,null,0,600);sNoise(.05,.08,1200,200)},
+    ()=>{sMuf(SJ(110),.16,'sawtooth',.08,null,0,650);sMuf(SJ(110),.26,'sawtooth',.08,null,.2,650);sNoise(.04,.07,1500,300)},
+    ()=>{sMuf(SJ(392),.3,'triangle',.07,null,0,1400);sMuf(SJ(311),.5,'triangle',.07,null,.26,1200);sNoise(.3,.02,900,120)},
+    ()=>{sNoise(.06,.12,2500,600);sMuf(SJ(82),.55,'sawtooth',.08,SJ(78),.05,500)}])},
+  step(){const k=Math.random();sNoise(SJ(.035,.3),SJ(.05,.3),SJ(k<.5?800:1100,.2),SJ(110,.3));if(k<.4)sMuf(SJ(90,.2),.05,'sine',.04,null,0,400)},
+  paper(){const n=2+Math.floor(Math.random()*3);for(let i=0;i<n;i++)sNoise(SJ(.09,.4),SJ(.06,.3),SJ(4200,.3),SJ(1600,.35),i*SJ(.08,.4));if(Math.random()<.4)sNoise(.03,.06,1800,500,n*.08)},
+  stamp(){SV([
+    ()=>{sNoise(.08,.4,SJ(360));sMuf(SJ(92),.12,'sine',.28,45);sTone(SJ(2100),.02,'square',.012,null,.005)},
+    ()=>{sNoise(.1,.45,SJ(300));sMuf(SJ(78),.16,'sine',.3,40);sNoise(.04,.1,3500,1500,.05)},
+    ()=>{sNoise(.06,.35,SJ(450));sMuf(SJ(110),.1,'sine',.25,55);sNoise(.05,.12,700,0,.09);sMuf(SJ(70),.08,'sine',.12,40,.09)}])},
+  ok(){SV([
+    ()=>{sMuf(SJ(440,.03),.18,'triangle',.06,null,0,1600);sMuf(SJ(660,.03),.28,'triangle',.05,null,.12,1600)},
+    ()=>{sMuf(SJ(392,.03),.14,'square',.035,null,0,1100);sMuf(SJ(523,.03),.3,'square',.035,null,.1,1100)},
+    ()=>{sMuf(SJ(523,.03),.35,'sine',.07,null,0,2000);sMuf(SJ(784,.03),.25,'sine',.03,null,.05,2000)}])},
+  bad(){SV([
+    ()=>{sMuf(SJ(130),.45,'sawtooth',.08,SJ(95),0,800);sMuf(SJ(124),.45,'sawtooth',.06,SJ(90),.03,800)},
+    ()=>{sMuf(SJ(98),.14,'square',.08,null,0,600);sMuf(SJ(98),.14,'square',.08,null,.18,600);sMuf(SJ(73),.3,'square',.08,null,.36,600)},
+    ()=>{sMuf(SJ(165),.6,'sawtooth',.07,SJ(82),0,700);sNoise(.2,.05,500)}])},
+  coin(){SV([
+    ()=>{sTone(SJ(2637),.08,'square',.025);sTone(SJ(3520),.2,'triangle',.03,null,.06);sNoise(.05,.05,8000,4000,.02)},
+    ()=>{for(let i=0;i<3;i++)sTone(SJ(2800,.15),.06,'triangle',.03,null,i*SJ(.05,.4));sNoise(.12,.05,7000,3000)},
+    ()=>{sTone(SJ(1976),.12,'sine',.04);sTone(SJ(2960),.22,'sine',.03,null,.04);sNoise(.08,.06,6000,2500,.01)},
+    ()=>{sNoise(.18,.07,6500,2800);sTone(SJ(3136),.1,'triangle',.025,null,.09)}])},
+  fanfare(){[[523,.12],[659,.12],[784,.12],[1047,.4]].reduce((t,[f,d])=>{sMuf(f,d,'square',.05,null,t,1800);sMuf(f/2,d,'triangle',.05,null,t,1200);return t+d*.9},0)},
+  sad(){[392,370,349,311].forEach((f,i)=>sMuf(f,i===3?.7:.3,'sawtooth',.05,i===3?260:null,i*.3,900))},
+  buy(){SV([
+    ()=>{SFX.coin();sNoise(.12,.08,3000,800,.12);sMuf(SJ(1568),.3,'sine',.04,null,.2,3000)},
+    ()=>{sNoise(.06,.2,2000,300);sMuf(SJ(880),.08,'square',.03,null,.05,1500);SFX.coin()},
+    ()=>{sMuf(SJ(1047),.06,'square',.03,null,0,2200);sMuf(SJ(1319),.06,'square',.03,null,.07,2200);sNoise(.25,.06,4000,1500,.1)}])},
+  click(){sMuf(SJ(1900,.15),.025,'square',.025,null,0,3000)},
+  engine(){SV([
+    ()=>{sMuf(SJ(70),1.4,'sawtooth',.06,55,0,500);sMuf(SJ(105),1.4,'square',.02,80,0,400)},
+    ()=>{sMuf(SJ(62),1.6,'sawtooth',.06,74,0,450);sNoise(1.2,.04,400,60)},
+    ()=>{sMuf(SJ(84),1.2,'sawtooth',.05,60,0,600);sMuf(SJ(42),1.2,'square',.03,38,0,300)}])},
+  crash(){SV([
+    ()=>{sNoise(.5,.6,900);sMuf(SJ(70),.35,'sine',.35,30,0,400);sNoise(.3,.2,6000,2500,.05)},
+    ()=>{sNoise(.35,.55,SJ(700));sMuf(SJ(55),.45,'sine',.35,28,0,300);sNoise(.15,.15,5000,2000,.12)},
+    ()=>{sNoise(.25,.5,1200,100);sMuf(SJ(90),.25,'sine',.3,40,0,500);sNoise(.4,.08,300,0,.1)}])},
   inject(){sNoise(.35,.05,9000,3000);sTone(1200,.15,'sine',.03,1600,.3)},
-  bell(){sTone(880,.9,'sine',.06);sTone(1320,.7,'sine',.03);sTone(1760,.5,'sine',.015)},
-  whistle(){sTone(2100,.2,'sine',.05,2500);sTone(2100,.35,'sine',.05,2400,.25)},
-  arrestHit(){sNoise(.2,.4,500)},
-  open(){sTone(300,.12,'triangle',.05,500);sNoise(.2,.03,1500,300)}
+  bell(){sMuf(220,1.4,'sawtooth',.06,null,0,700);sMuf(277,1.4,'sawtooth',.04,null,0,700);sMuf(330,1.4,'sawtooth',.03,null,0,700);sNoise(1.2,.03,500,80)},
+  whistle(){sTone(SJ(2100,.03),.2,'sine',.05,2500);sTone(SJ(2100,.03),.35,'sine',.05,2400,.25)},
+  arrestHit(){SV([()=>sNoise(.2,.4,500),()=>{sNoise(.15,.4,650);sMuf(70,.2,'sine',.25,35,0,300)},()=>sNoise(.28,.35,380)])},
+  open(){sMuf(300,.12,'triangle',.05,500,0,1500);sNoise(.2,.03,1500,300)},
+  amb(on){try{if(SFX._amb){const x=SFX._amb;SFX._amb=null;try{x.g.gain.setTargetAtTime(.0001,x.a.currentTime,.3);x.s.stop(x.a.currentTime+1.2)}catch(e){}}if(!on)return;const a=sfxCtx(),n=a.sampleRate*6,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<n;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.2}
+    const src=a.createBufferSource();src.buffer=b;src.loop=true;const fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=420;const g=a.createGain();g.gain.setValueAtTime(.0001,a.currentTime);g.gain.setTargetAtTime(.05,a.currentTime,1);src.connect(fl).connect(g).connect(a.destination);src.start();SFX._amb={a,s:src,g}}catch(e){}}
 });
 
 const QS={people:[],tick:0,bld:null,fx:[],car:null,W:480,OX:0,door:0,decals:[]};
@@ -1953,7 +1983,7 @@ const sleep=ms=>{const g=GEN;return new Promise(r=>setTimeout(()=>{if(g===GEN)r(
 const until=(fn,ms=12000)=>{const g=GEN;return new Promise(r=>{const t0=Date.now();const iv=setInterval(()=>{if(g!==GEN){clearInterval(iv);return}let ok=false;try{ok=fn()}catch(e){ok=true}if(ok||Date.now()-t0>ms){clearInterval(iv);r()}},80)})};
 const near=p=>Math.abs(p.x-p.tx)<1&&Math.abs(p.y-p.ty)<1;
 function ppNoise(dur,vol,lp){try{const a=sfxCtx();const n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.5);const s=a.createBufferSource();s.buffer=b;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;const g=a.createGain();g.gain.value=vol;s.connect(f).connect(g).connect(a.destination);s.start()}catch(e){}}
-const ppGunshot=()=>{sNoise(.1,.9,7000,900);sTone(110,.28,'sine',.3,38);sNoise(.6,.18,1400,0,.04)},ppShot=()=>{sNoise(.05,.55,6000,700);sTone(140,.07,'square',.07,55)},ppThud=()=>ppNoise(.25,.4,400);
+const ppGunshot=()=>SV([()=>{sNoise(.1,.9,7000,900);sTone(110,.28,'sine',.3,38);sNoise(.6,.18,1400,0,.04)},()=>{sNoise(.08,.85,5500,700);sTone(90,.35,'sine',.32,34);sNoise(.9,.14,900,0,.05)},()=>{sNoise(.12,.8,8000,1200);sTone(130,.22,'sine',.28,45);sNoise(.4,.2,2200,300,.03);sNoise(.3,.06,600,0,.35)}]),ppShot=()=>{sNoise(SJ(.05,.3),SJ(.55,.2),SJ(6000,.25),SJ(700,.3));sTone(SJ(140,.2),.07,'square',.07,55)},ppThud=()=>ppNoise(.25,.4,400);
 function ppPing(){try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.frequency.setValueAtTime(2400,t);o.frequency.exponentialRampToValueAtTime(900,t+.25);g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g).connect(a.destination);o.start();o.stop(t+.31)}catch(e){}}
 function drawOffice(cv,ov){
   const c=cv||$('#ppOffice');if(!c)return;const own=id=>ov&&ov.owned?!!ov.owned[id]:has(id);const x=c.getContext('2d'),R=P(x);const W=(PPX.WALLS[(ov&&ov.wall)||PP.wall]||PPX.WALLS.olive)[1];const t=QS.tick;
@@ -2281,7 +2311,7 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();const n=Math.min(4+PP.day,10);
+  ppCloseOv();SFX.bell();SFX.amb(true);const n=Math.min(4+PP.day,10);
   PD={deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   qsSetup(PD.tasks.map(t=>t.look));
   ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
@@ -2364,7 +2394,7 @@ function ppSubmitBundle(){
   document.querySelectorAll('#ppDesk .pp-good p, #ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');
 }
 function ppSiren(dur=1.4){try{const a=sfxCtx(),t=a.currentTime;const o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();o.type='sawtooth';o2.type='square';f.type='lowpass';f.frequency.value=2200;
-  for(let k=0,tt=t;tt<t+dur;k++,tt+=.42){const hi=k%2===0;o.frequency.setValueAtTime(hi?960:720,tt);o2.frequency.setValueAtTime(hi?962:722,tt)}
+  const md=Math.floor(Math.random()*3);if(md===0){for(let k=0,tt=t;tt<t+dur;k++,tt+=.42){const hi=k%2===0;o.frequency.setValueAtTime(hi?960:720,tt);o2.frequency.setValueAtTime(hi?962:722,tt)}}else{const per=md===1?1.3:.32;o.frequency.setValueAtTime(620,t);o2.frequency.setValueAtTime(622,t);for(let tt=t;tt<t+dur;tt+=per){o.frequency.linearRampToValueAtTime(1250,tt+per*.55);o.frequency.linearRampToValueAtTime(620,tt+per);o2.frequency.linearRampToValueAtTime(1252,tt+per*.55);o2.frequency.linearRampToValueAtTime(622,tt+per)}}
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.05,t+.08);g.gain.setValueAtTime(.05,t+dur-.3);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(f);o2.connect(f);f.connect(g).connect(a.destination);o.start(t);o2.start(t);o.stop(t+dur);o2.stop(t+dur);return{stop(){try{const n=a.currentTime;g.gain.cancelScheduledValues(n);g.gain.setValueAtTime(g.gain.value||.05,n);g.gain.exponentialRampToValueAtTime(.0001,n+.35);o.stop(n+.4);o2.stop(n+.4)}catch(e){}}}}catch(e){return{stop(){}}}}
 /* =====================================================
    CHAOS: arrest executions, police clean-up, random events
@@ -2561,7 +2591,7 @@ function ppVerdict(){
   $('#ppSum').onclick=ppSummary;ppBar();ppSave();
 }
 async function ppEndDay(){
-  if(!PD||PD.state==='over')return;PD.state='over';const me=PD;ppUnfreeze();drawFace(null);SFX.whistle();
+  if(!PD||PD.state==='over')return;PD.state='over';const me=PD;SFX.amb(false);ppUnfreeze();drawFace(null);SFX.whistle();
   const guarded=!!(PP.guardNext||PP.downed);PD.guarded=guarded;PD.escort=null;
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>КОНЕЦ СМЕНЫ</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">К будке идёт налоговый инспектор${guarded?' с вооружённой охраной':''}…</p><p class="pp-q">${PP.gun>0?(guarded?'Пистолет есть, но охрана прикроет инспектора щитами. Можешь попробовать.':'У тебя есть пистолет. Нажми «Пистолет» справа: время замедлится втрое, кликай по инспектору, пока он идёт. Замедление длится, пока есть патроны и инспектор не дошёл до будки.'):'Жди проверку.'}</p></div>`;
   let ins;
@@ -2634,7 +2664,7 @@ function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;
   const pp=$('#pp');const fx=document.createElement('div');fx.className='pp-ts';fx.innerHTML='<div class="ts-ring"></div><div class="ts-ring r2"></div><div class="ts-clock"><i class="h"></i><i class="m"></i></div><div class="ts-txt">ВРЕМЯ ОСТАНОВЛЕНО</div>';pp.appendChild(fx);
   try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.type='sawtooth';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(60,t+.9);g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+1);o.connect(g).connect(a.destination);o.start();o.stop(t+1.02)}catch(e){}
   setTimeout(()=>pp.classList.add('frozen'),350);setTimeout(()=>fx.remove(),1500);ppTalk('Таймстоп','Часы стоят, пока ты не закончишь с этим посетителем.');ppBar()}
-$('#ppSnd').onclick=()=>{SFX.on=!SFX.on;store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
+$('#ppSnd').onclick=()=>{SFX.on=!SFX.on;if(!SFX.on)SFX.amb(false);else if(PD&&PD.state!=='over')SFX.amb(true);store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
 $('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',e=>{if(QS.onClick){QS.onClick(qsToLogical(e));return}ppShoot(e)});
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
@@ -2644,7 +2674,7 @@ $('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches
 document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!tab.contains(e.target))return;
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
-$('#ppReset').onclick=()=>{GEN++;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
+$('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
   QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro();qsDraw()};
