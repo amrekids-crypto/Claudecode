@@ -160,6 +160,23 @@ a.btn{text-decoration:none;display:inline-block}
 .pp-window.arrest::before{content:"АРЕСТОВАН";position:absolute;left:50%;top:48%;z-index:2;transform:translate(-50%,-50%) rotate(-10deg);color:#f3e6cf;background:#a3302a;border:3px solid #15130f;padding:2px 10px;font-size:24px;white-space:nowrap;animation:inkin2 .2s .45s both}
 @keyframes bars{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 @keyframes inkin2{from{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(1.8)}to{opacity:1;transform:translate(-50%,-50%) rotate(-10deg) scale(1)}}
+.pp-ts{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center;animation:tsFlash 1.5s ease-out forwards}
+@keyframes tsFlash{0%{background:rgba(160,220,255,.0)}12%{background:rgba(160,220,255,.45)}30%{background:rgba(40,70,100,.35)}100%{background:rgba(40,70,100,0)}}
+.ts-ring{position:absolute;width:40px;height:40px;border:6px solid #8fd3ff;border-radius:50%;box-shadow:0 0 0 4px #15130f,0 0 30px #8fd3ff;animation:tsRing 1.1s cubic-bezier(.2,.7,.2,1) forwards}
+.ts-ring.r2{animation-delay:.18s;border-color:#e0f4ff}
+@keyframes tsRing{from{transform:scale(0);opacity:1}to{transform:scale(28);opacity:0}}
+.ts-clock{position:relative;width:96px;height:96px;border-radius:50%;background:#e8dfc4;border:6px solid #15130f;box-shadow:0 0 0 4px #8fd3ff,0 0 40px #8fd3ff;animation:tsClock 1.5s steps(12) forwards}
+.ts-clock i{position:absolute;left:50%;bottom:50%;width:6px;background:#15130f;transform-origin:50% 100%;margin-left:-3px}
+.ts-clock .h{height:26px;animation:tsHand 1s steps(8) forwards}.ts-clock .m{height:38px;animation:tsHand 1s steps(16) reverse forwards}
+@keyframes tsHand{from{transform:rotate(0)}to{transform:rotate(-720deg)}}
+@keyframes tsClock{0%{transform:scale(0) rotate(-90deg)}25%{transform:scale(1.15)}40%,85%{transform:scale(1)}100%{transform:scale(.6);opacity:0}}
+.ts-txt{position:absolute;bottom:22%;font-size:32px;color:#e0f4ff;letter-spacing:.14em;text-shadow:3px 3px 0 #15130f,0 0 18px #8fd3ff;animation:tsTxt 1.5s steps(10) forwards}
+@keyframes tsTxt{0%{opacity:0;letter-spacing:1em}30%,80%{opacity:1;letter-spacing:.14em}100%{opacity:0}}
+.pp.frozen .pp-top canvas,.pp.frozen .pp-window canvas{filter:grayscale(1) sepia(.35) hue-rotate(170deg) saturate(1.6) brightness(.95)}
+.pp.frozen .pp-clock{color:#8fd3ff;text-shadow:0 0 8px #8fd3ff;animation:tsBlink 1.2s steps(2) infinite}
+.pp.frozen .pp-top::after{content:"❚❚ ВРЕМЯ СТОИТ";position:absolute;left:50%;top:8px;transform:translateX(-50%);font-size:16px;color:#e0f4ff;background:rgba(20,40,60,.8);padding:2px 10px;border:2px solid #8fd3ff}
+@keyframes tsBlink{50%{opacity:.55}}
+@media (prefers-reduced-motion: reduce){.pp-ts{display:none}}
 .pp-bq{border-top:2px dashed #8f8360;padding-top:6px;margin-top:6px}
 .pp-opt.sel{border:2px solid #3a2e21;background:#e6ddbd;box-shadow:inset 3px 0 0 #3a2e21}
 table.pp-form td.badv{color:var(--pp-red);font-weight:700}
@@ -297,7 +314,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
       </div>
       <div class="pp-desk" id="ppDesk"></div>
     </div>
-    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp"><button class="pp-btn" id="ppHint">50/50 · $2</button><button class="pp-btn" id="ppBook" hidden>Справочник</button></div></div>
+    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp"><button class="pp-btn" id="ppHint">50/50 · $2</button><button class="pp-btn" id="ppBook" hidden>Справочник</button><button class="pp-btn" id="ppTS">Таймстоп · 0</button></div></div>
     <div class="pp-ov" id="ppOv" hidden></div>
   </div>
   <p class="muted" style="font-size:13.5px">Прогресс сохраняется в этом браузере. <button class="btn small" id="ppReset">Начать игру заново</button></p>
@@ -1576,7 +1593,7 @@ const PPX={
     doc:'Считай сверху вниз. Вычитаемые строки пиши положительными, кроме Cash Flow (там отток с минусом).'},
   FEE:5,RENT:12,FOOD:6,HEAT:4,BONUS:10,FINE:15,
 };
-function ppNorm(p){p=p||{};return Object.assign({day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0},beg:null},p)}
+function ppNorm(p){p=p||{};return Object.assign({ts:0,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
 let PP=ppNorm(store.get('pp',null));
 let PD=null,ppLoop=null;
 const ppSave=()=>store.set('pp',PP);
@@ -1617,8 +1634,8 @@ function drawFace(L){
   R(16,26,3,8,s);R(45,26,3,8,sd);R(17,28,1,4,sd);
   // hair
   const H=L.hair;
-  if(L.style!=='bald'||L.hat){for(let y=10;y<=19;y++){const t=(y-27)/16.5;const hw=Math.round(14.5*Math.sqrt(Math.max(0,1-t*t)));R(32-hw,y,hw*2,1,H)}R(18,19,3,8,H);R(43,19,3,8,H);R(20,19,8,2,H);R(36,19,8,2,H);R(22,11,20,1,shade(H,1.2))}
-  else{R(18,22,3,6,H);R(43,22,3,6,H)}
+  if(L.hat!=='scarf'&&(L.style!=='bald'||L.hat)){for(let y=10;y<=19;y++){const t=(y-27)/16.5;const hw=Math.round(14.5*Math.sqrt(Math.max(0,1-t*t)));R(32-hw,y,hw*2,1,H)}R(18,19,3,8,H);R(43,19,3,8,H);R(20,19,8,2,H);R(36,19,8,2,H);R(22,11,20,1,shade(H,1.2))}
+  else if(L.hat!=='scarf'){R(18,22,3,6,H);R(43,22,3,6,H)}
   if(L.style==='curly'){for(let i=0;i<7;i++)R(18+i*4,9+(i%2),4,3,H)}
   if(L.style==='bun'&&!L.hat){R(27,4,10,7,H);R(28,4,8,1,shade(H,1.2))}
   // brows, eyes
@@ -1634,14 +1651,14 @@ function drawFace(L){
   const C=L.hatc;
   if(L.hat==='cap'){R(17,7,30,9,C);R(17,7,30,2,shade(C,1.25));R(14,15,36,3,shade(C,.8))}
   if(L.hat==='fedora'){R(19,5,26,11,C);R(19,12,26,2,'#1a1a1a');R(10,15,44,3,shade(C,.85));R(22,5,20,2,shade(C,1.2))}
-  if(L.hat==='scarf'){R(15,9,34,12,C);R(15,19,4,20,C);R(45,19,4,20,C);R(18,10,28,2,shade(C,1.25));R(26,40,12,6,C);for(let i=0;i<5;i++)R(18+i*6,13,2,2,shade(C,1.4))}
+  if(L.hat==='scarf'){for(let y=8;y<=20;y++){const t=(y-27)/19.5;const hw=Math.round(17*Math.sqrt(Math.max(0,1-t*t)));R(32-hw,y,hw*2,1,C)}R(15,20,4,22,C);R(45,20,4,22,C);R(16,20,1,22,shade(C,1.2));R(23,11,18,1,shade(C,1.25));R(19,20,26,1,shade(C,.8));for(let i=0;i<4;i++)R(21+i*6,14,2,2,shade(C,1.35));R(24,45,16,3,C);R(29,47,6,3,shade(C,.85))}
   if(L.hat==='officer'){R(16,6,32,10,C);R(16,13,32,3,'#a3302a');R(12,16,40,3,'#15130f');R(29,8,6,5,'#e0b64a');R(30,9,4,3,'#f3dc8a');R(18,6,28,2,shade(C,1.4))}
 }
 /* queue scene 480x140 */
 const QS={people:[],tick:0,bld:null};
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<480){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
 function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-20-i*18,tx:0,state:'q',step:0}));qsTargets()}
-function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=352-k*20;k++}else if(p.state==='booth')p.tx=382;else if(p.state==='gone')p.tx=520})}
+function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=352-k*20;p.ty=92;k++}else if(p.state==='booth'){p.tx=382;p.ty=92}else if(p.state==='gone'){p.tx=-40;p.ty=110}})}
 function drawPerson(R,px,py,L,frame,moving){
   R(px,py+27,13,2,'rgba(0,0,0,.35)');
   const c=L.coat,cd=shade(c,.72),cl=shade(c,1.15),s=L.skin,sd=shade(s,.8),H=L.hair;
@@ -1683,12 +1700,12 @@ function qsDraw(){
   R(446,64,26,60,'#1c1a16');if(QS.door){R(448,66,22,58,'#0c0b09');R(450,70,18,54,'#4a3a22');R(450,70,18,2,'#6a5432')}else{R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a')}
   R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
   R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
-  QS.people.forEach(p=>{if(p.hide)return;const px=Math.round(p.x);if(px<-14||px>490)return;drawPerson(R,px,92,p.look,Math.floor(QS.tick/2),p.moving)});
+  QS.people.slice().sort((a,b)=>(a.y||92)-(b.y||92)).forEach(p=>{if(p.hide)return;const px=Math.round(p.x),py=Math.round(p.y==null?92:p.y);if(px<-14||px>490)return;const Rm=p.dir<0?(x0,y0,w,h,c)=>R(2*px+12-x0-w,y0,w,h,c):R;drawPerson(Rm,px,py,p.look,Math.floor(QS.tick/2),p.moving)});
 }
 function ppAnimate(){
   if($('#tab-mix').hidden)return;
   QS.tick++;let moving=false;
-  QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.5){p.x+=Math.sign(d)*Math.min(Math.abs(d),p.sp||2.2);p.moving=true;moving=true}else{p.x=p.tx;p.moving=false}});
+  if(!(PD&&PD.frozen))QS.people.forEach(p=>{if(p.y==null)p.y=92;if(p.ty==null)p.ty=92;const d=p.tx-p.x,dy=p.ty-p.y;let mv=false;if(Math.abs(dy)>.5){p.y+=Math.sign(dy)*Math.min(Math.abs(dy),1.4);mv=true}if(Math.abs(d)>.5&&Math.abs(dy)<6){p.x+=Math.sign(d)*Math.min(Math.abs(d),p.sp||2.2);p.dir=Math.sign(d);mv=true}else if(Math.abs(d)<=.5)p.x=p.tx;p.moving=mv;if(mv)moving=true;if(!mv&&p.state!=='gone')p.dir=1});
   if(moving||QS.tick%6===0)qsDraw();
   if(QS.tick%5===0)drawOffice();
 }
@@ -1808,6 +1825,7 @@ function ppBar(){
   const cur=PD&&PD.cur;const canHint=PD&&PD.state==='asking'&&!PD.hinted&&cur&&cur.kind==='q'&&cur.q.o.length===4;$('#ppHint').disabled=!canHint;$('#ppHint').textContent=`50/50 · $${has('calc')?1:2}`;
   $('#ppBook').hidden=!has('book');$('#ppBook').disabled=!(PD&&PD.state==='asking');
   $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'));
+  $('#ppTS').textContent=`Таймстоп · ${PP.ts||0}`;$('#ppTS').disabled=!(PD&&PD.state==='asking'&&!PD.frozen&&(PP.ts||0)>0);
   $('#ppDesk').classList.toggle('lit',has('lamp'));
 }
 function ppTalk(who,text){$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
@@ -1820,13 +1838,13 @@ function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
 /* ---------- day flow ---------- */
 function ppDayIntro(){
   PD=null;drawFace(null);$('#ppDesk').innerHTML='';ppTalk('Бюро','Окошко закрыто.');$('#ppClock').textContent='06:00';
-  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0};ppSave()}
+  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0};ppSave()}
   const ev=ppEvent();$('#ppEvent').textContent=ev.t;
   const n=Math.min(4+PP.day,10);const heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
    <p style="text-align:center">${esc(ev.t)}</p>
    <p class="mono" style="text-align:center">Посетителей: ${n} · плата за верный ответ $${PP.event==='fair'?6:PPX.FEE}<br>Вечером: аренда $${PPX.RENT}, еда $${PPX.FOOD}, отопление $${heat}<br>Сбережения сейчас: $${fmt(PP.cash)}</p>
-   <p class="mono">Инспекция: ${PP.event==='audit'?'90%+':'80%+'} верных → медаль и премия $${PP.event==='audit'?20:PPX.BONUS}; меньше 60% → штраф $${PPX.FINE}. Смена до 18:00, после ответа часы стоят, пока не позовёшь следующего.</p>
+   <p class="mono">Инспекция: ${PP.event==='audit'?'90%+':'80%+'} верных → медаль и премия $${PP.event==='audit'?20:PPX.BONUS}; меньше 60% → штраф $${PPX.FINE}. Смена до 18:00 (1 игровая минута = 1 секунда), после ответа часы стоят, пока не позовёшь следующего.</p>
    <p>Темы на сегодня:</p>
    <div class="pp-topics" id="ppTopicBox">${MIXT.map(([k,l])=>`<label><input type="checkbox" value="${k}" ${ppTopics().has(k)?'checked':''}> ${esc(l)}</label>`).join('')}</div>
    <div class="row"><button class="pp-btn" data-tp="all">Все</button><button class="pp-btn" data-tp="none">Ничего</button><button class="pp-btn" data-tp="t12">Темы 1–2</button><button class="pp-btn" data-tp="t37">Темы 3–7</button></div>
@@ -1842,9 +1860,11 @@ function ppShop(){
   ppOverlay(`<h3>МАГАЗИН ОФИСА</h3><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)}</p>
    <p class="mono">Мебель и техника — это <b>capital expenditure</b>: в Cash Flow это investing outflow, в балансе Office equipment, а в Income Statement попадает только depreciation (1/10 цены в день). Покраска стен — это <b>repairs expense</b>: сразу расход в IS.</p>
    <div class="pp-shop">${it}</div>
+   <p>Расходники</p><div class="pp-item" style="max-width:320px"><b>Таймстоп</b><small>Останавливает часы, пока не закончишь с текущим посетителем. Один предмет на одного клиента. Это supplies expense: сразу расход в IS.</small><small>У тебя: ${PP.ts||0} шт.</small><button class="pp-btn" data-ts="1" ${PP.cash<8?'disabled':''}>Купить $8</button></div>
    <p>Покраска стен · $10 (расход)</p><div class="row">${walls}</div>
    <button class="pp-btn horn" id="ppShopBack">Назад</button>`);
   $('#ppOv').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const s=PPX.SHOP.find(x=>x.id===b.dataset.buy);if(PP.cash<s.p)return;PP.cash-=s.p;PP.owned[s.id]=PP.day;PP.pending.capex+=s.p;ppSave();drawOffice();ppShop();ppBar()});
+  $('#ppOv').querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>{if(PP.cash<8)return;PP.cash-=8;PP.ts=(PP.ts||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+8;ppSave();ppShop();ppBar()});
   $('#ppOv').querySelectorAll('[data-wall]').forEach(b=>b.onclick=()=>{if(PP.cash<10)return;PP.cash-=10;PP.wall=b.dataset.wall;PP.pending.repairs+=10;ppSave();drawOffice();ppShop();ppBar()});
   $('#ppShopBack').onclick=ppDayIntro;
 }
@@ -1856,7 +1876,7 @@ function ppStartDay(){
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>БЮРО ФИН. ОТЧЁТНОСТИ</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
   ppBar();
 }
-function ppTick(){if(!PD||PD.state!=='asking'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=has('coffee')?2:3;ppClock();if(PD.min>=1080){ppTalk('Бюро','18:00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
+function ppTick(){if(!PD||PD.frozen||PD.state!=='asking'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=has('coffee')?.67:1;ppClock();if(PD.min>=1080){ppTalk('Бюро','18:00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
 function ppCall(){
   if(!PD||(PD.state!=='idle'&&PD.state!=='done'))return;
   if(PD.idx>=0&&QS.people[PD.idx])QS.people[PD.idx].state='gone';
@@ -1880,7 +1900,7 @@ function ppRenderTask(){
   $('#ppDesk').innerHTML=h;
 }
 function ppFinish(right,expl,ai,fee,extra){
-  const c=PD.cur;PD.state='done';ppThunk();
+  const c=PD.cur;PD.state='done';ppUnfreeze();ppThunk();
   $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
   if(right){PD.correct++;PD.fees+=fee;PP.cash+=fee;ppTalk(c.role,pick(PPX.THANKS))}else{PD.wrong++;if(fee>0){PD.fees+=fee;PP.cash+=fee}ppTalk(c.role,pick(PPX.ANGRY))}
   $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$${fee} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b>${extra||''}<p>${esc(expl)}</p><p>${fee>0?`Частичная оплата: $${fee}.`:'Оплата не получена.'}</p>${aiBox(ai)}</div>`);
@@ -1936,7 +1956,7 @@ function ppAudit(arrest){
   const rows=document.querySelectorAll('#ppPaper table.pp-form tr');a.labels.forEach((l,i)=>{const td=rows[i].children[1];if(Math.abs(a.th[i]-a.ok[i])>.5){td.classList.add('badv');td.insertAdjacentHTML('beforeend',`<span class="fix">верно: ${fmt(a.ok[i])}</span>`)}else td.classList.add('okv')});
   const expl=hasErr?`В документе ошибка. ${a.why}`:'Документ верный, все строки сходятся с условием.';
   const ai=`Проверь по шагам этот документ (${a.title}) и объясни, есть ли в нём ошибка и какая. Я студент 1 курса, Managerial Finance (Gitman).\nУсловие: ${a.story}\nДокумент посетителя: ${a.labels.map((l,i)=>l+' = '+fmt(a.th[i])).join('; ')}`;
-  const finish=()=>{PD.state='done';ppThunk();
+  const finish=()=>{PD.state='done';ppUnfreeze();ppThunk();
     $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${arrest?'АРЕСТ':'ОДОБРЕНО'}</div>`);
     if(right){PD.correct++;PD.fees+=15;PP.cash+=15}else{PD.wrong++;PD.deduct+=15;PP.cash-=15}
     if(!arrest)ppTalk(c.role,hasErr?'Хе-хе. Спасибо за печать!':'Спасибо, что поверили.');
@@ -1966,7 +1986,7 @@ function ppEndDay(){
 function ppSummary(){
   const d=PP.day,eq=equip(d),heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   const rev=PD.fees,rent=PPX.RENT,food=PPX.FOOD,rep=PP.pending.repairs,hints=PD.hints,dep=eq.dep;
-  const ded=PD.deduct||0;const opex=rent+food+heat+rep+hints+dep+ded,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
+  const ded=PD.deduct||0,sup=PP.pending.supplies||0;const opex=rent+food+heat+rep+hints+dep+ded+sup,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
   const begCash=PP.beg.cash,begNet=PP.beg.net,capex=PP.pending.capex;
   PP.cash=begCash+ni+dep-capex;
   const endNet=begNet+capex-dep,reBeg=begCash+begNet-PP.capital,reEnd=reBeg+ni,ta=PP.cash+endNet;
@@ -1977,7 +1997,7 @@ function ppSummary(){
    <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>
    <div class="pp-sumgrid">
    <table class="pp-is"><tr class="h"><td>Income statement</td><td></td></tr>
-   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}
+   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}${sup?row('Supplies (таймстопы)',-sup):''}
    ${row('Operating profit (EBIT)',ebit,'sub')}${row('Other income: премия',PD.bonus)}${row('Other expense: штраф',-PD.fine)}${row('Net income',ni,'sub')}</table>
    <table class="pp-is"><tr class="h"><td>Retained earnings</td><td></td></tr>${row('Beginning RE',reBeg)}${row('+ Net income',ni)}${row('− Dividends',0)}${row('Ending RE',reEnd,'sub')}
    <tr class="h"><td>Cash flows</td><td></td></tr>${row('Net income',ni)}${row('+ Depreciation',dep)}${row('CFO',ni+dep,'sub')}${row('CFI: office equipment',-capex)}${row('Net change in cash',ni+dep-capex,'sub')}${row('Cash, end of day',PP.cash)}</table>
@@ -1989,6 +2009,12 @@ function ppSummary(){
   else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
   ppSave();ppBar();
 }
+function ppUnfreeze(){if(PD)PD.frozen=false;$('#pp').classList.remove('frozen')}
+function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;PP.ts--;PD.frozen=true;ppSave();
+  const pp=$('#pp');const fx=document.createElement('div');fx.className='pp-ts';fx.innerHTML='<div class="ts-ring"></div><div class="ts-ring r2"></div><div class="ts-clock"><i class="h"></i><i class="m"></i></div><div class="ts-txt">ВРЕМЯ ОСТАНОВЛЕНО</div>';pp.appendChild(fx);
+  try{const A=window.AudioContext||window.webkitAudioContext;const a=ppThunk.ctx||(ppThunk.ctx=new A());const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.type='sawtooth';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(60,t+.9);g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+1);o.connect(g).connect(a.destination);o.start();o.stop(t+1.02)}catch(e){}
+  setTimeout(()=>pp.classList.add('frozen'),350);setTimeout(()=>fx.remove(),1500);ppTalk('Таймстоп','Часы стоят, пока ты не закончишь с этим посетителем.');ppBar()}
+$('#ppTS').onclick=ppTimeStop;
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
