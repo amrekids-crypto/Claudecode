@@ -1946,12 +1946,53 @@ function cardTask(pl){
   return{t:'card',q,o,a:o.indexOf(rev?c[1]:c[2]),x:`${c[1]} — ${c[2]}`};
 }
 const $f=n=>'$'+fmt(n);
-function docIS(){let S,cp,w,sl,rn,dp,L,ir,tax,gp,opx,ebit,int;do{S=rint(12,40)*10000;cp=pick([50,55,60,65,70]);w=rint(4,20)*1000;sl=rint(2,9)*1000;rn=rint(2,8)*1000;dp=rint(2,10)*1000;L=rint(2,10)*10000;ir=pick([5,6,8,10,12]);tax=pick([15,20,25]);gp=S*(100-cp)/100;opx=w+sl+rn+dp;ebit=gp-opx;int=L*ir/100}while(ebit<int+5000);
-  const cogs=S*cp/100,ebt=ebit-int,tx=ebt*tax/100,ni=ebt-tx;
-  return{title:'INCOME STATEMENT',given:`During the year the company sold goods for ${$f(S)}. The goods it sold cost ${cp}% of sales. It paid salaries and wages of ${$f(w)}, spent ${$f(sl)} on advertising and sales commissions, paid office rent of ${$f(rn)} and recorded depreciation of ${$f(dp)}. It has a ${$f(L)} bank loan at ${ir}% annual interest. The tax rate is ${tax}%.`,
-    rows:[['Sales',S],['Less: Cost of goods sold',cogs],['Gross profit',gp],['Salaries and wages',w],['Selling expenses',sl],['Rent expense',rn],['Depreciation expense',dp],['Total operating expenses',opx],['Operating profit (EBIT)',ebit],['Less: Interest expense',int],['Earnings before taxes',ebt],['Less: Taxes',tx],['Net income',ni]],
-    groups:[1,2,3,4,4,4,4,5,6,7,8,9,10],
-    x:`COGS = ${cp}% × ${fmt(S)} = ${fmt(cogs)}; GP = ${fmt(gp)}; OpEx = ${fmt(w)} + ${fmt(sl)} + ${fmt(rn)} + ${fmt(dp)} = ${fmt(opx)}; EBIT = ${fmt(ebit)}; Interest = ${ir}% × ${fmt(L)} = ${fmt(int)}; EBT = ${fmt(ebt)}; Taxes = ${tax}% × ${fmt(ebt)} = ${fmt(tx)}; NI = ${fmt(ni)}.`}}
+const BIZ=[
+ {n:'a small bakery',u:'loaves of bread',P:[3,6],C:[1,2],N:[40,120],retail:1,make:1},
+ {n:'an adult novelty store',u:'items',P:[30,70],C:[10,25],N:[4,12],retail:1},
+ {n:'a car wash',u:'car washes',P:[12,20],C:[3,6],N:[15,40]},
+ {n:'a bike rental shop',u:'rentals',P:[15,30],C:[2,5],N:[8,20]},
+ {n:'a coffee shop',u:'cups of coffee',P:[3,5],C:[1,1],N:[60,150],retail:1,make:1},
+ {n:'a phone repair shop',u:'repairs',P:[60,120],C:[20,40],N:[2,6]},
+ {n:'a tattoo studio',u:'tattoos',P:[100,250],C:[20,40],N:[1,3]},
+ {n:'a food truck',u:'burgers',P:[7,12],C:[2,4],N:[25,60],make:1},
+ {n:'a flower shop',u:'bouquets',P:[25,50],C:[8,15],N:[5,15],retail:1},
+ {n:'an escape room',u:'games',P:[80,150],C:[10,20],N:[2,5]},
+ {n:'a pet grooming salon',u:'grooming visits',P:[40,70],C:[10,20],N:[4,10]},
+ {n:'a video game store',u:'games',P:[40,60],C:[25,35],N:[5,15],retail:1}];
+function docIS(){
+ for(let tries=0;tries<400;tries++){
+  const B=pick(BIZ);const N=rint(B.N[0],B.N[1])*1000,P=rint(B.P[0],B.P[1]),C=rint(B.C[0],B.C[1]);const S=N*P,cogs=N*C,gp=S-cogs;
+  const lines=[],story=[],calc=[];
+  // salaries (always)
+  const sv=pick([0,1,2]);let w,n=rint(2,12);
+  if(sv===0){const per=rint(20,45)*1000;w=n*per;story.push(`It has ${n} employees, each paid ${$f(per)} per year.`);calc.push(`Salaries = ${n} × ${fmt(per)} = ${fmt(w)}`)}
+  else if(sv===1){const m=rint(15,40)*100;w=n*m*12;story.push(`After a pay raise, each of its ${n} workers earns ${$f(m)} per month.`);calc.push(`Salaries = ${n} × ${fmt(m)} × 12 = ${fmt(w)}`)}
+  else{const h=rint(12,20);w=n*h*1000;story.push(`It employs ${n} part-timers at $${h} per hour; each worked 1,000 hours this year.`);calc.push(`Wages = ${n} × $${h} × 1,000 = ${fmt(w)}`)}
+  lines.push(['Salaries and wages',w]);
+  const pool=[
+   ()=>{if(Math.random()<.5){const m=rint(8,40)*100;story.push(`Rent is ${$f(m)} per month.`);calc.push(`Rent = ${fmt(m)} × 12 = ${fmt(m*12)}`);return['Rent expense',m*12]}const q=rint(20,90)*100;story.push(`It pays ${$f(q)} of rent every quarter.`);calc.push(`Rent = ${fmt(q)} × 4 = ${fmt(q*4)}`);return['Rent expense',q*4]},
+   ()=>{const k=rint(2,12),c=rint(5,30)*100;story.push(`It ran ${k} online ad campaigns at ${$f(c)} each.`);calc.push(`Advertising = ${k} × ${fmt(c)} = ${fmt(k*c)}`);return['Advertising expense',k*c]},
+   ()=>{const p=pick([2,3,4,5]);const a=S*p/100;story.push(`Sales staff receive a ${p}% commission on all sales.`);calc.push(`Commissions = ${p}% × ${fmt(S)} = ${fmt(a)}`);return['Sales commissions',a]},
+   ()=>{const y=pick([4,5,8,10]),X=y*rint(1,6)*1000;story.push(`On January 1 it bought equipment for ${$f(X)}; useful life ${y} years, no salvage value, straight-line.`);calc.push(`Depreciation = ${fmt(X)} ÷ ${y} = ${fmt(X/y)} (покупка сама не расход)`);return['Depreciation expense',X/y]},
+   ()=>{const q=rint(3,20)*100;story.push(`Electricity and water cost about ${$f(q)} per quarter.`);calc.push(`Utilities = ${fmt(q)} × 4 = ${fmt(q*4)}`);return['Utilities expense',q*4]},
+   ()=>{const X=rint(4,30)*200;story.push(`On January 1 it paid ${$f(X)} for a 2-year insurance policy.`);calc.push(`Insurance = ${fmt(X)} ÷ 2 = ${fmt(X/2)} (вторая половина — prepaid, актив)`);return['Insurance expense',X/2]},
+   ()=>{if(!B.retail)return null;const X=rint(10,80)*100;story.push(`An inventory count showed that employees had stolen goods that cost ${$f(X)}.`);calc.push(`Shrinkage (theft) = ${fmt(X)} (здесь как операционный расход; иногда включают в COGS)`);return['Inventory shrinkage (theft)',X]},
+   ()=>{const X=rint(5,40)*100;story.push(`A customer who owed ${$f(X)} went bankrupt and will never pay.`);calc.push(`Bad debt = ${fmt(X)}`);return['Bad debt expense',X]},
+   ()=>{const X=rint(5,40)*100;story.push(`A burst pipe cost ${$f(X)} to repair.`);calc.push(`Repairs = ${fmt(X)}`);return['Repairs expense',X]}];
+  const k=rint(3,4);for(const f of shuffle(pool)){if(lines.length>k)break;const r=f();if(r)lines.push(r)}
+  const opx=lines.reduce((a,r)=>a+r[1],0),ebit=gp-opx;
+  const L=rint(2,12)*10000,ir=pick([5,6,8,10,12]),int=L*ir/100;
+  if(ebit<int+5000)continue;
+  const ebt=ebit-int,tax=pick([15,20,25]),tx=ebt*tax/100,ni=ebt-tx;if(!Number.isInteger(tx))continue;
+  const traps=shuffle([`It paid its owners dividends of ${$f(rint(2,15)*1000)}.`,`On December 31 it repaid ${$f(rint(1,4)*5000)} of the loan principal.`,`It also bought a delivery van for ${$f(rint(10,30)*1000)} on December 31 (depreciation starts next year).`,`The owner invested another ${$f(rint(5,20)*1000)} of her own money.`]).slice(0,rint(1,2));
+  const cogsText=B.make?`Ingredients and materials cost $${C} per unit.`:`Each unit cost the business $${C}.`;
+  const given=`${B.n[0].toUpperCase()+B.n.slice(1)} sold ${fmt(N)} ${B.u} at $${P} each this year. ${cogsText} `+shuffle(story.concat(traps)).join(' ')+` It has a ${$f(L)} bank loan at ${ir}% annual interest (interest for the year was paid on December 31). The tax rate is ${tax}%.`;
+  const rows=[['Sales',S],['Less: Cost of goods sold',cogs],['Gross profit',gp],...lines,['Total operating expenses',opx],['Operating profit (EBIT)',ebit],['Less: Interest expense',int],['Earnings before taxes',ebt],['Less: Taxes',tx],['Net income',ni]];
+  const groups=[1,2,3,...lines.map(()=>4),5,6,7,8,9,10];
+  return{title:'INCOME STATEMENT',given,rows,groups,
+   x:`Sales = ${fmt(N)} × $${P} = ${fmt(S)}; COGS = ${fmt(N)} × $${C} = ${fmt(cogs)}; GP = ${fmt(gp)}. ${calc.join('; ')}. Total OpEx = ${fmt(opx)}; EBIT = ${fmt(ebit)}; Interest = ${ir}% × ${fmt(L)} = ${fmt(int)} (на весь кредит; погашение тела — не расход); EBT = ${fmt(ebt)}; Taxes = ${tax}% = ${fmt(tx)}; NI = ${fmt(ni)}. Дивиденды, покупка фургона и вложения владельца в IS не входят.`}}
+ return null}
+
 function docRE(){const beg=rint(20,90)*1000,ni=rint(15,70)*1000,pd=rint(0,5)*1000,cd=rint(2,15)*1000,sh=pick([10000,20000,25000,40000,50000]);const end=beg+ni-pd-cd,eac=ni-pd,eps=Math.round(eac/sh*100)/100;
   return{title:'STATEMENT OF RETAINED EARNINGS',given:`Retained earnings at the beginning of the year ${$f(beg)}. Net income ${$f(ni)}. Preferred dividends ${$f(pd)}, common dividends ${$f(cd)}. Common shares outstanding: ${fmt(sh)}.`,
     rows:[['Beginning retained earnings',beg,1],['Plus: Net income',ni,1],['Less: Total dividends',pd+cd],['Ending retained earnings',end],['Earnings available for common',eac],['EPS ($, 2 decimals)',eps,0,{tol:.011,dec:2}]],x:`Dividends = ${fmt(pd)} + ${fmt(cd)} = ${fmt(pd+cd)}; Ending RE = ${fmt(beg)} + ${fmt(ni)} − ${fmt(pd+cd)} = ${fmt(end)}; EAC = ${fmt(ni)} − ${fmt(pd)} = ${fmt(eac)}; EPS = ${fmt(eac)} ÷ ${fmt(sh)} = ${eps.toFixed(2)}.`}}
