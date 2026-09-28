@@ -1,6 +1,6 @@
 <title>Finance Midterm Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
   --bg:#EEF2F0; --paper:#FFFFFF; --ink:#15231E; --muted:#5A6B64; --line:#D3DDD8; --line2:#E4EBE7;
@@ -142,6 +142,70 @@ table.simple th{background:var(--line2);font-weight:600}
   table.ledger td.val{width:130px}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+/* ===== MIX MODE: bureau game (own pixel style) ===== */
+#tab-mix{--pp-bg:#1c1a16;--pp-wall:#4a4838;--pp-wall2:#393829;--pp-desk:#5b4431;--pp-desk2:#43311f;--pp-paper:#d8cead;--pp-paper2:#c8bd98;--pp-ink:#3a2e21;--pp-red:#a3302a;--pp-green:#557538;--pp-pink:#e6b9b3;--pp-text:#d3c9a6;--pp-dim:#8d866a;--pp-gold:#d6a93c;--pp-line:#15130f}
+.pp{background:var(--pp-bg);color:var(--pp-text);font-family:"Pixelify Sans","Press Start 2P",ui-monospace,monospace;border:4px solid var(--pp-line);box-shadow:0 0 0 4px var(--pp-wall2);image-rendering:pixelated;display:flex;flex-direction:column;gap:0;user-select:none;position:relative}
+.pp canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.pp-top{position:relative;background:#2c2a21;border-bottom:4px solid var(--pp-line)}
+.pp-top canvas{width:100%;height:auto;aspect-ratio:240/60}
+.pp-date{position:absolute;left:8px;top:6px;font-size:13px;color:var(--pp-text);background:rgba(20,18,14,.75);padding:2px 6px}
+.pp-main{display:grid;grid-template-columns:minmax(220px,300px) 1fr;min-height:430px}
+.pp-booth{background:var(--pp-wall);border-right:4px solid var(--pp-line);display:flex;flex-direction:column;gap:10px;padding:10px}
+.pp-wall{min-height:46px;background:var(--pp-wall2);border:3px solid var(--pp-line);display:flex;flex-wrap:wrap;gap:6px;padding:6px;align-items:flex-start}
+.pp-wall .empty{font-size:12px;color:var(--pp-dim)}
+.medal{width:22px;height:34px;position:relative;flex:none}
+.medal::before{content:"";position:absolute;left:6px;top:0;width:10px;height:14px;background:var(--rib,#a3302a);box-shadow:inset 3px 0 0 rgba(255,255,255,.18)}
+.medal::after{content:"";position:absolute;left:2px;top:12px;width:18px;height:18px;background:var(--pp-gold);box-shadow:inset -3px -3px 0 #9b7424,inset 3px 3px 0 #f0cf73;clip-path:polygon(33% 0,67% 0,100% 33%,100% 67%,67% 100%,33% 100%,0 67%,0 33%)}
+.pp-window{background:#6c705b;border:4px solid var(--pp-line);position:relative}
+.pp-window canvas{width:100%;height:auto;aspect-ratio:1}
+.pp-clock{font-size:20px;background:#12110d;color:#e0b64a;border:3px solid var(--pp-line);padding:2px 8px;text-align:center;letter-spacing:.08em}
+.pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:15px;line-height:1.35;min-height:78px}
+.pp-talk .who{color:#e0b64a;display:block;font-size:13px}
+.pp-btn{font:inherit;font-size:15px;cursor:pointer;background:#7b7155;color:#1b1914;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:8px 12px;text-transform:uppercase;letter-spacing:.04em}
+.pp-btn:hover{filter:brightness(1.08)}
+.pp-btn:active{box-shadow:inset 3px 3px 0 #574f3a}
+.pp-btn[disabled]{opacity:.45;cursor:default;filter:none}
+.pp-btn.horn{background:#b8913b;box-shadow:inset -3px -3px 0 #7d5f22,inset 3px 3px 0 #e2c071}
+.pp-desk{background:var(--pp-desk);background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.12) 46px 48px);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.pp-paper{background:var(--pp-paper);color:var(--pp-ink);border:3px solid var(--pp-line);box-shadow:6px 6px 0 rgba(0,0,0,.35);padding:14px 16px;position:relative;max-width:560px;transform:rotate(-.6deg)}
+.pp-paper h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;border-bottom:2px solid var(--pp-ink);padding-bottom:4px;display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.pp-q{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14.5px;line-height:1.5;margin:8px 0 10px}
+.pp-opts{display:flex;flex-direction:column;gap:6px}
+.pp-opt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;text-align:left;background:var(--pp-paper2);color:var(--pp-ink);border:2px dashed #8f8360;padding:6px 8px;cursor:pointer;position:relative}
+.pp-opt:hover:not([disabled]){background:#e6ddbd;border-style:solid}
+.pp-opt[disabled]{cursor:default}
+.pp-opt.gone{opacity:.25;text-decoration:line-through}
+.pp-opt.right{border:2px solid var(--pp-green);background:#c9d3a6}
+.pp-opt.wrongpick{border:2px solid var(--pp-red);background:#e2b7a6}
+.pp-stamps{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px}
+.pp-stamp{font:inherit;font-size:20px;padding:10px 18px;cursor:pointer;border:4px solid var(--pp-line);color:#f0e8cc;letter-spacing:.1em;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.15)}
+.pp-stamp.t{background:var(--pp-green)} .pp-stamp.f{background:var(--pp-red)}
+.pp-stamp[disabled]{opacity:.5;cursor:default}
+.ink{position:absolute;right:14px;top:34px;font-family:"Pixelify Sans",monospace;font-size:26px;letter-spacing:.12em;padding:4px 12px;border:4px solid currentColor;transform:rotate(-12deg);opacity:.85;pointer-events:none;animation:inkin .18s ease-out}
+.ink.ok{color:var(--pp-green)} .ink.no{color:var(--pp-red)}
+@keyframes inkin{from{transform:rotate(-12deg) scale(1.8);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:.85}}
+.pp-cite{background:var(--pp-pink);color:#4a1d18;border:3px solid var(--pp-line);padding:10px 12px;max-width:520px;font-size:13.5px;box-shadow:5px 5px 0 rgba(0,0,0,.35);transform:rotate(.8deg);animation:print .35s steps(6)}
+.pp-cite b{display:block;font-size:14px;letter-spacing:.08em;border-bottom:2px dashed #4a1d18;margin-bottom:6px;padding-bottom:3px}
+.pp-cite p{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;line-height:1.45}
+.pp-good{background:#c9d3a6;color:#243016;border:3px solid var(--pp-line);padding:8px 12px;max-width:520px;font-size:13.5px;box-shadow:5px 5px 0 rgba(0,0,0,.35)}
+.pp-good p{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;line-height:1.45}
+@keyframes print{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+.pp-bar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:#2a281f;border-top:4px solid var(--pp-line);padding:8px 12px;font-size:15px}
+.pp-bar span b{color:#e0b64a;font-weight:500}
+.pp-ov{position:absolute;inset:0;background:rgba(14,13,10,.92);display:flex;align-items:center;justify-content:center;padding:16px;z-index:3;overflow:auto}
+.pp-card{background:var(--pp-paper);color:var(--pp-ink);border:4px solid var(--pp-line);box-shadow:8px 8px 0 #000;padding:18px 20px;max-width:460px;width:100%;display:flex;flex-direction:column;gap:10px}
+.pp-card h3{font-family:"Pixelify Sans",monospace;font-size:24px;font-weight:600;letter-spacing:.06em;text-align:center}
+.pp-card p{font-size:15px;line-height:1.4}
+.pp-card .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.pp-is{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13.5px;width:100%;border-collapse:collapse}
+.pp-is td{padding:2px 0}.pp-is td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.pp-is tr.sub td{border-top:2px solid var(--pp-ink);font-weight:600}
+.pp-is tr.neg td:last-child{color:var(--pp-red)}
+.pp-is tr.h td{padding-top:8px;font-weight:600;letter-spacing:.05em}
+.pp-card .pp-btn{align-self:center}
+.pp-title{font-size:34px;text-align:center;letter-spacing:.12em;color:var(--pp-ink)}
+@media (max-width:640px){.pp-main{grid-template-columns:1fr}.pp-booth{border-right:none;border-bottom:4px solid var(--pp-line);display:grid;grid-template-columns:110px 1fr;grid-template-areas:"win talk" "clock talk" "wall wall" "btn btn"}.pp-window{grid-area:win}.pp-clock{grid-area:clock;font-size:16px}.pp-talk{grid-area:talk}.pp-wall{grid-area:wall}.pp-booth .horn{grid-area:btn}.pp-paper{transform:none}}
+@media (prefers-reduced-motion: reduce){.ink,.pp-cite{animation:none}}
 </style>
 
 <header class="top">
@@ -150,6 +214,7 @@ table.simple th{background:var(--line2);font-weight:600}
     <nav class="tabs" role="tablist" id="tabs">
       <button role="tab" data-tab="home" aria-selected="true">Главная</button>
       <button role="tab" data-tab="build">Отчёты</button>
+      <button role="tab" data-tab="mix">МИКС</button>
       <button role="tab" data-tab="place">Где статья?</button>
       <button role="tab" data-tab="quiz">Тесты</button>
       <button role="tab" data-tab="cards">Карточки</button>
@@ -184,6 +249,27 @@ table.simple th{background:var(--line2);font-weight:600}
       <li>Решай в таком порядке: Income Statement → Retained Earnings → Balance Sheet → Cash Flow.</li>
     </ul>
   </div>
+</section>
+
+<!-- MIX -->
+<section class="section" id="tab-mix" hidden>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Режим МИКС · все темы вперемешку</span><h1>Бюро финансовой отчётности</h1><p class="muted" style="max-width:70ch">Ты клерк в будке бюро. Каждый день к окошку приходят люди со своими вопросами. Штампуй правильные ответы и зарабатывай. Вечером приходит налоговый инспектор: вешает медаль на стену или выписывает штраф. В конце дня видишь свой Income Statement за этот день.</p></div>
+  <div class="pp" id="pp">
+    <div class="pp-top"><canvas id="ppQueue" width="240" height="60" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div></div>
+    <div class="pp-main">
+      <div class="pp-booth">
+        <div class="pp-window"><canvas id="ppFace" width="32" height="32" aria-label="Посетитель"></canvas></div>
+        <div class="pp-clock" id="ppClock">06:00</div>
+        <div class="pp-talk" id="ppTalk" aria-live="polite"></div>
+        <div class="pp-wall" id="ppWall" title="Медали от налоговой"></div>
+        <button class="pp-btn horn" id="ppNext">Следующий!</button>
+      </div>
+      <div class="pp-desk" id="ppDesk"></div>
+    </div>
+    <div class="pp-bar"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span><button class="pp-btn" id="ppHint" style="font-size:13px;padding:5px 10px">50/50 · $2</button></div>
+    <div class="pp-ov" id="ppOv" hidden></div>
+  </div>
+  <p class="muted" style="font-size:13.5px">Прогресс сохраняется в этом браузере. <button class="btn small" id="ppReset">Начать игру заново</button></p>
 </section>
 
 <!-- BUILD -->
@@ -281,7 +367,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function parseNum(s){if(s==null)return null;s=String(s).trim();if(!s)return null;let neg=false;if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}s=s.replace(/[$\s,]/g,'').replace(/−/g,'-');if(s.startsWith('-')){neg=!neg;s=s.slice(1)}const n=parseFloat(s);if(isNaN(n))return null;return neg?-n:n}
 
 /* ---------- tabs ---------- */
-const TABS=['home','build','place','quiz','cards','sheet'];
+const TABS=['home','build','mix','place','quiz','cards','sheet'];
 function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);if(t==='home')renderHome();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
@@ -1127,6 +1213,194 @@ $('#placeFilter').onchange=pgBuild;
 $('#placeListBtn').onclick=()=>{const L=$('#placeList');L.hidden=!L.hidden;if(L.hidden)return;
   L.innerHTML='<div class="tw"><table class="simple"><tr><th>Статья</th><th>Отчёт → категория</th><th>Почему</th></tr>'+Object.keys(STMTS).map(k=>ITEMS.filter(i=>i.s===k).map(i=>`<tr><td><b>${esc(i.n)}</b></td><td>${esc(i.full)}</td><td>${esc(i.x)}</td></tr>`).join('')).join('')+'</table></div>'};
 pgBuild();
+
+/* =====================================================
+   MIX MODE: bureau game
+   ===================================================== */
+const PPX={
+  ROLES:['Пекарь','Фермерша','Студент 1 курса','Владелица кафе','Таксист','Пенсионерка-инвестор','Стартапер','Стажёр-бухгалтер','Рыбак','Кассир банка','Строитель','Цветочница','Сантехник','Блогерша','Учитель','Хозяин автомойки'],
+  OPEN:{
+    mini:['Препод дал мини-тест, а я забыл ответ.','Это было на мини-тесте. Что правильно?'],
+    intro:['Хочу понять, чем вообще занимаются финансисты.','Мой сын пошёл учиться на финансы. Объясните вот это.'],
+    forms:['Хочу открыть свой бизнес. Какая форма лучше?','Мы с другом открываем фирму. Вопрос по форме бизнеса.'],
+    inst:['Куда мне нести свои сбережения?','Банк прислал бумагу, не понимаю, кто есть кто.'],
+    mkt:['Хочу купить акции. Вопрос про рынки.','На бирже что-то непонятное. Помогите.'],
+    stmt:['Бухгалтер уволился, а отчёты нужны к пятнице.','Налоговая требует отчёты. Помогите с балансом.'],
+    cf:['Прибыль есть, а денег на счёте нет. Как так?','Составляю cash flow. Куда это писать?'],
+    calc:['Посчитайте, пожалуйста, у меня калькулятор сломался.','Цифры не сходятся. Проверьте расчёт.'],
+    cls:['Куда записать эту операцию?','У меня строка в бумагах. Какой раздел?'],
+    place:['У меня в бумагах есть строка. Куда её записать?','Не знаю, в какой отчёт это ставить.'],
+    pairs:['Одна и та же вещь и в IS, и в BS? Объясните.','Почему это в двух отчётах сразу?']},
+  THANKS:['Спасибо! Держите плату.','Ох, теперь понятно. Спасибо!','Вы мне очень помогли.','Слава балансу!'],
+  ANGRY:['Кажется, вы ошиблись...','Мой бухгалтер сказал бы иначе.','Хм. Я на вас пожалуюсь.','Это точно правильно?'],
+  MEDALS:[['Орден Сбалансированного Баланса','#a3302a'],['Медаль Accrual Basis','#3f6d8c'],['Крест Cash Flow','#557538'],['Звезда Retained Earnings','#7a4b8c'],['Знак отличия EBIT','#a36a2a'],['Орден Двойной Записи','#2f6a63'],['Медаль Money Market','#8c3f5c'],['Крест Capital Market','#4d5a8c']],
+  FEE:5,RENT:12,FOOD:6,HEAT:4,BONUS:10,FINE:15,
+};
+let PP=store.get('pp',null)||{day:1,cash:40,medals:[],fines:0,best:0};
+let PD=null; // day state
+let ppTimer=null;
+const ppSave=()=>store.set('pp',PP);
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---- pixel sprites ---- */
+const SKIN=['#e8c29a','#d9a877','#b9855a','#8d5b3a','#f0d2b0','#c8946a'];
+const HAIR=['#2a1d14','#5a3a20','#8a5a2a','#c9a24a','#7a7a74','#a8412a','#1a1a1a','#d8d0c0'];
+const SHIRT=['#5b6b4a','#6a4a3a','#4a5a6b','#7a6a4a','#5a4a6a','#8a3a32','#3f5a52','#6b6b5a'];
+function newLook(){return{skin:pick(SKIN),hair:pick(HAIR),shirt:pick(SHIRT),hat:Math.random()<.3?pick(['#3a3a30','#5a3a24','#2d3b4a']):null,stache:Math.random()<.25,glasses:Math.random()<.2,long:Math.random()<.35}}
+const INSPECTOR={skin:'#d9b08a',hair:'#1a1a1a',shirt:'#3b3d3a',hat:'#23241f',band:'#a3302a',stache:true,glasses:false,long:false,insp:true};
+function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;r=Math.max(0,Math.min(255,Math.round(r*f)));g=Math.max(0,Math.min(255,Math.round(g*f)));b=Math.max(0,Math.min(255,Math.round(b*f)));return'#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}
+function drawFace(look){
+  const c=$('#ppFace'),x=c.getContext('2d');const R=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  R(0,0,32,32,'#6c705b');R(0,26,32,6,'#5a5e4b');for(let i=0;i<32;i+=4)R(i,0,1,26,'#646853');
+  if(!look){R(0,0,32,32,'#6c705b');R(12,12,8,8,'#5f6350');return}
+  const s=look.skin,sd=shade(s,.82);
+  if(look.long)R(8,8,16,16,look.hair);
+  R(5,25,22,7,look.shirt);R(5,25,22,1,shade(look.shirt,1.2));
+  if(look.insp){R(13,25,6,7,'#d8d0c0');R(15,26,2,6,'#a3302a');R(5,27,3,2,'#e0b64a');R(24,27,3,2,'#e0b64a')}
+  else{R(13,25,6,2,shade(look.shirt,.7))}
+  R(13,21,6,4,sd);
+  R(10,7,12,15,s);R(9,9,1,11,s);R(22,9,1,11,s);R(11,21,10,1,s);R(21,9,1,12,sd);
+  R(10,6,12,3,look.hair);R(9,7,2,5,look.hair);R(21,7,2,5,look.hair);
+  R(12,12,3,1,shade(look.hair,.9));R(17,12,3,1,shade(look.hair,.9));
+  R(12,14,2,1,'#1b1914');R(18,14,2,1,'#1b1914');R(12,13,2,1,'#f0e8d8');R(18,13,2,1,'#f0e8d8');
+  if(look.glasses){R(11,13,4,3,'rgba(30,30,30,.0)');x.strokeStyle='#1b1914';x.lineWidth=1;x.strokeRect(11.5,12.5,4,3);x.strokeRect(16.5,12.5,4,3);R(15,13,2,1,'#1b1914')}
+  R(15,15,2,3,sd);
+  if(look.stache)R(13,18,6,1,look.insp?'#1a1a1a':look.hair);
+  R(14,19,4,1,shade(s,.6));
+  if(look.hat){R(8,4,16,4,look.hat);R(6,7,20,2,shade(look.hat,.8));if(look.band)R(8,6,16,1,look.band);if(look.insp){R(15,4,2,2,'#e0b64a')}}
+}
+/* queue scene */
+const QS={people:[],t:0};
+function qsSetup(n){QS.people=[];for(let i=0;i<n;i++)QS.people.push({look:newLook(),x:20+i*-11,tx:0,state:'q'});qsTargets()}
+function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=150-k*11;k++}else if(p.state==='booth'){p.tx=196}else if(p.state==='gone'){p.tx=260}})}
+function qsDraw(){
+  const c=$('#ppQueue');if(!c)return;const x=c.getContext('2d');const R=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h)};
+  R(0,0,240,60,'#3a382c');R(0,0,240,14,'#2a2920');for(let i=0;i<240;i+=6)R(i,12,3,2,'#4a4838');
+  R(0,44,240,16,'#2f2d23');for(let i=0;i<240;i+=16)R(i,47,8,1,'#3a382c');
+  for(let i=0;i<240;i+=20){R(i,14,2,10,'#1c1a16')}R(0,16,240,1,'#1c1a16');R(0,21,240,1,'#1c1a16');
+  R(204,8,34,40,'#4a4838');R(202,6,38,4,'#23211a');R(206,20,12,12,'#6c705b');R(207,21,10,10,'#5a5e4b');R(222,24,12,24,'#23211a');R(220,6,4,4,'#a3302a');
+  R(40,30,150,1,'#262419');
+  QS.people.forEach(p=>{const px=Math.round(p.x),py=32;if(px<-10||px>250)return;const L=p.look;
+    R(px,py,5,3,L.hair);R(px,py+2,5,3,L.skin);R(px-1,py+5,7,6,L.shirt);R(px,py+11,2,2,'#1c1a16');R(px+3,py+11,2,2,'#1c1a16');if(L.hat)R(px-1,py-1,7,2,L.hat)});
+}
+function qsLoop(){let moving=false;QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.4){p.x+=Math.sign(d)*Math.min(Math.abs(d),1.6);moving=true}else p.x=p.tx});qsDraw();if(moving)requestAnimationFrame(qsLoop)}
+const qsKick=()=>{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){QS.people.forEach(p=>p.x=p.tx);qsDraw()}else requestAnimationFrame(qsLoop)};
+
+/* ---- ui helpers ---- */
+function ppBar(){$('#ppCash').textContent=(PP.cash<0?'-$':'$')+Math.abs(PP.cash);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?`${PD.correct}/${PD.clients.length}`:'—';$('#ppDate').textContent=`ДЕНЬ ${PP.day}`;
+  const w=$('#ppWall');w.innerHTML=PP.medals.length?PP.medals.map(m=>`<span class="medal" style="--rib:${m[1]}" title="${esc(m[0])} (день ${m[2]})"></span>`).join(''):'<span class="empty">Стена пуста. Заработай медаль.</span>';
+  const canHint=PD&&PD.state==='asking'&&!PD.hinted&&PD.cur&&PD.cur.q.o.length===4;$('#ppHint').disabled=!canHint;
+  $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'));}
+function ppTalk(who,text){$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
+function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=PD.min%60;$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
+function ppOverlay(html){const o=$('#ppOv');o.innerHTML=`<div class="pp-card">${html}</div>`;o.hidden=false}
+function ppCloseOv(){$('#ppOv').hidden=true}
+function ppThunk(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=ppThunk.ctx||(ppThunk.ctx=new A());const o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.setValueAtTime(140,a.currentTime);o.frequency.exponentialRampToValueAtTime(50,a.currentTime+.09);g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.13)}catch(e){}}
+
+/* ---- day flow ---- */
+function ppDayIntro(){
+  PD=null;drawFace(null);$('#ppDesk').innerHTML='';ppTalk('Бюро','Окошко закрыто.');$('#ppClock').textContent='06:00';
+  const n=Math.min(4+PP.day,10);
+  ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
+   <p class="mono" style="text-align:center">Посетителей сегодня: ${n}<br>Плата за верный ответ: $${PPX.FEE}<br>Вечером: аренда $${PPX.RENT}, еда $${PPX.FOOD}, отопление $${PPX.HEAT}</p>
+   <p style="font-size:13.5px">Правила инспекции: 80%+ верных → медаль и премия $${PPX.BONUS}. Меньше 60% → штраф $${PPX.FINE}. Смена до 18:00. Если сбережения уйдут в минус, бюро закроют.</p>
+   <button class="pp-btn horn" id="ppGo">Открыть окошко</button>`);
+  $('#ppGo').onclick=ppStartDay;ppBar();
+}
+function ppPickQs(n){
+  const wrong=store.get('wrong',{});const weak=shuffle(Q.filter(q=>wrong[q.t+'|'+q.q]));
+  const byTopic={};Q.forEach(q=>{(byTopic[q.t]=byTopic[q.t]||[]).push(q)});
+  const out=[];const used=new Set();
+  const nWeak=Math.min(weak.length,Math.floor(n/3));for(let i=0;i<nWeak;i++){out.push(weak[i]);used.add(weak[i].id)}
+  const topics=shuffle(Object.keys(byTopic));let k=0;
+  while(out.length<n&&k<500){const t=topics[k%topics.length];const q=pick(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
+  return shuffle(out);
+}
+function ppStartDay(){
+  ppCloseOv();const n=Math.min(4+PP.day,10);
+  PD={clients:ppPickQs(n).map(q=>({q,look:newLook(),role:pick(PPX.ROLES)})),idx:-1,correct:0,wrong:0,hints:0,min:360,state:'idle',cur:null,hinted:false,startCash:PP.cash};
+  qsSetup(n);QS.people.forEach((p,i)=>p.look=PD.clients[i].look);qsTargets();QS.people.forEach(p=>p.x=p.tx-40);qsKick();
+  ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
+  $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>БЮРО ФИН. ОТЧЁТНОСТИ</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
+  clearInterval(ppTimer);ppTimer=setInterval(ppTick,1000);ppBar();
+}
+function ppTick(){if(!PD||PD.state==='over'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=3;ppClock();if(PD.min>=1080){ppTalk('Бюро','18:00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
+function ppCall(){
+  if(!PD)return;if(PD.state!=='idle'&&PD.state!=='done')return;
+  if(PD.idx>=0&&QS.people[PD.idx])QS.people[PD.idx].state='gone';
+  PD.idx++;
+  if(PD.idx>=PD.clients.length){qsTargets();qsKick();drawFace(null);ppEndDay();return}
+  QS.people[PD.idx].state='booth';qsTargets();qsKick();
+  const c=PD.clients[PD.idx];PD.cur=c;PD.hinted=false;PD.state='asking';
+  drawFace(c.look);ppTalk(c.role,pick(PPX.OPEN[c.q.t]||['Добрый день. Вот мой документ.']));
+  ppRenderDoc();ppBar();
+}
+function ppRenderDoc(){
+  const c=PD.cur,q=c.q;const tf=q.o===TF;
+  const order=(tf||q.t==='mini'||q.o.some(x=>/above/.test(x)))?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));c.order=order;
+  $('#ppDesk').innerHTML=`<div class="pp-paper" id="ppPaper"><h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>${esc(TOPICS[q.t]||'')}</span></h4>
+   <p class="pp-q">${esc(q.q.replace(/^True or False:\s*/,''))}</p>
+   ${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:
+   `<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}</div>`;
+}
+function ppAnswer(k){
+  if(!PD||PD.state!=='asking')return;const c=PD.cur,q=c.q;const right=k===q.a;PD.state='done';ppThunk();
+  const paper=$('#ppPaper');paper.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.classList.contains('pp-opt')){if(+b.dataset.k===q.a)b.classList.add('right');else if(+b.dataset.k===k)b.classList.add('wrongpick')}});
+  paper.insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${right?'ВЕРНО':'ОШИБКА'}</div>`);
+  const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);
+  const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st);
+  const corr=q.o[q.a];
+  if(right){PD.correct++;PP.cash+=PPX.FEE;ppTalk(c.role,pick(PPX.THANKS));$('#ppDesk').insertAdjacentHTML('beforeend',`<div class="pp-good"><b>+$${PPX.FEE} · ОПЛАТА ПОЛУЧЕНА</b><p>${esc(q.x)}</p></div>`)}
+  else{PD.wrong++;ppTalk(c.role,pick(PPX.ANGRY));$('#ppDesk').insertAdjacentHTML('beforeend',`<div class="pp-cite"><b>ЗАМЕЧАНИЕ · НАРУШЕНИЕ ПРОТОКОЛА</b><p>Верный ответ: ${esc(corr)}</p><p>${esc(q.x)}</p><p>Оплата не получена.</p></div>`)}
+  PD.min=Math.min(1080,PD.min+rint(20,45));ppClock();ppSave();ppBar();
+}
+function ppHint(){if(!PD||PD.state!=='asking'||PD.hinted)return;const q=PD.cur.q;if(q.o.length!==4)return;PD.hinted=true;PD.hints++;PP.cash-=2;
+  const wrongs=shuffle([0,1,2,3].filter(k=>k!==q.a)).slice(0,2);document.querySelectorAll('#ppPaper .pp-opt').forEach(b=>{if(wrongs.includes(+b.dataset.k)){b.classList.add('gone');b.disabled=true}});ppTalk('Справочник','Два неверных варианта вычеркнуты. −$2.');ppSave();ppBar()}
+function ppEndDay(){
+  if(!PD||PD.state==='over')return;PD.state='over';clearInterval(ppTimer);
+  const n=PD.clients.length,acc=PD.correct/n;drawFace(INSPECTOR);
+  let verdict,bonus=0,fine=0,medal=null;
+  if(acc>=.8){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=PPX.BONUS;verdict='medal'}
+  else if(acc>=.6)verdict='warn';else{fine=PPX.FINE;PP.fines++;verdict='fine'}
+  PD.bonus=bonus;PD.fine=fine;
+  const lines={medal:`Налоговая инспекция. Проверил ваши записи: ${PD.correct} из ${n} верно. Книги в порядке. Вручаю вам «${medal&&medal[0]}» и премию $${bonus}. Повесьте на стену.`,
+    warn:`Налоговая инспекция. ${PD.correct} из ${n} верно. Есть нарушения. В этот раз без штрафа, но медали не будет. Assets должны равняться Liabilities + Equity.`,
+    fine:`Налоговая инспекция! ${PD.correct} из ${n} верно. Это недопустимо. Штраф $${fine}. Выучите шпаргалку к завтрашнему дню.`}[verdict];
+  ppTalk('Налоговый инспектор',lines);
+  $('#ppDesk').innerHTML=`<div class="${verdict==='fine'?'pp-cite':'pp-paper'}" style="transform:none"><b style="display:block;letter-spacing:.08em">${verdict==='medal'?'АКТ ПРОВЕРКИ · НАГРАЖДЕНИЕ':verdict==='warn'?'АКТ ПРОВЕРКИ · ПРЕДУПРЕЖДЕНИЕ':'АКТ ПРОВЕРКИ · ШТРАФ'}</b><p class="pp-q">${esc(lines)}</p><button class="pp-btn horn" id="ppSum">Итоги дня</button></div>`;
+  $('#ppSum').onclick=ppSummary;ppBar();ppSave();
+}
+function ppSummary(){
+  const n=PD.clients.length,rev=PD.correct*PPX.FEE,opx=PPX.RENT+PPX.FOOD+PPX.HEAT,hints=PD.hints*2;
+  const ebit=rev-opx-hints,ni=ebit+PD.bonus-PD.fine;
+  const beg=PD.startCash;PP.cash=beg+ni;const end=PP.cash;
+  const row=(l,v,cls='')=>`<tr class="${cls}${v<0?' neg':''}"><td>${l}</td><td>${v<0?'('+Math.abs(v)+')':v}</td></tr>`;
+  const broke=end<0;
+  ppOverlay(`<h3>ИТОГИ ДНЯ ${PP.day}</h3>
+   <p class="mono" style="font-size:13px;text-align:center">Income Statement клерка, $</p>
+   <table class="pp-is">
+   ${row(`Revenue: плата (${PD.correct} × $${PPX.FEE})`,rev)}
+   <tr class="h"><td>Operating expenses</td><td></td></tr>
+   ${row('  Rent (аренда)',-PPX.RENT)}${row('  Food (еда)',-PPX.FOOD)}${row('  Heat (отопление)',-PPX.HEAT)}${hints?row('  Справочник 50/50',-hints):''}
+   ${row('Operating profit (EBIT)',ebit,'sub')}
+   ${row('Other income: премия инспектора',PD.bonus)}
+   ${row('Other expense: штраф налоговой',-PD.fine)}
+   ${row('Net income',ni,'sub')}
+   <tr class="h"><td>Statement of retained earnings</td><td></td></tr>
+   ${row('Beginning savings',beg)}${row('+ Net income',ni)}${row('Ending savings',end,'sub')}
+   </table>
+   <p style="font-size:13.5px">Верных ответов: ${PD.correct} из ${n}. ${PD.wrong?'Ошибки попали в «Только мои ошибки» во вкладке Тесты.':'Без единой ошибки!'}</p>
+   ${broke?'<p><b>Сбережения ушли в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn horn" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
+  PP.best=Math.max(PP.best||0,PP.day);
+  if(broke){$('#ppAgain').onclick=()=>{PP={day:1,cash:40,medals:[],fines:0,best:PP.best};ppSave();ppDayIntro()}}
+  else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
+  PD=null;ppSave();ppBar();
+}
+$('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;
+$('#ppDesk').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b&&!b.disabled)ppAnswer(+b.dataset.k)});
+$('#ppReset').onclick=()=>{clearInterval(ppTimer);PP={day:1,cash:40,medals:[],fines:0,best:PP.best||0};ppSave();ppDayIntro()};
+qsSetup(6);QS.people.forEach(p=>p.x=p.tx);qsDraw();ppDayIntro();
 
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
