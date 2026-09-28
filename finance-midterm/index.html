@@ -1944,7 +1944,7 @@ function drawFace(L,cv,ov){
 
   if(L.insp){const wAt=y=>{const dy=y-44,RR=F.rsh?9:5;return F.rsh?(dy<RR?Math.round(16+(shw-16)*Math.sqrt(1-Math.pow((RR-dy-1)/RR,2))):shw):Math.min(shw,17+dy*4)};
     const ew=Math.min(11,Math.max(7,shw-19)),w1=wAt(48)-1;R(32-w1,47,ew,3,'#c9a24a');R(32+w1-ew,47,ew,3,'#c9a24a');R(32-w1,49,ew,1,'#8a6a2a');R(32+w1-ew,49,ew,1,'#8a6a2a');
-    const w2=wAt(54);R(32-w2+4,52,7,5,'#8a2a24');R(32-w2+6,54,3,1,'#c9a24a');R(32+w2-11,52,6,6,'#b8923a');R(32+w2-10,53,4,4,'#d8bf63')}
+    const w2=wAt(54),mL=32-Math.min(17,w2-4),mR=32+Math.min(11,w2-10);R(mL,53,7,5,'#8a2a24');R(mL+2,55,3,1,'#c9a24a');R(mR,53,6,6,'#b8923a');R(mR+1,54,4,4,'#d8bf63')}
   // neck
   const nw=F.build==='thin'?4:F.build==='wide'?6:5;R(32-nw-1,37,nw*2+2,9,OL);R(32-nw,37,nw*2,9,sd);R(32-nw,37,nw*2,3,s2);R(32+nw-3,40,2,6,s2);R(32-nw,44,nw*2,1,s3);if(F.age==='o'){R(30,41,1,4,s2);R(34,41,1,4,s2)}if(L.g==='m'&&F.age!=='y')R(31,41,2,2,s)
   {const SH=PM(F.shirt||L.shirt,.2),SH1=shade(SH,.75),SH2=shade(SH,1.15),nk=F.neck||'collar';
