@@ -2330,7 +2330,7 @@ async function ppCall(){
   if(Math.abs(p.x-p.tx)>24){p.run=true;p.sp=Math.max(4.5,Math.abs(p.tx-p.x)/28);PD.state='arriving';drawFace(null);ppTalk('Бюро','Посетитель бежит к окошку…');
     $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>…</span></h4><p class="pp-q">Посетитель бежит к окошку. Часы стоят.</p></div>`;ppBar();
     await until(()=>near(p),9000);p.run=false;p.sp=2.2}
-  PD.state='asking';SFX.paper();if(Math.random()<.5)document.querySelector('.pp-window').classList.remove('splat');
+  PD.state='asking';SFX.paper();
   drawFace(c.look);const tk=c.kind==='q'?c.q.t:c.kind;if(c.kind==='bundle')c.bsel={};ppTalk(c.role,pick(PPX.OPEN[tk]||['Добрый день. Вот мой документ.']));
   ppRenderTask();ppBar();
 }
