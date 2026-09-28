@@ -127,3 +127,65 @@ revoke all on function public.cloud_load(text) from public;
 grant execute on function public.cloud_login(text, text, text) to anon, authenticated;
 grant execute on function public.cloud_save(text, jsonb) to anon, authenticated;
 grant execute on function public.cloud_load(text) to anon, authenticated;
+
+-- =====================================================================
+-- Hardening (v2): nobody can write someone else's leaderboard row or
+-- read player ids. Leaderboard writes go only through lb_submit with the
+-- secret account token; the public can read names and scores only.
+-- =====================================================================
+drop policy if exists "leaderboard insert" on public.leaderboard;
+drop policy if exists "leaderboard update" on public.leaderboard;
+revoke all on public.leaderboard from anon, authenticated;
+grant select (name, score, best_day, medals, correct, answered, updated_at) on public.leaderboard to anon, authenticated;
+
+create or replace function public.lb_submit(p_token text, p_best_day integer, p_medals integer,
+                                            p_correct integer, p_answered integer, p_earned integer)
+returns jsonb language plpgsql security definer
+set search_path = public, extensions as $$
+declare r public.cloud_saves; sc integer;
+begin
+  select * into r from public.cloud_saves where token = p_token;
+  if not found then raise exception 'bad_token'; end if;
+  if p_best_day not between 0 and 10000 or p_medals not between 0 and 10000
+     or p_correct < 0 or p_answered < p_correct or p_answered > 1000000 then raise exception 'bad_stats'; end if;
+  sc := least(1000000, p_medals * 100 + p_best_day * 25 + p_correct * 5);
+  insert into public.leaderboard (player_id, name, score, best_day, medals, correct, answered, earned, updated_at)
+  values (r.player_id, r.name, sc, p_best_day, p_medals, p_correct, p_answered, greatest(0, coalesce(p_earned, 0)), now())
+  on conflict (player_id) do update set name = excluded.name, score = excluded.score, best_day = excluded.best_day,
+    medals = excluded.medals, correct = excluded.correct, answered = excluded.answered, earned = excluded.earned, updated_at = now();
+  return jsonb_build_object('score', sc);
+end $$;
+revoke all on function public.lb_submit(text, integer, integer, integer, integer, integer) from public;
+grant execute on function public.lb_submit(text, integer, integer, integer, integer, integer) to anon, authenticated;
+
+-- Safety net: every cloud save keeps the previous version (last 20 per player),
+-- so a bad update or a wrong choice on another device can always be rolled back.
+create table if not exists public.cloud_saves_history (
+  id         bigserial primary key,
+  name_key   text not null,
+  data       jsonb not null,
+  saved_at   timestamptz not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists cloud_saves_history_key_idx on public.cloud_saves_history (name_key, id desc);
+alter table public.cloud_saves_history enable row level security;
+revoke all on public.cloud_saves_history from anon, authenticated;
+
+create or replace function public.cloud_saves_keep_history() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if old.data is distinct from new.data and old.data <> '{}'::jsonb then
+    insert into public.cloud_saves_history (name_key, data, saved_at) values (old.name_key, old.data, old.updated_at);
+    delete from public.cloud_saves_history
+     where name_key = old.name_key
+       and id not in (select id from public.cloud_saves_history where name_key = old.name_key order by id desc limit 20);
+  end if;
+  return new;
+end $$;
+drop trigger if exists cloud_saves_history_trg on public.cloud_saves;
+create trigger cloud_saves_history_trg before update of data on public.cloud_saves
+  for each row execute function public.cloud_saves_keep_history();
+
+-- Restore example (run by the owner in SQL Editor):
+--   update public.cloud_saves set data = (select data from public.cloud_saves_history
+--     where name_key = 'ник в нижнем регистре' order by id desc limit 1) where name_key = 'ник в нижнем регистре';
