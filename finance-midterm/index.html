@@ -2538,6 +2538,11 @@ function claimBS(){if(Math.random()<.5){const L=rint(10,60)*10000,E=rint(10,60)*
     return{kind:'claim',title:'Баланс',story:`Total liabilities ${CF$(L)}, Total stockholders’ equity ${CF$(E)}.`,claim:`Total assets у меня ${CF$(A2)}, всё сходится.`,ok,why:`Assets = Liabilities + Equity = ${fmt(L)} + ${fmt(E)} = ${CF$(A)}.`}}
   const b=rint(20,90)*1000,ni=rint(10,50)*1000,d=rint(2,12)*1000,e=b+ni-d;const ok=Math.random()<.5,e2=ok?e:pick([b+ni+d,b+ni,b-ni+d]);
   return{kind:'claim',title:'Retained earnings',story:`Retained earnings на начало ${CF$(b)}, net income ${CF$(ni)}, дивиденды ${CF$(d)}.`,claim:`Retained earnings на конец года ${CF$(e2)}.`,ok,why:`Ending RE = Beginning RE + Net income − Dividends = ${fmt(b)} + ${fmt(ni)} − ${fmt(d)} = ${CF$(e)}.`}}
+function docKey(x){const t=(x.doc&&x.doc.title)||(x.au&&x.au.title)||'';if(!t)return null;return /BALANCE/.test(t)?'BS':/RETAINED/.test(t)?'RE':/CASH FLOW/.test(t)?'CF':/INCOME/.test(t)?'IS':t}
+function docSpread(t){const bad=a=>a.some((x,i)=>i&&docKey(x)&&docKey(x)===docKey(a[i-1]));
+  for(let k=0;k<40&&bad(t);k++){for(let i=1;i<t.length;i++){const ki=docKey(t[i]);if(!ki||ki!==docKey(t[i-1]))continue;
+    const j=t.findIndex((x,jj)=>jj!==i&&jj!==i-1&&docKey(x)!==ki&&(jj===0||docKey(t[jj-1])!==ki||jj-1===i)&&(jj+1>=t.length||docKey(t[jj+1])!==ki||jj+1===i));if(j>=0)[t[i],t[j]]=[t[j],t[i]]}
+    if(bad(t)&&k>20)t=shuffle(t)}return t}
 function makeTasks(n,ev){
   const T=ppTopics();
   const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
@@ -2565,7 +2570,7 @@ function makeTasks(n,ev){
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
-  return shuffle(t).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&Math.random()<.1)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
+  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&Math.random()<.1)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
