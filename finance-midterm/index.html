@@ -1875,16 +1875,18 @@ function sympLook(){const L=newLook(),sp=pick(['granny','mom','wheel','cat']);L.
   if(sp==='mom'){const r=Math.random(),KC=['#e0b64a','#6aa0c8','#d87a8a','#7ac070','#b07ad0','#e07a3a','#40b0b0','#e0e0e0','#c84040'],kh=()=>pick(HAIR.filter(h=>!['#8a8a82','#e0d8c8'].includes(h)));L.nk=r<.6?1:r<.85?2:3;if(L.nk>=2)L.kid2={k:Math.random()<.7?L.kid:pick(SKIN),c:pick(KC),h:kh()};if(L.nk===3)L.kid3={k:L.kid,c:pick(['#f0e0e8','#d8e8f4','#f4ecd0','#e0f0dc'])}}
   return L}
 function catLook(){const L=newLook();Object.assign(L,{catgirl:true,g:'f',old:false,hat:null,style:'long',beard:false,stache:false,tie:null,brow:0,hair:pick(['#1c1a24','#2a2436','#e8e0d0','#c89a4a','#d88aa8','#8a5a3a','#4a4a6a'])});return L}
-function celebLook(){const k=pick(['biden','zelensky','floyd','kirk']),L=newLook();
+function celebLook(){const k=pick(['biden','zelensky','hitler','floyd','kirk']),L=newLook();
+  if(k==='hitler'){Object.assign(L,{celeb:k,g:'m',old:false,skin:'#e8c4a4',hair:'#1f1812',style:'short',hat:null,coat:'#6a5e40',shirt:'#8a7c56',tie:'#15130f',beard:false,stache:true,glasses:false,brow:1});return L}
   if(k==='floyd')Object.assign(L,{celeb:k,g:'m',old:false,skin:'#6a4632',hair:'#15120f',style:'bald',hat:null,coat:'#2a2a2e',shirt:'#2a2a2e',tie:null,beard:true,stache:true,glasses:false,brow:1});
   if(k==='kirk')Object.assign(L,{celeb:k,g:'m',old:false,skin:'#ecc8b0',hair:'#4a3020',style:'short',hat:null,coat:'#233050',shirt:'#f0f0f0',tie:null,beard:false,stache:false,glasses:false,brow:1});
   if(k==='floyd'||k==='kirk')return L;
   if(k==='biden')Object.assign(L,{celeb:k,g:'m',old:true,skin:'#e8c4a8',hair:'#e8e4dc',style:'short',hat:null,coat:'#1f2a44',shirt:'#eef0f2',tie:'#2a4a8a',beard:false,stache:false,glasses:false,brow:0});
   else Object.assign(L,{celeb:k,g:'m',old:false,skin:'#dcb498',hair:'#2a2420',style:'short',hat:null,coat:'#4a5238',shirt:'#4a5238',tie:null,beard:false,stache:false,glasses:false,brow:1});
   return L}
-function roleFor(L){if(L.celeb==='biden'||L.celeb==='zelensky')return L.celeb==='biden'?'Джо Байден':'Владимир Зеленский';if(L.cat)return pick(['Бабушка с котом Барсиком','Бабушка с котом Мурзиком','Бабуля и её кот']);if(L.sp==='granny')return pick(['Бабушка Нина','Бабушка Валя','Бабуля с пенсией']);if(L.sp==='mom')return L.nk===3?pick(['Многодетная мама','Мама троих детей']):L.nk===2?pick(['Мама двоих детей','Мама с двойняшками']):pick(['Мама с малышом','Молодая мама','Мама-одиночка']);if(L.sp==='wheel')return L.g==='f'?'Женщина в коляске':pick(['Ветеран в коляске','Мужчина в коляске']);
+function roleFor(L){if(L.celeb==='hitler')return'Адольф Гитлер';if(L.celeb==='biden'||L.celeb==='zelensky')return L.celeb==='biden'?'Джо Байден':'Владимир Зеленский';if(L.cat)return pick(['Бабушка с котом Барсиком','Бабушка с котом Мурзиком','Бабуля и её кот']);if(L.sp==='granny')return pick(['Бабушка Нина','Бабушка Валя','Бабуля с пенсией']);if(L.sp==='mom')return L.nk===3?pick(['Многодетная мама','Мама троих детей']):L.nk===2?pick(['Мама двоих детей','Мама с двойняшками']):pick(['Мама с малышом','Молодая мама','Мама-одиночка']);if(L.sp==='wheel')return L.g==='f'?'Женщина в коляске':pick(['Ветеран в коляске','Мужчина в коляске']);
   if(L.old)return L.g==='f'?pick(['Пенсионерка-инвестор','Бабушка-вкладчица','Пенсионерка']):pick(['Пенсионер-инвестор','Дедушка-вкладчик','Пенсионер']);return pick(L.g==='f'?ROLES_F:ROLES_M)}
 const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
+const CLERK={special:true,g:'m',skin:'#e3b98f',hair:'#3f2a1a',style:'short',hat:null,hatc:'#3a3a30',coat:'#56664a',shirt:'#d8d0c0',tie:'#8a2a22',beard:false,stache:false,glasses:false,brow:1};
 function P(ctx){return(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}}
 const FACE={L:null,talkUntil:0};
 const FACES={oval:[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,12,12,11,11,10,9,9,8,7,6,5,3],
@@ -1895,7 +1897,7 @@ const FACES={oval:[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,
 function pmixHex(c1,c2,t){const a=parseInt(c1.slice(1),16),b=parseInt(c2.slice(1),16);const m=sh=>Math.round(((a>>sh)&255)*(1-t)+((b>>sh)&255)*t);return'#'+((1<<24)|(m(16)<<16)|(m(8)<<8)|m(0)).toString(16).slice(1)}
 function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['avatar',L.g,L.fs].join('|'):[L.skin,L.hair,L.coat,L.shirt,L.style,L.hat,L.g,L.tie,L.hatc,L.fs].join('|');for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}
   let st=h>>>0;const rnd=()=>{st=(Math.imul(st^(st>>>15),2246822507)+0x9e3779b9)>>>0;return (st>>>8)/16777216};const pk=a=>a[Math.floor(rnd()*a.length)];
-  const f=L.insp||L.hat==='police'||L.hat==='helmet'?{shape:'square',age:'m',build:'wide',ears:0,cheek:'hollow',eye:'small',eyeY:0,eyeGap:0,brow:'angry',nose:'normal',mouth:'normal',mood:'frown',iris:'#15120f',look:0,hairline:0,part:'side'}:{
+  const f=(L.insp&&!L.avatar)||L.hat==='police'||L.hat==='helmet'?{shape:'square',age:'m',build:'wide',ears:0,cheek:'hollow',eye:'small',eyeY:0,eyeGap:0,brow:'angry',nose:'normal',mouth:'normal',mood:'frown',iris:'#15120f',look:0,hairline:0,part:'side'}:{
     shape:pk(['oval','oval','square','round','long','heart']),age:L.old?'o':(rnd()<.45?'y':'m'),build:pk(['normal','normal','wide','thin']),ears:rnd()<.25?1:0,cheek:pk(['normal','normal','hollow','full']),
     eye:pk(['normal','normal','big','small']),eyeY:rnd()<.3?1:0,eyeGap:rnd()<.35?1:0,brow:pk(['flat','flat','thick','angry','sad','raised','uni']),nose:pk(['normal','normal','small','long','wide','hook']),
     mouth:pk(['normal','normal','wide','small','full']),mood:pk(['neutral','neutral','smile','frown']),iris:pk(['#15120f','#15120f','#3a5a7a','#4a6a4a','#4a3020','#5a6a78']),look:rnd()<.3?(rnd()<.5?-1:1):0,
@@ -1905,7 +1907,7 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['ava
   f.shirt=L.tie||L.insp||L.payot?L.shirt:pk(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0','#8a9aa8','#a8584a','#5a6a4a','#d8c070','#3a3a44','#e8e4dc','#7a5a8a','#4a6a8a']);
   f.rsh=L.g==='f'||rnd()<.5;f.clean=rnd()<.5;if(f.clean){f.freckles=false;f.mole=null;f.scar=0;f.stubble=false;f.bags=false;f.chin=false;f.cheek=f.cheek==='hollow'?'normal':f.cheek}
   if(f.age==='y'){f.bags=false;f.stubble=f.stubble&&rnd()<.5}
-  f.pretty=!L.insp&&L.hat!=='police'&&L.hat!=='helmet'&&L.hat!=='hasid'&&!L.payot&&!L.old&&!L.sp&&rnd()<.25;
+  f.pretty=!(L.insp&&!L.avatar)&&L.hat!=='police'&&L.hat!=='helmet'&&L.hat!=='hasid'&&!L.payot&&!L.old&&!L.sp&&rnd()<.25;
   if(f.pretty){const fm=L.g==='f';Object.assign(f,{clean:true,scar:0,bags:false,lids:false,ears:0,freckles:fm&&rnd()<.15,mole:rnd()<.3?(fm?[40,35]:[24,36]):null,
     shape:fm?pk(['oval','heart','oval']):pk(['square','oval']),age:rnd()<.7?'y':'m',build:fm?'thin':pk(['normal','wide']),cheek:fm?'normal':'hollow',chin:!fm,
     eye:fm?'big':'normal',eyeY:0,eyeGap:0,brow:fm?'arch':pk(['flat','thick']),nose:'small',mouth:fm?'full':'normal',mood:pk(['neutral','smile','smile']),look:0,
@@ -1913,6 +1915,7 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['ava
     L.stache=false;L.beard=!fm&&rnd()<.15;L.glasses=rnd()<.12;if(['#8a8a82','#e0d8c8','#d8d4c8'].includes(L.hair))L.hair=pk(['#1f1812','#3f2a1a','#6a4526','#c89a4a','#a8402a'])}
   if(L.celeb==='floyd'){L.beard=true;L.stache=true;L.glasses=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'square',build:'wide',narrow:0,mood:'neutral',iris:'#2a1a10',neck:'crew',shirt:'#2a2a2e',clean:true,brow:'flat',nose:'wide',mouth:'full',eye:'normal',rsh:false,pend:false})}
   else if(L.celeb==='kirk'){L.beard=false;L.glasses=false;L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:true,age:'y',shape:'long',build:'thin',narrow:2,mood:'smile',iris:'#4a3a2a',neck:'collar',shirt:'#f0f0f0',clean:true,brow:'flat',hairline:0,part:'side',nose:'normal',mouth:'normal',eye:'small',eyeGap:0,rsh:false,pend:false,stubble:false})}
+  else if(L.celeb==='hitler'){L.beard=false;L.glasses=false;L.stache=true;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'long',build:'thin',narrow:2,mood:'frown',iris:'#3a4a5a',neck:'collar',shirt:L.shirt,clean:true,brow:'angry',hairline:0,part:'side',nose:'normal',mouth:'small',eye:'normal',eyeGap:0,rsh:true,pend:false,stubble:false,bags:false,look:0})}
   else if(L.celeb){L.beard=false;L.glasses=false;L.stache=false}
   if(L.catgirl){L.glasses=false;Object.assign(f,{pretty:true,long:true,bang:rnd()<.6,quiff:false,age:'y',shape:pk(['oval','heart']),build:'thin',eye:'big',brow:'arch',nose:'small',mouth:'full',blush:true,clean:true,scar:0,bags:false,stubble:false,mood:pk(['smile','smile','neutral']),iris:pk(['#c8a030','#5a9a5a','#8a4ab0','#3a7ab0']),cat2:pk(['#e8a0b0','#f0c8c8'])})}
   if(L.celeb==='biden')Object.assign(f,{pretty:false,long:false,quiff:false,age:'o',shape:'long',mood:'smile',iris:'#5a7a90',neck:'collar',narrow:1,clean:true,brow:'flat',hairline:-2,part:'side',mole:null,freckles:false,stubble:false,bags:true,eye:'small',nose:'long',mouth:'wide',rsh:false});
@@ -2001,7 +2004,7 @@ function drawFace(L,cv,ov){
   if(L.beard){for(let y=30;y<=34;y++){const hw=hwAt(y);R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}for(let y=35;y<=47;y++){const hw=y<=44?hwAt(y):Math.max(0,HW[33]-1-(y-45)*2);if(hw>0){if(y>44)R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
   else{const lip=F.pretty&&L.g==='f'?pmixHex(s,'#b04858',.55):L.g==='f'?'#7a4a44':s2;R(mx+1,my-1,mw-2,1,sd);R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,F.mouth==='full'?2:1,lip);R(mx+2,my+2+(F.mouth==='full'?1:0),mw-4,1,sd);if(F.pretty&&L.g==='f'){R(mx+2,my-1,mw-4,1,shade(lip,.85));R(mx+3,my+1,2,1,shade(lip,1.35))}if(F.mood==='smile'){R(mx-1,my-1,1,1,s3);R(mx+mw,my-1,1,1,s3)}else if(F.mood==='frown'){R(mx-1,my+1,1,1,s3);R(mx+mw,my+1,1,1,s3)}}
   if(talk){R(mx,my-1,mw,3,'#1e100c');R(mx+1,my-1,mw-2,1,'#c8c0b0');R(mx+1,my+1,mw-2,1,'#5a2a24')}
-  if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
+  if(L.celeb==='hitler'){R(30,my-3,4,3,H);R(33,my-3,1,3,H1);for(let i=0;i<7;i++){const y=18+i,x0=38-i*2;R(x0-5,y,9,1,H);R(x0+3,y,1,1,H1);R(x0-6,y+1,1,1,OL)}}else if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
   if(LS==='long'&&!L.hat){for(let y=19;y<=50;y++){const dr=y>38?Math.floor((y-38)/4):0,w=y<42?4:Math.max(1,4-Math.floor((y-42)/2)),a=17+d-dr,b=a+w;R(a-1,y,1,1,OL);R(a,y,w,1,H);R(b-1,y,1,1,H1);R(b,y,1,1,OL);R(64-b-1,y,1,1,OL);R(64-b,y,w,1,H1);R(64-b,y,1,1,H);R(64-a,y,1,1,OL);if(y%6<2&&w>2)R(a+1,y,1,1,H2)}
     if(F.bang){for(let y=19;y<=24;y++){const w=Math.max(0,18-(y-19)*3);R(19,y,w,1,H);R(19+w,y,1,1,OL);if(y<22)R(21+(y-19)*2,y,3,1,H2)}}}
   // hats
@@ -2226,11 +2229,11 @@ function qsDraw(cv,ov){
   R(20,30,3,70,'#23211a');R(14,28,15,5,'#23211a');R(16,33,11,3,'#e0c070');x.fillStyle=ST.lamp;x.beginPath();x.moveTo(16,36);x.lineTo(0,100);x.lineTo(52,100);x.lineTo(28,36);x.fill();
   const BC=(PPX.BOOTHS[(ov&&ov.booth)||PP.booth]||PPX.BOOTHS.olive)[1];
   R(398,38,80,86,BC);R(398,38,2,86,shade(BC,1.15));R(476,38,2,86,shade(BC,.75));R(392,30,92,10,'#2a2820');R(392,38,92,3,'#1c1a16');if(ST.snow)R(390,27,96,4,'#eef1f5');
-  R(404,58,34,26,'#15130f');R(406,60,30,22,'#8a8e6a');R(406,60,30,4,'#a8ac84');R(420,60,2,22,'#15130f');R(404,82,34,4,'#6a5a44');
+  R(404,82,34,3,shade(BC,.8));
   R(446,64,26,60,'#1c1a16');if(QS.door){R(448,66,22,58,'#0c0b09');R(450,70,18,54,'#4a3a22');R(450,70,18,2,'#6a5432')}else{R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a')}
   R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
   R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
-  if(!(ov&&ov.noClerk))drawBoothClerk(R);if(!cv)drawPetStreet(R);
+  if(!cv)drawPetStreet(R);
   if(QS.crater){const cx=QS.crater.x,cy=QS.crater.y;for(let k=-6;k<=6;k++){const w=Math.round(34*Math.sqrt(1-(k/7)*(k/7)));R(cx-w,cy+k,w*2,1,k<-3?'#5a5046':k<0?'#2a2420':'#15110e')}R(cx-26,cy-1,52,2,'#0c0a08');for(let i=0;i<5;i++)R(cx-20+i*9,cy+1,3,1,QS.tick%(6+i)<3?'#e05a1a':'#8a2a10');R(cx-40,cy+5,80,1,'rgba(0,0,0,.25)')}
   drawStreetDecals(x,R);
   (QS.scorch||[]).forEach(d=>{R(d.x-18,d.y,36,3,'#1a1410');R(d.x-14,d.y-1,28,1,'#2a2018');R(d.x-8,d.y+1,3,1,'#6a2a10');R(d.x+6,d.y+1,3,1,'#6a2a10')});
@@ -2879,7 +2882,7 @@ const ARRESTS=[
      QS.fx.push({t:'line',x1:Math.round(h.x+50),y1:Math.round(h.y+15),x2:Math.round(tx),y2:Math.round(ty),ttl:2});QS.fx.push({t:'spark',x:Math.round(tx),y:Math.round(ty),ttl:4,c:hitMan?'#a3201a':'#c8c0b0'});QS.fx.push({t:'spark',x:Math.round(h.x+38+rint(0,4)),y:Math.round(h.y+22+i%4*3),ttl:3,c:'#e0b64a'});
      if(!hitMan&&i%3===0)QS.decals.length<40&&QS.fx.push({t:'spark',x:Math.round(tx),y:Math.round(ty-2),ttl:6,c:'#6a6254'});ppShot();if(i===15){kill(p);popText('RATATATA!',Math.round(p.x+6),Math.round(p.y+2),'#ffe060',16);shakePP()}await sleep(75)}
    h.fire=false;await sleep(400);ppTalk('Пилот','Цель нейтрализована. Возвращаюсь на базу.');h.tilt=-.12;await tick(()=>{h.x+=11;h.y-=2.2;return h.y<-40});QS.actors=QS.actors.filter(a=>a!==h)}},
- {n:'rock',title:'Камень клерка',desc:'Ты сам выбегаешь из будки и швыряешь булыжник.',price:10,line:'Клерк выходит из будки с камнем…',async run(p){QS.door=1;const me={look:avatarLook(),x:452,y:92,tx:430,ty:110,state:'x',sp:4.5,run:true};QS.clerkOut=true;QS.people.push(me);ppTalk('Клерк','Эй, ты! Стоять!');popText('ЭЙ!',436,100,'#ffe060',14);
+ {n:'rock',title:'Камень клерка',desc:'Ты сам выбегаешь из будки и швыряешь булыжник.',price:10,line:'Клерк выходит из будки с камнем…',async run(p){QS.door=1;const me={look:CLERK,x:452,y:92,tx:430,ty:110,state:'x',sp:4.5,run:true};QS.clerkOut=true;QS.people.push(me);ppTalk('Клерк','Эй, ты! Стоять!');popText('ЭЙ!',436,100,'#ffe060',14);
    const t0=Date.now();await tick(()=>{me.tx=Math.max(p.x+110,-QS.OX+80);return Date.now()-t0>3000||Math.abs(me.x-p.x)<130});me.tx=me.x;me.ty=110;me.run=false;p.sp=1.6;await tick(()=>near(me));me.dir=-1;me.faceL=true;
    ppTalk('Клерк','Лови отчётность!');me.pose='wind';sTone(300,.3,'triangle',.03,500);await sleep(650);me.pose='throw';
    const r={t:'bigrock',x:me.x-4,y:me.y+2};QS.actors.push(r);const x0=r.x,y0=r.y;let k=0;const T=24;sTone(500,.5,'triangle',.04,150);
@@ -3244,7 +3247,7 @@ $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.c
    META: album, achievements, easter eggs, avatar, pet, boss
    (META lives outside PP, so it survives "Начать игру заново")
    ===================================================== */
-const META=Object.assign({album:{},ach:{},eggs:{},st:{},av:null},store.get('meta',{}));['album','ach','eggs','st'].forEach(k=>{if(!META[k]||typeof META[k]!=='object')META[k]={}});
+const META=Object.assign({album:{},ach:{},eggs:{},st:{},av:null},store.get('meta',{}));['album','ach','eggs','st'].forEach(k=>{if(!META[k]||typeof META[k]!=='object')META[k]={}});if(!META.avInsp){META.av=null;META.avInsp=1}
 const metaSave=()=>store.set('meta',META);
 function stInc(k,v=1){META.st[k]=(META.st[k]||0)+v;metaSave()}
 function stMax(k,v){if(v>(META.st[k]||0)){META.st[k]=v;metaSave()}}
@@ -3292,6 +3295,7 @@ const ALBUM=[
  ['flag_ps','С флагом Палестины','Флаг несёт каждый 10-й',L=>L.flag==='ps','Держит флаг крепче, чем свой бюджет.'],
  ['catgirl','Кошкодевочка','Очень редкая гостья',L=>!!L.catgirl,'Мяу. Требует оплату рыбой. Бухгалтерия в замешательстве.'],
  ['biden','Джо Байден','Знаменитость, приходит редко',L=>L.celeb==='biden','Вышел не в ту дверь и оказался в очереди. Остался из вежливости.'],
+ ['hitler','Адольф Гитлер','Знаменитость, приходит редко',L=>L.celeb==='hitler','Не прошёл в академию художеств. Теперь не может пройти даже проверку отчёта о движении денежных средств.'],
  ['zelensky','Владимир Зеленский','Знаменитость, приходит редко',L=>L.celeb==='zelensky','Пришёл попросить ещё немного финансирования. Как обычно.'],
  ['inspector','Налоговый инспектор','Приходит каждый вечер',L=>!!L.insp,'Любит порядок, медали и чужие ошибки.'],
  ['boss','Олигарх Скруджев','Босс недели, каждый 7-й день',L=>!!L.boss,'Семь заводов, ноль бухгалтеров. Монокль дороже твоей будки.'],
@@ -3315,7 +3319,7 @@ const ACH=[
  ['streak25','Машина','25 верных ответов подряд',s=>s.bestStreak>=25,['coat','#c9a24a']],
  ['arrest1','Первый арест','Верно арестуй нарушителя',s=>s.arrests>=1,null],
  ['arrest25','Гроза мошенников','25 верных арестов',s=>s.arrests>=25,['badge','star']],
- ['boss1','Олигарх повержен','Реши весь кейс Олигарха без ошибок',s=>s.bosses>=1,['hat','officer']],
+ ['boss1','Олигарх повержен','Реши весь кейс Олигарха без ошибок',s=>s.bosses>=1,['coat','#1e2a44']],
  ['boss3','Укротитель олигархов','Победи Олигарха 3 раза',s=>s.bosses>=3,['gl','mono']],
  ['rich100','Подушка безопасности','Накопи $100',s=>s.maxCash>=100,['coat','#2a4a6a']],
  ['rich500','Капиталист','Накопи $500',s=>s.maxCash>=500,['hat','top']],
@@ -3335,12 +3339,12 @@ const ACH=[
 function achStats(){const S=META.st;return{days:S.days||0,maxDay:Math.max(S.maxDay||0,PP.day),medals:Math.max(S.maxMedals||0,PP.medals.length),perfect:S.perfect||0,bestStreak:S.bestStreak||0,arrests:S.arrests||0,bosses:S.bosses||0,
   maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).length,allArr:ARRESTS.every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
   petDays:Math.max(S.petDays||0,PP.pet?PP.day-PP.pet.since:0),album:Object.keys(META.album).length,eggs:Object.keys(META.eggs).length,events:Object.keys(S.ev||{}).length,broke:S.broke||0}}
-const REWARD_NAME={hat:{fedora:'шляпа',officer:'фуражка',top:'цилиндр',crown:'корона',halo:'нимб',horns:'рожки',ears:'кошачьи ушки'},gl:{sun:'тёмные очки',mono:'монокль'},tie:{gold:'золотой галстук'},badge:{medal:'орден на грудь',star:'звезда шерифа',heart:'значок-сердечко',egg:'значок пасхальщика'},coat:{'#15130f':'чёрный пиджак','#6a2a4a':'бордовый пиджак','#c9a24a':'золотой пиджак','#2a4a6a':'синий пиджак'}};
+const REWARD_NAME={hat:{fedora:'шляпа',officer:'фуражка',top:'цилиндр',crown:'корона',halo:'нимб',horns:'рожки',ears:'кошачьи ушки'},gl:{sun:'тёмные очки',mono:'монокль'},tie:{gold:'золотой галстук'},badge:{medal:'орден на грудь',star:'звезда шерифа',heart:'значок-сердечко',egg:'значок пасхальщика'},coat:{'#15130f':'чёрный пиджак','#6a2a4a':'бордовый пиджак','#c9a24a':'золотой пиджак','#2a4a6a':'синий пиджак','#1e2a44':'парадный мундир'}};
 const rewardText=r=>r?'Награда: '+(REWARD_NAME[r[0]][r[1]]||r[1]):'';
-function achCheck(){const s=achStats();let n=0;ACH.forEach(([k,name,d,t,r])=>{if(!META.ach[k]&&t(s)){META.ach[k]=PP.day||1;n++;setTimeout(()=>{toast('Достижение: '+name,r?rewardText(r)+' для твоего клерка':d,'#e0b64a');chime()},n*700)}});if(n)metaSave()}
+function achCheck(){const s=achStats();let n=0;ACH.forEach(([k,name,d,t,r])=>{if(!META.ach[k]&&t(s)){META.ach[k]=PP.day||1;n++;setTimeout(()=>{toast('Достижение: '+name,r?rewardText(r)+' для инспектора':d,'#e0b64a');chime()},n*700)}});if(n)metaSave()}
 
-/* ---------- avatar ("Мой клерк") ---------- */
-const AV_DEF={g:'m',skin:'#e3b98f',hair:'#3f2a1a',style:'short',face:3,coat:'#56664a',tie:'#8a2a22',beard:false,stache:false,gl:'none',hat:'none',badge:'none'};
+/* ---------- avatar (customizable inspector) ---------- */
+const AV_DEF={g:'m',skin:'#dcb48c',hair:'#1f1812',style:'short',face:3,coat:'#3b3d3a',tie:'#1a1a1a',beard:false,stache:true,gl:'none',hat:'officer',badge:'none'};
 const AV_OPT={
  g:[['m','Мужчина'],['f','Женщина']],
  face:[1,2,3,4,5,6,7,8].map(i=>[i,'Лицо '+i]),
@@ -3348,19 +3352,21 @@ const AV_OPT={
  hair:['#1f1812','#3f2a1a','#6a4526','#9a6a34','#c9a24a','#b0442c','#8a8a82','#e0d8c8','#2a2436','#d88aa8'].map((c,i)=>[c,'Цвет '+(i+1)]),
  style:[['short','Короткая'],['long','Длинная'],['bun','Пучок'],['curly','Кудри'],['bald','Лысина']],
  beard:[[false,'Без бороды'],[true,'Борода']],stache:[[false,'Без усов'],[true,'Усы']],
- coat:[['#56664a','Оливковый'],['#44566a','Серо-синий'],['#6a4a3a','Коричневый'],['#843a32','Кирпичный'],['#5a4a6a','Сливовый'],['#15130f','Чёрный'],['#2a4a6a','Синий'],['#6a2a4a','Бордовый'],['#c9a24a','Золотой']],
- tie:[['none','Без галстука'],['#8a2a22','Красный'],['#2a3a6a','Синий'],['#3a5a2a','Зелёный'],['gold','Золотой']],
+ coat:[['#3b3d3a','Мундир'],['#56664a','Оливковый'],['#44566a','Серо-синий'],['#6a4a3a','Коричневый'],['#843a32','Кирпичный'],['#5a4a6a','Сливовый'],['#15130f','Чёрный'],['#2a4a6a','Синий'],['#6a2a4a','Бордовый'],['#c9a24a','Золотой'],['#1e2a44','Парадный']],
+ tie:[['none','Без галстука'],['#1a1a1a','Чёрный'],['#8a2a22','Красный'],['#2a3a6a','Синий'],['#3a5a2a','Зелёный'],['gold','Золотой']],
  gl:[['none','Без очков'],['round','Очки'],['sun','Тёмные очки'],['mono','Монокль']],
  hat:[['none','Без шляпы'],['cap','Кепка'],['fedora','Шляпа'],['officer','Фуражка'],['top','Цилиндр'],['crown','Корона'],['halo','Нимб'],['horns','Рожки'],['ears','Кошачьи ушки']],
  badge:[['none','Без значка'],['star','Звезда шерифа'],['medal','Орден'],['heart','Сердечко'],['egg','Пасхальное яйцо']]};
 const AV_LABEL={g:'Пол',face:'Черты лица',skin:'Кожа',hair:'Цвет волос',style:'Причёска',beard:'Борода',stache:'Усы',coat:'Пиджак',tie:'Галстук',gl:'Очки',hat:'Головной убор',badge:'Значок'};
 function avLock(key,val){for(const [k,name,,,r] of ACH){if(r&&r[0]===key&&r[1]===val)return META.ach[k]?null:name}return null}
 function avState(){const a=Object.assign({},AV_DEF,META.av||{});Object.keys(AV_OPT).forEach(k=>{if(avLock(k,a[k]))a[k]=AV_DEF[k]});return a}
+function inspLook(){for(const k of Object.keys(INSPECTOR))delete INSPECTOR[k];INSPECTOR._f=null;Object.assign(INSPECTOR,avatarLook(),{insp:true});return INSPECTOR}
 function avatarLook(){const a=avState();const L={avatar:true,special:true,g:a.g,skin:a.skin,hair:a.hair,style:a.style,coat:a.coat,shirt:'#d8d0c0',tie:a.tie==='none'?null:a.tie==='gold'?'#e0b64a':a.tie,
   beard:a.g==='m'&&a.beard,stache:a.g==='m'&&a.stache,glasses:a.gl==='round'||a.gl==='sun',gl:a.gl,hat:['cap','fedora','officer','top','crown'].includes(a.hat)?a.hat:null,hatc:a.hat==='top'?'#15130f':'#3a3a30',
   halo:a.hat==='halo',horns:a.hat==='horns',ears:a.hat==='ears',badge:a.badge,fs:a.face/9.7,brow:a.g==='m'?1:0};return L}
 function avDataURL(){const c=document.createElement('canvas');c.width=c.height=64;drawFace(avatarLook(),c,{clean:1});return c.toDataURL()}
 function avMini(){const c=$('#ppAvatar');if(c)drawFace(avatarLook(),c,{clean:1})}
+inspLook();
 
 /* ---------- pet ---------- */
 const PETS={cat:{n:'Кошка',price:20,food:2,def:'Мурзик',col:'#c88a4a'},dog:{n:'Собака',price:25,food:3,def:'Бобик',col:'#8a5a30'},parrot:{n:'Попугай',price:30,food:2,def:'Кеша',col:'#3aa04a'},hamster:{n:'Хомяк',price:10,food:1,def:'Хома',col:'#e0b070'}};
@@ -3448,12 +3454,12 @@ function drawOfficeFx(x,R){const t=QS.tick;for(let i=OFFX.length-1;i>=0;i--){con
 /* ---------- profile overlay ---------- */
 function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const mid=!!PD;
   const nA=Object.keys(META.album).length,nH=Object.keys(META.ach).length,nE=Object.keys(META.eggs).length;
-  const tabs=[['album',`Альбом ${nA}/${ALBUM.length}`],['ach',`Достижения ${nH}/${ACH.length}`],['avatar','Мой клерк'],['pet',PP.pet?'Питомец: '+PP.pet.name:'Питомец']];
+  const tabs=[['album',`Альбом ${nA}/${ALBUM.length}`],['ach',`Достижения ${nH}/${ACH.length}`],['avatar','Инспектор'],['pet',PP.pet?'Питомец: '+PP.pet.name:'Питомец']];
   let body='';
   if(tab==='album'){body=`<div class="pp-album">${ALBUM.map(([k,n,h,,ds])=>{const e=META.album[k];return e?`<div class="pp-acard got"><canvas width="64" height="64" data-alb="${k}"></canvas><b>${esc(n)}</b><em>${esc(ds||'')}</em><small>впервые: день ${e.d}</small></div>`:`<div class="pp-acard"><div class="pp-aq">?</div><b>???</b><small>${esc(h)}</small></div>`}).join('')}</div>
     <p class="mono" style="text-align:center">Пасхалки: ${nE} из ${EGGS.length}. Они спрятаны везде: в клавиатуре, в офисе, во времени и в названиях.</p><div class="pp-eggs">${EGGS.map(([k,n])=>`<span class="${META.eggs[k]?'got':''}">${META.eggs[k]?esc(n):'???'}</span>`).join('')}</div>`}
   else if(tab==='ach'){body=`<div class="pp-achs">${ACH.map(([k,n,d,,r])=>`<div class="pp-ach${META.ach[k]?' got':''}"><i>${META.ach[k]?'★':'☆'}</i><div><b>${esc(n)}</b><small>${esc(d)}${r?' · '+esc(rewardText(r)):''}</small></div></div>`).join('')}</div>`}
-  else if(tab==='avatar'){const a=avState();body=`<div class="pp-avwrap"><div class="pp-avprev"><canvas id="ppAvBig" width="64" height="64"></canvas><canvas id="ppAvStreet" width="40" height="40"></canvas><small>Так тебя видят в окошке и на улице. Новые вещи открываются за достижения.</small></div><div class="pp-avopts">${Object.entries(AV_OPT).filter(([k])=>!(a.g==='f'&&(k==='beard'||k==='stache'))).map(([k,opts])=>`<div class="pp-avrow"><span>${AV_LABEL[k]}</span><div>${opts.map(([v,n])=>{const lock=avLock(k,v);const sw=['skin','hair','coat'].includes(k)?`<i class="sw" style="background:${v}"></i>`:'';return`<button class="pp-chip${String(a[k])===String(v)?' on':''}" data-av="${k}" data-v="${esc(String(v))}" ${lock?'disabled title="Откроется за достижение «'+esc(lock)+'»"':''}>${sw}${lock?'🔒 ':''}${esc(n)}</button>`}).join('')}</div></div>`).join('')}</div></div>`}
+  else if(tab==='avatar'){const a=avState();body=`<div class="pp-avwrap"><div class="pp-avprev"><canvas id="ppAvBig" width="64" height="64"></canvas><canvas id="ppAvStreet" width="40" height="40"></canvas><small>Так выглядит инспектор, который приходит в конце дня. Новые вещи открываются за достижения.</small></div><div class="pp-avopts">${Object.entries(AV_OPT).filter(([k])=>!(a.g==='f'&&(k==='beard'||k==='stache'))).map(([k,opts])=>`<div class="pp-avrow"><span>${AV_LABEL[k]}</span><div>${opts.map(([v,n])=>{const lock=avLock(k,v);const sw=['skin','hair','coat'].includes(k)?`<i class="sw" style="background:${v}"></i>`:'';return`<button class="pp-chip${String(a[k])===String(v)?' on':''}" data-av="${k}" data-v="${esc(String(v))}" ${lock?'disabled title="Откроется за достижение «'+esc(lock)+'»"':''}>${sw}${lock?'🔒 ':''}${esc(n)}</button>`}).join('')}</div></div>`).join('')}</div></div>`}
   else if(tab==='pet'){const pe=PP.pet;
     if(!pe)body=`<p style="text-align:center">Питомец живёт в офисе и у будки, радуется верным ответам и расстраивается из-за ошибок. Корм списывается в Income Statement как <b>Pet food</b>. Если не кормить два дня подряд, питомец сбежит. Покормленный и поглаженный питомец иногда приносит находку в Other income.</p>${PP.petLeft?`<p class="mono" style="text-align:center">${esc(PP.petLeft)}</p>`:''}
       <div class="pp-shop">${Object.entries(PETS).map(([k,v])=>`<div class="pp-item"><canvas class="pp-petc" width="24" height="16" data-pet="${k}"></canvas><b>${v.n}</b><small>Корм $${v.food} в день</small><button class="pp-btn" data-adopt="${k}" ${PP.cash<v.price?'disabled':''}>Завести · $${v.price}</button></div>`).join('')}</div>`;
@@ -3464,8 +3470,8 @@ function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const 
   $('#ppProfBack').onclick=()=>{SFX.click();if(PD)ppCloseOv();else ppDayIntro()};
   $('#ppOv').querySelectorAll('[data-ptab]').forEach(b=>b.onclick=()=>{SFX.click();ppProfile(b.dataset.ptab)});
   $('#ppOv').querySelectorAll('[data-alb]').forEach(c=>{const e=META.album[c.dataset.alb];if(e)drawFace(e.L,c,{win:PP.win,clean:1})});
-  if(tab==='avatar'){const upd=()=>{const L=avatarLook();drawFace(L,$('#ppAvBig'),{win:PP.win,clean:1});const sc=$('#ppAvStreet'),sx=sc.getContext('2d');sx.clearRect(0,0,40,40);sx.fillStyle='#34322a';sx.fillRect(0,0,40,40);drawPerson(P(sx),13,6,L,0,false);avMini()};upd();ppProfile.upd=upd;
-    $('#ppOv').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>{const k=b.dataset.av;let v=b.dataset.v;if(k==='face')v=+v;if(v==='true')v=true;if(v==='false')v=false;META.av=Object.assign(avState(),{[k]:v});metaSave();SFX.click();ppProfile('avatar');qsDraw()})}
+  if(tab==='avatar'){const upd=()=>{const L=inspLook();drawFace(L,$('#ppAvBig'),{win:PP.win,clean:1});const sc=$('#ppAvStreet'),sx=sc.getContext('2d');sx.clearRect(0,0,40,40);sx.fillStyle='#34322a';sx.fillRect(0,0,40,40);drawPerson(P(sx),13,6,L,0,false);avMini()};upd();ppProfile.upd=upd;
+    $('#ppOv').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>{const k=b.dataset.av;let v=b.dataset.v;if(k==='face')v=+v;if(v==='true')v=true;if(v==='false')v=false;META.av=Object.assign(avState(),{[k]:v});metaSave();inspLook();SFX.click();ppProfile('avatar');qsDraw()})}
   if(tab==='pet'){$('#ppOv').querySelectorAll('[data-pet]').forEach(c=>{const x=c.getContext('2d');drawPetSprite(P(x),6,15,c.dataset.pet,PETS[c.dataset.pet].col,0,'idle')});
     $('#ppOv').querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{const k=b.dataset.adopt,v=PETS[k];if(PP.cash<v.price)return;PP.cash-=v.price;PP.pending.supplies=(PP.pending.supplies||0)+v.price;PP.pet={type:k,name:v.def,col:v.col,fed:false,hunger:0,since:PP.day,petted:false};PP.petLeft=null;stMax('pet',1);ppSave();SFX.buy();petSound('good');achCheck();ppBar();drawOffice();ppProfile('pet')});
     if(PP.pet){const draw=()=>{const c=$('#ppPetBig');if(!c)return;const x=c.getContext('2d');x.clearRect(0,0,24,16);drawPetSprite(P(x),6,15,PP.pet.type,petCol(),Math.floor(QS.tick/4),PETST.mode==='walk'?'idle':PETST.mode)};draw();ppProfile.petDraw=draw;
