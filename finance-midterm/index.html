@@ -27,6 +27,7 @@
   --shadow:none;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;margin:0}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -149,6 +150,7 @@ table.simple th{background:var(--line2);font-weight:600}
     <nav class="tabs" role="tablist" id="tabs">
       <button role="tab" data-tab="home" aria-selected="true">Главная</button>
       <button role="tab" data-tab="build">Отчёты</button>
+      <button role="tab" data-tab="place">Где статья?</button>
       <button role="tab" data-tab="quiz">Тесты</button>
       <button role="tab" data-tab="cards">Карточки</button>
       <button role="tab" data-tab="sheet">Шпаргалка</button>
@@ -226,6 +228,21 @@ table.simple th{background:var(--line2);font-weight:600}
   <div class="panel q-card" id="quizBox"></div>
 </section>
 
+<!-- PLACE -->
+<section class="section" id="tab-place" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="stack" style="gap:4px"><span class="eyebrow">Игра: куда идёт статья и почему</span><h1>Где эта статья?</h1></div>
+    <div class="row">
+      <select id="placeFilter" aria-label="Набор статей">
+        <option value="all">Все статьи</option><option value="BS">Только Balance sheet</option><option value="IS">Только Income statement</option><option value="RE">Retained earnings</option><option value="CF">Cash flow</option><option value="weak">Мои ошибки</option>
+      </select>
+      <button class="btn" id="placeListBtn">Список всех статей</button>
+    </div>
+  </div>
+  <div class="panel q-card" id="placeBox"></div>
+  <div class="panel" id="placeList" hidden></div>
+</section>
+
 <!-- CARDS -->
 <section class="section" id="tab-cards" hidden>
   <div class="row" style="justify-content:space-between">
@@ -264,7 +281,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function parseNum(s){if(s==null)return null;s=String(s).trim();if(!s)return null;let neg=false;if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}s=s.replace(/[$\s,]/g,'').replace(/−/g,'-');if(s.startsWith('-')){neg=!neg;s=s.slice(1)}const n=parseFloat(s);if(isNaN(n))return null;return neg?-n:n}
 
 /* ---------- tabs ---------- */
-const TABS=['home','build','quiz','cards','sheet'];
+const TABS=['home','build','place','quiz','cards','sheet'];
 function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);if(t==='home')renderHome();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
@@ -688,6 +705,130 @@ const CLS_IS=[['Cost of goods sold','Income statement'],['Depreciation expense',
 const WHICH=['Income statement','Balance sheet','Statement of retained earnings','Statement of cash flows'];
 CLS_IS.forEach(([item,cat])=>{Q.push({t:'cls',q:`In which statement do you record "${item}" as a line item (main place)?`,o:WHICH,a:WHICH.indexOf(cat),x:`${item} → ${cat}.${item==='Dividends paid'?' Также появляется в financing части Cash Flow, но в IS дивидендов нет никогда.':''}`})});
 
+/* =====================================================
+   ITEM PLACEMENT: where does each account go and why
+   s: statement key, c: category, x: explanation (RU)
+   ===================================================== */
+const STMTS={BS:'Balance sheet',IS:'Income statement',RE:'Statement of retained earnings',CF:'Statement of cash flows (only)'};
+const CATS={
+  BS:['Current assets','Non-current assets','Current liabilities','Long-term liabilities','Stockholders’ equity'],
+  IS:['Revenue','Cost of goods sold','Operating expenses','Non-operating items (interest, gains, losses)','Taxes','Subtotal / result line'],
+  RE:['Starting balance','Adds to retained earnings','Subtracts from retained earnings'],
+  CF:['Operating activities','Investing activities','Financing activities']};
+const ITEMS=[
+// BS current assets
+{n:'Cash',s:'BS',c:'Current assets',x:'Самый ликвидный актив, стоит первым в балансе. В Cash Flow итоговая строка = cash в балансе.'},
+{n:'Marketable securities',s:'BS',c:'Current assets',x:'Краткосрочные ценные бумаги, которые можно быстро продать (в течение года). Поэтому current.'},
+{n:'Accounts receivable',s:'BS',c:'Current assets',x:'Деньги, которые клиенты должны нам за продажи в кредит. Пара в IS: Sales (выручка признана, деньги ещё не пришли).'},
+{n:'Notes receivable (due within a year)',s:'BS',c:'Current assets',x:'Письменное обещание должника заплатить нам в течение года.'},
+{n:'Inventory',s:'BS',c:'Current assets',x:'Запасы — актив, пока не проданы. Когда товар продан, его стоимость уходит в IS как Cost of goods sold.'},
+{n:'Prepaid expenses (prepaid rent, prepaid insurance)',s:'BS',c:'Current assets',x:'Заплатили заранее за будущий период. Это актив, потому что услуга ещё не получена. Когда период наступит, сумма станет expense в IS.'},
+{n:'Supplies',s:'BS',c:'Current assets',x:'Материалы для работы. Актив, пока не израсходованы. Израсходованные = supplies expense в IS.'},
+{n:'Allowance for doubtful accounts',s:'BS',c:'Current assets',x:'Contra-asset к Accounts receivable: оценка долгов, которые не вернут. Уменьшает AR до net AR.'},
+// BS non-current
+{n:'Land',s:'BS',c:'Non-current assets',x:'Основное средство. Земля НЕ амортизируется, поэтому у неё нет accumulated depreciation.'},
+{n:'Buildings',s:'BS',c:'Non-current assets',x:'Основное средство по первоначальной стоимости (cost). Износ копится в accumulated depreciation.'},
+{n:'Plant & equipment (gross)',s:'BS',c:'Non-current assets',x:'Основные средства по стоимости покупки. Используются больше года. Их износ за год (depreciation expense) идёт в IS.'},
+{n:'Machinery / Vehicles',s:'BS',c:'Non-current assets',x:'Основные средства. Покупка — investing outflow в Cash Flow, расход появляется позже через depreciation.'},
+{n:'Accumulated depreciation',s:'BS',c:'Non-current assets',x:'Contra-asset: вся амортизация за все годы с покупки. Вычитается из gross plant & equipment → net fixed assets. Каждый год растёт на depreciation expense из IS.'},
+{n:'Net fixed assets (net plant & equipment)',s:'BS',c:'Non-current assets',x:'Gross fixed assets − Accumulated depreciation (net book value).'},
+{n:'Long-term investments (in other businesses, real estate)',s:'BS',c:'Non-current assets',x:'Вложения, которые держат больше года. В шаблоне лекции это отдельная группа Investments.'},
+{n:'Patent',s:'BS',c:'Non-current assets',x:'Нематериальный актив (intangible). Его износ называется amortization.'},
+{n:'Copyright / Trademark',s:'BS',c:'Non-current assets',x:'Нематериальные активы (intangible assets).'},
+{n:'Software',s:'BS',c:'Non-current assets',x:'Нематериальный актив (в шаблоне лекции — Intangible assets).'},
+{n:'Goodwill',s:'BS',c:'Non-current assets',x:'Нематериальный актив: переплата сверх справедливой стоимости при покупке другой компании.'},
+// BS current liabilities
+{n:'Accounts payable',s:'BS',c:'Current liabilities',x:'Долг поставщикам за покупки в кредит. Рост AP = источник денег в Cash Flow.'},
+{n:'Notes payable (short-term bank loan)',s:'BS',c:'Current liabilities',x:'Краткосрочный банковский кредит. Проценты по нему — interest expense в IS, а погашение основной суммы — financing в Cash Flow.'},
+{n:'Accrued expenses (accruals)',s:'BS',c:'Current liabilities',x:'Расход уже случился (признан в IS), но деньги ещё не заплачены. Сам счёт accrued expenses — это долг, т.е. current liability.'},
+{n:'Wages payable (accrued wages)',s:'BS',c:'Current liabilities',x:'Зарплата, которую сотрудники заработали, но ещё не получили. Пара в IS: wages/salaries expense.'},
+{n:'Income taxes payable',s:'BS',c:'Current liabilities',x:'Налог начислен (в IS как income tax expense), но ещё не уплачен государству. Это долг на срок до года. Когда платят: payable ↓ и cash ↓, IS не меняется.'},
+{n:'Interest payable',s:'BS',c:'Current liabilities',x:'Проценты начислены (interest expense в IS), но ещё не выплачены.'},
+{n:'Rent payable',s:'BS',c:'Current liabilities',x:'Аренда за прошедший период, которую ещё не заплатили. Пара в IS: rent expense.'},
+{n:'Current portion of long-term debt',s:'BS',c:'Current liabilities',x:'Часть долгосрочного долга, которую нужно вернуть в течение ближайших 12 месяцев.'},
+{n:'Unearned revenue (customer deposits)',s:'BS',c:'Current liabilities',x:'Клиент заплатил заранее, а мы ещё не поставили товар/услугу. Это долг перед клиентом. Выручкой в IS станет после поставки.'},
+{n:'Dividends payable',s:'BS',c:'Current liabilities',x:'Дивиденды объявлены, но ещё не выплачены. Сами дивиденды уменьшают retained earnings, в IS их нет.'},
+// BS long-term
+{n:'Bonds payable',s:'BS',c:'Long-term liabilities',x:'Облигации — долгосрочный долг. Проценты по ним — interest expense в IS.'},
+{n:'Long-term notes payable / bank loans',s:'BS',c:'Long-term liabilities',x:'Кредиты со сроком больше года.'},
+{n:'Mortgage payable',s:'BS',c:'Long-term liabilities',x:'Долгосрочный кредит под залог недвижимости.'},
+// BS equity
+{n:'Common stock (at par)',s:'BS',c:'Stockholders’ equity',x:'Количество выпущенных акций × par value. Деньги сверх par идут в paid-in capital.'},
+{n:'Preferred stock',s:'BS',c:'Stockholders’ equity',x:'Привилегированные акции — часть капитала владельцев. Их дивиденды вычитаются перед расчётом EPS.'},
+{n:'Paid-in capital in excess of par',s:'BS',c:'Stockholders’ equity',x:'Shares × (price − par). Например 2,000 × ($10 − $1) = $18,000.'},
+{n:'Retained earnings',s:'BS',c:'Stockholders’ equity',x:'Накопленная нераспределённая прибыль за все годы. Считается в Statement of RE, итог переносится в баланс. Это НЕ деньги.'},
+{n:'Treasury stock',s:'BS',c:'Stockholders’ equity',x:'Выкупленные собственные акции. Contra-equity: уменьшает капитал. Issued = Outstanding + Treasury.'},
+// IS
+{n:'Sales (Revenue)',s:'IS',c:'Revenue',x:'Первая строка IS. Если продажа в кредит, одновременно растёт accounts receivable в балансе.'},
+{n:'Interest income',s:'IS',c:'Non-operating items (interest, gains, losses)',x:'Доход не от основной деятельности. Показывается ниже EBIT.'},
+{n:'Cost of goods sold',s:'IS',c:'Cost of goods sold',x:'Себестоимость проданного товара. Пара в балансе: inventory (пока не продано — актив).'},
+{n:'Gross profit',s:'IS',c:'Subtotal / result line',x:'Sales − COGS.'},
+{n:'Selling expenses',s:'IS',c:'Operating expenses',x:'Расходы на продажи (реклама, комиссии). Часть S&A.'},
+{n:'General & administrative expenses',s:'IS',c:'Operating expenses',x:'Административные расходы. Часть S&A.'},
+{n:'Salaries / wages expense',s:'IS',c:'Operating expenses',x:'Расход за период. Если ещё не выплачено — одновременно wages payable в балансе.'},
+{n:'Rent expense',s:'IS',c:'Operating expenses',x:'Аренда за период. Если заплачено заранее — сначала prepaid rent (актив), если не заплачено — rent payable (долг).'},
+{n:'Utilities expense',s:'IS',c:'Operating expenses',x:'Коммунальные расходы (в шаблоне лекции в S&A).'},
+{n:'Insurance expense',s:'IS',c:'Operating expenses',x:'Страховка за период (в шаблоне лекции — other operating expenses).'},
+{n:'Depreciation expense',s:'IS',c:'Operating expenses',x:'Износ только за этот период. Операционный non-cash расход: уменьшает прибыль, но деньги не уходят, поэтому в Cash Flow его прибавляют обратно. Та же сумма добавляется к accumulated depreciation в балансе.'},
+{n:'Amortization expense',s:'IS',c:'Operating expenses',x:'То же, что depreciation, но для нематериальных активов (patent, software).'},
+{n:'Research & development expense',s:'IS',c:'Operating expenses',x:'Операционный расход.'},
+{n:'Operating profit (EBIT)',s:'IS',c:'Subtotal / result line',x:'Gross profit − Operating expenses.'},
+{n:'Interest expense',s:'IS',c:'Non-operating items (interest, gains, losses)',x:'Финансовый расход: ниже EBIT, до налогов. EBT = EBIT − Interest. Если не выплачен — ещё и interest payable в балансе.'},
+{n:'Gain / loss on sale of equipment',s:'IS',c:'Non-operating items (interest, gains, losses)',x:'Разница между ценой продажи и net book value. Не основная деятельность.'},
+{n:'Earnings before taxes (EBT)',s:'IS',c:'Subtotal / result line',x:'EBIT − Interest expense.'},
+{n:'Income tax expense',s:'IS',c:'Taxes',x:'Налог за период: EBT × tax rate. Если ещё не уплачен, та же сумма сидит в балансе как income taxes payable.'},
+{n:'Net income',s:'IS',c:'Subtotal / result line',x:'Последняя строка IS (EBT − Taxes). Потом переходит в Statement of RE и в начало Cash Flow.'},
+{n:'Earnings per share (EPS)',s:'IS',c:'Subtotal / result line',x:'(NI − preferred dividends) ÷ common shares outstanding. Показывается внизу IS.'},
+// RE
+{n:'Beginning retained earnings',s:'RE',c:'Starting balance',x:'Конечная RE прошлого года (из прошлого баланса).'},
+{n:'Net income (in the RE statement)',s:'RE',c:'Adds to retained earnings',x:'Прибыль из IS увеличивает RE. Убыток уменьшал бы.'},
+{n:'Cash dividends',s:'RE',c:'Subtracts from retained earnings',x:'Дивиденды — распределение прибыли, не расход, поэтому их нет в IS. Уменьшают RE; выплата — financing outflow в Cash Flow.'},
+{n:'Preferred stock dividends',s:'RE',c:'Subtracts from retained earnings',x:'Уменьшают RE. В US-формате IS их ещё вычитают после NI, чтобы получить earnings available for common stockholders.'},
+// CF only
+{n:'Purchase of new equipment (capital expenditure)',s:'CF',c:'Investing activities',x:'Отток денег. В IS в момент покупки ничего не происходит; расход появится постепенно через depreciation. В балансе растёт gross plant & equipment.'},
+{n:'Proceeds from issuing new stock',s:'CF',c:'Financing activities',x:'Приток. Это не выручка! В балансе растут common stock и paid-in capital.'},
+{n:'Repayment of loan principal',s:'CF',c:'Financing activities',x:'Отток. Это не расход: в IS идут только проценты. В балансе уменьшается notes payable.'},
+{n:'Dividends paid (cash)',s:'CF',c:'Financing activities',x:'Отток в financing. В Statement of RE — уменьшение RE.'},
+{n:'Sale of marketable securities',s:'CF',c:'Investing activities',x:'Приток в investing (как в задаче FMA).'},
+{n:'Change in accounts receivable',s:'CF',c:'Operating activities',x:'Рост AR = минус, падение = плюс в operating.'},
+{n:'Depreciation (add-back)',s:'CF',c:'Operating activities',x:'Прибавляется к NI, потому что это non-cash расход.'},
+];
+ITEMS.forEach(it=>{it.full=`${STMTS[it.s]} → ${it.c}`});
+// add placement MCQ to quiz bank (one combined answer)
+ITEMS.forEach(it=>{
+  const same=CATS[it.s].filter(c=>c!==it.c).map(c=>`${STMTS[it.s]} → ${c}`);
+  const other=Object.keys(CATS).filter(k=>k!==it.s).flatMap(k=>CATS[k].map(c=>`${STMTS[k]} → ${c}`));
+  const o=shuffle([it.full,...shuffle(same).slice(0,2),...shuffle(other).slice(0,1)]);
+  Q.push({t:'place',q:`Where does "${it.n}" go? (statement → category)`,o,a:o.indexOf(it.full),x:`${it.full}. ${it.x}`});
+});
+// concept "pair" questions
+Q.push(
+{t:'pairs',q:'Depreciation expense is reported on the ______, while accumulated depreciation is reported on the ______.',o:['balance sheet; income statement','income statement; balance sheet','income statement; statement of retained earnings','cash flow statement; income statement'],a:1,x:'Depreciation expense — износ только за этот год (расход в IS). Accumulated depreciation — сумма износа за все годы, contra-asset в балансе. Каждый год расход из IS прибавляется к накопленной сумме.'},
+{t:'pairs',q:'Accumulated depreciation at the end of the year equals',o:['this year’s depreciation expense only','beginning accumulated depreciation + this year’s depreciation expense','gross fixed assets − depreciation expense','net fixed assets + depreciation expense'],a:1,x:'В FMA: 75,000 + 50,000 = 125,000.'},
+{t:'pairs',q:'Income tax expense vs. income taxes payable:',o:['both are income statement items','expense is on the income statement; payable (unpaid part) is a current liability on the balance sheet','expense is a current liability; payable is on the income statement','payable is part of stockholders’ equity'],a:1,x:'Налог признаётся расходом в IS. Пока не уплачен, та же сумма висит долгом в BS (current liabilities).'},
+{t:'pairs',q:'When a company pays income taxes that were accrued earlier, what happens?',o:['Tax expense increases on the income statement','Taxes payable decreases and cash decreases; the income statement is not affected','Retained earnings increase','Nothing changes on the balance sheet'],a:1,x:'Расход уже был учтён ранее. Оплата только гасит долг: payable ↓ и cash ↓.'},
+{t:'pairs',q:'Accrued expenses as an account are classified as',o:['operating expenses on the income statement','current liabilities on the balance sheet','current assets','stockholders’ equity'],a:1,x:'Сам расход признан в IS, но счёт accrued expenses (ещё не оплаченные расходы) — current liability.'},
+{t:'pairs',q:'Wages earned by employees but not yet paid appear as',o:['wages expense (IS) and wages payable (BS current liability)','only wages expense','only a reduction of cash','prepaid wages (asset)'],a:0,x:'Расход признан в IS; долг сотрудникам — wages payable.'},
+{t:'pairs',q:'A sale made on credit increases',o:['sales (IS) and accounts receivable (BS)','sales and cash','accounts payable and sales','inventory and sales'],a:0,x:'Выручка признаётся сразу (accrual basis), а деньги ещё не пришли → AR.'},
+{t:'pairs',q:'Inventory and cost of goods sold are related because',o:['they are the same account','goods are an asset (inventory) until sold; when sold, their cost moves to COGS on the income statement','COGS is a liability','inventory is shown on the income statement'],a:1,x:'Пока товар на складе — актив в BS. Продали — его стоимость становится расходом COGS в IS.'},
+{t:'pairs',q:'Rent paid in advance for next year is recorded as',o:['rent expense this year','prepaid rent, a current asset','rent payable, a liability','a reduction of equity'],a:1,x:'Услуга ещё не получена → актив (prepaid). Расходом станет в следующем году.'},
+{t:'pairs',q:'A customer pays in advance for goods to be delivered next month. The firm records',o:['revenue now','unearned revenue, a current liability','accounts receivable','inventory increase'],a:1,x:'Фирма должна клиенту товар → обязательство. Выручка признается после поставки.'},
+{t:'pairs',q:'Buying a machine for cash affects the income statement',o:['immediately by the full price','only gradually through depreciation expense over its useful life','never','through interest expense'],a:1,x:'Покупка: PP&E ↑, cash ↓ (investing outflow). В IS расход приходит частями через depreciation.'},
+{t:'pairs',q:'Repaying $10,000 of loan principal is',o:['an expense on the income statement','not an expense: notes payable ↓, cash ↓, financing outflow','an operating outflow','a reduction of retained earnings'],a:1,x:'Расход — только проценты. Возврат основного долга — движение по балансу и financing в Cash Flow.'},
+{t:'pairs',q:'Money received from issuing new common stock is',o:['revenue','a financing inflow and an increase in stockholders’ equity','an operating inflow','a liability'],a:1,x:'Это не выручка: растут common stock (par) и paid-in capital.'},
+{t:'pairs',q:'Dividends declared but not yet paid appear as',o:['an expense on the income statement','a reduction of retained earnings and dividends payable (current liability)','an increase in retained earnings','an operating expense'],a:1,x:'Дивиденды никогда не в IS. Уменьшают RE; пока не выплачены — dividends payable.'},
+{t:'pairs',q:'Net income vs. retained earnings:',o:['they are always equal','net income is for one period (IS); retained earnings is cumulative (BS)','retained earnings is on the income statement','net income is on the balance sheet'],a:1,x:'RE = накопленная сумма всех прибылей минус все дивиденды.'},
+{t:'pairs',q:'Interest expense is classified on the income statement as',o:['an operating expense above EBIT','a non-operating (financial) expense below EBIT, before taxes','part of COGS','a tax'],a:1,x:'EBT = EBIT − Interest.'},
+{t:'pairs',q:'Marketable securities are current assets because',o:['they are long-term investments','they can be converted into cash quickly (within a year)','they are equity of the firm','they are liabilities'],a:1,x:'Высокая ликвидность → current.'},
+{t:'pairs',q:'Amortization is to intangible assets what ______ is to plant & equipment.',o:['interest','depreciation','inventory','dividends'],a:1,x:'Amortization — износ нематериальных активов, depreciation — материальных.'},
+{t:'pairs',q:'True or False: Accumulated depreciation is an expense on the income statement.',o:TF,a:1,x:'False. Это contra-asset в балансе. Расход в IS — depreciation expense за год.'},
+{t:'pairs',q:'True or False: Income taxes payable is part of stockholders’ equity.',o:TF,a:1,x:'False. Это current liability (долг государству).'},
+{t:'pairs',q:'True or False: Dividends reduce net income.',o:TF,a:1,x:'False. Дивиденды уменьшают retained earnings, а net income считается до дивидендов.'},
+{t:'pairs',q:'True or False: Land is depreciated like buildings.',o:TF,a:1,x:'False. Земля не амортизируется.'},
+{t:'pairs',q:'True or False: Treasury stock increases stockholders’ equity.',o:TF,a:1,x:'False. Contra-equity, уменьшает капитал.'},
+);
+TOPICS.place='Где статья: отчёт и категория';TOPICS.pairs='Пары: IS vs BS (почему?)';
+
 /* ---------- quiz engine ---------- */
 const topicSel=$('#quizTopic');
 topicSel.innerHTML=`<option value="exam">Экзамен-микс (30 случайных)</option><option value="wrong">Только мои ошибки</option>`+Object.entries(TOPICS).map(([k,v])=>`<option value="${k}">${v} (${Q.filter(q=>q.t===k).length})</option>`).join('');
@@ -782,7 +923,8 @@ const CARDS=[
 ['cf','Financing activities','Borrowing/repaying principal, issuing/repurchasing stock, paying dividends.'],
 ['cf','Final check of cash flow','Beginning cash + Net change (CFO + CFI + CFF) = Ending cash on the balance sheet.'],
 ];
-const cardTopics={all:'Все темы',intro:'Finance',forms:'Формы бизнеса',inst:'Институты',mkt:'Рынки',stmt:'Отчёты',cf:'Cash flow'};
+ITEMS.forEach(it=>CARDS.push(['place',it.n,it.full+'. '+it.x]));
+const cardTopics={all:'Все темы',place:'Где статья',intro:'Finance',forms:'Формы бизнеса',inst:'Институты',mkt:'Рынки',stmt:'Отчёты',cf:'Cash flow'};
 $('#cardTopic').innerHTML=Object.entries(cardTopics).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
 let CD={list:[],i:0,flip:false};
 function buildDeck(){const t=$('#cardTopic').value,known=store.get('known',{});CD.list=shuffle(CARDS.filter(c=>(t==='all'||c[0]===t)&&(!$('#cardOnlyUnknown').checked||!known[c[1]])));CD.i=0;CD.flip=false;renderCard()}
@@ -945,6 +1087,46 @@ function renderHome(){
   const tile=(label,val,p)=>`<div class="stat"><span class="eyebrow">${label}</span><b>${val}</b>${p!=null?`<div class="meter"><i style="width:${p}%"></i></div>`:''}</div>`;
   $('#homeStats').innerHTML=tile('Вопросов в базе',Q.length)+tile('Точность в тестах',n?Math.round(c/n*100)+'%':'—',n?Math.round(c/n*100):0)+tile('Ошибок на повтор',wrong)+tile('Карточек выучено',`${known}/${CARDS.length}`,Math.round(known/CARDS.length*100))+tile('FMA: отчётов без ошибок',`${fmaDone}/4`,fmaDone*25);
 }
+
+
+/* =====================================================
+   PLACEMENT GAME (two steps: statement, then category)
+   ===================================================== */
+let PG={deck:[],i:0,step:1,firstTry:true,streak:0};
+function pgBuild(){const f=$('#placeFilter').value;const pm=store.get('place',{});
+  let d=ITEMS.filter(it=>f==='all'||f===it.s||(f==='weak'&&pm[it.n]&&pm[it.n].bad>0));
+  PG.deck=shuffle(d);PG.i=0;PG.step=1;PG.firstTry=true;pgRender()}
+function pgRender(){
+  const box=$('#placeBox');
+  if(!PG.deck.length){box.innerHTML='<p>Здесь пусто: ошибок нет. Выбери другой набор.</p>';return}
+  if(PG.i>=PG.deck.length){box.innerHTML=`<h2>Круг пройден</h2><p class="muted">Серия правильных подряд: ${PG.streak}. Нажми, чтобы перемешать и пройти снова.</p><div class="row"><button class="btn primary" id="pgAgain">Ещё круг</button></div>`;$('#pgAgain').onclick=pgBuild;return}
+  const it=PG.deck[PG.i];const pm=store.get('place',{});const done=ITEMS.filter(x=>pm[x.n]&&pm[x.n].ok>0&&!pm[x.n].bad).length;
+  const opts=PG.step===1?Object.keys(STMTS).map(k=>({v:k,l:STMTS[k]})):CATS[it.s].map(c=>({v:c,l:c}));
+  box.innerHTML=`<div class="progress-line"><span>Статья ${PG.i+1} из ${PG.deck.length} · шаг ${PG.step} из 2</span><span>Серия: ${PG.streak} · освоено ${done}/${ITEMS.length}</span></div>
+  <div class="q-text" style="font-size:21px;font-weight:700">${esc(it.n)}</div>
+  <p class="muted">${PG.step===1?'В каком отчёте эта строка?':`Верно: ${STMTS[it.s]}. Теперь категория:`}</p>
+  <div class="opts">${opts.map((o,j)=>`<button class="opt" data-v="${esc(o.v)}"><span class="k">${'ABCDEF'[j]})</span><span>${esc(o.l)}</span></button>`).join('')}</div><div id="pgex"></div>`;
+}
+$('#placeBox').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b||b.disabled)return;const it=PG.deck[PG.i];
+  const right=PG.step===1?b.dataset.v===it.s:b.dataset.v===it.c;
+  if(!right){b.classList.add('wrong');b.disabled=true;PG.firstTry=false;
+    $('#pgex').innerHTML=`<div class="explain"><b>Не туда.</b> Попробуй ещё раз. ${PG.step===1?'Подумай: это остаток на дату (BS), результат за период (IS), изменение RE или только движение денег (CF)?':''}</div>`;return}
+  if(PG.step===1){PG.step=2;pgRender()}
+});
+// second-step completion handled here to show explanation
+$('#placeBox').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b||PG.step!==2)return;const it=PG.deck[PG.i];
+  if(b.dataset.v!==it.c)return;
+  document.querySelectorAll('#placeBox .opt').forEach(o=>{o.disabled=true;if(o.dataset.v===it.c)o.classList.add('correct')});
+  const pm=store.get('place',{});pm[it.n]=pm[it.n]||{ok:0,bad:0};if(PG.firstTry){pm[it.n].ok++;pm[it.n].bad=Math.max(0,pm[it.n].bad-1);PG.streak++}else{pm[it.n].bad++;PG.streak=0}store.set('place',pm);
+  $('#pgex').innerHTML=`<div class="explain"><b>${PG.firstTry?'Верно с первой попытки.':'Правильно, но с ошибкой — статья добавлена в «Мои ошибки».'}</b> ${esc(it.full)}.<br>${esc(it.x)}</div><div class="row" style="margin-top:12px"><button class="btn primary" id="pgNext">Дальше →</button></div>`;
+  $('#pgNext').onclick=()=>{PG.i++;PG.step=1;PG.firstTry=true;pgRender()};$('#pgNext').focus();
+},true);
+$('#placeFilter').onchange=pgBuild;
+$('#placeListBtn').onclick=()=>{const L=$('#placeList');L.hidden=!L.hidden;if(L.hidden)return;
+  L.innerHTML='<div class="tw"><table class="simple"><tr><th>Статья</th><th>Отчёт → категория</th><th>Почему</th></tr>'+Object.keys(STMTS).map(k=>ITEMS.filter(i=>i.s===k).map(i=>`<tr><td><b>${esc(i.n)}</b></td><td>${esc(i.full)}</td><td>${esc(i.x)}</td></tr>`).join('')).join('')+'</table></div>'};
+pgBuild();
 
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
