@@ -2286,7 +2286,7 @@ function ppAnimate(){
   if(moving||QS.tick%6===0||PP.street==='snow'||['rain','fire','holiday','blackout'].includes(PP.event)||EGG.matrix||EGG.dec)qsDraw();
   if(QS.tick%5===0)drawOffice();
   if(FACE.L||FACE.tv)drawFace(FACE.L);
-  if(!$('#ppOv').hidden){const ab=$('#ppAvBig');if(ab&&QS.tick%2===0)drawFace(avatarLook(),ab,{win:PP.win,clean:1});if($('#ppPetBig')&&ppProfile.petDraw&&QS.tick%3===0)ppProfile.petDraw()}else if(QS.tick%10===0)avMini();
+  if(!$('#ppOv').hidden){const ab=$('#ppAvBig');if(ab&&QS.tick%2===0)drawFace(INSPECTOR,ab,{win:PP.win,clean:1});if($('#ppPetBig')&&ppProfile.petDraw&&QS.tick%3===0)ppProfile.petDraw()}else if(QS.tick%10===0)avMini();
   const pw=document.querySelector('#ppOv:not([hidden]) #ppPrevWin');if(pw&&ppShop.face)drawFace(ppShop.face.L,pw,ppShop.face.ov);
 }
 function qsToLogical(ev){const c=$('#ppQueue'),r=c.getBoundingClientRect();const sc=r.width/c.width;return{x:(ev.clientX-r.left)/sc-QS.OX,y:(ev.clientY-r.top)/sc+20}}
@@ -3368,7 +3368,7 @@ function inspLook(){for(const k of Object.keys(INSPECTOR))delete INSPECTOR[k];IN
 function avatarLook(){const a=avState();const L={avatar:true,special:true,g:a.g,skin:a.skin,hair:a.hair,style:a.style,coat:a.coat,shirt:'#d8d0c0',tie:a.tie==='none'?null:a.tie==='gold'?'#e0b64a':a.tie,
   beard:a.g==='m'&&a.beard,stache:a.g==='m'&&a.stache,glasses:a.gl==='round'||a.gl==='sun',gl:a.gl,hat:['cap','fedora','officer','top','crown'].includes(a.hat)?a.hat:null,hatc:a.hat==='top'?'#15130f':'#3a3a30',
   halo:a.hat==='halo',horns:a.hat==='horns',ears:a.hat==='ears',badge:a.badge,fs:a.face/9.7,brow:a.g==='m'?1:0};return L}
-function avDataURL(){const c=document.createElement('canvas');c.width=c.height=64;drawFace(avatarLook(),c,{clean:1});return c.toDataURL()}
+function avDataURL(){const c=document.createElement('canvas');c.width=c.height=64;drawFace(INSPECTOR,c,{clean:1});return c.toDataURL()}
 function avMini(){const c=$('#ppAvatar');if(c)drawFace(avatarLook(),c,{clean:1})}
 inspLook();
 
