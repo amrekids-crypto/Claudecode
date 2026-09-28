@@ -1866,7 +1866,7 @@ function drawFace(L,cv,ov){
     R(17,19,3,9,H);R(16,19,1,9,OL);R(44,19,3,9,H1);R(47,19,1,9,OL);if(F.part==='side'){R(20,20+hl,24,2,H);R(20,21+hl,24,1,H1);R(25,19,1,3+hl,H1)}else if(F.part==='fringe'){R(20,20+hl,24,3,H);R(20,22+hl,24,1,H1);for(let xx=21;xx<43;xx+=3)R(xx,23+hl,1,1,H)}else{R(20,20+hl,24,2,H);R(20,21+hl,24,1,H1);R(31,19,2,2,s)}R(24,10,14,1,H2);
     if(F.age==='o'&&hl<0){R(24,17,16,3,s);R(24,17,16,1,sl)}}
   else if(LS==='bald'&&!L.hat){R(24,12,10,2,sl);R(26,11,6,1,sl);if(F.age!=='y'){R(17,21,2,6,H);R(45,21,2,6,H1)}}
-  if(LS==='curly'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
+  if(LS==='curly'&&L.hat!=='scarf'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
   if(LS==='bun'&&!L.hat){R(26,3,12,7,OL);R(27,4,10,6,H);R(28,4,8,1,H2);R(35,5,2,4,H1)}
   if(F.pretty&&L.hat!=='scarf'&&LS!=='bald'&&LS!=='curly'){const HG=shade(H,1.55);R(23,10,6,1,HG);R(21,11,5,1,HG);R(20,12,3,1,H2);R(29,9,6,1,H2);if(LS==='long'&&!L.hat)for(let y=24;y<48;y+=1)if(y%6<3){R(18-Math.floor((y-24)/8),y,1,1,H2)}}
   if(F.quiff&&!L.hat&&LS==='short'){R(21,5,20,1,OL);R(19,6,1,3,OL);R(41,6,1,3,OL);R(20,6,21,3,H);R(22,6,9,1,shade(H,1.55));R(35,7,6,2,H1);R(20,9,22,1,H)}
@@ -1894,7 +1894,7 @@ function drawFace(L,cv,ov){
   if(F.pretty){R(22,30,3,1,sl);R(40,30,2,1,shade(s,1.08));if(L.g==='m'){R(22,39,2,4,sd);R(41,39,2,4,s2);R(29,44,6,1,sd)}}
   // mouth
   const mw=F.mouth==='wide'?10:F.mouth==='small'?6:8,mx=32-mw/2,my=38+Math.max(0,nl);
-  if(L.beard){for(let y=35;y<=45;y++){const hw=Math.round(13-(y-35)*1.2);if(hw>0){R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
+  if(L.beard){for(let y=35;y<=45;y++){const hw=Math.min(hwAt(y),Math.round(13-(y-35)*1.2));if(hw>0){R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
   else{const lip=F.pretty&&L.g==='f'?pmixHex(s,'#b04858',.55):L.g==='f'?'#7a4a44':s2;R(mx+1,my-1,mw-2,1,sd);R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,F.mouth==='full'?2:1,lip);R(mx+2,my+2+(F.mouth==='full'?1:0),mw-4,1,sd);if(F.pretty&&L.g==='f'){R(mx+2,my-1,mw-4,1,shade(lip,.85));R(mx+3,my+1,2,1,shade(lip,1.35))}if(F.mood==='smile'){R(mx-1,my-1,1,1,s3);R(mx+mw,my-1,1,1,s3)}else if(F.mood==='frown'){R(mx-1,my+1,1,1,s3);R(mx+mw,my+1,1,1,s3)}}
   if(talk){R(mx,my-1,mw,3,'#1e100c');R(mx+1,my-1,mw-2,1,'#c8c0b0');R(mx+1,my+1,mw-2,1,'#5a2a24')}
   if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
@@ -1909,7 +1909,7 @@ function drawFace(L,cv,ov){
   if(L.hat==='fedora'){brimShade(17,18,46);const rows=[[3,22,30],[3,34,42],[4,21,43],[5,20,44]];for(let y=6;y<=13;y++)rows.push([y,19,45]);shp(rows);R(30,3,4,3,C1);R(31,4,2,4,C1);R(19,11,26,2,'#1a1714');R(19,11,26,1,'#2e2a24');
     [[14,10,54],[15,8,56],[16,9,55]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(14,10,54,C);row(15,8,56,C1);row(16,9,55,C3);R(12,14,12,1,C2);row(15,8,11,C3);row(15,53,56,C3)}
   if(L.hat==='scarf'){for(let y=6;y<=21;y++){const t=(y-27)/21;const hw=Math.round(17*Math.sqrt(Math.max(0,1-t*t)));row(y,32-hw-1,32+hw+1,OL);row(y,32-hw,32+hw,C);R(32-hw,y,2,1,C2);R(32+hw-3,y,3,1,C1)}
-    for(let y=20;y<=42;y++){R(14,y,6,1,OL);R(15,y,4,1,C);R(15,y,1,1,C2);R(44,y,6,1,OL);R(45,y,4,1,C1)}R(19,20,26,1,C1);R(20,21,24,1,C3);
+    for(let y=20;y<=45;y++){const fw=hwAt(y),l=Math.min(19,32-fw),r=Math.max(45,32+fw);R(14,y,6,1,OL);R(15,y,4,1,C);R(15,y,1,1,C2);R(44,y,6,1,OL);R(45,y,4,1,C1);if(y>=24){R(19,y,Math.max(0,32-fw-19),1,C1);R(32+fw,y,Math.max(0,45-32-fw),1,C3);if(fw>0&&fw<13){R(32-fw-1,y,1,1,OL);R(32+fw,y,1,1,OL)}}}R(19,20,26,1,C1);R(20,21,24,1,C3);
     for(let i=0;i<5;i++){R(20+i*5,11+(i%2)*3,2,2,C2);R(22+i*5,15-(i%2)*2,1,1,C1)}R(22,43,20,4,OL);R(23,43,18,3,C);R(29,46,7,4,OL);R(30,46,5,3,C1);R(23,43,18,1,C2)}
   if(L.hat==='kippah'){[[7,26,38],[8,24,40],[9,23,41]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(7,26,38,C);row(8,24,40,C);row(9,23,41,C1);R(27,7,6,1,C2);R(25,8,3,1,C2)}
   if(L.hat==='hasid'){const K='#15130f',K1='#26241f',K2='#3a3832';brimShade(16,18,46);for(let y=0;y<=11;y++){row(y,18,46,OL);row(y,19,45,y<2?K1:K)}R(20,1,8,1,K2);R(19,9,26,2,K1);row(9,19,45,'#0c0b09');
