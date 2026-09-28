@@ -2452,7 +2452,7 @@ function sortTask(){
 const DISTRACT={IS:['Dividends paid','Accounts receivable','Inventory','Retained earnings','Common stock','Accounts payable','Purchase of equipment','Repayment of loan principal'],RE:['Sales','Taxes','Accounts payable','Depreciation expense','Gross profit','Issuance of common stock'],CF:['Sales','Retained earnings','Gross profit','Common stock','Total assets','Interest expense (IS line)']};
 function buildTask(g){g=g||pick([docIS,docRE,docCF]);const d=g();const n=g===docRE?4:d.rows.length;const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:d.rows.slice(0,n).map((_,i)=>i+1));
   const rows=d.rows.slice(0,n).map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]);shuffle(DISTRACT[g===docIS?'IS':g===docRE?'RE':'CF']).slice(0,3).forEach(l=>rows.push([l,-1,null]));
-  return{kind:'build',doc:d,rows,fee:22,pool:shuffle(rows.map((_,i)=>i)),seq:[],vals:{}}}
+  return{kind:'build',big:g!==docRE,doc:d,rows,fee:22,pool:shuffle(rows.map((_,i)=>i)),seq:[],vals:{}}}
 function ppRenderBuild(){const c=PD.cur;const box=$('#ppPaper .bld');if(!box)return;
   box.innerHTML=`<p class="pp-q" style="margin:4px 0">Перетащи нужные строки из пула в документ (или кликни по ним), расставь порядок и впиши суммы из рассказа. В пуле есть лишние строки. Порядок строк внутри одной категории (например, отдельные операционные расходы) не важен. Оттоки в Cash Flow пиши с минусом.</p>
   <div class="pp-build"><div class="col"><small>Пул строк</small><div class="pp-pool" id="ppPool">${c.pool.map(i=>`<button class="pp-chip" data-oi="${i}">${esc(c.rows[i][0])}</button>`).join('')||'<span class="muted">пусто</span>'}</div></div>
@@ -2482,7 +2482,7 @@ function ppBuildSubmit(){const c=PD.cur,d=c.doc;const rows=c.rows;const real=row
   document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
 
 function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
-  return{kind:'ofill',doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
+  return{kind:'ofill',big:g!==docRE,doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
 function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Поставленные строки можно перетаскивать мышкой вверх-вниз, а клик по строке возвращает её обратно.</p>
   <ol class="pp-seq" id="ppSeq">${c.seq.map((i,k)=>`<li data-i="${i}"><span class="grip" aria-hidden="true">⋮⋮</span><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||'<li class="ph">пусто</li>'}</ol>
   <div class="pp-pool">${c.pool.map(i=>`<button class="pp-chip" data-oi="${i}">${esc(c.rows[i][0])}</button>`).join('')}</div>
@@ -2558,7 +2558,8 @@ function makeTasks(n,ev){
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
   for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
-  for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g()})}
+  for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS})}
+  {let nb=0;t.forEach((x,i)=>{if(x.big&&nb++)t[i]=x.kind==='build'?buildTask(docRE):ofillTask(docRE)})}
   t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18)t[i]=claimQ(x.q)});
   {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
