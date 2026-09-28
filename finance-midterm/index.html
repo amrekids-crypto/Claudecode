@@ -2311,7 +2311,7 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();SFX.amb(true);const n=Math.min(4+PP.day,10);
+  ppCloseOv();SFX.bell();const n=Math.min(4+PP.day,10);
   PD={deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   qsSetup(PD.tasks.map(t=>t.look));
   ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
@@ -2664,7 +2664,7 @@ function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;
   const pp=$('#pp');const fx=document.createElement('div');fx.className='pp-ts';fx.innerHTML='<div class="ts-ring"></div><div class="ts-ring r2"></div><div class="ts-clock"><i class="h"></i><i class="m"></i></div><div class="ts-txt">ВРЕМЯ ОСТАНОВЛЕНО</div>';pp.appendChild(fx);
   try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.type='sawtooth';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(60,t+.9);g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+1);o.connect(g).connect(a.destination);o.start();o.stop(t+1.02)}catch(e){}
   setTimeout(()=>pp.classList.add('frozen'),350);setTimeout(()=>fx.remove(),1500);ppTalk('Таймстоп','Часы стоят, пока ты не закончишь с этим посетителем.');ppBar()}
-$('#ppSnd').onclick=()=>{SFX.on=!SFX.on;if(!SFX.on)SFX.amb(false);else if(PD&&PD.state!=='over')SFX.amb(true);store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
+$('#ppSnd').onclick=()=>{SFX.on=!SFX.on;if(!SFX.on)SFX.amb(false);store.set('sfx',SFX.on);$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');if(SFX.on)SFX.click()};$('#ppSnd').textContent='Звук: '+(SFX.on?'вкл':'выкл');
 $('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',e=>{if(QS.onClick){QS.onClick(qsToLogical(e));return}ppShoot(e)});
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
