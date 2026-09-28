@@ -155,7 +155,15 @@ a.btn{text-decoration:none;display:inline-block}
 .pp-date{left:8px;color:var(--pp-gold)} .pp-event{right:8px;max-width:60%;text-align:right}
 .pp-main{display:grid;grid-template-columns:minmax(230px,300px) 1fr;min-height:520px}
 .pp-booth{background:var(--pp-wall);border-right:4px solid var(--pp-line);display:flex;flex-direction:column;gap:8px;padding:10px}
-.pp-window{border:4px solid var(--pp-line);background:#5f6452}
+.pp-window{border:4px solid var(--pp-line);background:#5f6452;position:relative;overflow:hidden}
+.pp-window.arrest::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 16px,#1b1914 16px 22px),rgba(163,48,42,.25);animation:bars .45s steps(6) both}
+.pp-window.arrest::before{content:"АРЕСТОВАН";position:absolute;left:50%;top:48%;z-index:2;transform:translate(-50%,-50%) rotate(-10deg);color:#f3e6cf;background:#a3302a;border:3px solid #15130f;padding:2px 10px;font-size:24px;white-space:nowrap;animation:inkin2 .2s .45s both}
+@keyframes bars{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+@keyframes inkin2{from{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(1.8)}to{opacity:1;transform:translate(-50%,-50%) rotate(-10deg) scale(1)}}
+.pp-bq{border-top:2px dashed #8f8360;padding-top:6px;margin-top:6px}
+.pp-opt.sel{border:2px solid #3a2e21;background:#e6ddbd;box-shadow:inset 3px 0 0 #3a2e21}
+table.pp-form td.badv{color:var(--pp-red);font-weight:700}
+table.pp-form td.okv{color:var(--pp-green)}
 .pp-clockrow{display:flex;gap:8px;align-items:stretch}
 .pp-clock{font-size:24px;background:#12110d;color:var(--pp-gold);border:3px solid var(--pp-line);padding:2px 8px;letter-spacing:.06em;line-height:1.2}
 .pp-rank{flex:1;background:#23211a;border:3px solid var(--pp-line);padding:3px 8px;font-size:16px;line-height:1.1;display:flex;align-items:center;color:var(--pp-text)}
@@ -395,8 +403,8 @@ function parseNum(s){if(s==null)return null;s=String(s).trim();if(!s)return null
 /* ---------- ask AI about a question ---------- */
 function aiPromptQ(q,picked){const opts=q.o.map((o,i)=>'ABCD'[i]+') '+o).join('\n');
   return `Объясни простыми словами, почему в этом вопросе правильный ответ именно такой${picked!=null&&picked!==q.a?', и почему мой ответ неверный':''}. Я студент 1 курса, предмет Managerial Finance (учебник Gitman).\n\nВопрос: ${q.q}\n${q.o===TF?'':'Варианты:\n'+opts+'\n'}${picked!=null?'Мой ответ: '+q.o[picked]+'\n':''}Правильный ответ: ${q.o[q.a]}`}
-function aiBox(text){const enc=encodeURIComponent(text);
-  return `<div class="aibox"><label class="ai-lab" for="aiTxt${aiBox.n=(aiBox.n||0)+1}">Не понял? Спроси у нейросети:</label><textarea id="aiTxt${aiBox.n}" class="ai-txt" rows="3" readonly>${esc(text)}</textarea><div class="row"><a class="btn small" href="https://claude.ai/new?q=${enc}" target="_blank" rel="noopener">Открыть в Claude</a><a class="btn small" href="https://gemini.google.com/app" target="_blank" rel="noopener" data-copy="${esc(text)}">Открыть Gemini (текст скопируется)</a></div></div>`}
+function aiBox(text){
+  return `<div class="aibox"><label class="ai-lab" for="aiTxt${aiBox.n=(aiBox.n||0)+1}">Не понял? Спроси у нейросети:</label><textarea id="aiTxt${aiBox.n}" class="ai-txt" rows="3" readonly>${esc(text)}</textarea><div class="row"><a class="btn small" href="https://gemini.google.com/app" target="_blank" rel="noopener" data-copy="${esc(text)}">Открыть Gemini (текст скопируется)</a></div></div>`}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if(!a)return;const t=a.getAttribute('data-copy');try{navigator.clipboard.writeText(t).catch(()=>{})}catch(err){}const ta=a.closest('.aibox')&&a.closest('.aibox').querySelector('textarea');if(ta){ta.focus();ta.select()}});
 document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ai-txt'))e.target.select()});
 
@@ -1521,6 +1529,8 @@ const PPX={
     place:['У меня в бумагах есть строка. Куда её записать?','Не знаю, в какой отчёт это ставить.'],
     pairs:['Одна и та же вещь и в IS, и в BS? Объясните.','Почему это в двух отчётах сразу?'],
     card:['Слышал умное слово на собрании. Что оно значит?','Проверьте, правильно ли я понимаю термин.'],
+    bundle:['У меня сразу несколько вопросов. Заплачу больше, если всё верно.','Вот пачка бумаг. Ответьте на всё сразу.'],
+    audit:['Я уже всё посчитал сам. Просто поставьте печать.','Отчёт готов, проверять не надо. Печать, пожалуйста.','Мой бухгалтер сказал, что всё правильно. Одобрите?'],
     doc:['Заполните, пожалуйста, форму. Я сам не умею.','Мне нужен готовый документ к вечеру.','Бухгалтер в отпуске. Заполните отчёт?']},
   THANKS:['Спасибо! Держите плату.','Теперь понятно. Спасибо!','Вы мне очень помогли.','Слава балансу!','Отличная работа, клерк.'],
   ANGRY:['Кажется, вы ошиблись...','Мой бухгалтер сказал бы иначе.','Хм. Я на вас пожалуюсь.','Это точно правильно?','Налоговая об этом узнает.'],
@@ -1579,7 +1589,12 @@ const SKIN=['#f0d0ac','#e3b98f','#cf9d70','#b07a50','#8a5a38','#6b432a'];
 const HAIR=['#1f1812','#3f2a1a','#6a4526','#9a6a34','#c9a24a','#8a8a82','#b0442c','#e0d8c8'];
 const COAT=['#56664a','#6a4a3a','#44566a','#7a6a48','#5a4a6a','#843a32','#3c5a52','#62624f','#4f4f5f'];
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const c=v=>Math.max(0,Math.min(255,Math.round(v*f)));return'#'+((1<<24)|(c(r)<<16)|(c(g)<<8)|c(b)).toString(16).slice(1)}
-function newLook(){return{skin:pick(SKIN),hair:pick(HAIR),coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:pick(['short','short','long','bald','bun','curly']),hat:Math.random()<.3?pick(['cap','fedora','scarf']):null,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:Math.random()<.18,stache:Math.random()<.22,glasses:Math.random()<.22,tie:Math.random()<.4?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:Math.random()<.5?1:0}}
+function newLook(){const f=Math.random()<.5;const old=Math.random()<.18;const hair=old?pick(['#8a8a82','#b8b4aa','#e0d8c0']):pick(HAIR.filter(h=>!['#8a8a82','#e0d8c0'].includes(h)));
+  const hat=Math.random()<.3?pick(f?['scarf','fedora','cap']:['cap','fedora']):null;
+  return{g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25,stache:!f&&Math.random()<.25,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
+const ROLES_M=['Пекарь','Таксист','Стартапер','Рыбак','Строитель','Сантехник','Учитель','Хозяин автомойки','Почтальон','Студент 1 курса','Стажёр-бухгалтер','Кассир банка','Фермер','Владелец кафе'];
+const ROLES_F=['Фермерша','Владелица кафе','Цветочница','Блогерша','Библиотекарша','Студентка 1 курса','Учительница','Кассирша банка','Стажёрка-бухгалтер','Пекарша','Парикмахерша','Владелица автомойки'];
+function roleFor(L){if(L.old)return L.g==='f'?pick(['Пенсионерка-инвестор','Бабушка-вкладчица','Пенсионерка']):pick(['Пенсионер-инвестор','Дедушка-вкладчик','Пенсионер']);return pick(L.g==='f'?ROLES_F:ROLES_M)}
 const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
 function P(ctx){return(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}}
 function drawFace(L){
@@ -1626,18 +1641,31 @@ function drawFace(L){
 const QS={people:[],tick:0,bld:null};
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<480){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
 function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-20-i*18,tx:0,state:'q',step:0}));qsTargets()}
-function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=372-k*20;k++}else if(p.state==='booth')p.tx=404;else if(p.state==='gone')p.tx=520})}
-function drawPerson(R,px,py,L,frame){
-  R(px-1,py+27,14,2,'rgba(0,0,0,.35)');
-  const c=L.coat,cd=shade(c,.75);
-  const lg=frame%2;R(px+2,py+20,3,7-lg,'#2a2620');R(px+7,py+20,3,6+lg,'#2a2620');R(px+1,py+26-lg,4,2,'#15130f');R(px+7,py+25+lg,4,2,'#15130f');
-  R(px+1,py+10,10,11,c);R(px+1,py+10,2,11,shade(c,1.12));R(px+9,py+10,2,11,cd);R(px+5,py+10,2,4,L.shirt||'#d8d0c0');
-  R(px,py+11,2,8,cd);R(px+10,py+11,2,8,cd);R(px,py+18,2,2,L.skin);R(px+10,py+18,2,2,L.skin);
-  R(px+3,py+8,6,2,shade(L.skin,.8));R(px+2,py+2,8,7,L.skin);R(px+8,py+2,2,7,shade(L.skin,.85));R(px+3,py+5,1,1,'#1b1914');R(px+7,py+5,1,1,'#1b1914');
-  if(L.style!=='bald'){R(px+2,py+1,8,3,L.hair);R(px+2,py+1,1,5,L.hair)}
-  if(L.style==='long')R(px+1,py+2,2,8,L.hair);
-  if(L.hat==='officer'){R(px+1,py,10,3,'#23241f');R(px+1,py+2,10,1,'#a3302a');R(px,py+3,12,1,'#15130f')}
-  else if(L.hat){R(px+1,py,10,3,L.hatc);R(px,py+2,12,1,shade(L.hatc,.8))}
+function qsTargets(){let k=0;QS.people.forEach(p=>{if(p.state==='q'){p.tx=352-k*20;k++}else if(p.state==='booth')p.tx=382;else if(p.state==='gone')p.tx=520})}
+function drawPerson(R,px,py,L,frame,moving){
+  R(px,py+27,13,2,'rgba(0,0,0,.35)');
+  const c=L.coat,cd=shade(c,.72),cl=shade(c,1.15),s=L.skin,sd=shade(s,.8),H=L.hair;
+  const f=moving?frame%4:0;const lg=[[0,0],[2,-2],[0,0],[-2,2]][f];const arm=[0,2,0,-2][f];const bob=moving&&(f===1||f===3)?-1:0;
+  const y=py+bob;
+  R(px+4+lg[1],y+20,2,7-bob,'#1f1c17');R(px+4+lg[1],py+26,4,2,'#100e0b');
+  R(px+5-arm,y+11,2,7,cd);
+  R(px+3,y+9,6,12,c);R(px+3,y+9,1,12,cl);R(px+8,y+10,1,10,cd);R(px+7,y+9,2,3,L.shirt||'#d8d0c0');if(L.tie)R(px+8,y+10,1,4,L.tie);
+  if(L.insp){R(px+3,y+9,6,1,'#e0b64a');R(px+4,y+13,4,2,'#a3302a')}
+  R(px+5+lg[0],y+20,2,7-bob,'#2a2620');R(px+5+lg[0],py+26,4,2,'#15130f');
+  R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);
+  R(px+5,y+7,3,2,sd);
+  R(px+3,y+1,7,7,s);R(px+9,y+3,1,4,s);R(px+10,y+4,1,2,sd);R(px+3,y+7,6,1,sd);
+  if(L.style!=='bald'||L.hat){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
+  if(L.style==='long'&&!L.hat)R(px+2,y+2,2,8,H);
+  if(L.style==='bun'&&!L.hat)R(px+1,y,2,3,H);
+  if(L.style==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
+  R(px+5,y+3,1,2,sd);
+  R(px+8,y+3,1,1,'#1b1914');R(px+7,y+6,2,1,shade(s,.6));
+  if(L.glasses){R(px+7,y+3,3,1,'#1b1914');R(px+5,y+3,2,1,'#1b1914')}
+  if(L.beard)R(px+6,y+6,4,2,H);if(L.stache)R(px+8,y+5,2,1,H);
+  if(L.hat==='officer'){R(px+2,y-1,8,3,'#23241f');R(px+2,y+1,8,1,'#a3302a');R(px+8,y+2,4,1,'#100e0b');R(px+6,y-1,2,1,'#e0b64a')}
+  else if(L.hat==='scarf'){R(px+2,y,8,4,L.hatc);R(px+2,y+4,2,4,L.hatc)}
+  else if(L.hat){R(px+3,y-1,7,3,L.hatc);R(px+2,y+1,(L.hat==='fedora'?11:10),1,shade(L.hatc,.75))}
 }
 function qsDraw(){
   const c=$('#ppQueue');if(!c)return;const x=c.getContext('2d'),R=P(x);qsInitBld();
@@ -1648,19 +1676,19 @@ function qsDraw(){
   for(let xx=0;xx<480;xx+=4){R(xx,27+((xx/4)%2),2,1,'#6a6a5a');R(xx,33+((xx/4+1)%2),2,1,'#6a6a5a')}
   R(0,70,480,70,'#34322a');for(let yy=74;yy<140;yy+=10)R(0,yy,480,1,'#2e2c24');for(let xx=0;xx<480;xx+=24)R(xx+((xx/24)%2)*12,74,1,66,'#2e2c24');
   R(0,98,480,22,'#3b392f');R(0,98,480,1,'#44423a');R(0,119,480,1,'#2a281f');
-  for(let xx=40;xx<=360;xx+=40){R(xx,86,3,14,'#6a6254');R(xx-1,85,5,2,'#8a8270')}for(let xx=40;xx<360;xx+=2)R(xx,89+Math.round(Math.sin((xx%40)/40*Math.PI)*2),2,1,'#8a2a22');
-  R(378,30,3,70,'#23211a');R(372,28,15,5,'#23211a');R(374,33,11,3,'#e0c070');x.fillStyle='rgba(224,192,112,.08)';x.beginPath();x.moveTo(374,36);x.lineTo(350,100);x.lineTo(410,100);x.lineTo(386,36);x.fill();
+  for(let xx=40;xx<=320;xx+=40){R(xx,86,3,14,'#6a6254');R(xx-1,85,5,2,'#8a8270')}for(let xx=40;xx<320;xx+=2)R(xx,89+Math.round(Math.sin((xx%40)/40*Math.PI)*2),2,1,'#8a2a22');
+  R(20,30,3,70,'#23211a');R(14,28,15,5,'#23211a');R(16,33,11,3,'#e0c070');x.fillStyle='rgba(224,192,112,.08)';x.beginPath();x.moveTo(16,36);x.lineTo(0,100);x.lineTo(52,100);x.lineTo(28,36);x.fill();
   R(398,38,80,86,'#4d4b3b');R(398,38,2,86,'#5a5846');R(476,38,2,86,'#3a3829');R(392,30,92,10,'#2a2820');R(392,38,92,3,'#1c1a16');
   R(404,58,34,26,'#15130f');R(406,60,30,22,'#8a8e6a');R(406,60,30,4,'#a8ac84');R(420,60,2,22,'#15130f');R(404,82,34,4,'#6a5a44');
-  R(446,64,26,60,'#1c1a16');R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a');
+  R(446,64,26,60,'#1c1a16');if(QS.door){R(448,66,22,58,'#0c0b09');R(450,70,18,54,'#4a3a22');R(450,70,18,2,'#6a5432')}else{R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a')}
   R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
   R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
-  QS.people.forEach(p=>{const px=Math.round(p.x);if(px<-14||px>490)return;drawPerson(R,px,92,p.look,p.moving?Math.floor(QS.tick/3):0)});
+  QS.people.forEach(p=>{if(p.hide)return;const px=Math.round(p.x);if(px<-14||px>490)return;drawPerson(R,px,92,p.look,Math.floor(QS.tick/2),p.moving)});
 }
 function ppAnimate(){
   if($('#tab-mix').hidden)return;
   QS.tick++;let moving=false;
-  QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.5){p.x+=Math.sign(d)*Math.min(Math.abs(d),2.2);p.moving=true;moving=true}else{p.x=p.tx;p.moving=false}});
+  QS.people.forEach(p=>{const d=p.tx-p.x;if(Math.abs(d)>.5){p.x+=Math.sign(d)*Math.min(Math.abs(d),p.sp||2.2);p.moving=true;moving=true}else{p.x=p.tx;p.moving=false}});
   if(moving||QS.tick%6===0)qsDraw();
   if(QS.tick%5===0)drawOffice();
 }
@@ -1727,25 +1755,52 @@ function ppPickQs(n,exclude,topics){
   const tks=shuffle(Object.keys(byTopic));let k=0;while(out.length<n&&k<800&&tks.length){const t=tks[k%tks.length];const q=pick(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
   return out;
 }
-const MIXT=[['mini','Мини-тест из класса'],['intro','Finance и фин. менеджер'],['forms','Формы бизнеса'],['inst','Фин. институты'],['mkt','Фин. рынки'],['stmt','Отчёты: IS, BS, RE'],['cf','Cash flow'],['calc','Задачи на счёт'],['cls','Классификация статей'],['pairs','Пары IS vs BS'],['place','Где статья (2 шага)'],['card','Карточки-термины'],['ratio','Financial ratios'],['fsa','Анализ отчётов, DuPont'],['tvm','Time value of money'],['rr','Ставки, risk & return'],['stfm','Short-term fin. mgmt'],['personal','Личные финансы']];
+const MIXT=[['mini','Мини-тест из класса'],['intro','Finance и фин. менеджер'],['forms','Формы бизнеса'],['inst','Фин. институты'],['mkt','Фин. рынки'],['stmt','Отчёты: IS, BS, RE'],['cf','Cash flow'],['calc','Задачи на счёт'],['cls','Классификация статей'],['pairs','Пары IS vs BS'],['place','Где статья (2 шага)'],['card','Карточки-термины'],['ratio','Financial ratios'],['fsa','Анализ отчётов, DuPont'],['tvm','Time value of money'],['rr','Ставки, risk & return'],['stfm','Short-term fin. mgmt'],['personal','Личные финансы'],['audit','Проверка документа (арест)']];
 function ppTopics(){const t=PP.topics&&PP.topics.length?PP.topics:MIXT.map(x=>x[0]);return new Set(t)}
+/* ---------- bundles & audits ---------- */
+const FIRMS=['Neris Bakery','Amber Taxi','Trakai Fish','Kaunas Print','Baltic Flowers','Vilnius Car Wash','Old Town Cafe','Nemunas Tools','Delta Bikes','Sunny Farm'];
+function auditIS(err){const S=rint(15,45)*10000,cp=pick([50,55,60,65]),sga=rint(4,12)*5000,dep=rint(2,8)*2500,L=rint(2,8)*10000,r=pick([6,8,10,12]),P=rint(1,4)*5000,t=pick([15,20,25]),D=rint(2,6)*2000;
+  const calc=m=>{const cogs=S*cp/100,gp=S-cogs,s2=sga+(m==='div'?D:0),d2=m==='noDep'?0:dep,ebit=gp-s2-d2,int=(m==='intAfter'?(L-P)*r/100:L*r/100)+(m==='principal'?P:0),ebt=ebit-int,tax=(m==='taxEBIT'?ebit:ebt)*t/100,ni=ebt-tax;return[S,cogs,gp,s2,d2,ebit,int,ebt,tax,ni]};
+  const ok=calc(null),th=calc(err);if(ok[7]<3000||th[7]<1000)return auditIS(err);
+  const lab=['Sales','Cost of goods sold','Gross profit','Selling & admin. expenses','Depreciation','Operating profit (EBIT)','Interest expense','Earnings before taxes','Taxes','Net income'];
+  const why={intAfter:'Проценты посчитаны на остаток ПОСЛЕ погашения. Кредит весь год был '+fmt(L)+', значит interest = '+r+'% × '+fmt(L)+'.',principal:'Погашение основного долга ('+fmt(P)+') записано как расход. Это financing, в IS идут только проценты.',noDep:'Забыли амортизацию: это операционный расход до EBIT.',taxEBIT:'Налог посчитан с EBIT, а надо с EBT (после процентов).',div:'Дивиденды ('+fmt(D)+') добавлены к расходам. Дивиденды не расход, они уменьшают RE.'};
+  return{title:'INCOME STATEMENT',story:`${pick(FIRMS)} за год: выручка ${$f(S)}, себестоимость проданного товара ${cp}% от выручки. Зарплаты, аренда и прочие S&A расходы ${$f(sga)}. Амортизация оборудования ${$f(dep)}. Банковский кредит ${$f(L)} под ${r}% годовых: 31 декабря заплатили проценты за год и вернули ${$f(P)} основного долга. Акционерам выплатили дивиденды ${$f(D)}. Налог ${t}%.`,labels:lab,ok,th,why:err?why[err]:null}}
+function auditRE(err){const beg=rint(20,90)*1000,ni=rint(15,60)*1000,pd=rint(1,4)*1000,cd=rint(3,12)*1000,X=rint(2,8)*5000;
+  const div=m=>m==='prefOnly'?cd:pd+cd;const calc=m=>{const d=div(m);const end=m==='addDiv'?beg+ni+d:m==='stockIn'?beg+ni-d+X:beg+ni-d;return[beg,ni,d,end]};
+  const why={addDiv:'Дивиденды прибавлены вместо вычитания.',stockIn:'В retained earnings добавлены деньги от выпуска акций ('+fmt(X)+'). Они идут в common stock и paid-in capital, не в RE.',prefOnly:'Вычтены только обычные дивиденды, привилегированные ('+fmt(pd)+') забыли.'};
+  return{title:'STATEMENT OF RETAINED EARNINGS',story:`${pick(FIRMS)}: нераспределённая прибыль на начало года ${$f(beg)}, чистая прибыль за год ${$f(ni)}. Выплачены дивиденды: по привилегированным акциям ${$f(pd)}, по обычным ${$f(cd)}. Также компания выпустила новые акции на ${$f(X)}.`,labels:['Beginning retained earnings','Plus: Net income','Less: Dividends','Ending retained earnings'],ok:calc(null),th:calc(err),why:err?why[err]:null}}
+function auditCF(err){const ni=rint(10,50)*1000,dep=rint(3,15)*1000,dAR=rint(-8,8)*1000||2000,dInv=rint(-8,10)*1000||3000,dAP=rint(-6,8)*1000||-2000,P=rint(1,4)*5000;
+  const calc=m=>{const a=m==='arSign'?dAR:-dAR,i=m==='invSign'?dInv:-dInv,p=m==='apSign'?-dAP:dAP,d=m==='depMinus'?-dep:dep;return[ni,d,a,i,p,ni+d+a+i+p]};
+  const w=(x,up,down)=>x>0?up+' на '+fmt(x):down+' на '+fmt(-x);
+  const why={arSign:'Знак AR перепутан: рост дебиторки — минус, снижение — плюс.',invSign:'Знак запасов перепутан: рост inventory — отток денег (минус).',apSign:'Знак AP перепутан: рост кредиторки — источник денег (плюс).',depMinus:'Амортизацию вычли, а её надо прибавить (non-cash expense).'};
+  return{title:'CASH FLOW FROM OPERATIONS',story:`${pick(FIRMS)}: чистая прибыль ${$f(ni)}, амортизация ${$f(dep)}. За год accounts receivable ${w(dAR,'выросли','снизились')}, inventory ${w(dInv,'вырос','снизился')}, accounts payable ${w(dAP,'выросли','снизились')}. Ещё вернули банку ${$f(P)} кредита (это не operating).`,labels:['Net income','Depreciation','Change in accounts receivable','Change in inventory','Change in accounts payable','Cash flow from operations'],ok:calc(null),th:calc(err),why:err?why[err]:null,signed:1}}
+function auditBS(err){const cs=rint(20,60)*1000,pic=rint(10,50)*1000,g=rint(100,300)*1000,ad=rint(20,80)*1000,n=rint(1,6)*1000,par=pick([1,2]),pr=par+rint(4,12),M=rint(2,8)*10000,D=rint(2,6)*5000;
+  const calc=m=>{const c2=cs+(m==='allCS'?n*pr:n*par),p2=pic+(m==='allCS'?0:n*(pr-par)),g2=g+M,a2=ad+(m==='noAccDep'?0:D),net=m==='netDep'?g2-D:g2-a2;return[c2,p2,g2,a2,net]};
+  const why={allCS:'Вся сумма от выпуска акций записана в common stock. В CS идёт только par × shares, остальное в paid-in capital.',noAccDep:'Accumulated depreciation не увеличили на амортизацию года.',netDep:'Net P&E посчитан как gross − амортизация ЭТОГО года, а надо gross − ВСЯ accumulated depreciation.'};
+  return{title:'BALANCE SHEET (EXTRACT)',story:`${pick(FIRMS)} на начало года: common stock ${$f(cs)}, paid-in capital ${$f(pic)}, gross plant & equipment ${$f(g)}, accumulated depreciation ${$f(ad)}. За год: выпустили ${fmt(n)} акций номиналом $${par} по $${pr}, купили машину за ${$f(M)}, амортизация за год ${$f(D)}.`,labels:['Common stock (par)','Paid-in capital in excess of par','Gross plant & equipment','Accumulated depreciation','Net plant & equipment'],ok:calc(null),th:calc(err),why:err?why[err]:null}}
+const AUDITS=[[auditIS,['intAfter','principal','noDep','taxEBIT','div']],[auditRE,['addDiv','stockIn','prefOnly']],[auditCF,['arSign','invSign','apSign','depMinus']],[auditBS,['allCS','noAccDep','netDep']]];
+function makeAudit(){const [g,errs]=pick(AUDITS);const err=Math.random()<.5?pick(errs):null;return g(err)}
+
 function makeTasks(n,ev){
   const T=ppTopics();
   const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
-  const canPlace=T.has('place'),canCard=T.has('card');
-  const qTopics=[...T].filter(t=>!['place','card'].includes(t));
+  const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');
+  const qTopics=[...T].filter(t=>!['place','card','audit'].includes(t));
   let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):Math.max(1,Math.round(n*.18))):0;
   let nPlace=canPlace?Math.max(1,Math.round(n*.18)):0,nCard=canCard?Math.max(1,Math.round(n*.15)):0;
-  let nQ=Math.max(0,n-nDoc-nPlace-nCard);
+  let nAudit=canAudit?Math.max(1,Math.round(n*.2)):0;
+  let nQ=Math.max(0,n-nDoc-nPlace-nCard-nAudit);
   const seen=new Set(store.get('ppSeen',[]));
-  const qs=qTopics.length?ppPickQs(nQ,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
-  let miss=nQ-qs.length;while(miss-->0){if(docs.length)nDoc++;else if(canCard)nCard++;else if(canPlace)nPlace++}
-  const t=[];qs.forEach(q=>t.push({kind:'q',q}));
+  const extra=PP.day>=1?Math.round(nQ*.4):0;const qs=qTopics.length?ppPickQs(nQ+extra,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
+  let miss=nQ-Math.min(nQ,qs.length);while(miss-->0){if(docs.length)nDoc++;else if(canAudit)nAudit++;else if(canCard)nCard++;else if(canPlace)nPlace++}
+  const t=[];let qi=0,spare=Math.max(0,qs.length-nQ);
+  for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
+  for(let i=0;i<nAudit;i++)t.push({kind:'audit',au:makeAudit()});
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
   for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
   for(let i=0;i<nDoc;i++)t.push({kind:'doc',doc:pick(docs)()});
-  return shuffle(t).map(x=>Object.assign(x,{look:newLook(),role:pick(PPX.ROLES)}));
+  return shuffle(t).map(x=>{const look=newLook();return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
@@ -1778,7 +1833,7 @@ function ppDayIntro(){
    <div class="row" style="justify-content:center"><button class="pp-btn" id="ppShopBtn">Магазин офиса</button><button class="pp-btn horn" id="ppGo">Открыть окошко</button></div>`);
   const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave()};
   tb.addEventListener('change',syncT);
-  $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
+  $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
   $('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;ppStartDay()};$('#ppShopBtn').onclick=ppShop;ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
 function ppShop(){
@@ -1795,7 +1850,7 @@ function ppShop(){
 }
 function ppStartDay(){
   ppCloseOv();const n=Math.min(4+PP.day,10);
-  PD={tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
+  PD={deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   qsSetup(PD.tasks.map(t=>t.look));
   ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>БЮРО ФИН. ОТЧЁТНОСТИ</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
@@ -1809,7 +1864,7 @@ function ppCall(){
   if(PD.idx>=PD.tasks.length){qsTargets();drawFace(null);ppEndDay();return}
   QS.people[PD.idx].state='booth';qsTargets();
   const c=PD.tasks[PD.idx];PD.cur=c;PD.hinted=false;PD.state='asking';PD.step=1;
-  drawFace(c.look);const tk=c.kind==='q'?c.q.t:c.kind;ppTalk(c.role,pick(PPX.OPEN[tk]||['Добрый день. Вот мой документ.']));
+  drawFace(c.look);const tk=c.kind==='q'?c.q.t:c.kind;if(c.kind==='bundle')c.bsel={};ppTalk(c.role,pick(PPX.OPEN[tk]||['Добрый день. Вот мой документ.']));
   ppRenderTask();ppBar();
 }
 function ppHead(label){return`<h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>${esc(label)}</span></h4>`}
@@ -1819,6 +1874,8 @@ function ppRenderTask(){
     h=`<div class="pp-paper" id="ppPaper">${ppHead(TOPICS[q.t]||'Вопрос')}<p class="pp-q" style="white-space:pre-line">${esc(q.q.replace(/^True or False:\s*/,''))}</p>${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:`<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}</div>`}
   else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
     h=`<div class="pp-paper" id="ppPaper">${ppHead('Где статья')}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?'Step 1 of 2: which statement?':`Step 2 of 2: ${esc(STMTS[it.s])} — which category?`}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
+  else if(c.kind==='bundle'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Пакет: '+c.qs.length+' вопроса')}<p class="pp-q"><b>Все ответы верны → $${ppBundleFee(c.qs.length)}. Хоть одна ошибка → $0.</b></p>${c.qs.map((q,i)=>{const order=(q.o===TF||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));return`<div class="pp-bq" data-bq="${i}"><p class="pp-q" style="white-space:pre-line"><b>${i+1}.</b> ${esc(q.q.replace(/^True or False:\s*/,q.o===TF?'True or False: ':''))}</p><div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-b="${i}" data-bk="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div></div>`}).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmitB" disabled>Подать ответы</button></div></div>`}
+  else if(c.kind==='audit'){const a=c.au;h=`<div class="pp-paper" id="ppPaper">${ppHead('Проверка документа')}<p class="pp-q" style="margin-top:4px"><b>Что произошло (со слов посетителя):</b></p><div class="pp-given">${esc(a.story)}</div><p class="pp-q"><b>Его ${esc(a.title)}:</b></p><table class="pp-form">${a.labels.map((l,i)=>`<tr><td>${esc(l)}</td><td>${fmt(a.th[i])}</td></tr>`).join('')}</table><p class="pp-q" style="font-size:13px">Сверь с условием. Всё верно → одобри. Есть ошибка → арестуй. Верное решение +$15, неверное −$15 из зарплаты.</p><textarea class="ai-txt" rows="2" placeholder="Черновик для расчётов" aria-label="Черновик"></textarea><div class="pp-stamps"><button class="pp-stamp t" data-audit="ok">ОДОБРИТЬ</button><button class="pp-stamp f" data-audit="arrest">АРЕСТОВАТЬ</button></div></div>`}
   else{const d=c.doc;h=`<div class="pp-paper" id="ppPaper">${ppHead('Документ')}<p class="pp-q" style="margin-top:4px"><b>${esc(d.title)}</b></p><div class="pp-given">${esc(d.given)}</div><table class="pp-form">${d.rows.map((r,i)=>`<tr><td>${esc(r[0])}</td><td>${r[2]?`<span>${fmt(r[1])}</span>`:`<input id="ppIn${i}" data-i="${i}" inputmode="decimal" autocomplete="off" aria-label="${esc(r[0])}">`}</td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmit">Подать документ</button></div></div>`}
   $('#ppDesk').innerHTML=h;
 }
@@ -1851,13 +1908,50 @@ function ppSubmitDoc(){
   const ai=`Объясни по шагам, как заполнить этот документ (${d.title}). Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}\nСтроки: ${d.rows.map(r=>r[0]).join('; ')}\nПравильные ответы: ${d.rows.map(r=>r[0]+' = '+fmt(r[1],(r[3]||{}).dec||0)).join('; ')}`;
   ppFinish(right,`Верно ${ok} из ${tot} полей. ${d.x}`,ai,ok*per,right?'':`<p>Правильные значения показаны красным под полями.</p>`);
 }
+function ppBundleFee(k){return ppFee()*k+3*(k-1)}
+function ppPickB(b){const c=PD.cur,i=+b.dataset.b;c.bsel[i]=+b.dataset.bk;document.querySelectorAll(`#ppPaper .pp-opt[data-b="${i}"]`).forEach(x=>x.classList.toggle('sel',x===b));$('#ppSubmitB').disabled=Object.keys(c.bsel).length<c.qs.length}
+function ppSubmitBundle(){
+  const c=PD.cur;let ok=0;const lines=[];
+  c.qs.forEach((q,i)=>{const k=c.bsel[i],right=k===q.a;if(right)ok++;
+    document.querySelectorAll(`#ppPaper .pp-opt[data-b="${i}"]`).forEach(x=>{x.disabled=true;x.classList.remove('sel');if(+x.dataset.bk===q.a)x.classList.add('right');else if(+x.dataset.bk===k)x.classList.add('wrongpick')});
+    const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(q.id!=null){if(right)delete w[key];else w[key]=1;store.set('wrong',w)}
+    lines.push(`${i+1}. ${right?'✓':'✗ Верно: '+q.o[q.a]+'.'} ${q.x}`)});
+  $('#ppSubmitB').disabled=true;const all=ok===c.qs.length;const firstBad=c.qs.findIndex((q,i)=>c.bsel[i]!==q.a);
+  const ai=firstBad>=0?aiPromptQ(c.qs[firstBad],c.bsel[firstBad]):aiPromptQ(c.qs[0],c.bsel[0]);
+  ppFinish(all,lines.join('\n'),ai,all?ppBundleFee(c.qs.length):0,all?'':`<p>Верно ${ok} из ${c.qs.length}. В пакете нужна каждая позиция.</p>`);
+  document.querySelectorAll('#ppDesk .pp-good p, #ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');
+}
+function ppSiren(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=ppThunk.ctx||(ppThunk.ctx=new A());const o=a.createOscillator(),g=a.createGain();o.type='square';const t=a.currentTime;[0,.2,.4,.6].forEach((d,i)=>o.frequency.setValueAtTime(i%2?560:760,t+d));g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.8);o.connect(g).connect(a.destination);o.start();o.stop(t+.82)}catch(e){}}
+function ppArrestAnim(cb){
+  const p=QS.people[PD.idx];const win=document.querySelector('.pp-window');win.classList.remove('arrest');void win.offsetWidth;win.classList.add('arrest');ppSiren();
+  const ins={look:INSPECTOR,x:458,tx:397,state:'x',sp:3.2};QS.door=1;QS.people.push(ins);ppTalk('Налоговый инспектор','Пройдёмте, гражданин. Подделка отчётности.');
+  let phase=1,ticks=0;const iv=setInterval(()=>{ticks++;
+    if(phase===1&&Math.abs(ins.x-ins.tx)<1){phase=2;if(p){p.tx=458;p.sp=2.6;p.state='x'}ins.tx=462;ins.sp=2.6}
+    else if(phase===2&&(!p||Math.abs(p.x-p.tx)<1)&&Math.abs(ins.x-ins.tx)<1){phase=3}
+    if(phase===3||ticks>50){clearInterval(iv);if(p)p.hide=true;ins.hide=true;QS.door=0;drawFace(null);setTimeout(()=>win.classList.remove('arrest'),600);cb()}},80);
+}
+function ppAudit(arrest){
+  const c=PD.cur,a=c.au,hasErr=!!a.why;const right=arrest===hasErr;
+  document.querySelectorAll('#ppPaper [data-audit]').forEach(b=>b.disabled=true);
+  const rows=document.querySelectorAll('#ppPaper table.pp-form tr');a.labels.forEach((l,i)=>{const td=rows[i].children[1];if(Math.abs(a.th[i]-a.ok[i])>.5){td.classList.add('badv');td.insertAdjacentHTML('beforeend',`<span class="fix">верно: ${fmt(a.ok[i])}</span>`)}else td.classList.add('okv')});
+  const expl=hasErr?`В документе ошибка. ${a.why}`:'Документ верный, все строки сходятся с условием.';
+  const ai=`Проверь по шагам этот документ (${a.title}) и объясни, есть ли в нём ошибка и какая. Я студент 1 курса, Managerial Finance (Gitman).\nУсловие: ${a.story}\nДокумент посетителя: ${a.labels.map((l,i)=>l+' = '+fmt(a.th[i])).join('; ')}`;
+  const finish=()=>{PD.state='done';ppThunk();
+    $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${arrest?'АРЕСТ':'ОДОБРЕНО'}</div>`);
+    if(right){PD.correct++;PD.fees+=15;PP.cash+=15}else{PD.wrong++;PD.deduct+=15;PP.cash-=15}
+    if(!arrest)ppTalk(c.role,hasErr?'Хе-хе. Спасибо за печать!':'Спасибо, что поверили.');
+    $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${arrest?'НАРУШИТЕЛЬ ЗАДЕРЖАН':'ВЕРНОЕ ОДОБРЕНИЕ'}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${arrest?'АРЕСТ БЕЗ ОСНОВАНИЙ':'ПРОПУЩЕНА ОШИБКА'}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
+    ppSave();ppBar()};
+  if(arrest){PD.state='anim';ppBar();ppArrestAnim(finish)}else finish();
+}
+
 function ppHint(){const c=PD&&PD.cur;if(!c||PD.state!=='asking'||PD.hinted||c.kind!=='q'||c.q.o.length!==4)return;const q=c.q;const cost=has('calc')?1:2;PD.hinted=true;PD.hints+=cost;PP.cash-=cost;
   const wrongs=shuffle([0,1,2,3].filter(k=>k!==q.a)).slice(0,2);document.querySelectorAll('#ppPaper .pp-opt').forEach(b=>{if(wrongs.includes(+b.dataset.k)){b.classList.add('gone');b.disabled=true}});ppTalk('Справочник',`Два неверных варианта вычеркнуты. −$${cost}.`);ppSave();ppBar()}
 function ppBook(){const c=PD&&PD.cur;if(!c)return;const tk=c.kind==='q'?c.q.t:c.kind;ppTalk('Справочник',PPX.RULES[tk]||PPX.RULES.stmt)}
 function ppEndDay(){
   if(!PD||PD.state==='over')return;PD.state='over';
   const n=PD.tasks.length,acc=PD.correct/n;drawFace(INSPECTOR);
-  QS.people.push({look:INSPECTOR,x:-20,tx:404,state:'insp'});
+  QS.people.push({look:INSPECTOR,x:-20,tx:366,state:'insp'});
   const hi=PP.event==='audit'?.9:.8;let verdict,bonus=0,fine=0,medal=null;
   if(acc>=hi){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=PP.event==='audit'?20:PPX.BONUS;verdict='medal'}
   else if(acc>=.6)verdict='warn';else{fine=PPX.FINE;PP.fines++;verdict='fine'}
@@ -1872,7 +1966,7 @@ function ppEndDay(){
 function ppSummary(){
   const d=PP.day,eq=equip(d),heat=has('heater')?1:PPX.HEAT*(PP.event==='cold'?2:1);
   const rev=PD.fees,rent=PPX.RENT,food=PPX.FOOD,rep=PP.pending.repairs,hints=PD.hints,dep=eq.dep;
-  const opex=rent+food+heat+rep+hints+dep,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
+  const ded=PD.deduct||0;const opex=rent+food+heat+rep+hints+dep+ded,ebit=rev-opex,ni=ebit+PD.bonus-PD.fine;
   const begCash=PP.beg.cash,begNet=PP.beg.net,capex=PP.pending.capex;
   PP.cash=begCash+ni+dep-capex;
   const endNet=begNet+capex-dep,reBeg=begCash+begNet-PP.capital,reEnd=reBeg+ni,ta=PP.cash+endNet;
@@ -1883,7 +1977,7 @@ function ppSummary(){
    <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>
    <div class="pp-sumgrid">
    <table class="pp-is"><tr class="h"><td>Income statement</td><td></td></tr>
-   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}
+   ${row('Revenue (fees)',rev)}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}
    ${row('Operating profit (EBIT)',ebit,'sub')}${row('Other income: премия',PD.bonus)}${row('Other expense: штраф',-PD.fine)}${row('Net income',ni,'sub')}</table>
    <table class="pp-is"><tr class="h"><td>Retained earnings</td><td></td></tr>${row('Beginning RE',reBeg)}${row('+ Net income',ni)}${row('− Dividends',0)}${row('Ending RE',reEnd,'sub')}
    <tr class="h"><td>Cash flows</td><td></td></tr>${row('Net income',ni)}${row('+ Depreciation',dep)}${row('CFO',ni+dep,'sub')}${row('CFI: office equipment',-capex)}${row('Net change in cash',ni+dep-capex,'sub')}${row('Cash, end of day',PP.cash)}</table>
@@ -1897,7 +1991,7 @@ function ppSummary(){
 }
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;
-  if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
+  if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
 $('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.pp-form input')){const n=$('#ppIn'+(+e.target.dataset.i+1));if(n&&!n.disabled)n.focus();else ppSubmitDoc()}});
 $('#ppReset').onclick=()=>{PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro()};
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
