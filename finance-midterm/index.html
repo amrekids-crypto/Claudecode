@@ -204,6 +204,14 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 @keyframes ppFlash{from{opacity:.85}to{opacity:0}}
 .pp-seq{margin:6px 0;padding-left:26px;display:flex;flex-direction:column;gap:4px;font-family:"IBM Plex Mono",monospace;font-size:13px;min-height:30px;border:2px dashed #8f8360;padding-block:6px;background:var(--pp-paper2)}
 .pp-seq .ph{list-style:none;color:#8f8360}
+.pp-build{display:grid;grid-template-columns:minmax(200px,1fr) minmax(300px,1.6fr);gap:12px;margin-top:6px}
+.pp-build .col{display:flex;flex-direction:column;gap:4px}.pp-build .col>small{font-family:"Tiny5",monospace;font-size:16px}
+.pp-build .pp-pool{align-content:flex-start;min-height:120px;border:2px dashed #8f8360;padding:6px;margin:0;background:var(--pp-paper2)}
+.pp-doc li[data-i]{display:flex;align-items:center;gap:6px}.pp-doc li[data-i] .pp-chip{flex:1;text-align:left}
+.pp-doc input{font-family:"IBM Plex Mono",monospace;font-size:13px;width:110px;text-align:right;background:#efe6c8;color:var(--pp-ink);border:2px solid #8f8360;padding:3px 6px}
+.pp-doc.over{outline:3px solid #e0b64a;outline-offset:2px}
+.pp-ghost{position:fixed;z-index:9999;pointer-events:none;background:#3a2e21;color:#efe6c8;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+@media (max-width:760px){.pp-build{grid-template-columns:1fr}}
 .pp-seq li[data-i]{touch-action:none;cursor:grab;user-select:none}
 .pp-seq li[data-i] .grip{display:inline-block;width:14px;color:#8f8360;font-size:12px;margin-right:4px;letter-spacing:-2px}
 .pp-seq li.dragging{opacity:.9}.pp-seq li.dragging .pp-chip{background:#3a2e21;color:#efe6c8;box-shadow:4px 4px 0 rgba(0,0,0,.3)}
@@ -1626,6 +1634,7 @@ const PPX={
     card:['Слышал умное слово на собрании. Что оно значит?','Проверьте, правильно ли я понимаю термин.'],
     order:['Бухгалтер перепутал строки. Разложите по порядку?','У меня все строки отчёта вразнобой.'],
     sort:['Помогите разложить бумаги по папкам.','Куда что относится? Я запутался.'],
+    build:['Вот что было за год. Составьте мне отчёт с нуля.','Бухгалтер оставил только заметки. Соберите документ?'],
     ofill:['Нужно собрать отчёт с нуля: и порядок, и цифры.','Самое сложное: соберите мне весь отчёт.'],
     bundle:['У меня сразу несколько вопросов. Заплачу больше, если всё верно.','Вот пачка бумаг. Ответьте на всё сразу.'],
     audit:['Я уже всё посчитал сам. Просто поставьте печать.','Отчёт готов, проверять не надо. Печать, пожалуйста.','Мой бухгалтер сказал, что всё правильно. Одобрите?'],
@@ -1950,7 +1959,7 @@ function ppPickQs(n,exclude,topics){
   const tks=shuffle(Object.keys(byTopic));let k=0;while(out.length<n&&k<800&&tks.length){const t=tks[k%tks.length];const q=pick(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
   return out;
 }
-const MIXT=[['mini','Мини-тест из класса'],['intro','Finance и фин. менеджер'],['forms','Формы бизнеса'],['inst','Фин. институты'],['mkt','Фин. рынки'],['stmt','Отчёты: IS, BS, RE'],['cf','Cash flow'],['calc','Задачи на счёт'],['cls','Классификация статей'],['pairs','Пары IS vs BS'],['place','Где статья (2 шага)'],['card','Карточки-термины'],['ratio','Financial ratios'],['fsa','Анализ отчётов, DuPont'],['tvm','Time value of money'],['rr','Ставки, risk & return'],['stfm','Short-term fin. mgmt'],['personal','Личные финансы'],['audit','Проверка документа (арест)'],['order','Порядок строк отчёта'],['sort','Раскидать по категориям'],['ofill','Порядок + заполнение']];
+const MIXT=[['mini','Мини-тест из класса'],['intro','Finance и фин. менеджер'],['forms','Формы бизнеса'],['inst','Фин. институты'],['mkt','Фин. рынки'],['stmt','Отчёты: IS, BS, RE'],['cf','Cash flow'],['calc','Задачи на счёт'],['cls','Классификация статей'],['pairs','Пары IS vs BS'],['place','Где статья (2 шага)'],['card','Карточки-термины'],['ratio','Financial ratios'],['fsa','Анализ отчётов, DuPont'],['tvm','Time value of money'],['rr','Ставки, risk & return'],['stfm','Short-term fin. mgmt'],['personal','Личные финансы'],['audit','Проверка документа (арест)'],['order','Порядок строк отчёта'],['sort','Раскидать по категориям'],['ofill','Порядок + заполнение'],['build','Собери документ сам']];
 function ppTopics(){const t=PP.topics&&PP.topics.length?PP.topics:MIXT.map(x=>x[0]);return new Set(t)}
 /* ---------- bundles & audits ---------- */
 const FIRMS=['Neris Bakery','Amber Taxi','Trakai Fish','Kaunas Print','Baltic Flowers','Vilnius Car Wash','Old Town Cafe','Nemunas Tools','Delta Bikes','Sunny Farm'];
@@ -1991,17 +2000,50 @@ function sortTask(){
   else if(v==='CF'){cats=['Operating','Investing','Financing'];items=shuffle(CLS_CF).slice(0,8).map(([a,b])=>[a,b.split(' ')[0]]);title='Cash flow: разложи операции по разделам'}
   else{const M={BS:'Balance sheet',IS:'Income statement',RE:'Retained earnings',CF:'Cash flows only'};cats=Object.values(M);items=shuffle(ITEMS).slice(0,8).map(i=>[i.n,M[i.s]]);title='В какой отчёт идёт каждая строка?'}
   const note=v==='IS'?'Non-operating = interest, gains, losses. Subtotal = строки-итоги (GP, EBIT, EBT, NI, EPS).':v==='ST'?'CF only = строка есть только в Statement of cash flows.':'';return{kind:'sort',title,cats,items,note,fee:cats.length>=5?8:7,pick:{}}}
+/* ---------- build a document yourself ---------- */
+const DISTRACT={IS:['Dividends paid','Accounts receivable','Inventory','Retained earnings','Common stock','Accounts payable','Purchase of equipment','Repayment of loan principal'],RE:['Sales','Taxes','Accounts payable','Depreciation expense','Gross profit','Issuance of common stock'],CF:['Sales','Retained earnings','Gross profit','Common stock','Total assets','Interest expense (IS line)']};
+function buildTask(g){g=g||pick([docIS,docRE,docCF]);const d=g();const n=g===docRE?4:d.rows.length;const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:d.rows.slice(0,n).map((_,i)=>i+1));
+  const rows=d.rows.slice(0,n).map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]);shuffle(DISTRACT[g===docIS?'IS':g===docRE?'RE':'CF']).slice(0,3).forEach(l=>rows.push([l,-1,null]));
+  return{kind:'build',doc:d,rows,fee:22,pool:shuffle(rows.map((_,i)=>i)),seq:[],vals:{}}}
+function ppRenderBuild(){const c=PD.cur;const box=$('#ppPaper .bld');if(!box)return;
+  box.innerHTML=`<p class="pp-q" style="margin:4px 0">Перетащи нужные строки из пула в документ (или кликни по ним), расставь порядок и впиши суммы из рассказа. В пуле есть лишние строки. Порядок строк внутри одной категории (например, отдельные операционные расходы) не важен. Оттоки в Cash Flow пиши с минусом.</p>
+  <div class="pp-build"><div class="col"><small>Пул строк</small><div class="pp-pool" id="ppPool">${c.pool.map(i=>`<button class="pp-chip" data-oi="${i}">${esc(c.rows[i][0])}</button>`).join('')||'<span class="muted">пусто</span>'}</div></div>
+  <div class="col"><small>Твой документ</small><ol class="pp-seq pp-doc" id="ppSeq">${c.seq.map((i,k)=>`<li data-i="${i}"><span class="grip" aria-hidden="true">⋮⋮</span><button class="pp-chip on" data-os="${k}" title="Вернуть в пул">${esc(c.rows[i][0])}</button><input data-v="${i}" inputmode="decimal" autocomplete="off" value="${esc(c.vals[i]??'')}" aria-label="${esc(c.rows[i][0])}"></li>`).join('')||'<li class="ph">перетащи строки сюда</li>'}</ol></div></div>
+  <div class="row" style="margin-top:10px"><button class="pp-btn" id="ppOReset">Сбросить</button><button class="pp-btn horn" id="ppBSubmit" ${c.seq.length?'':'disabled'}>Подать ($${c.fee})</button></div>`;
+  ppSeqDrag();ppPoolDrag()}
+function ppPoolDrag(){const pool=$('#ppPool');if(!pool)return;let st=null,ghost=null;
+  pool.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-oi]');if(!b||e.button>0)return;st={b,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}});
+  pool.addEventListener('pointermove',e=>{if(!st)return;if(!st.moved){if(Math.hypot(e.clientX-st.x,e.clientY-st.y)<6)return;st.moved=true;try{pool.setPointerCapture(st.id)}catch(_){}ghost=st.b.cloneNode(true);ghost.className='pp-chip pp-ghost';document.body.appendChild(ghost)}
+    e.preventDefault();ghost.style.left=(e.clientX+8)+'px';ghost.style.top=(e.clientY-12)+'px';const seq=$('#ppSeq');const r=seq.getBoundingClientRect();seq.classList.toggle('over',e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top-20&&e.clientY<=r.bottom+20)});
+  const end=e=>{if(!st)return;if(st.moved){ghost&&ghost.remove();ghost=null;const seq=$('#ppSeq');const r=seq.getBoundingClientRect();const c=PD.cur;const i=+st.b.dataset.oi;
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top-20&&e.clientY<=r.bottom+20){const lis=[...seq.querySelectorAll('li[data-i]')];let k=lis.findIndex(li=>{const q=li.getBoundingClientRect();return e.clientY<q.top+q.height/2});if(k<0)k=lis.length;c.pool=c.pool.filter(x=>x!==i);c.seq.splice(k,0,i);SFX.click()}
+      c._drag=true;setTimeout(()=>{c._drag=false},50);ppRenderBuild()}st=null};
+  pool.addEventListener('pointerup',end);pool.addEventListener('pointercancel',()=>{ghost&&ghost.remove();ghost=null;st=null})}
+function ppBuildSubmit(){const c=PD.cur,d=c.doc;const rows=c.rows;const real=rows.map((r,i)=>[r,i]).filter(([r])=>r[1]>0).map(([,i])=>i);
+  const extra=c.seq.filter(i=>rows[i][1]<0),missing=real.filter(i=>!c.seq.includes(i));const placedReal=c.seq.filter(i=>rows[i][1]>0);
+  const exp=real.map(i=>rows[i][1]).sort((a,b)=>a-b);const orderGood=extra.length===0&&missing.length===0&&placedReal.every((i,k)=>rows[i][1]===exp[k]);
+  let vOk=0;const lines=[];
+  c.seq.forEach((i,k)=>{const r=rows[i];if(r[1]<0){lines.push(`${k+1}. ${r[0]} ✗ лишняя строка, её нет в этом отчёте`);return}
+    const n=parseNum(c.vals[i]);const good=n!==null&&(d.signed?Math.abs(n-r[2])<=1:Math.abs(Math.abs(n)-Math.abs(r[2]))<=1);if(good)vOk++;
+    const pos=placedReal.indexOf(i);const posOk=r[1]===exp[pos];lines.push(`${k+1}. ${r[0]}: ${c.vals[i]||'—'} ${good?'✓':'✗ верно '+fmt(r[2])}${posOk?'':'  (не на своём месте)'}`)});
+  missing.forEach(i=>lines.push(`Не хватает строки: ${rows[i][0]} = ${fmt(rows[i][2])}`));
+  document.querySelectorAll('#ppPaper .bld button,#ppPaper .bld input').forEach(x=>x.disabled=true);
+  const all=orderGood&&vOk===real.length;const fee=all?c.fee:(orderGood?vOk:0);
+  const right=real.slice().sort((a,b)=>rows[a][1]-rows[b][1]).map((i,k)=>`${k+1}. ${rows[i][0]} = ${fmt(rows[i][2])}`).join('\n');
+  ppFinish(all,lines.join('\n')+'\n\nПравильный документ (строки одной категории можно менять местами):\n'+right,`Объясни по шагам, как составить этот документ (${d.title}) и почему строки идут в таком порядке. Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}`,fee,all?'':`<p>${orderGood?`Структура верная, сумм верно ${vOk} из ${real.length}: $1 за каждую.`:'Структура документа неверная: лишние, пропущенные или переставленные строки.'}</p>`);
+  document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
+
 function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
   return{kind:'ofill',doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
 function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Поставленные строки можно перетаскивать мышкой вверх-вниз, а клик по строке возвращает её обратно.</p>
   <ol class="pp-seq" id="ppSeq">${c.seq.map((i,k)=>`<li data-i="${i}"><span class="grip" aria-hidden="true">⋮⋮</span><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||'<li class="ph">пусто</li>'}</ol>
   <div class="pp-pool">${c.pool.map(i=>`<button class="pp-chip" data-oi="${i}">${esc(c.rows[i][0])}</button>`).join('')}</div>
   <div class="row" style="margin-top:10px"><button class="pp-btn" id="ppOReset">Сбросить</button><button class="pp-btn horn" id="ppOSubmit" ${c.pool.length?'disabled':''}>${btn}</button></div>`}
-function ppRenderOrder(){const c=PD.cur;const paper=$('#ppPaper');
+function ppRenderOrder(){const c=PD.cur;if(c.kind==='build')return ppRenderBuild();const paper=$('#ppPaper');
   if(c.kind==='order')paper.querySelector('.ord').innerHTML=ppOrderHTML(c,`Подать ($${c.fee})`);
   else paper.querySelector('.ord').innerHTML=ppOrderHTML(c,'Дальше: заполнить');ppSeqDrag()}
 function ppSeqDrag(){const seq=$('#ppSeq');if(!seq)return;let st=null;
-  seq.addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-i]');if(!li||e.button>0)return;st={li,y:e.clientY,moved:false,id:e.pointerId}});
+  seq.addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-i]');if(!li||e.button>0||e.target.closest('input'))return;st={li,y:e.clientY,moved:false,id:e.pointerId}});
   seq.addEventListener('pointermove',e=>{if(!st)return;if(!st.moved){if(Math.abs(e.clientY-st.y)<5)return;st.moved=true;st.li.classList.add('dragging');try{seq.setPointerCapture(st.id)}catch(_){}}
     e.preventDefault();const sibs=[...seq.children].filter(x=>x!==st.li&&x.dataset.i!=null);const tgt=sibs.find(s=>{const r=s.getBoundingClientRect();return e.clientY<r.top+r.height/2});if(tgt!==st.li.nextElementSibling)seq.insertBefore(st.li,tgt||null)});
   const end=()=>{if(!st)return;if(st.moved){const c=PD.cur;c.seq=[...seq.children].filter(x=>x.dataset.i!=null).map(x=>+x.dataset.i);c._drag=true;setTimeout(()=>{c._drag=false},50);SFX.click();ppRenderOrder()}st=null};
@@ -2025,8 +2067,8 @@ function ppSortSubmit(){const c=PD.cur;let ok=0;c.items.forEach((it,i)=>{const g
 function makeTasks(n,ev){
   const T=ppTopics();
   const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
-  const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');const OK=['order','sort','ofill'].filter(k=>T.has(k));
-  const qTopics=[...T].filter(t=>!['place','card','audit','order','sort','ofill'].includes(t));
+  const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');const OK=['order','sort','ofill','build'].filter(k=>T.has(k));
+  const qTopics=[...T].filter(t=>!['place','card','audit','order','sort','ofill','build'].includes(t));
   let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):Math.max(1,Math.round(n*.18))):0;
   let nPlace=canPlace?Math.max(1,Math.round(n*.18)):0,nCard=canCard?Math.max(1,Math.round(n*.15)):0;
   let nAudit=canAudit?Math.max(1,Math.round(n*.2)):0;
@@ -2038,7 +2080,7 @@ function makeTasks(n,ev){
   const t=[];let qi=0,spare=Math.max(0,qs.length-nQ);
   for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
   for(let i=0;i<nAudit;i++)t.push({kind:'audit',au:makeAudit()});
-  special.forEach(k=>t.push(k==='order'?orderTask():k==='sort'?sortTask():ofillTask()));
+  special.forEach(k=>t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask()));
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
   for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
@@ -2079,7 +2121,7 @@ function ppDayIntro(){
    <div class="row" style="justify-content:center"><button class="pp-btn" id="ppShopBtn">Магазин офиса</button><button class="pp-btn horn" id="ppGo">Открыть окошко</button></div>`);
   const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave()};
   tb.addEventListener('change',syncT);
-  $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit','order','sort','ofill'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
+  $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit','order','sort','ofill','build'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
   $('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
 const ITEM_BOX={lamp:[56,50,36,36],plant:[0,44,24,42],poster:[86,2,48,38],clock:[116,40,22,22],radio:[92,38,26,24],cat:[128,44,30,20],coffee:[54,64,24,22],calc:[36,82,20,14],heater:[18,68,38,18],book:[112,44,18,18],painting:[86,2,48,38],aquarium:[92,64,36,22],fan:[122,60,26,26],trophy:[143,68,17,18],neon:[86,36,48,16]};
@@ -2151,6 +2193,7 @@ function ppRenderTask(){
   else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
     h=`<div class="pp-paper" id="ppPaper">${ppHead('Где статья')}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?'Step 1 of 2: which statement?':`Step 2 of 2: ${esc(STMTS[it.s])} — which category?`}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
   else if(c.kind==='order'||c.kind==='ofill'){h=`<div class="pp-paper" id="ppPaper">${ppHead(c.kind==='order'?'Порядок строк · $'+c.fee:'Порядок + заполнение · $'+c.fee)}<p class="pp-q"><b>${esc(c.kind==='order'?c.tpl.n:c.doc.title)}</b></p>${c.kind==='ofill'?`<div class="pp-given">${esc(c.doc.given)}</div>`:''}<div class="ord"></div></div>`;$('#ppDesk').innerHTML=h;ppRenderOrder();return}
+  else if(c.kind==='build'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Собери документ · $'+c.fee)}<p class="pp-q"><b>${esc(c.doc.title)}</b></p><div class="pp-given">${esc(c.doc.given)}</div><div class="bld"></div></div>`;$('#ppDesk').innerHTML=h;ppRenderBuild();return}
   else if(c.kind==='sort'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Категории · $'+c.fee)}<p class="pp-q"><b>${esc(c.title)}</b></p>${c.note?`<p class="pp-q" style="font-size:12.5px;margin:0 0 4px">${esc(c.note)}</p>`:''}${c.items.map((it,i)=>`<div class="pp-sortrow"><b>${esc(it[0])}</b><span class="chips">${c.cats.map(ct=>`<button class="pp-chip" data-si="${i}" data-sc="${esc(ct)}" title="${esc(ct)}">${esc(SHORTC[ct]||ct)}</button>`).join('')}</span></div>`).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSSubmit" disabled>Подать</button></div></div>`}
   else if(c.kind==='bundle'){h=`<div class="pp-paper" id="ppPaper">${ppHead('Пакет: '+c.qs.length+' вопроса')}<p class="pp-q"><b>Все ответы верны → $${ppBundleFee(c.qs.length)}. Хоть одна ошибка → $0.</b></p>${c.qs.map((q,i)=>{const order=(q.o===TF||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));return`<div class="pp-bq" data-bq="${i}"><p class="pp-q" style="white-space:pre-line"><b>${i+1}.</b> ${esc(q.q.replace(/^True or False:\s*/,q.o===TF?'True or False: ':''))}</p><div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-b="${i}" data-bk="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div></div>`}).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSubmitB" disabled>Подать ответы</button></div></div>`}
   else if(c.kind==='audit'){const a=c.au;h=`<div class="pp-paper" id="ppPaper">${ppHead('Проверка документа')}<p class="pp-q" style="margin-top:4px"><b>Что произошло (со слов посетителя):</b></p><div class="pp-given">${esc(a.story)}</div><p class="pp-q"><b>Его ${esc(a.title)}:</b></p><table class="pp-form">${a.labels.map((l,i)=>`<tr><td>${esc(l)}</td><td>${fmt(a.th[i])}</td></tr>`).join('')}</table><p class="pp-q" style="font-size:13px">Сверь с условием. Всё верно → одобри. Есть ошибка → арестуй. Верное решение +$15, неверное −$15 из зарплаты.</p><textarea class="ai-txt" rows="2" placeholder="Черновик для расчётов" aria-label="Черновик"></textarea><div class="pp-stamps"><button class="pp-stamp t" data-audit="ok">ОДОБРИТЬ</button><button class="pp-stamp f" data-audit="arrest">АРЕСТОВАТЬ</button></div></div>`}
@@ -2323,7 +2366,8 @@ $('#ppSnd').onclick=()=>{SFX.on=!SFX.on;store.set('sfx',SFX.on);$('#ppSnd').text
 $('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',ppShoot);
 $('#ppNext').onclick=ppCall;$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
-  if(b.dataset.oi!=null||b.dataset.os!=null)ppOrderClick(b);else if(b.id==='ppOReset'){const c=PD.cur;c.pool=shuffle(c.rows.map((_,i)=>i));c.seq=[];ppRenderOrder()}else if(b.id==='ppOSubmit')ppOrderSubmit();else if(b.id==='ppOFSubmit')ppOFSubmit();else if(b.dataset.si!=null)ppSortPick(b);else if(b.id==='ppSSubmit')ppSortSubmit();else if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
+  if(b.dataset.oi!=null||b.dataset.os!=null)ppOrderClick(b);else if(b.id==='ppOReset'){const c=PD.cur;c.pool=shuffle(c.rows.map((_,i)=>i));c.seq=[];ppRenderOrder()}else if(b.id==='ppBSubmit')ppBuildSubmit();else if(b.id==='ppOSubmit')ppOrderSubmit();else if(b.id==='ppOFSubmit')ppOFSubmit();else if(b.dataset.si!=null)ppSortPick(b);else if(b.id==='ppSSubmit')ppSortSubmit();else if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
+$('#ppDesk').addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.v!=null&&PD&&PD.cur&&PD.cur.vals)PD.cur.vals[t.dataset.v]=t.value});
 $('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.pp-form input')){const n=$('#ppIn'+(+e.target.dataset.i+1));if(n&&!n.disabled)n.focus();else if($('#ppOFSubmit'))ppOFSubmit();else ppSubmitDoc()}});
 $('#ppReset').onclick=()=>{PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro()};
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
