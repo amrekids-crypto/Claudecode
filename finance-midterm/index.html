@@ -352,7 +352,8 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
   #tab-mix>.row:first-child h1{font-size:16px!important}
   #tab-mix>.row:first-child .muted{display:none}
   #tab-mix>.row:first-child .btn{padding:4px 8px;font-size:12px}
-  .pp{font-size:14px;height:calc(100dvh - var(--hdr,52px) - 40px);min-height:480px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;border-width:3px;box-shadow:none}
+  html:has(body.mixwide),body.mixwide{overflow:hidden;overscroll-behavior:none;height:100%}
+  .pp{font-size:14px;height:var(--ppH,calc(100dvh - var(--hdr,52px) - 40px));min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;border-width:3px;box-shadow:none}
   .pp-main{display:contents}
   .pp-top{grid-row:1}
   .pp-booth{grid-row:2;display:grid;grid-template-columns:68px minmax(0,1fr) 92px;grid-template-areas:"win talk clock" "win talk btn";gap:6px;padding:6px;border-right:none;border-bottom:3px solid var(--pp-line);overflow:visible}
@@ -1918,7 +1919,7 @@ Object.assign(SFX,{
 
 const QS={people:[],tick:0,bld:null,fx:[],car:null,W:480,OX:0,door:0,decals:[]};
 function drawBlood(R,x,y){R(x+1,y+27,18,2,'#5a100c');R(x+4,y+26,12,1,'#7a1a14');R(x+18,y+28,5,1,'#5a100c');R(x-2,y+28,3,1,'#6a1410');R(x+8,y+29,6,1,'#4a0c08');R(x+6,y+26,2,1,'#9a2a20')}
-function qsResize(){const c=$('#ppQueue');if(!c)return;const hd=document.querySelector('header.top');if(hd)document.documentElement.style.setProperty('--hdr',hd.offsetHeight+'px');const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const mob=window.innerWidth<=700;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=mob?300:Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
+function qsResize(){const c=$('#ppQueue');if(!c)return;const hd=document.querySelector('header.top');if(hd)document.documentElement.style.setProperty('--hdr',hd.offsetHeight+'px');if(window.innerWidth<=700){window.scrollTo(0,0);const pp=$('#pp');if(pp){const top=pp.getBoundingClientRect().top;document.documentElement.style.setProperty('--ppH',Math.max(360,Math.floor(window.innerHeight-top-2))+'px')}}const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const mob=window.innerWidth<=700;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=mob?300:Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
 window.addEventListener('resize',()=>{if(!$('#tab-mix').hidden)qsResize()});
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<QS.W){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
 function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:92,tx:0,ty:92,state:'q'}));QS.car=null;QS.fx=[];QS.decals=[];QS.actors=[];QS.onClick=null;qsTargets()}
