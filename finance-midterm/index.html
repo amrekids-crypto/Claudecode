@@ -1788,7 +1788,7 @@ const COAT=['#56664a','#6a4a3a','#44566a','#7a6a48','#5a4a6a','#843a32','#3c5a52
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const c=v=>Math.max(0,Math.min(255,Math.round(v*f)));return'#'+((1<<24)|(c(r)<<16)|(c(g)<<8)|c(b)).toString(16).slice(1)}
 function newLook(){const f=Math.random()<.5;const old=Math.random()<.18;const hair=old?pick(['#8a8a82','#b8b4aa','#e0d8c0']):pick(HAIR.filter(h=>!['#8a8a82','#e0d8c0'].includes(h)));
   const hat=Math.random()<.3?pick(f?['scarf','fedora','cap']:['cap','fedora']):null;
-  return{g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25,stache:!f&&Math.random()<.25,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
+  return{fs:Math.random(),g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25,stache:!f&&Math.random()<.25,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
 const ROLES_M=['Пекарь','Таксист','Стартапер','Рыбак','Строитель','Сантехник','Учитель','Хозяин автомойки','Почтальон','Студент 1 курса','Стажёр-бухгалтер','Кассир банка','Фермер','Владелец кафе'];
 const ROLES_F=['Фермерша','Владелица кафе','Цветочница','Блогерша','Библиотекарша','Студентка 1 курса','Учительница','Кассирша банка','Стажёрка-бухгалтер','Пекарша','Парикмахерша','Владелица автомойки'];
 const FLAGS={pride:['#e40303','#ff8c00','#ffed00','#008026','#24408e','#732982'],ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700'],ps:['#15130f','#15130f','#f4f4ec','#f4f4ec','#007a3d','#007a3d']};
@@ -1804,6 +1804,21 @@ function roleFor(L){if(L.cat)return pick(['Бабушка с котом Барс
 const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
 function P(ctx){return(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}}
 const FACE={L:null,talkUntil:0};
+const FACES={oval:[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,12,12,11,11,10,9,9,8,7,6,5,3],
+ square:[8,11,12,12,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,12,12,12,11,11,10,9,8,5],
+ round:[7,10,12,13,13,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,13,13,13,12,12,11,10,9,8,7,6,4,2],
+ long:[5,8,9,10,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,12,12,11,11,11,10,10,10,9,9,8,7,6,4],
+ heart:[7,10,12,13,13,13,13,13,13,13,13,13,13,13,13,13,12,12,12,11,11,11,10,10,9,9,8,7,6,5,5,4,3,2]};
+function pmixHex(c1,c2,t){const a=parseInt(c1.slice(1),16),b=parseInt(c2.slice(1),16);const m=sh=>Math.round(((a>>sh)&255)*(1-t)+((b>>sh)&255)*t);return'#'+((1<<24)|(m(16)<<16)|(m(8)<<8)|m(0)).toString(16).slice(1)}
+function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=[L.skin,L.hair,L.coat,L.shirt,L.style,L.hat,L.g,L.tie,L.hatc,L.fs].join('|');for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}
+  let st=h>>>0;const rnd=()=>{st=(Math.imul(st^(st>>>15),2246822507)+0x9e3779b9)>>>0;return (st>>>8)/16777216};const pk=a=>a[Math.floor(rnd()*a.length)];
+  const f=L.insp||L.hat==='police'||L.hat==='helmet'?{shape:'square',age:'m',build:'wide',ears:0,cheek:'hollow',eye:'small',eyeY:0,eyeGap:0,brow:'angry',nose:'normal',mouth:'normal',mood:'frown',iris:'#15120f',look:0,hairline:0,part:'side'}:{
+    shape:pk(['oval','oval','square','round','long','heart']),age:L.old?'o':(rnd()<.45?'y':'m'),build:pk(['normal','normal','wide','thin']),ears:rnd()<.25?1:0,cheek:pk(['normal','normal','hollow','full']),
+    eye:pk(['normal','normal','big','small']),eyeY:rnd()<.3?1:0,eyeGap:rnd()<.35?1:0,brow:pk(['flat','flat','thick','angry','sad','raised','uni']),nose:pk(['normal','normal','small','long','wide','hook']),
+    mouth:pk(['normal','normal','wide','small','full']),mood:pk(['neutral','neutral','smile','frown']),iris:pk(['#15120f','#15120f','#3a5a7a','#4a6a4a','#4a3020','#5a6a78']),look:rnd()<.3?(rnd()<.5?-1:1):0,
+    hairline:L.old&&rnd()<.5?-2:rnd()<.2?1:0,part:pk(['side','middle','fringe']),freckles:rnd()<.1,mole:rnd()<.2?pk([[24,35],[40,33],[38,37],[22,29],[42,28]]):null,scar:rnd()<.08?pk([24,39]):0,
+    stubble:L.g==='m'&&rnd()<.3,blush:L.g==='f'&&rnd()<.4,earring:L.g==='f'&&rnd()<.4,bags:rnd()<.25,lids:rnd()<.2,chin:rnd()<.3};
+  if(f.age==='y'){f.bags=false;f.stubble=f.stubble&&rnd()<.5}Object.defineProperty(L,'_f',{value:f,enumerable:false,writable:true});return f}
 function drawFace(L,cv,ov){
   if(!cv)FACE.L=L;
   if(!cv&&FACE.tv){drawTV($('#ppFace'),FACE.tv);return}
@@ -1818,41 +1833,57 @@ function drawFace(L,cv,ov){
   const s=PM(L.skin),sd=shade(s,.8),sl=shade(s,1.16),s2=shade(s,.6),s3=shade(s,.42),OL='#15120f',hd=shade(PM(L.hair),.7);
   const ph=((L.skin.charCodeAt(2)||0)*7+(L.coat.charCodeAt(3)||0)*3)%53,tk=QS.tick+ph,blink=tk%53<2||(tk%197>=6&&tk%197<8),bob=Math.floor(tk/9)%2,talk=!cv&&Date.now()<FACE.talkUntil&&Math.floor(QS.tick/2)%2===0;
   x.save();x.translate(0,bob);
-  const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);
-  const HW=[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,12,12,11,11,10,9,9,8,7,6,5,3];const hwAt=y=>y<11||y>44?0:HW[y-11];
+  const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);const F=faceOf(L);
+  let HW=FACES[F.shape].slice();if(F.age==='o')for(let i=26;i<32;i++)HW[i]+=1;if(F.age==='y')for(let i=28;i<34;i++)HW[i]=Math.max(2,HW[i]-1);const hwAt=y=>y<11||y>44?0:HW[y-11];
   if(L.style==='long'&&!L.hat){for(let y=15;y<=52;y++){const hw=15-(y>42?Math.round((y-42)*1.3):0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32-hw,y,2,1,H1);R(32+hw-3,y,3,1,H1);if(y%3===0)R(32-hw+3,y,1,1,H2)}}}
-  // shoulders: boxy uniform-like coat with collar
-  for(let y=44;y<64;y++){const w=Math.min(29,17+(y-44)*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1)}R(15,45,34,1,CO2);
+  // shoulders
+  const shw=F.build==='wide'?31:F.build==='thin'?25:29;for(let y=44;y<64;y++){const w=Math.min(shw,17+(y-44)*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1)}R(15,45,34,1,CO2);
   R(25,44,14,9,L.shirt);for(let i=0;i<8;i++){R(25+i,44+i,1,1,CO1);R(38-i,44+i,1,1,CO1);R(24+i,45+i,1,1,CO);R(39-i,45+i,1,1,CO)}R(26,44,12,1,shade(L.shirt,.8));
   if(L.tie){R(31,46,3,2,shade(L.tie,.8));R(30,48,5,7,L.tie);R(31,48,1,6,shade(L.tie,1.2));R(31,55,3,1,shade(L.tie,.7))}
   if(L.insp){R(5,45,11,3,'#c9a24a');R(48,45,11,3,'#c9a24a');R(5,47,11,1,'#8a6a2a');R(10,52,8,5,'#8a2a24');R(12,54,4,1,'#c9a24a');R(42,52,6,6,'#b8923a');R(43,53,4,4,'#d8bf63')}
   // neck
-  R(26,37,12,9,OL);R(27,37,10,9,sd);R(27,37,10,3,s2);R(35,40,2,6,s2);R(27,44,10,1,s3);
+  const nw=F.build==='thin'?4:F.build==='wide'?6:5;R(32-nw-1,37,nw*2+2,9,OL);R(32-nw,37,nw*2,9,sd);R(32-nw,37,nw*2,3,s2);R(32+nw-3,40,2,6,s2);R(32-nw,44,nw*2,1,s3);if(F.age==='o'){R(30,41,1,4,s2);R(34,41,1,4,s2)}if(L.g==='m'&&F.age!=='y')R(31,41,2,2,s)
   // head
-  for(let y=10;y<=45;y++){const hw=y===10?5:y===45?2:hwAt(y);if(hw<=0)continue;R(32-hw-1,y,hw*2+2,1,OL)}
+  for(let y=10;y<=45;y++){const hw=y===10?Math.max(3,HW[0]-1):y===45?Math.max(1,HW[33]-1):hwAt(y);if(hw<=0)continue;R(32-hw-1,y,hw*2+2,1,OL)}
   for(let y=11;y<=44;y++){const hw=hwAt(y);R(32-hw,y,hw*2,1,s);if(y>=13){R(32+hw-4,y,2,1,sd);R(32+hw-2,y,2,1,s2);R(32-hw,y,1,1,sl)}}
-  R(16,25,3,9,OL);R(17,26,2,7,sd);R(18,27,1,4,s2);R(45,25,3,9,OL);R(45,26,2,7,s2);R(45,27,1,4,s3);
-  R(21,32,4,2,sd);R(40,32,5,2,s2);R(22,33,2,1,s2);R(29,43,6,1,sd);R(31,41,3,1,sl);R(24,39,2,3,sd);R(38,38,3,4,s2);
-  if(L.old){R(24,15,16,1,sd);R(26,17,12,1,sd);R(22,30,4,1,s2);R(38,30,4,1,s2);R(26,36,1,4,s2);R(37,36,1,4,s3)}
+  const eb=F.ears;R(17-eb,25,3+eb,9+eb,OL);R(18-eb,26,1+eb,7+eb,sd);R(18,27,1,4,s2);R(45,25,3+eb,9+eb,OL);R(45,26,1+eb,7+eb,s2);R(45,27,1,4,s3);if(F.earring){R(17-eb,34+eb,1,2,'#c8a84a');R(46+eb,34+eb,1,2,'#a8883a')}
+  if(F.cheek==='hollow'){R(21,32,4,3,sd);R(40,32,5,3,s2);R(22,34,2,1,s2)}else if(F.cheek==='full'){R(21,31,3,2,sl);R(24,33,2,1,sd)}else{R(21,32,4,2,sd);R(40,32,5,2,s2)}
+  R(29,43,6,1,sd);R(31,41,3,1,sl);if(F.chin)R(32,42,1,1,s2);
+  if(F.age==='o'){R(24,15,16,1,sd);R(26,17,12,1,sd);R(28,19,8,1,sd);R(20,27,1,2,s2);R(44,27,1,2,s3);R(22,30,5,1,s2);R(37,30,5,1,s3);R(26,35,1,5,s2);R(37,35,1,5,s3);R(24,40,2,3,s2);R(38,40,2,3,s3)}
+  else if(F.age==='y'){R(22,30,3,2,sl);R(40,30,2,2,shade(s,1.05))}
+  if(F.bags&&F.age!=='o'){R(23,29,6,1,sd);R(36,29,6,1,s2)}
   // hair
-  if(L.hat!=='scarf'&&(L.style!=='bald'||L.hat)){for(let y=8;y<=21;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round(15*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
-    R(17,19,3,9,H);R(16,19,1,9,OL);R(44,19,3,9,H1);R(47,19,1,9,OL);R(20,20,24,2,H);R(20,21,24,1,H1);R(29,20,1,2,H1);R(24,10,14,1,H2)}
-  else if(L.style==='bald'&&!L.hat){R(24,12,10,2,sl);R(26,11,6,1,sl)}
+  const hl=F.hairline;
+  if(L.hat!=='scarf'&&(L.style!=='bald'||L.hat)){for(let y=8;y<=21+hl;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round(15*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
+    R(17,19,3,9,H);R(16,19,1,9,OL);R(44,19,3,9,H1);R(47,19,1,9,OL);if(F.part==='side'){R(20,20+hl,24,2,H);R(20,21+hl,24,1,H1);R(25,19,1,3+hl,H1)}else if(F.part==='fringe'){R(20,20+hl,24,3,H);R(20,22+hl,24,1,H1);for(let xx=21;xx<43;xx+=3)R(xx,23+hl,1,1,H)}else{R(20,20+hl,24,2,H);R(20,21+hl,24,1,H1);R(31,19,2,2,s)}R(24,10,14,1,H2);
+    if(F.age==='o'&&hl<0){R(24,17,16,3,s);R(24,17,16,1,sl)}}
+  else if(L.style==='bald'&&!L.hat){R(24,12,10,2,sl);R(26,11,6,1,sl);if(F.age!=='y'){R(17,21,2,6,H);R(45,21,2,6,H1)}}
   if(L.style==='curly'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
   if(L.style==='bun'&&!L.hat){R(26,3,12,7,OL);R(27,4,10,6,H);R(28,4,8,1,H2);R(35,5,2,4,H1)}
-  // brows, eye sockets, eyes
-  R(22,24,8,5,sd);R(35,24,8,5,s2);R(22,24,8,1,s2);R(35,24,8,1,s3);
-  const bw=1+L.brow;R(22,22,8,bw,hd);R(35,22,8,bw,hd);R(28,22+bw,2,1,hd);R(35,22+bw,2,1,hd);
-  if(blink){R(23,26,6,2,sd);R(36,26,6,2,s2);R(23,27,6,1,s3);R(36,27,6,1,s3)}
-  else{R(23,26,6,2,'#d0ccc0');R(36,26,6,2,'#c4c0b4');R(25,26,2,2,OL);R(38,26,2,2,OL);R(25,26,1,1,'#e8e8e0');R(23,28,6,1,s2);R(36,28,6,1,s3);if(L.g==='f'){R(22,25,2,1,OL);R(42,25,2,1,OL)}}
-  if(L.glasses){x.strokeStyle='#15120f';x.lineWidth=1;x.strokeRect(21.5,24.5,9,5);x.strokeRect(34.5,24.5,9,5);R(30,26,5,1,'#15120f');R(17,26,4,1,'#15120f');R(44,26,3,1,'#15120f');R(22,25,2,1,'rgba(255,255,255,.35)');R(35,25,2,1,'rgba(255,255,255,.3)')}
+  // eyes
+  const ey=26+F.eyeY,eg=F.eyeGap,ew=F.eye==='big'?7:F.eye==='small'?5:6,eh=F.eye==='big'?3:2,lx=29-ew-eg,rx=35+eg;
+  R(lx-1,ey-2,ew+2,eh+3,sd);R(rx-1,ey-2,ew+2,eh+3,s2);R(lx-1,ey-2,ew+2,1,s2);R(rx-1,ey-2,ew+2,1,s3);
+  const bc=F.age==='o'?pmixHex(hd,'#b8b4aa',.5):hd,bw=1+L.brow+(F.brow==='thick'?1:0),by=ey-4-(F.brow==='raised'?1:0);
+  R(lx-1,by,ew+2,bw,bc);R(rx-1,by,ew+2,bw,bc);if(F.brow==='angry'){R(lx+ew-2,by+bw,3,1,bc);R(rx-1,by+bw,3,1,bc)}else if(F.brow==='sad'){R(lx-1,by+bw,2,1,bc);R(rx+ew-1,by+bw,2,1,bc)}else{R(lx+ew-1,by+bw,2,1,bc);R(rx-1,by+bw,2,1,bc)}if(F.brow==='uni')R(lx+ew,by,rx-lx-ew,bw,bc);
+  if(blink){R(lx,ey,ew,eh,sd);R(rx,ey,ew,eh,s2);R(lx,ey+eh-1,ew,1,s3);R(rx,ey+eh-1,ew,1,s3)}
+  else{R(lx,ey,ew,eh,'#d0ccc0');R(rx,ey,ew,eh,'#c4c0b4');const px2=Math.floor((ew-2)/2)+F.look;R(lx+px2,ey,2,eh,F.iris);R(rx+px2,ey,2,eh,F.iris);if(F.iris!==OL){R(lx+px2,ey,1,1,OL);R(rx+px2+1,ey,1,1,OL)}R(lx+px2,ey,1,1,'#e8e8e0');
+    if(F.age==='o'||F.lids){R(lx,ey,ew,1,sd);R(rx,ey,ew,1,s2)}R(lx,ey+eh,ew,1,s2);R(rx,ey+eh,ew,1,s3);if(L.g==='f'){R(lx-1,ey-1,2,1,OL);R(rx+ew-1,ey-1,2,1,OL)}}
+  if(L.glasses){x.strokeStyle='#15120f';x.lineWidth=1;x.strokeRect(lx-1.5,ey-1.5,ew+3,eh+3);x.strokeRect(rx-1.5,ey-1.5,ew+3,eh+3);R(lx+ew+1,ey,rx-lx-ew-2,1,'#15120f');R(17,ey,lx-18,1,'#15120f');R(rx+ew+2,ey,46-rx-ew-2,1,'#15120f');R(lx,ey-1,2,1,'rgba(255,255,255,.35)');R(rx,ey-1,2,1,'rgba(255,255,255,.3)')}
   // nose
-  R(31,25,1,8,sl);R(33,26,1,8,sd);R(30,33,5,2,s);R(29,34,2,1,s3);R(34,34,2,1,s3);R(30,35,5,1,s2);R(27,34,1,4,sd);R(37,34,1,4,s2);
+  const nl=F.nose==='long'?2:F.nose==='small'?-1:0,nwd=F.nose==='wide'?1:0;R(31,25,1,8+nl,sl);R(33,26,1,8+nl,sd);if(F.nose==='hook'){R(33,28,1,3,s);R(34,29,1,2,sd)}
+  R(30-nwd,33+nl,5+nwd*2,2,s);R(29-nwd,34+nl,2,1,s3);R(34+nwd,34+nl,2,1,s3);R(30-nwd,35+nl,5+nwd*2,1,s2);if(F.age!=='y'){R(27-nwd,34+nl,1,4,sd);R(37+nwd,34+nl,1,4,s2)}
+  // extras
+  if(F.freckles)for(const [fx2,fy2] of [[22,31],[24,32],[26,31],[38,31],[40,32],[42,31],[23,33],[41,33]])R(fx2,fy2,1,1,sd);
+  if(F.mole)R(F.mole[0],F.mole[1],1,1,s3);
+  if(F.scar){R(F.scar,22,1,8,sl);R(F.scar-1,23,1,1,s2);R(F.scar+1,27,1,1,s2)}
+  if(F.stubble&&!L.beard)for(let y=36;y<=44;y++){const hw=hwAt(y)-2;if(y%2===0)for(let xx=32-hw+1;xx<32+hw-1;xx+=3)R(xx+(y%4?1:0),y,1,1,shade(s,.8))}
+  if(F.blush){R(21,32,3,1,'#b87a70');R(40,32,3,1,'#a86a60')}
   // mouth
-  if(L.beard){for(let y=35;y<=45;y++){const hw=Math.round(13-(y-35)*1.2);if(hw>0){R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(28,38,8,1,s3);R(29,39,6,1,shade(s,.7))}
-  else{const lip=L.g==='f'?'#7a4a44':s2;R(29,37,6,1,sd);R(28,38,8,1,s3);R(29,39,6,1,lip);R(30,40,4,1,sd)}
-  if(talk){R(28,37,8,3,'#1e100c');R(29,37,6,1,'#c8c0b0');R(29,39,6,1,'#5a2a24')}
-  if(L.stache){R(27,36,10,2,H);R(27,37,10,1,H1)}
+  const mw=F.mouth==='wide'?10:F.mouth==='small'?6:8,mx=32-mw/2,my=38+Math.max(0,nl);
+  if(L.beard){for(let y=35;y<=45;y++){const hw=Math.round(13-(y-35)*1.2);if(hw>0){R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
+  else{const lip=L.g==='f'?'#7a4a44':s2;R(mx+1,my-1,mw-2,1,sd);R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,F.mouth==='full'?2:1,lip);R(mx+2,my+2+(F.mouth==='full'?1:0),mw-4,1,sd);if(F.mood==='smile'){R(mx-1,my-1,1,1,s3);R(mx+mw,my-1,1,1,s3)}else if(F.mood==='frown'){R(mx-1,my+1,1,1,s3);R(mx+mw,my+1,1,1,s3)}}
+  if(talk){R(mx,my-1,mw,3,'#1e100c');R(mx+1,my-1,mw-2,1,'#c8c0b0');R(mx+1,my+1,mw-2,1,'#5a2a24')}
+  if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
   // hats
   const C=L.hatc;
   if(L.hat==='cap'){R(17,7,30,9,C);R(17,7,30,2,shade(C,1.25));R(14,15,36,3,shade(C,.8))}
@@ -1971,7 +2002,7 @@ function drawPerson(R,px,py,L,frame,moving){
   else if(L.hat==='scarf'){R(px+2,y,8,4,L.hatc);R(px+2,y+4,2,4,L.hatc)}
   else if(L.hat){R(px+3,y-1,7,3,L.hatc);R(px+2,y+1,(L.hat==='fedora'?11:10),1,shade(L.hatc,.75))}
 }
-function sootL(L){if(!L)return L;if(L._soot)return L._soot;const S=Object.assign({},L,{skin:'#3a322c',coat:'#1e1c1a',hair:'#15130f',shirt:'#2e2a26',hatc:'#1a1816',tie:L.tie?'#141210':null});if(L.kid){S.kid='#3a322c';S.kidc='#1e1c1a';S.kidh='#15130f'}if(L.cat){S.cat='#1e1c1a';S.cat2='#15130f'}S._soot=S;Object.defineProperty(L,'_soot',{value:S,enumerable:false,writable:true});return S}
+function sootL(L){if(!L)return L;if(L._soot)return L._soot;const S=Object.assign({},L,{skin:'#3a322c',coat:'#1e1c1a',hair:'#15130f',shirt:'#2e2a26',hatc:'#1a1816',tie:L.tie?'#141210':null});if(L.kid){S.kid='#3a322c';S.kidc='#1e1c1a';S.kidh='#15130f'}if(L.cat){S.cat='#1e1c1a';S.cat2='#15130f'}Object.defineProperty(S,'_f',{value:faceOf(L),enumerable:false,writable:true});S._soot=S;Object.defineProperty(L,'_soot',{value:S,enumerable:false,writable:true});return S}
 function drawLeader(R,x,who,talk,tk){
   if(who==='trump'){for(let i=0;i<13;i++)R(4,4+i*4,56,2,i%2?'#f0f0ec':'#c8283a');for(let i=0;i<13;i++)R(4,6+i*4,56,2,i%2?'#c8283a':'#f0f0ec');R(4,4,22,18,'#2a3a7a');for(let yy=6;yy<20;yy+=4)for(let xx=6;xx<24;xx+=4)R(xx+(yy%8?2:0),yy,1,1,'#f0f0ec')}
   else{R(4,4,56,17,'#f0f0ec');R(4,21,56,17,'#1c4ab0');R(4,38,56,16,'#d0202a')}
