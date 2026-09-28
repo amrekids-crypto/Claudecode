@@ -2231,19 +2231,19 @@ function qsDraw(cv,ov){
   R(20,30,3,70,'#23211a');R(14,28,15,5,'#23211a');R(16,33,11,3,'#e0c070');x.fillStyle=ST.lamp;x.beginPath();x.moveTo(16,36);x.lineTo(0,100);x.lineTo(52,100);x.lineTo(28,36);x.fill();
   const BC=(PPX.BOOTHS[(ov&&ov.booth)||PP.booth]||PPX.BOOTHS.olive)[1];
   R(398,38,80,86,BC);R(398,38,2,86,shade(BC,1.15));R(476,38,2,86,shade(BC,.75));R(392,30,92,10,'#2a2820');R(392,38,92,3,'#1c1a16');if(ST.snow)R(390,27,96,4,'#eef1f5');
-  R(404,82,34,3,shade(BC,.8));
+  R(404,58,34,26,'#15130f');R(406,60,30,22,'#8a8e6a');R(406,60,30,4,'#a8ac84');R(420,60,2,22,'#15130f');R(404,82,34,4,'#6a5a44');R(408,66,3,1,'rgba(255,255,255,.35)');R(424,66,3,1,'rgba(255,255,255,.35)');
   R(446,64,26,60,'#1c1a16');if(QS.door){R(448,66,22,58,'#0c0b09');R(450,70,18,54,'#4a3a22');R(450,70,18,2,'#6a5432')}else{R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a')}
   R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
   R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
   if(!cv)drawPetStreet(R);
-  if(QS.crater){const cx=QS.crater.x,cy=QS.crater.y;for(let k=-6;k<=6;k++){const w=Math.round(34*Math.sqrt(1-(k/7)*(k/7)));R(cx-w,cy+k,w*2,1,k<-3?'#5a5046':k<0?'#2a2420':'#15110e')}R(cx-26,cy-1,52,2,'#0c0a08');for(let i=0;i<5;i++)R(cx-20+i*9,cy+1,3,1,QS.tick%(6+i)<3?'#e05a1a':'#8a2a10');R(cx-40,cy+5,80,1,'rgba(0,0,0,.25)')}
+  if(QS.crater){x.globalAlpha=fa(QS.crater);const cx=QS.crater.x,cy=QS.crater.y;for(let k=-6;k<=6;k++){const w=Math.round(34*Math.sqrt(1-(k/7)*(k/7)));R(cx-w,cy+k,w*2,1,k<-3?'#5a5046':k<0?'#2a2420':'#15110e')}R(cx-26,cy-1,52,2,'#0c0a08');for(let i=0;i<5;i++)R(cx-20+i*9,cy+1,3,1,QS.tick%(6+i)<3?'#e05a1a':'#8a2a10');R(cx-40,cy+5,80,1,'rgba(0,0,0,.25)');x.globalAlpha=1}
   drawStreetDecals(x,R);
-  (QS.scorch||[]).forEach(d=>{R(d.x-18,d.y,36,3,'#1a1410');R(d.x-14,d.y-1,28,1,'#2a2018');R(d.x-8,d.y+1,3,1,'#6a2a10');R(d.x+6,d.y+1,3,1,'#6a2a10')});
-  QS.decals.forEach(d=>drawBlood(R,d.x,d.y));
+  (QS.scorch||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-18,d.y,36,3,'#1a1410');R(d.x-14,d.y-1,28,1,'#2a2018');R(d.x-8,d.y+1,3,1,'#6a2a10');R(d.x+6,d.y+1,3,1,'#6a2a10')});
+  QS.decals.forEach(d=>{x.globalAlpha=fa(d);drawBlood(R,d.x,d.y)});x.globalAlpha=1;
   if(ov&&ov.noPeople){x.setTransform(1,0,0,1,0,-20);if(ST.snow)for(let i=0;i<50;i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0);return}
   if(PP.downed){drawBlood(R,Math.round(PP.downed.x),Math.round(PP.downed.y));drawLying(R,Math.round(PP.downed.x),Math.round(PP.downed.y),INSPECTOR)}
-  QS.people.forEach(p=>{if(p.hide||!p.lying)return;const px=Math.round(p.x);if(p.bag){R(px,Math.round(p.y)+22,28,6,'#15130f');R(px+2,Math.round(p.y)+23,24,1,'#3a3a40');R(px+26,Math.round(p.y)+22,3,3,'#8a8a92')}else if(p.flat){const y0=Math.round(p.y)+27,L=QS.soot?sootL(p.look):p.look;R(px-4,y0,36,2,'rgba(0,0,0,.35)');R(px-2,y0-2,6,2,L.skin);R(px-3,y0-2,2,2,L.hair);R(px+4,y0-2,16,2,L.coat);R(px+4,y0-2,16,1,shade(L.coat,1.2));R(px+20,y0-2,9,2,'#1f1c17');R(px+10,y0-3,4,1,L.coat);R(px+6,y0,4,1,'#a3201a')}else if(p.ash){const y0=Math.round(p.y)+27;R(px+1,y0-1,14,2,'#6a6660');R(px+3,y0-3,10,2,'#7e7a72');R(px+5,y0-5,6,2,'#8e8a80');R(px+7,y0-6,2,1,'#a09a90');R(px,y0+1,16,1,'rgba(0,0,0,.3)')}else drawLying(R,px,Math.round(p.y),QS.soot?sootL(p.look):p.look)});
-  let carDone=!QS.car;const carNow=()=>{if(!carDone){carDone=true;drawCar(R,Math.round(QS.car.x),QS.car.y-4+(QS.car.bump||0),QS.car.dir,QS.tick)}};
+  QS.people.forEach(p=>{if(p.hide||!p.lying)return;x.globalAlpha=fa(p);const px=Math.round(p.x);if(p.bag){R(px,Math.round(p.y)+22,28,6,'#15130f');R(px+2,Math.round(p.y)+23,24,1,'#3a3a40');R(px+26,Math.round(p.y)+22,3,3,'#8a8a92')}else if(p.flat){const y0=Math.round(p.y)+27,L=QS.soot?sootL(p.look):p.look;R(px-4,y0,36,2,'rgba(0,0,0,.35)');R(px-2,y0-2,6,2,L.skin);R(px-3,y0-2,2,2,L.hair);R(px+4,y0-2,16,2,L.coat);R(px+4,y0-2,16,1,shade(L.coat,1.2));R(px+20,y0-2,9,2,'#1f1c17');R(px+10,y0-3,4,1,L.coat);R(px+6,y0,4,1,'#a3201a')}else if(p.ash){const y0=Math.round(p.y)+27;R(px+1,y0-1,14,2,'#6a6660');R(px+3,y0-3,10,2,'#7e7a72');R(px+5,y0-5,6,2,'#8e8a80');R(px+7,y0-6,2,1,'#a09a90');R(px,y0+1,16,1,'rgba(0,0,0,.3)')}else drawLying(R,px,Math.round(p.y),QS.soot?sootL(p.look):p.look)});
+  x.globalAlpha=1;let carDone=!QS.car;const carNow=()=>{if(!carDone){carDone=true;drawCar(R,Math.round(QS.car.x),QS.car.y-4+(QS.car.bump||0),QS.car.dir,QS.tick)}};
   [...new Set(QS.people)].sort((a,b)=>(a.y||92)-(b.y||92)).forEach(p=>{if((p.y==null?92:p.y)>=100)carNow();if(p.hide)return;const px=Math.round(p.x),py=Math.round((p.y==null?92:p.y)+(p.jy||0)+(p.kneel?5:0));if(px<-OX-14||px>490)return;
     if(p.lying)return;
     const Rb=p.clipY!=null?(x0,y0,w,h,cc)=>{if(y0>=p.clipY)return;R(x0,y0,w,Math.min(h,p.clipY-y0),cc)}:R;const LK=QS.soot?sootL(p.look):p.look;const Rm=p.dir<0?(x0,y0,w,h,cc)=>Rb(2*px+12-x0-w,y0,w,h,cc):Rb;if(LK.ghost)x.globalAlpha=.55;drawPerson(Rm,px,py,LK,p.run?QS.tick:Math.floor(QS.tick/(PD&&PD.slow?6:2)),p.moving&&LK.sp!=='wheel');x.globalAlpha=1;
@@ -2283,6 +2283,7 @@ function ppAnimate(){
   if(QS.fx.length){QS.fx=QS.fx.filter(f=>--f.ttl>0);moving=true}
   if(QS.actors&&QS.actors.length){moving=true;QS.actors.forEach(a=>{if(a.t==='smoke'){a.y-=.5;a.life-=.04}});QS.actors.forEach(a=>{if(a.ttl!=null)a.ttl--;if(a.t==='txt'&&a.rise)a.y-=.6});QS.actors=QS.actors.filter(a=>(a.t!=='smoke'||a.life>0)&&(a.ttl==null||a.ttl>0))}
   if(QS.flash){QS.flash--;moving=true}
+  if(fadeSweep())moving=true;
   if(moving||QS.tick%6===0||PP.street==='snow'||['rain','fire','holiday','blackout'].includes(PP.event)||EGG.matrix||EGG.dec)qsDraw();
   if(QS.tick%5===0)drawOffice();
   if(FACE.L||FACE.tv)drawFace(FACE.L);
@@ -2661,7 +2662,7 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;
+  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;
   PD={deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   const hr=new Date().getHours();if(hr<5&&PD.tasks.length>2){const t=PD.tasks[rint(1,PD.tasks.length-1)];t.look=ghostLook();t.role='Призрак прошлого квартала'}
   if(PP.day===42&&PD.tasks[0]){PD.tasks[0].look=deepLook();PD.tasks[0].role='Глубокомысленный'}
@@ -2769,7 +2770,28 @@ function sTheremin(dur){try{const a=sfxCtx(),t=a.currentTime,o=a.createOscillato
   return{stop(){try{const n=a.currentTime;g.gain.cancelScheduledValues(n);g.gain.setValueAtTime(g.gain.value,n);g.gain.exponentialRampToValueAtTime(.0001,n+.4);g2.gain.setValueAtTime(.0001,n+.1)}catch(e){}}}}catch(e){return{stop(){}}}}
 function kaijuRoar(v){sMuf(230,2.6,'sawtooth',.09*v,68,0,750);sMuf(172,2.6,'square',.05*v,52,.06,520);sMuf(310,1.6,'sawtooth',.04*v,120,.2,900);sNoise(2.3,.2*v,1300,180)}
 const SWATL=()=>({g:'m',skin:'#2a2a2e',hair:'#15130f',coat:'#15130f',shirt:'#2a2a30',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true,swat:true});
-function drawArrestActor(R0,a,x,y,t){const OL='#15130f';
+function drawArrestActor2(R0,a,x,y,t){
+  if(a.t==='tint'){R0(-QS.OX-10,0,QS.W+20,170,'rgba('+a.rgb+','+a.a.toFixed(3)+')');return true}
+  if(a.t==='meteor'){const r=a.r;for(let i=1;i<10;i++)R0(Math.round(x-r-i*5),Math.round(y-r*.6-i*2.4+(i+t)%2),6,3,'rgba(255,'+(210-i*14)+',60,'+(.75-i*.07).toFixed(2)+')');
+    for(let yy=-r-3;yy<=r+3;yy++){const w=Math.round(Math.sqrt(Math.max(0,(r+3)*(r+3)-yy*yy)));R0(x-w,y+yy,w*2,1,'rgba(255,140,40,.35)')}
+    for(let yy=-r;yy<=r;yy++){const w=Math.round(Math.sqrt(r*r-yy*yy));R0(x-w,y+yy,w*2,1,yy<-r/3?'#8a5a3a':'#5a3a24');R0(x-w,y+yy,2,1,t%2?'#ffb040':'#ffe060')}R0(x-2,y-3,3,2,'#c8804a');R0(x+2,y+1,2,2,'#3a2418');R0(x-4,y+3,2,1,'#3a2418');return true}
+  if(a.t==='tornado'){const top=a.top,bot=y,h=bot-top;for(let yy=top;yy<bot;yy+=2){const f=(bot-yy)/h,w=Math.round(3+f*f*30+f*5),ox=Math.round(Math.sin((yy+t*4)/8)*4*(1-f*.5)+Math.sin(t/3)*2*f);const band=((yy+t*5)%12)<4;
+      R0(x+ox-w,yy,w*2,2,band?'rgba(150,145,130,.85)':'rgba(100,98,90,.8)');R0(x+ox-w,yy,2,2,'rgba(60,58,52,.85)');R0(x+ox+w-3,yy,3,2,'rgba(70,68,60,.85)')}
+    R0(x-16,bot-2,32,3,'rgba(120,110,90,.5)');for(let i=0;i<7;i++){const an=t*.5+i*.9;R0(Math.round(x+Math.cos(an)*(10+i*3)),Math.round(bot-6-i*9+Math.sin(an)*2),2,2,i%2?'#5a4a30':'#8a7a5a')}return true}
+  if(a.t==='dragon'){const R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);const G='#a8302a',Gd='#6a1a18',Gl='#d0503a',W='#5a1a18',up=Math.floor(t/3)%2===0;
+    if(up){for(let k=0;k<8;k++)R(x+11+k,y+4-k,Math.max(1,9-k),1,k%3?W:Gd)}
+    R(x-2,y+8,3,3,Gd);R(x,y+9,6,2,G);R(x+4,y+8,4,2,G);R(x+6,y+5,16,9,'#15130f');R(x+7,y+6,14,7,G);R(x+7,y+6,14,1,Gl);R(x+9,y+11,10,2,'#e0c070');R(x+9,y+13,2,3,Gd);R(x+17,y+13,2,3,Gd);R(x+8,y+16,3,1,'#e8e0c0');R(x+16,y+16,3,1,'#e8e0c0');
+    for(let i=0;i<5;i++)R(x+8+i*3,y+5,1,1,'#e0c070');R(x+20,y+3,4,6,G);R(x+23,y+1,3,5,G);R(x+25,y,8,6,'#15130f');R(x+26,y+1,6,4,G);R(x+31,y+2,3,3,G);R(x+26,y+1,6,1,Gl);
+    R(x+28,y+2,1,1,a.fire?'#ffffff':'#ffe060');R(x+26,y-2,1,2,'#e8e0c0');R(x+28,y-2,1,2,'#e8e0c0');R(x+33,y+2,1,1,'#15130f');if(a.fire){R(x+31,y+4,3,2,'#ff6a1a');R(x+32,y+5,2,1,'#ffe060')}else R(x+30,y+4,4,1,'#15130f');
+    if(!up){for(let k=0;k<6;k++)R(x+11+k,y+8+k,Math.max(1,8-k),1,k%3?W:Gd)}return true}
+  if(a.t==='flame'){const n=26;for(let i=0;i<n;i++){const f=i/n,px=a.x1+(a.x2-a.x1)*f+rint(-2,2),py=a.y1+(a.y2-a.y1)*f+rint(-2,2),s=Math.round(3+f*10);R0(Math.round(px-s/2),Math.round(py-s/2),s,s,(i+t)%3===0?'#ffe060':(i+t)%3===1?'#ff8a20':'#e0401a')}return true}
+  if(a.t==='blizz'){for(let i=0;i<80;i++){const bx=((i*53+t*(6+i%4))%(QS.W+40))-QS.OX-20,by=20+((i*37+t*(2+i%3))%130);R0(bx,by,i%5?1:2,1,'#f0f8ff')}return true}
+  if(a.t==='ice'){const h=Math.round(a.h);if(h>0){R0(x,y-h,a.w,h,'rgba(170,220,255,.55)');R0(x,y-h,a.w,1,'#e8f8ff');R0(x,y-h,1,h,'rgba(232,248,255,.9)');R0(x+a.w-1,y-h,1,h,'rgba(90,150,200,.8)');R0(x+3,y-h+2,1,Math.max(0,h-6),'rgba(255,255,255,.6)');R0(x+5,y-h+3,1,Math.max(0,Math.round(h/3)),'rgba(255,255,255,.5)');
+    if(a.crack)[[9,-h+4,3,6],[12,-h+10,-4,7],[8,-h+17,5,6],[13,-h+23,-5,5]].slice(0,a.crack*2).forEach(([cx,cy,dx,dy])=>qsLine(R0,x+cx,y+cy,x+cx+dx,y+cy+dy,'#ffffff'))}return true}
+  if(a.t==='bh'){const r=Math.round(a.r);(a.motes||[]).forEach(m=>R0(Math.round(m.x),Math.round(m.y),2,1,m.c));if(r>0){for(let i=0;i<30;i++){const an=a.ang+i/30*Math.PI*2,rr=r+4+(i%3);R0(Math.round(x+Math.cos(an)*rr*1.9),Math.round(y+Math.sin(an)*rr*.5),2,1,i%5===0?'#ffffff':i%2?'#ffb040':'#c070ff')}
+    for(let yy=-r;yy<=r;yy++){const w=Math.round(Math.sqrt(r*r-yy*yy));R0(x-w-1,y+yy,w*2+2,1,'rgba(200,120,255,.4)');R0(x-w,y+yy,w*2,1,'#050308')}for(let i=0;i<14;i++){const an=a.ang+i/14*Math.PI*2;if(Math.sin(an)>0)R0(Math.round(x+Math.cos(an)*(r+5)*1.9),Math.round(y+Math.sin(an)*(r+5)*.5),2,1,i%2?'#ffb040':'#ffe8a0')}}return true}
+  return false}
+function drawArrestActor(R0,a,x,y,t){const OL='#15130f';if(drawArrestActor2(R0,a,x,y,t))return true;
   if(a.t==='saucer'){const R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);
     if(a.beam>0){const top=y+12,bot=a.by;for(let yy=top;yy<bot;yy+=2){const f=(yy-top)/Math.max(1,bot-top),w2=Math.round(10+f*34);const band=((yy+t*3)%12)<3;R0(x-w2,yy,w2*2,2,'rgba('+(band?'190,255,200,':'120,240,150,')+((band?.34:.2)*a.beam).toFixed(3)+')')}R0(x-26,bot-2,52,3,'rgba(160,255,180,'+(.35*a.beam).toFixed(3)+')')}
     [[-6,4],[-5,6],[-4,7],[-3,7],[-2,8],[-1,8]].forEach(([dy,w])=>{R(x-w/2-1,y+dy,w+2,1,OL);R(x-w/2,y+dy,w,1,'#8ad0e0')});R(x-2,y-5,2,1,'#e8f8ff');R(x-3,y-4,1,2,'#c8f0ff');
@@ -2802,9 +2824,10 @@ function drawArrestActor(R0,a,x,y,t){const OL='#15130f';
     R(x-4,y-5,8,6,OL);R(x-3,y-5,6,5,'#b0603a');R(x-3,y-5,6,1,'#d0805a');R(x-1,y-9,1,4,'#3a8a3a');R(x+1,y-8,1,3,'#3a8a3a');R(x-3,y-10,3,2,'#d06ad0');R(x,y-11,3,2,'#e080e0');R(x+1,y-9,3,2,'#b04ab0');R(x-1,y-10,1,1,'#ffe060')}
   else return false;return true}
 function drawStreetDecals(x,R){
-  (QS.prints||[]).forEach(d=>{R(d.x-30,d.y-2,60,5,'rgba(20,16,12,.55)');R(d.x-26,d.y-3,52,1,'rgba(20,16,12,.4)');[[-30,-2],[-6,0],[18,-2]].forEach(([dx,dy])=>R(d.x+dx,d.y+dy+2,12,3,'rgba(10,8,6,.6)'));R(d.x-20,d.y+3,40,1,'rgba(0,0,0,.3)')});
-  (QS.slime||[]).forEach(d=>{R(d.x-13,d.y,26,3,'#3a8a3a');R(d.x-9,d.y-1,18,1,'#5ab05a');R(d.x-5,d.y+3,10,1,'#2a6a2a');R(d.x+9,d.y+2,5,1,'#3a8a3a');if(QS.tick%20<10)R(d.x+2,d.y,1,1,'#c8ffc8')});
-  (QS.stamps||[]).forEach(d=>{const w=62,h=13;R(d.x-w/2,d.y-9,w,1,'rgba(192,32,42,.8)');R(d.x-w/2,d.y+3,w,1,'rgba(192,32,42,.8)');R(d.x-w/2,d.y-9,1,h,'rgba(192,32,42,.8)');R(d.x+w/2-1,d.y-9,1,h,'rgba(192,32,42,.8)');x.font='8px Tiny5, monospace';x.textAlign='center';x.fillStyle='rgba(200,36,46,.85)';x.fillText(d.text,d.x,d.y+1)})}
+  (QS.ice||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-14,d.y-1,28,3,'rgba(150,200,240,.45)');R(d.x-10,d.y-2,20,1,'rgba(200,235,255,.5)');[[-9,-3],[-4,-5],[3,-2],[8,-4],[12,0],[-13,0],[0,-6]].forEach(([dx,dy])=>{R(d.x+dx,d.y+dy,2,2,'#d8f0ff');R(d.x+dx,d.y+dy,1,1,'#ffffff')})});
+  (QS.prints||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-30,d.y-2,60,5,'rgba(20,16,12,.55)');R(d.x-26,d.y-3,52,1,'rgba(20,16,12,.4)');[[-30,-2],[-6,0],[18,-2]].forEach(([dx,dy])=>R(d.x+dx,d.y+dy+2,12,3,'rgba(10,8,6,.6)'));R(d.x-20,d.y+3,40,1,'rgba(0,0,0,.3)')});
+  (QS.slime||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-13,d.y,26,3,'#3a8a3a');R(d.x-9,d.y-1,18,1,'#5ab05a');R(d.x-5,d.y+3,10,1,'#2a6a2a');R(d.x+9,d.y+2,5,1,'#3a8a3a');if(QS.tick%20<10)R(d.x+2,d.y,1,1,'#c8ffc8')});
+  (QS.stamps||[]).forEach(d=>{x.globalAlpha=fa(d);const w=62,h=13;R(d.x-w/2,d.y-9,w,1,'rgba(192,32,42,.8)');R(d.x-w/2,d.y+3,w,1,'rgba(192,32,42,.8)');R(d.x-w/2,d.y-9,1,h,'rgba(192,32,42,.8)');R(d.x+w/2-1,d.y-9,1,h,'rgba(192,32,42,.8)');x.font='8px Tiny5, monospace';x.textAlign='center';x.fillStyle='rgba(200,36,46,.85)';x.fillText(d.text,d.x,d.y+1)});x.globalAlpha=1}
 function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;if(drawActorExtra(R,a,x,y,t))return;
   if(a.t==='heli'){const tl=a.tilt||0;const H=(xx,yy,w,h,c)=>R(xx,yy+Math.round((xx-x-24)*tl),w,h,c);
     H(x-30,y+10,34,4,'#34442e');H(x-30,y+10,34,1,'#4a5c42');H(x-34,y+4,5,12,'#34442e');H(x-33,y+5,2,10,'#4a5c42');const tr=t%2;H(x-38,y+(tr?2:6),3,2,'#9a9a8a');H(x-32,y+(tr?14:10),3,2,'#9a9a8a');
@@ -2880,8 +2903,8 @@ const MOB={n:'mob',title:'Самосуд очереди',line:'Очередь р
     if(i%3===0)popText(pick(words),Math.round(p.x+6+rint(-16,16)),Math.round(p.y-4+rint(-6,4)),'#ffe060',12);if(i===8){kill(p);shakePP();ppTalk(PD.cur.role,'Ой… всё… сдаюсь…')}await sleep(rint(130,220))}
   await sleep(400);ppTalk('Очередь','Готово. Возвращаемся, кто за кем стоял.');
   crew.forEach(q=>{q.faceL=false;q.sp=3.2});
-  if(temp){crew.forEach(q=>{q.tx=QS.W-QS.OX+30;q.ty=110});await tick(()=>crew.every(near));crew.forEach(q=>q.hide=true)}
-  else{crew.forEach(q=>q.state='q');qsTargets();crew.forEach(q=>q.sp=Math.max(2.4,Math.abs(q.tx-q.x)/30));await tick(()=>crew.every(near));crew.forEach(q=>{q.sp=2.2;q.dir=1})}}};
+  (async()=>{try{if(temp){crew.forEach(q=>{q.tx=QS.W-QS.OX+30;q.ty=110});await tick(()=>crew.every(near));crew.forEach(q=>q.hide=true)}
+  else{crew.forEach(q=>q.state='q');qsTargets();crew.forEach(q=>q.sp=Math.max(2.4,Math.abs(q.tx-q.x)/30));await tick(()=>crew.every(near));crew.forEach(q=>{q.sp=2.2;q.dir=1})}}catch(e){}})()}};
 const ARRESTS=[
  {n:'heli',title:'Боевой вертолёт',desc:'Прилетает вертолёт и расстреливает беглеца из пулемёта.',price:30,line:'Вызываю боевой вертолёт!',async run(p){const h={t:'heli',x:-QS.OX-80,y:-10};QS.actors.push(h);sTone(70,4.5,'sawtooth',.04,70);sTone(140,4.5,'square',.012,140);
    const hs=Math.max(8,Math.abs(p.x-70-h.x)/24);await tick(()=>{const tx=p.x-70;h.x+=Math.sign(tx-h.x)*Math.min(Math.abs(tx-h.x),hs);h.y=Math.min(30,h.y+2);return Math.abs(tx-h.x)<3&&h.y>=30});
@@ -2937,7 +2960,7 @@ const ARRESTS=[
    let k=0;await tick(()=>{k++;J.glow=k*1.3;J.y-=k*.25;if(k%2===0)for(let q=0;q<4;q++){const an=Math.random()*Math.PI*2,r=rint(6,40);QS.fx.push({t:'spark',x:Math.round(bx+Math.cos(an)*r),y:Math.round(J.y+50+Math.sin(an)*r),ttl:5+q,c:q%2?'#fff3b0':'#ffffff'})}if(k===16)J.gone=true;return k>=22});
    QS.flash=3;sNoise(.5,.2,9000,3000);for(let i=0;i<24;i++){const an=i/24*Math.PI*2;QS.fx.push({t:'spark',x:Math.round(bx+Math.cos(an)*34),y:Math.round(p.y-10+Math.sin(an)*20),ttl:8,c:'#ffffff'})}
    QS.actors=QS.actors.filter(a=>a!==J);await tick(()=>{beam.w=Math.max(0,beam.w-3);beam.al=Math.max(0,beam.al-.03);return beam.w<=0});QS.actors=QS.actors.filter(a=>a!==beam);ppTalk('Бюро','Остался только прах. Полиция, заберите.')}},
- {n:'nuke',title:'Ядерный указ',desc:'Окошко ловит помехи, в телевизоре Трамп лично приказывает наказать нарушителя. Бомбардировщик сбрасывает ядерную бомбу: кратер до конца дня, все в саже.',price:45,line:'Внимание! Экстренное включение…',async run(p){p.sp=1.2;
+ {n:'nuke',title:'Ядерный указ',desc:'Окошко ловит помехи, в телевизоре Трамп лично приказывает наказать нарушителя. Бомбардировщик сбрасывает ядерную бомбу: огромный кратер, все в саже.',price:45,line:'Внимание! Экстренное включение…',async run(p){p.sp=1.2;
    await tvOn('trump');tvSay('Дональд Трамп','Это Дональд Трамп. Никто не считает отчёты лучше меня, никто. А этот парень считает ужасно. Просто ужасно!');await sleep(2600);
    tvSay('Дональд Трамп','Я приказываю: наказать его. Жёстко. Самый большой бадабум в истории!');await sleep(2200);
    const bm={t:'bomber',x:-QS.OX-100,y:24};QS.actors.push(bm);sMuf(55,4.5,'sawtooth',.07,60,0,300);sMuf(82,4.5,'square',.03,80,0,260);sNoise(4,.05,500,60);ppTalk('Бюро','В небе стратегический бомбардировщик…');
@@ -2948,7 +2971,7 @@ const ARRESTS=[
    p.lying=true;p.ash=true;p.run=false;p.moving=false;p.tx=p.x;QS.crater={x:gx,y:gy-2};const m={t:'mush',x:gx,y:gy,k:0},ring={t:'ring',x:gx,y:gy-3,r:4};QS.actors.push(m,ring);popText('БАДАБУМ!',gx,gy-60,'#ffe060',22);
    for(let i=0;i<40;i++){const an=Math.random()*Math.PI;QS.fx.push({t:'spark',x:Math.round(gx+Math.cos(an)*rint(10,60)),y:Math.round(gy-Math.sin(an)*rint(4,40)),ttl:6+i%10,c:i%3?'#ffb040':'#fff0a0'})}
    QS.soot=true;k=0;await tick(()=>{k++;m.k=k;ring.r+=4;if(k%4===0)QS.actors.push({t:'smoke',x:gx+rint(-30,30),y:gy-rint(0,20),life:1});return k>=34});QS.actors=QS.actors.filter(a=>a!==ring&&a!==bm);
-   ppTalk('Бюро','Все вокруг в саже. Кратер останется до конца дня.');await sleep(900);
+   ppTalk('Бюро','Все вокруг в саже. На месте нарушителя кратер и пепел.');await sleep(900);
    tvSay('Дональд Трамп','Прекрасный взрыв. Лучший взрыв. Все говорят. Отчёты теперь в порядке!');await sleep(2400);await tvOff();
    k=0;await tick(()=>{k++;m.k=34+k;return k>=12});QS.actors=QS.actors.filter(a=>a!==m)}},
  {n:'svo',title:'Специальная операция',desc:'Окошко ловит помехи, Путин объявляет специальную операцию против нарушителя, а потом лично проезжает по нему на огромном танке.',price:45,line:'Внимание! Экстренное обращение…',async run(p){p.sp=1.2;
@@ -3034,12 +3057,73 @@ const ARRESTS=[
    popText('ПЛЮХ!!!',w.x,Math.round(p.y-14),'#9ad0ff',22);for(let i=0;i<34;i++){const an=Math.random()*Math.PI;QS.fx.push({t:'spark',x:Math.round(w.x+Math.cos(an)*rint(10,50)),y:Math.round(p.y+26-Math.sin(an)*rint(4,34)),ttl:6+i%8,c:i%3?'#9ad0ff':'#e8f4ff'})}
    await tick(()=>{pt.y+=4;return pt.y>=p.y+24});pt.y=Math.round(p.y+24);pt.broken=1;sNoise(.35,.35,4000,600);popText('ДЗЫНЬ',Math.round(pt.x),Math.round(pt.y-14),'#e0a070',12);for(let i=0;i<12;i++)QS.fx.push({t:'spark',x:Math.round(pt.x+rint(-8,8)),y:Math.round(pt.y+rint(-4,4)),ttl:5,c:i%2?'#b0603a':'#d06ad0'});
    await sleep(1300);ppTalk('Бюро','Кит успел подумать о многом. Горшок с петуниями, кажется, уже падал раньше.');await sleep(900);sNoise(.9,.3,2600,300);
-   for(let i=0;i<24;i++)QS.fx.push({t:'spark',x:Math.round(w.x+rint(-40,40)),y:Math.round(w.y+rint(-16,10)),ttl:6+i%6,c:i%2?'#9ad0ff':'#ffffff'});QS.actors=QS.actors.filter(a=>a!==w);popText('БУЛЬК',w.x,Math.round(w.y-10),'#9ad0ff',14);p.anvil=pt}}
+   for(let i=0;i<24;i++)QS.fx.push({t:'spark',x:Math.round(w.x+rint(-40,40)),y:Math.round(w.y+rint(-16,10)),ttl:6+i%6,c:i%2?'#9ad0ff':'#ffffff'});QS.actors=QS.actors.filter(a=>a!==w);popText('БУЛЬК',w.x,Math.round(w.y-10),'#9ad0ff',14);p.anvil=pt}},
+ {n:'meteor',title:'Метеорит',desc:'Небо краснеет, с неба с воем падает раскалённый метеорит. От нарушителя остаётся пепел на дне кратера.',price:40,line:'Обсерватория сообщает о крупном болиде…',async run(p){p.sp=1;p.faceL=false;
+   const tint={t:'tint',rgb:'150,40,10',a:0};QS.actors.unshift(tint);ppTalk('Бюро','Небо багровеет. Что-то летит прямо на улицу…');await tick(()=>{tint.a=Math.min(.28,tint.a+.02);return tint.a>=.28});
+   const gx=Math.round(p.x+6),gy=Math.round(p.y+26),m={t:'meteor',x:gx-230,y:-30,r:7},sh={t:'shadow',x:gx,y:gy+1,w:2};QS.actors.push(sh,m);sTone(2400,3.1,'sine',.05,160);sNoise(3.1,.08,1400,200);
+   const x0=m.x,y0=m.y,K=38;let k=0;
+   await tick(()=>{k++;const f=k/K;m.x=x0+(gx-x0)*f;m.y=y0+(gy-y0)*f*f;sh.w=Math.round(2+f*40);sh.x=gx-sh.w/2;for(let q=0;q<3;q++)QS.fx.push({t:'spark',x:Math.round(m.x-rint(6,26)),y:Math.round(m.y-rint(2,14)),ttl:4+q*2,c:q?'#ff8a20':'#ffe060'});
+     if(k===22){p.sp=0;p.tx=p.x;popText('?!',gx,Math.round(p.y-4),'#ffe060',14);ppTalk(PD.cur.role,'Это… за мной?!')}return k>=K});
+   QS.actors=QS.actors.filter(a=>a!==m&&a!==sh);QS.flash=8;shakePP();setTimeout(shakePP,300);setTimeout(shakePP,650);sNoise(2.6,.7,900);sMuf(36,2.4,'sine',.5,20,0,220);
+   p.lying=true;p.ash=true;p.run=false;p.moving=false;p.tx=p.x;QS.crater={x:gx,y:gy-2};const ring={t:'ring',x:gx,y:gy-3,r:4};QS.actors.push(ring);popText('КА-БУМ!',gx,gy-50,'#ffb040',22);
+   for(let i=0;i<50;i++){const an=Math.random()*Math.PI;QS.fx.push({t:'spark',x:Math.round(gx+Math.cos(an)*rint(6,70)),y:Math.round(gy-Math.sin(an)*rint(4,50)),ttl:6+i%12,c:i%3?'#ff8a20':'#6a5a4a'})}
+   k=0;await tick(()=>{k++;ring.r+=5;if(k%3===0)QS.actors.push({t:'smoke',x:gx+rint(-24,24),y:gy-rint(0,16),life:1});if(k%2===0)QS.fx.push({t:'spark',x:gx+rint(-60,60),y:rint(40,110),ttl:5,c:'#8a6a4a'});return k>=22});QS.actors=QS.actors.filter(a=>a!==ring);
+   await tick(()=>{tint.a=Math.max(0,tint.a-.02);return tint.a<=0});QS.actors=QS.actors.filter(a=>a!==tint);ppTalk('Бюро','От нарушителя остался только пепел на дне кратера.')}},
+ {n:'tornado',title:'Торнадо',desc:'Небо темнеет, по улице несётся торнадо, закручивает нарушителя и уносит его в облака.',price:40,line:'Штормовое предупреждение!',async run(p){p.sp=1.2;p.faceL=true;
+   const tint={t:'tint',rgb:'30,40,55',a:0};QS.actors.unshift(tint);ppTalk('Бюро','Небо темнеет, поднимается ветер…');sNoise(9,.12,700,80);sMuf(90,9,'sawtooth',.03,60,0,300);
+   await tick(()=>{tint.a=Math.min(.32,tint.a+.02);return tint.a>=.32});
+   const gy=Math.round(p.y+28),tw={t:'tornado',x:QS.W-QS.OX+40,y:gy,top:24};QS.actors.push(tw);ppTalk('Бюро','ТОРНАДО! Все в укрытие!');
+   await tick(()=>{tw.x-=Math.max(3.5,(tw.x-(p.x+6))*.06);if(QS.tick%2===0)QS.fx.push({t:'spark',x:Math.round(tw.x+rint(-22,22)),y:Math.round(gy-rint(0,40)),ttl:4,c:'#8a8270'});return tw.x<=p.x+7});
+   p.sp=0;p.run=false;popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);ppTalk(PD.cur.role,'А-а-а! Меня уносит!!');sNoise(1.5,.25,1500,300);
+   const cx=tw.x;let k=0;await tick(()=>{k++;const an=k*.45,rad=Math.min(16,4+k*.4);p.x=cx-6+Math.cos(an)*rad;p.y-=1.8;p.tx=p.x;p.ty=p.y;p.faceL=Math.sin(an)>0;tw.x=cx+Math.sin(k/5)*3;
+     if(k%3===0)QS.fx.push({t:'spark',x:Math.round(cx+rint(-20,20)),y:Math.round(p.y+rint(0,30)),ttl:4,c:'#a8a090'});if(k===30)popText('ВЖУУУХ!',Math.round(cx),Math.round(p.y-6),'#e0e0e0',14);return p.y<-40});
+   p.hide=true;p.vanished=true;p.vanishMsg='Его унесло ураганом. Ищите где-нибудь в Канзасе. Уезжаем.';ppTalk('Бюро','Торнадо уходит за город…');
+   let tv=4;await tick(()=>{tv=Math.min(24,tv*1.12);tw.x-=tv;return tw.x<-QS.OX-60});QS.actors=QS.actors.filter(a=>a!==tw);await tick(()=>{tint.a=Math.max(0,tint.a-.02);return tint.a<=0});QS.actors=QS.actors.filter(a=>a!==tint)}},
+ {n:'dragon',title:'Дракон',desc:'Из-за крыш вылетает красный дракон, зависает над улицей и сжигает нарушителя струёй огня.',price:45,line:'С гор доносится рёв…',async run(p){p.sp=1.2;p.faceL=false;
+   const d={t:'dragon',x:-QS.OX-90,y:30};QS.actors.push(d);kaijuRoar(.5);ppTalk('Бюро','Над крышами пролетает тень. Это… дракон?!');
+   const tx=p.x-80;await tick(()=>{d.x+=Math.max(3,(tx-d.x)*.07);d.y=30+Math.sin(QS.tick/5)*3;return d.x>=tx-1});
+   p.sp=0;p.tx=p.x;popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);ppTalk('Дракон','Ррр… Кто тут не сдал отчётность?');await sleep(1400);ppTalk(PD.cur.role,'Н-не я…');await sleep(900);
+   d.fire=1;kaijuRoar(.8);sNoise(2.2,.35,1800,200);const fl={t:'flame',x1:d.x+66,y1:d.y+10,x2:p.x+6,y2:p.y+16};QS.actors.push(fl);let k=0;
+   await tick(()=>{k++;d.y=30+Math.sin(QS.tick/5)*1;fl.x1=d.x+66;fl.y1=d.y+10;if(k%2===0)for(let q=0;q<4;q++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(-4,16)),y:Math.round(p.y+rint(0,28)),ttl:4+q,c:q%2?'#ff6a1a':'#ffe060'});
+     if(k===16){p.lying=true;p.ash=true;p.run=false;p.moving=false;p.tx=p.x;QS.flash=2;popText('ПШШШ!',Math.round(p.x+6),Math.round(p.y-4),'#ff8a20',16)}return k>=26});
+   QS.actors=QS.actors.filter(a=>a!==fl);d.fire=0;QS.scorch=(QS.scorch||[]).concat([{x:Math.round(p.x+8),y:Math.round(p.y+28)}]);for(let i=0;i<10;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,14),y:p.y+rint(10,26),life:1});
+   ppTalk('Дракон','Отчётность принята. Хрум.');await sleep(1000);kaijuRoar(.4);await tick(()=>{d.x+=8;d.y-=2.5;return d.y<-70||d.x>QS.W-QS.OX+40});QS.actors=QS.actors.filter(a=>a!==d);ppTalk('Бюро','Дракон улетел в горы. От нарушителя остался пепел.')}},
+ {n:'freeze',title:'Ледяной аудит',desc:'Начинается метель, нарушитель вмерзает в глыбу льда, лёд трескается и разлетается на осколки.',price:35,line:'Температура на улице резко падает…',async run(p){p.sp=1;p.faceL=false;
+   const tint={t:'tint',rgb:'120,170,230',a:0},sn={t:'blizz'};QS.actors.unshift(tint);QS.actors.push(sn);sNoise(6,.1,3000,600);sTone(1200,3,'sine',.025,1800);
+   ppTalk('Бюро','Температура падает до минус сорока. Начинается метель…');await tick(()=>{tint.a=Math.min(.25,tint.a+.015);return tint.a>=.25});
+   p.sp=.4;await sleep(600);p.sp=0;p.tx=p.x;p.run=false;ppTalk(PD.cur.role,'Х-х-холодно… н-не могу п-пошевелиться…');
+   const ice={t:'ice',x:Math.round(p.x-3),y:Math.round(p.y+28),w:18,h:0};QS.actors.push(ice);let k=0;
+   await tick(()=>{k++;ice.h=Math.min(32,ice.h+1.2);if(k%3===0){sTone(rint(1800,3200),.05,'triangle',.02);QS.fx.push({t:'spark',x:ice.x+rint(0,18),y:Math.round(ice.y-ice.h),ttl:4,c:'#e8f8ff'})}return ice.h>=32});
+   popText('ЗАМОРОЖЕН',Math.round(p.x+6),Math.round(p.y-8),'#bfe8ff',14);ppTalk('Бюро','Нарушитель заморожен вместе со своей отчётностью.');await sleep(1300);
+   ice.crack=1;sNoise(.2,.3,6000,2000);popText('ХРУСТЬ…',Math.round(p.x+6),Math.round(p.y-8),'#e8f8ff',12);await sleep(700);ice.crack=2;sNoise(.2,.35,6000,2000);await sleep(500);
+   QS.actors=QS.actors.filter(a=>a!==ice);p.hide=true;p.vanished=true;p.vanishMsg='Тут только осколки льда и лужа. Растает само. Уезжаем.';QS.flash=2;shakePP();sNoise(.9,.5,8000,1500);for(let i=0;i<6;i++)sTone(rint(2500,4500),.12,'triangle',.03,null,i*.05);
+   popText('ДЗЫНЬ!',ice.x+9,Math.round(ice.y-40),'#bfe8ff',20);for(let i=0;i<44;i++)QS.fx.push({t:'spark',x:Math.round(ice.x+9+rint(-32,32)),y:Math.round(ice.y-rint(0,36)),ttl:5+i%8,c:i%3?'#bfe8ff':'#ffffff'});
+   QS.ice=(QS.ice||[]).concat([{x:ice.x+9,y:ice.y}]);await sleep(1000);QS.actors=QS.actors.filter(a=>a!==sn);await tick(()=>{tint.a=Math.max(0,tint.a-.015);return tint.a<=0});QS.actors=QS.actors.filter(a=>a!==tint);ppTalk('Бюро','Метель стихла. От нарушителя остались только осколки льда.')}},
+ {n:'blackhole',title:'Чёрная дыра',desc:'Рядом с нарушителем открывается чёрная дыра, затягивает его вместе с мусором с улицы и схлопывается во вспышке.',price:50,line:'Бухгалтерия запустила адронный коллайдер…',async run(p){p.sp=1;p.faceL=false;
+   const cx=Math.round(p.x+44),cy=Math.round(p.y+6),bh={t:'bh',x:cx,y:cy,r:0,ang:0,motes:[]};QS.actors.push(bh);sMuf(60,8,'sawtooth',.05,30,0,200);sTone(900,6,'sine',.03,60);
+   const pull=()=>{bh.ang+=.3;if(bh.motes.length<40){const an=Math.random()*Math.PI*2,r=rint(40,90);bh.motes.push({x:cx+Math.cos(an)*r,y:cy+Math.sin(an)*r*.5,c:pick(['#8a8270','#c8c0b0','#c070ff','#ffb040'])})}
+     bh.motes.forEach(m=>{const dx=cx-m.x,dy=cy-m.y;m.x+=dx*.12-dy*.25;m.y+=dy*.12+dx*.06});bh.motes=bh.motes.filter(m=>Math.abs(m.x-cx)+Math.abs(m.y-cy)>bh.r)};
+   ppTalk('Бюро','В воздухе открывается крошечная чёрная дыра. Она растёт…');await tick(()=>{bh.r=Math.min(11,bh.r+.25);pull();return bh.r>=11});
+   p.sp=0;p.run=false;popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);ppTalk(PD.cur.role,'Меня тянет!! Держите меня!');sTone(300,3,'sawtooth',.03,60);
+   const px0=p.x,py0=p.y;let k=0;await tick(()=>{k++;pull();const f=Math.min(1,k/42);p.x=px0+(cx-6-px0)*f*f;p.y=py0+(cy-14-py0)*f*f;p.tx=p.x;p.ty=p.y;p.faceL=k%4<2;return k>=42});
+   p.hide=true;p.vanished=true;p.vanishMsg='Хм. Никого и ничего, даже следов нет. Пусть физики разбираются. Уезжаем.';popText('ЧПОК!',cx,cy-16,'#c8a0ff',16);sTone(200,.4,'sine',.1,40);
+   await sleep(500);ppTalk('Бюро','Чёрная дыра схлопывается!');await tick(()=>{bh.r-=.8;pull();return bh.r<=1});QS.actors=QS.actors.filter(a=>a!==bh);
+   QS.flash=6;shakePP();sNoise(1.4,.5,6000,300);sMuf(40,1.6,'sine',.4,20,0,200);const ring={t:'ring',x:cx,y:cy,r:3};QS.actors.push(ring);
+   for(let i=0;i<36;i++){const an=i/36*Math.PI*2;QS.fx.push({t:'spark',x:Math.round(cx+Math.cos(an)*rint(8,44)),y:Math.round(cy+Math.sin(an)*rint(6,24)),ttl:6+i%6,c:i%2?'#c8a0ff':'#ffffff'})}
+   k=0;await tick(()=>{k++;ring.r+=6;return k>=14});QS.actors=QS.actors.filter(a=>a!==ring);ppTalk('Бюро','Тишина. Будто никого и не было.')}}
 ];
+function fadeRemains(p){const now=Date.now(),sn=p.snap||{};const mark=(arr,i0)=>{(arr||[]).slice(i0||0).forEach(o=>o.f0=now)};
+  mark(QS.decals,sn.d);mark(QS.scorch,sn.sc);mark(QS.slime,sn.sl);mark(QS.prints,sn.pr);mark(QS.stamps,sn.st);mark(QS.ice,sn.ic);if(QS.crater&&QS.crater!==sn.cr)QS.crater.f0=now;if(p.ash&&!p.hide)p.f0=now}
+const fa=o=>o&&o.f0?Math.max(0,1-(Date.now()-o.f0)/10000):1;
+function fadeSweep(){let any=false;const keep=o=>{if(!o.f0)return true;any=true;return fa(o)>0};QS.decals=QS.decals.filter(keep);['scorch','slime','prints','stamps','ice'].forEach(k=>{if(QS[k])QS[k]=QS[k].filter(keep)});
+  if(QS.crater&&QS.crater.f0){any=true;if(fa(QS.crater)<=0)QS.crater=null}QS.people.forEach(q=>{if(q.f0&&!q.hide){any=true;if(fa(q)<=0)q.hide=true}});return any}
 async function policeCleanup(p,onArrive){
   await until(()=>!QS.car,20000);const arrive=()=>{if(onArrive){const f=onArrive;onArrive=null;f()}};
-  if(p.vanished){const car={x:-QS.OX-70,y:118,dir:1,sp:Math.max(7,(p.x-60+QS.OX+70)/24)};QS.car=car;arrive();const siren=ppSiren(8);SFX.engine();ppTalk('Полиция','Финансовая полиция! Где нарушитель?');await tick(()=>car.x>=p.x-70);siren.stop();car.sp=0;await sleep(700);
-    ppTalk('Полиция',p.vanishMsg||'Хм. Только запах серы и подпалина на асфальте. Не наша юрисдикция. Уезжаем.');await sleep(1800);car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null;return}
+  if(p.vanished||p.ash){if(Math.random()<.5){const car={x:-QS.OX-70,y:118,dir:1,sp:9};QS.car=car;arrive();const siren=ppSiren(8);SFX.engine();
+      ppTalk('Полиция',p.ash?'Тут одна кучка пепла. Не тормозим, едем дальше!':'Задерживать некого. Не тормозим, едем дальше!');await tick(()=>car.x>QS.W-QS.OX+60);siren.stop();QS.car=null}
+    else{const car={x:-QS.OX-70,y:118,dir:1,sp:Math.max(7,(p.x-60+QS.OX+70)/24)};QS.car=car;arrive();const siren=ppSiren(8);SFX.engine();ppTalk('Полиция','Финансовая полиция! Где нарушитель?');await tick(()=>car.x>=p.x-70);siren.stop();car.sp=0;await sleep(700);
+      ppTalk('Полиция',p.ash?'Хм. Тут только пепел. Совок нам не выдали. Уезжаем.':p.vanishMsg||'Хм. Только запах серы и подпалина на асфальте. Не наша юрисдикция. Уезжаем.');await sleep(1800);car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null}
+    fadeRemains(p);return}
   const car={x:-QS.OX-70,y:118,dir:1,sp:0};QS.car=car;arrive();const siren=ppSiren(14);const runOver=!p.lying||!!p.dogs||Math.random()<.5;SFX.engine();ppTalk('Полиция','Финансовая полиция. Разойдись!');
   const over=()=>car.x+46>p.x&&car.x<p.x+28;
   car.sp=Math.max(7,(p.x+30-car.x)/26);const flyDogs=()=>{(p.dogs||[]).forEach(d=>{if(d.gone)return;if(!d.fly&&car.x+46>=d.x){d.fly=1;d.face='r';d.vx=rint(5,9);d.vy=-rint(6,9);d.bark=false;SFX.crash();sTone(700,.15,'square',.05,1400);for(let k=0;k<8;k++)QS.fx.push({t:'spark',x:Math.round(d.x+rint(0,12)),y:Math.round(d.y+rint(0,8)),ttl:4+k%4,c:'#a3201a'})}
@@ -3058,14 +3142,15 @@ async function ppArrestAnim(cb){
   let bars=win.querySelector('.bars');if(!bars){bars=document.createElement('div');bars.className='bars';bars.innerHTML='<span>АРЕСТОВАН</span>';win.appendChild(bars)}
   bars.classList.remove('on');void bars.offsetWidth;bars.classList.add('on');ppTalk(PD.cur.role,'Нет! Я не пойду!');
   if(!p){setTimeout(cb,1200);return}
+  p.snap={d:QS.decals.length,sc:(QS.scorch||[]).length,sl:(QS.slime||[]).length,pr:(QS.prints||[]).length,st:(QS.stamps||[]).length,ic:(QS.ice||[]).length,cr:QS.crater};
   p.state='x';p.ty=110;p.tx=-QS.OX+20;p.sp=3.6;p.run=true;let spl={granny:'Сынок, да ты что?! Я ж тебе пирожков принесла!',mom:p.look.nk===3?'Только не при детях!! Все трое, бежим!':p.look.nk===2?'Дети, держитесь за руки, бежим!':'Не при ребёнке!! Мы убегаем!',wheel:'Серьёзно?! Ну догоняй!'}[p.look.sp];if(p.look.cat)spl='Барсик, бежим! Нас не поймают!';ppTalk(PD.cur.role,spl||'Нет! Я не пойду! Бегу!');await sleep(2200);
   let done=false;const fin=()=>{if(done)return;done=true;FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
   const ownA=ARRESTS.filter(a=>(PP.arrests||{})[a.n]&&!(PP.arrOff||{})[a.n]);let v,trial=false;
   if(window.__forceArrest!=null)v=window.__forceArrest==='mob'?MOB:window.__forceArrest<0?null:ARRESTS[window.__forceArrest];
   else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const alt=pool.filter(a=>(a?a.n:'car')!==PP.lastArrest);v=pick(alt.length?alt:pool);trial=trial&&!!v&&v!==MOB}
   PP.lastArrest=v?v.n:'car';
-  try{if(v){ppTalk('Бюро',trial?`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);await v.run(p);await sleep(400)}else ppTalk('Бюро','Патруль, перехватите его!');await policeCleanup(p,fin)}catch(e){}
-  p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
+  try{if(v){ppTalk('Бюро',trial?`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);await v.run(p);await sleep(v===MOB?0:400)}else ppTalk('Бюро','Патруль, перехватите его!');await policeCleanup(p,fin)}catch(e){}
+  if(!p.f0)p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
 }
 /* ---------- random events between visitors ---------- */
 function banner(t){const top=document.querySelector('.pp-top');let b=top.querySelector('.pp-evb');if(!b){b=document.createElement('div');b.className='pp-evb';top.appendChild(b)}b.textContent=t;b.hidden=!t}
@@ -3249,7 +3334,7 @@ document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!ta
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
 $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
-  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
+  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro();qsDraw()};
 /* =====================================================
