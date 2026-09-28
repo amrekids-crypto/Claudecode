@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Finance Midterm Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Tiny5&display=swap">
@@ -338,6 +339,56 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 .pp-item .pp-btn{font-size:16px;padding:4px 8px;align-self:flex-start}
 .pp-item.owned{border-style:solid;border-color:var(--pp-green)}
 @media (prefers-reduced-motion: reduce){.ink,.pp-cite{animation:none}}
+
+/* ---------- mobile game layout ---------- */
+@media (max-width:700px){
+  body.mixwide header.top .brand{display:none}
+  body.mixwide nav.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  body.mixwide nav.tabs::-webkit-scrollbar{display:none}
+  body.mixwide nav.tabs button{flex:none;padding:6px 8px}
+  body.mixwide .wrap{padding-inline:0}
+  #tab-mix.section{padding-top:4px;gap:4px}
+  #tab-mix>.row:first-child{padding:0 8px;flex-wrap:nowrap}
+  #tab-mix>.row:first-child h1{font-size:16px!important}
+  #tab-mix>.row:first-child .muted{display:none}
+  #tab-mix>.row:first-child .btn{padding:4px 8px;font-size:12px}
+  .pp{font-size:14px;height:calc(100dvh - var(--hdr,52px) - 40px);min-height:480px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;border-width:3px;box-shadow:none}
+  .pp-main{display:contents}
+  .pp-top{grid-row:1}
+  .pp-booth{grid-row:2;display:grid;grid-template-columns:68px minmax(0,1fr) 92px;grid-template-areas:"win talk clock" "win talk btn";gap:6px;padding:6px;border-right:none;border-bottom:3px solid var(--pp-line);overflow:visible}
+  .pp-window{grid-area:win;border-width:3px;align-self:start}
+  .pp-window canvas{width:100%;height:auto;max-width:none}
+  .pp-window .bars span{font-size:12px;padding:1px 4px}
+  .pp-window.splat::after{font-size:8px}
+  .pp-clockrow{grid-area:clock;flex-direction:column;gap:4px}
+  .pp-clock{font-size:17px;text-align:center;padding:1px 4px;border-width:2px}
+  .pp-rank{display:none}
+  .pp-talk{grid-area:talk;font-size:12.5px;line-height:1.25;min-height:0;max-height:68px;overflow-y:auto;padding:4px 6px;border-width:2px}
+  .pp-booth .horn{grid-area:btn;font-size:12px;padding:5px 4px;align-self:stretch}
+  .pp-desk{grid-row:3;padding:8px;gap:8px;min-height:0}
+  .pp-side{grid-row:4;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border-left:none!important;border-top:3px solid var(--pp-line)!important}
+  .pp-side .pp-office{display:none}
+  .pp-side .pp-btn{font-size:10.5px;padding:6px 2px;letter-spacing:0;border-width:2px;box-shadow:inset -2px -2px 0 #574f3a,inset 2px 2px 0 #a79a74}
+  .pp-side .pp-btn.red{box-shadow:inset -2px -2px 0 #6a1f1a,inset 2px 2px 0 #c86a5a}
+  .pp-bar{grid-row:5;padding:4px 8px;font-size:12px;border-top-width:3px}
+  .pp-paper{padding:10px!important}
+  .pp-q{font-size:13px!important}
+  .pp-given{font-size:12.5px!important;padding:6px 8px!important}
+  .pp-opt{font-size:12.5px!important;padding:8px 6px!important}
+  .pp-date,.pp-event{font-size:11px!important;padding:1px 5px!important}
+  .pp-ov{padding:10px 6px}
+  .pp-card{padding:12px!important}
+  .pp-card.shop{max-width:none}
+  .shop-l .pp-prev{grid-template-columns:1.4fr 1fr 1fr}
+  .pp.aiming .pp-top::before{font-size:11px}
+  .pp-shop{grid-template-columns:1fr 1fr!important;gap:6px!important}
+  .pp-item{padding:6px!important;font-size:12px}
+  .pp-item b{font-size:13px}.pp-item small{font-size:11px!important}
+  .pp-item .pp-btn{font-size:12px;padding:4px 8px}
+  .pp-thumb{max-height:56px;object-fit:cover}
+  .shop-note{display:none}
+  .shop-top h3{font-size:18px}
+}
 </style>
 
 <header class="top">
@@ -1867,7 +1918,7 @@ Object.assign(SFX,{
 
 const QS={people:[],tick:0,bld:null,fx:[],car:null,W:480,OX:0,door:0,decals:[]};
 function drawBlood(R,x,y){R(x+1,y+27,18,2,'#5a100c');R(x+4,y+26,12,1,'#7a1a14');R(x+18,y+28,5,1,'#5a100c');R(x-2,y+28,3,1,'#6a1410');R(x+8,y+29,6,1,'#4a0c08');R(x+6,y+26,2,1,'#9a2a20')}
-function qsResize(){const c=$('#ppQueue');if(!c)return;const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
+function qsResize(){const c=$('#ppQueue');if(!c)return;const hd=document.querySelector('header.top');if(hd)document.documentElement.style.setProperty('--hdr',hd.offsetHeight+'px');const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const mob=window.innerWidth<=700;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=mob?300:Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
 window.addEventListener('resize',()=>{if(!$('#tab-mix').hidden)qsResize()});
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<QS.W){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
 function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:92,tx:0,ty:92,state:'q'}));QS.car=null;QS.fx=[];QS.decals=[];QS.actors=[];QS.onClick=null;qsTargets()}
