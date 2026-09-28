@@ -204,6 +204,9 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 @keyframes ppFlash{from{opacity:.85}to{opacity:0}}
 .pp-seq{margin:6px 0;padding-left:26px;display:flex;flex-direction:column;gap:4px;font-family:"IBM Plex Mono",monospace;font-size:13px;min-height:30px;border:2px dashed #8f8360;padding-block:6px;background:var(--pp-paper2)}
 .pp-seq .ph{list-style:none;color:#8f8360}
+.pp-seq li[data-i]{touch-action:none;cursor:grab;user-select:none}
+.pp-seq li[data-i] .grip{display:inline-block;width:14px;color:#8f8360;font-size:12px;margin-right:4px;letter-spacing:-2px}
+.pp-seq li.dragging{opacity:.9}.pp-seq li.dragging .pp-chip{background:#3a2e21;color:#efe6c8;box-shadow:4px 4px 0 rgba(0,0,0,.3)}
 .pp-pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .pp-chip{font-family:"IBM Plex Mono",monospace;font-size:13px;background:#efe6c8;color:var(--pp-ink);border:2px solid #8f8360;padding:4px 8px;cursor:pointer;text-align:left}
 .pp-chip:hover:not([disabled]){border-color:#3a2e21}
@@ -1990,19 +1993,27 @@ function sortTask(){
   const note=v==='IS'?'Non-operating = interest, gains, losses. Subtotal = строки-итоги (GP, EBIT, EBT, NI, EPS).':v==='ST'?'CF only = строка есть только в Statement of cash flows.':'';return{kind:'sort',title,cats,items,note,fee:cats.length>=5?8:7,pick:{}}}
 function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
   return{kind:'ofill',doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
-function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Нажми на уже поставленную строку, чтобы вернуть её.</p>
-  <ol class="pp-seq">${c.seq.map((i,k)=>`<li><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||'<li class="ph">пусто</li>'}</ol>
+function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Поставленные строки можно перетаскивать мышкой вверх-вниз, а клик по строке возвращает её обратно.</p>
+  <ol class="pp-seq" id="ppSeq">${c.seq.map((i,k)=>`<li data-i="${i}"><span class="grip" aria-hidden="true">⋮⋮</span><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||'<li class="ph">пусто</li>'}</ol>
   <div class="pp-pool">${c.pool.map(i=>`<button class="pp-chip" data-oi="${i}">${esc(c.rows[i][0])}</button>`).join('')}</div>
   <div class="row" style="margin-top:10px"><button class="pp-btn" id="ppOReset">Сбросить</button><button class="pp-btn horn" id="ppOSubmit" ${c.pool.length?'disabled':''}>${btn}</button></div>`}
 function ppRenderOrder(){const c=PD.cur;const paper=$('#ppPaper');
   if(c.kind==='order')paper.querySelector('.ord').innerHTML=ppOrderHTML(c,`Подать ($${c.fee})`);
-  else paper.querySelector('.ord').innerHTML=ppOrderHTML(c,'Дальше: заполнить')}
-function ppOrderClick(b){const c=PD.cur;if(b.dataset.oi!=null){const i=+b.dataset.oi;c.pool=c.pool.filter(x=>x!==i);c.seq.push(i)}else{const k=+b.dataset.os;const i=c.seq[k];c.seq.splice(k,1);c.pool.push(i)}ppRenderOrder()}
+  else paper.querySelector('.ord').innerHTML=ppOrderHTML(c,'Дальше: заполнить');ppSeqDrag()}
+function ppSeqDrag(){const seq=$('#ppSeq');if(!seq)return;let st=null;
+  seq.addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-i]');if(!li||e.button>0)return;st={li,y:e.clientY,moved:false,id:e.pointerId}});
+  seq.addEventListener('pointermove',e=>{if(!st)return;if(!st.moved){if(Math.abs(e.clientY-st.y)<5)return;st.moved=true;st.li.classList.add('dragging');try{seq.setPointerCapture(st.id)}catch(_){}}
+    e.preventDefault();const sibs=[...seq.children].filter(x=>x!==st.li&&x.dataset.i!=null);const tgt=sibs.find(s=>{const r=s.getBoundingClientRect();return e.clientY<r.top+r.height/2});if(tgt!==st.li.nextElementSibling)seq.insertBefore(st.li,tgt||null)});
+  const end=()=>{if(!st)return;if(st.moved){const c=PD.cur;c.seq=[...seq.children].filter(x=>x.dataset.i!=null).map(x=>+x.dataset.i);c._drag=true;setTimeout(()=>{c._drag=false},50);SFX.click();ppRenderOrder()}st=null};
+  seq.addEventListener('pointerup',end);seq.addEventListener('pointercancel',end)}
+function ppOrderClick(b){const c=PD.cur;if(c._drag){c._drag=false;return}if(b.dataset.oi!=null){const i=+b.dataset.oi;c.pool=c.pool.filter(x=>x!==i);c.seq.push(i)}else{const k=+b.dataset.os;const i=c.seq[k];c.seq.splice(k,1);c.pool.push(i)}ppRenderOrder()}
 function orderOK(c){const got=c.seq.map(i=>c.rows[i][1]);const exp=c.rows.map(r=>r[1]).slice().sort((a,b)=>a-b);return got.every((g,i)=>g===exp[i])}
+function orderDiff(c){const exp=c.rows.map(r=>r[1]).slice().sort((a,b)=>a-b);const names=g=>c.rows.filter(r=>r[1]===g).map(r=>r[0]);
+  return 'Твой порядок:\n'+c.seq.map((i,k)=>{const ok=c.rows[i][1]===exp[k];return `${k+1}. ${c.rows[i][0]} ${ok?'✓':'✗  здесь должна быть: '+names(exp[k]).join(' / ')}`}).join('\n')}
 function correctOrderText(c){const seen=[];return c.rows.slice().sort((a,b)=>a[1]-b[1]).map((r,i)=>`${i+1}. ${r[0]}`).join('\n')}
 function ppOrderSubmit(){const c=PD.cur;const ok=orderOK(c);
-  if(c.kind==='order'){ppFinish(ok,(ok?'Порядок верный.\n':'Правильный порядок:\n')+correctOrderText(c),`Объясни, почему строки отчёта «${c.tpl.n}» идут именно в таком порядке:\n${correctOrderText(c)}\nЯ студент 1 курса, Managerial Finance (Gitman).`,ok?c.fee:0,ok?'':'<p>Порядок строк неверный.</p>');document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
-  if(!ok){ppFinish(false,'Правильный порядок:\n'+correctOrderText(c),`Объясни порядок строк и как посчитать этот документ: ${c.doc.given}`,0,'<p>Порядок неверный, до заполнения не дошло.</p>');document.querySelectorAll('#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
+  if(c.kind==='order'){ppFinish(ok,(ok?'Порядок верный.\n'+correctOrderText(c):orderDiff(c)+'\n\nПравильный порядок (строки одной группы, например отдельные расходы, можно менять местами между собой):\n'+correctOrderText(c)),`Объясни, почему строки отчёта «${c.tpl.n}» идут именно в таком порядке:\n${correctOrderText(c)}\nЯ студент 1 курса, Managerial Finance (Gitman).`,ok?c.fee:0,ok?'':'<p>Порядок строк неверный.</p>');document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
+  if(!ok){ppFinish(false,orderDiff(c)+'\n\nПравильный порядок (строки одной группы, например отдельные расходы, можно менять местами между собой):\n'+correctOrderText(c),`Объясни порядок строк и как посчитать этот документ: ${c.doc.given}`,0,'<p>Порядок неверный, до заполнения не дошло.</p>');document.querySelectorAll('#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');return}
   c.stage=2;$('#ppPaper .ord').innerHTML=`<p class="pp-q" style="margin:4px 0">Порядок верный. Теперь заполни суммы. В Cash Flow оттоки с минусом.</p><table class="pp-form">${c.seq.map((i,k)=>`<tr><td>${esc(c.rows[i][0])}</td><td><input id="ppIn${k}" data-i="${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(c.rows[i][0])}"></td></tr>`).join('')}</table><div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppOFSubmit">Подать ($${c.fee})</button></div>`;const f=$('#ppIn0');if(f)f.focus()}
 function ppOFSubmit(){const c=PD.cur,d=c.doc;let ok=0;c.seq.forEach((i,k)=>{const el=$('#ppIn'+k);const n=parseNum(el.value);const v=c.rows[i][2];const good=n!==null&&(d.signed?Math.abs(n-v)<=1:Math.abs(Math.abs(n)-Math.abs(v))<=1);el.disabled=true;el.classList.add(good?'ok':'bad');if(good)ok++;else el.insertAdjacentHTML('afterend',`<span class="fix">${fmt(v)}</span>`)});
   $('#ppOFSubmit').disabled=true;const all=ok===c.seq.length;ppFinish(all,`Верно ${ok} из ${c.seq.length} сумм. ${d.x}`,`Объясни по шагам, как заполнить: ${d.title}. Данные: ${d.given}`,all?c.fee:ok,all?'':'<p>Правильные суммы показаны под полями. За каждую верную $1.</p>')}
