@@ -1799,7 +1799,11 @@ function sympLook(){const L=newLook(),sp=pick(['granny','mom','wheel','cat']);L.
   if(sp==='granny'||sp==='cat')Object.assign(L,{g:'f',old:true,hair:'#d8d4c8',hat:'scarf',hatc:pick(['#8a3a5a','#5a6a3a','#6a4a8a']),style:'bun',beard:false,stache:false,tie:null,brow:0,glasses:true,coat:pick(['#6a4a5a','#5a5a6a'])});
   if(sp==='mom')Object.assign(L,{g:'f',old:false,style:pick(['long','bun']),beard:false,stache:false,tie:null,brow:0,hat:null,kid:pick(SKIN),kidh:pick(HAIR.filter(h=>!['#8a8a82','#e0d8c8'].includes(h))),kidc:pick(['#e0b64a','#6aa0c8','#d87a8a','#7ac070','#b07ad0','#e07a3a','#40b0b0','#e0e0e0','#c84040'])});
   return L}
-function roleFor(L){if(L.cat)return pick(['Бабушка с котом Барсиком','Бабушка с котом Мурзиком','Бабуля и её кот']);if(L.sp==='granny')return pick(['Бабушка Нина','Бабушка Валя','Бабуля с пенсией']);if(L.sp==='mom')return pick(['Мама с малышом','Молодая мама','Мама-одиночка']);if(L.sp==='wheel')return L.g==='f'?'Женщина в коляске':pick(['Ветеран в коляске','Мужчина в коляске']);
+function celebLook(){const k=pick(['biden','zelensky']),L=newLook();
+  if(k==='biden')Object.assign(L,{celeb:k,g:'m',old:true,skin:'#e8c4a8',hair:'#e8e4dc',style:'short',hat:null,coat:'#1f2a44',shirt:'#eef0f2',tie:'#2a4a8a',beard:false,stache:false,glasses:false,brow:0});
+  else Object.assign(L,{celeb:k,g:'m',old:false,skin:'#dcb498',hair:'#2a2420',style:'short',hat:null,coat:'#4a5238',shirt:'#4a5238',tie:null,beard:false,stache:false,glasses:false,brow:1});
+  return L}
+function roleFor(L){if(L.celeb)return L.celeb==='biden'?'Джо Байден':'Владимир Зеленский';if(L.cat)return pick(['Бабушка с котом Барсиком','Бабушка с котом Мурзиком','Бабуля и её кот']);if(L.sp==='granny')return pick(['Бабушка Нина','Бабушка Валя','Бабуля с пенсией']);if(L.sp==='mom')return pick(['Мама с малышом','Молодая мама','Мама-одиночка']);if(L.sp==='wheel')return L.g==='f'?'Женщина в коляске':pick(['Ветеран в коляске','Мужчина в коляске']);
   if(L.old)return L.g==='f'?pick(['Пенсионерка-инвестор','Бабушка-вкладчица','Пенсионерка']):pick(['Пенсионер-инвестор','Дедушка-вкладчик','Пенсионер']);return pick(L.g==='f'?ROLES_F:ROLES_M)}
 const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
 function P(ctx){return(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}}
@@ -1828,6 +1832,9 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=[L.skin,L.hair
     eye:fm?'big':'normal',eyeY:0,eyeGap:0,brow:fm?'arch':pk(['flat','thick']),nose:'small',mouth:fm?'full':'normal',mood:pk(['neutral','smile','smile']),look:0,
     iris:pk(['#3a6a9a','#4a7a5a','#6a4228','#5a7a90','#2a2420']),blush:fm,stubble:!fm&&rnd()<.35,hairline:0,long:fm&&!L.hat&&rnd()<.75,bang:fm&&rnd()<.5,quiff:!fm&&rnd()<.6});
     L.stache=false;L.beard=!fm&&rnd()<.15;L.glasses=rnd()<.12;if(['#8a8a82','#e0d8c8','#d8d4c8'].includes(L.hair))L.hair=pk(['#1f1812','#3f2a1a','#6a4526','#c89a4a','#a8402a'])}
+  if(L.celeb){L.beard=false;L.glasses=false;L.stache=false}
+  if(L.celeb==='biden')Object.assign(f,{pretty:false,long:false,quiff:false,age:'o',shape:'long',mood:'smile',iris:'#5a7a90',neck:'collar',narrow:1,clean:true,brow:'flat',hairline:-2,part:'side',mole:null,freckles:false,stubble:false,bags:true,eye:'small',nose:'long',mouth:'wide',rsh:false});
+  if(L.celeb==='zelensky')Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'square',mood:'neutral',iris:'#4a3020',neck:'crew',shirt:'#4a5238',narrow:1,clean:true,brow:'thick',hairline:0,part:'side',stubble:true,bags:true,eye:'normal',nose:'long',mouth:'normal',pend:false,rsh:false});
   Object.defineProperty(L,'_f',{value:f,enumerable:false,writable:true});return f}
 function drawFace(L,cv,ov){
   if(!cv)FACE.L=L;
@@ -2427,7 +2434,7 @@ function makeTasks(n,ev){
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
-  return shuffle(t).map(x=>{const look=Math.random()<.16?sympLook():newLook();if(Math.random()<.1)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
+  return shuffle(t).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&Math.random()<.1)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
