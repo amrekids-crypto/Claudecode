@@ -1948,8 +1948,9 @@ function ppAnimate(){
   const pw=document.querySelector('#ppOv:not([hidden]) #ppPrevWin');if(pw&&ppShop.face)drawFace(ppShop.face.L,pw,ppShop.face.ov);
 }
 function qsToLogical(ev){const c=$('#ppQueue'),r=c.getBoundingClientRect();const sc=r.width/c.width;return{x:(ev.clientX-r.left)/sc-QS.OX,y:(ev.clientY-r.top)/sc+20}}
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const until=(fn,ms=12000)=>new Promise(r=>{const t0=Date.now();const iv=setInterval(()=>{if(fn()||Date.now()-t0>ms){clearInterval(iv);r()}},80)});
+let GEN=0;
+const sleep=ms=>{const g=GEN;return new Promise(r=>setTimeout(()=>{if(g===GEN)r()},ms))};
+const until=(fn,ms=12000)=>{const g=GEN;return new Promise(r=>{const t0=Date.now();const iv=setInterval(()=>{if(g!==GEN){clearInterval(iv);return}let ok=false;try{ok=fn()}catch(e){ok=true}if(ok||Date.now()-t0>ms){clearInterval(iv);r()}},80)})};
 const near=p=>Math.abs(p.x-p.tx)<1&&Math.abs(p.y-p.ty)<1;
 function ppNoise(dur,vol,lp){try{const a=sfxCtx();const n=Math.floor(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.5);const s=a.createBufferSource();s.buffer=b;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;const g=a.createGain();g.gain.value=vol;s.connect(f).connect(g).connect(a.destination);s.start()}catch(e){}}
 const ppGunshot=()=>{sNoise(.1,.9,7000,900);sTone(110,.28,'sine',.3,38);sNoise(.6,.18,1400,0,.04)},ppShot=()=>{sNoise(.05,.55,6000,700);sTone(140,.07,'square',.07,55)},ppThud=()=>ppNoise(.25,.4,400);
@@ -2643,7 +2644,10 @@ $('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches
 document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!tab.contains(e.target))return;
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
-$('#ppReset').onclick=()=>{PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro()};
+$('#ppReset').onclick=()=>{GEN++;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
+  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;qsSetup([]);banner('');ppCloseOv();
+  const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
+  PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro();qsDraw()};
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
