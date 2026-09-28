@@ -1917,10 +1917,12 @@ function cardTask(pl){
   return{t:'card',q,o,a:o.indexOf(rev?c[1]:c[2]),x:`${c[1]} — ${c[2]}`};
 }
 const $f=n=>'$'+fmt(n);
-function docIS(){let S,cp,opx,int,tax,gp,ebit;do{S=rint(12,40)*10000;cp=pick([50,55,60,65,70]);opx=rint(4,14)*5000;int=rint(1,8)*1000;tax=pick([15,20,25]);gp=S*(100-cp)/100;ebit=gp-opx}while(ebit<int+5000);
+function docIS(){let S,cp,w,sl,rn,dp,L,ir,tax,gp,opx,ebit,int;do{S=rint(12,40)*10000;cp=pick([50,55,60,65,70]);w=rint(4,20)*1000;sl=rint(2,9)*1000;rn=rint(2,8)*1000;dp=rint(2,10)*1000;L=rint(2,10)*10000;ir=pick([5,6,8,10,12]);tax=pick([15,20,25]);gp=S*(100-cp)/100;opx=w+sl+rn+dp;ebit=gp-opx;int=L*ir/100}while(ebit<int+5000);
   const cogs=S*cp/100,ebt=ebit-int,tx=ebt*tax/100,ni=ebt-tx;
-  return{title:'INCOME STATEMENT',given:`Sales ${$f(S)}. Cost of goods sold = ${cp}% of sales. Operating expenses ${$f(opx)}. Interest expense ${$f(int)}. Tax rate ${tax}%.`,
-    rows:[['Sales',S,1],['Less: Cost of goods sold',cogs],['Gross profit',gp],['Less: Operating expenses',opx,1],['Operating profit (EBIT)',ebit],['Less: Interest expense',int,1],['Earnings before taxes',ebt],['Less: Taxes',tx],['Net income',ni]],x:`COGS = ${cp}% × ${fmt(S)} = ${fmt(cogs)}; GP = ${fmt(gp)}; EBIT = ${fmt(gp)} − ${fmt(opx)} = ${fmt(ebit)}; EBT = ${fmt(ebt)}; Taxes = ${tax}% × ${fmt(ebt)} = ${fmt(tx)}; NI = ${fmt(ni)}.`}}
+  return{title:'INCOME STATEMENT',given:`During the year the company sold goods for ${$f(S)}. The goods it sold cost ${cp}% of sales. It paid salaries and wages of ${$f(w)}, spent ${$f(sl)} on advertising and sales commissions, paid office rent of ${$f(rn)} and recorded depreciation of ${$f(dp)}. It has a ${$f(L)} bank loan at ${ir}% annual interest. The tax rate is ${tax}%.`,
+    rows:[['Sales',S],['Less: Cost of goods sold',cogs],['Gross profit',gp],['Salaries and wages',w],['Selling expenses',sl],['Rent expense',rn],['Depreciation expense',dp],['Total operating expenses',opx],['Operating profit (EBIT)',ebit],['Less: Interest expense',int],['Earnings before taxes',ebt],['Less: Taxes',tx],['Net income',ni]],
+    groups:[1,2,3,4,4,4,4,5,6,7,8,9,10],
+    x:`COGS = ${cp}% × ${fmt(S)} = ${fmt(cogs)}; GP = ${fmt(gp)}; OpEx = ${fmt(w)} + ${fmt(sl)} + ${fmt(rn)} + ${fmt(dp)} = ${fmt(opx)}; EBIT = ${fmt(ebit)}; Interest = ${ir}% × ${fmt(L)} = ${fmt(int)}; EBT = ${fmt(ebt)}; Taxes = ${tax}% × ${fmt(ebt)} = ${fmt(tx)}; NI = ${fmt(ni)}.`}}
 function docRE(){const beg=rint(20,90)*1000,ni=rint(15,70)*1000,pd=rint(0,5)*1000,cd=rint(2,15)*1000,sh=pick([10000,20000,25000,40000,50000]);const end=beg+ni-pd-cd,eac=ni-pd,eps=Math.round(eac/sh*100)/100;
   return{title:'STATEMENT OF RETAINED EARNINGS',given:`Retained earnings at the beginning of the year ${$f(beg)}. Net income ${$f(ni)}. Preferred dividends ${$f(pd)}, common dividends ${$f(cd)}. Common shares outstanding: ${fmt(sh)}.`,
     rows:[['Beginning retained earnings',beg,1],['Plus: Net income',ni,1],['Less: Total dividends',pd+cd],['Ending retained earnings',end],['Earnings available for common',eac],['EPS ($, 2 decimals)',eps,0,{tol:.011,dec:2}]],x:`Dividends = ${fmt(pd)} + ${fmt(cd)} = ${fmt(pd+cd)}; Ending RE = ${fmt(beg)} + ${fmt(ni)} − ${fmt(pd+cd)} = ${fmt(end)}; EAC = ${fmt(ni)} − ${fmt(pd)} = ${fmt(eac)}; EPS = ${fmt(eac)} ÷ ${fmt(sh)} = ${eps.toFixed(2)}.`}}
@@ -1986,7 +1988,7 @@ function sortTask(){
   else if(v==='CF'){cats=['Operating','Investing','Financing'];items=shuffle(CLS_CF).slice(0,8).map(([a,b])=>[a,b.split(' ')[0]]);title='Cash flow: разложи операции по разделам'}
   else{const M={BS:'Balance sheet',IS:'Income statement',RE:'Retained earnings',CF:'Cash flows only'};cats=Object.values(M);items=shuffle(ITEMS).slice(0,8).map(i=>[i.n,M[i.s]]);title='В какой отчёт идёт каждая строка?'}
   const note=v==='IS'?'Non-operating = interest, gains, losses. Subtotal = строки-итоги (GP, EBIT, EBT, NI, EPS).':v==='ST'?'CF only = строка есть только в Statement of cash flows.':'';return{kind:'sort',title,cats,items,note,fee:cats.length>=5?8:7,pick:{}}}
-function ofillTask(){const g=pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1);
+function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
   return{kind:'ofill',doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
 function ppOrderHTML(c,btn){return`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Нажми на уже поставленную строку, чтобы вернуть её.</p>
   <ol class="pp-seq">${c.seq.map((i,k)=>`<li><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||'<li class="ph">пусто</li>'}</ol>
@@ -2029,7 +2031,7 @@ function makeTasks(n,ev){
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
   for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
-  for(let i=0;i<nDoc;i++)t.push({kind:'doc',doc:pick(docs)()});
+  for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g()})}
   return shuffle(t).map(x=>{const look=newLook();return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
