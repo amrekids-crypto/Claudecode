@@ -1,0 +1,954 @@
+<title>Finance Midterm Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF2F0; --paper:#FFFFFF; --ink:#15231E; --muted:#5A6B64; --line:#D3DDD8; --line2:#E4EBE7;
+  --accent:#1D6B52; --accent-soft:#DCEDE5; --accent-ink:#FFFFFF;
+  --ok:#1F7A45; --ok-soft:#DDF1E3; --bad:#B23A2E; --bad-soft:#F8E1DD; --warn:#9A6A08; --warn-soft:#F7ECD2;
+  --shadow:0 1px 2px rgba(20,40,30,.06);
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1614; --paper:#17211E; --ink:#E4EEE9; --muted:#95A89F; --line:#2B3A35; --line2:#22302B;
+    --accent:#4FB58E; --accent-soft:#1E3A30; --accent-ink:#0B1411;
+    --ok:#5CC98A; --ok-soft:#173526; --bad:#EE7B6E; --bad-soft:#3D1F1B; --warn:#E3B34F; --warn-soft:#3A2F14;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1614; --paper:#17211E; --ink:#E4EEE9; --muted:#95A89F; --line:#2B3A35; --line2:#22302B;
+  --accent:#4FB58E; --accent-soft:#1E3A30; --accent-ink:#0B1411;
+  --ok:#5CC98A; --ok-soft:#173526; --bad:#EE7B6E; --bad-soft:#3D1F1B; --warn:#E3B34F; --warn-soft:#3A2F14;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.topin{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.01em;display:flex;align-items:baseline;gap:8px}
+.brand small{font-weight:500;color:var(--muted);font-size:12px;font-family:var(--mono)}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav.tabs button{font:inherit;font-size:14px;font-weight:500;border:1px solid transparent;background:none;color:var(--muted);padding:6px 12px;border-radius:6px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--line)}
+nav.tabs button:hover{color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:28px;font-weight:700}
+h2{font-size:21px;font-weight:700}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:14px}
+.section{display:flex;flex-direction:column;gap:18px;padding-top:24px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.eyebrow{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.btn{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 14px;border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:4px 10px;font-size:13px;font-weight:500}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.bad{background:var(--bad-soft);color:var(--bad)} .chip.warn{background:var(--warn-soft);color:var(--warn)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+select{font:inherit;font-size:14px;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+ul.clean{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+code,.formula{font-family:var(--mono);font-size:13.5px;background:var(--line2);padding:1px 6px;border-radius:4px}
+.formula{display:block;padding:8px 10px;white-space:pre-wrap}
+
+/* home */
+.hero{display:flex;flex-direction:column;gap:10px;max-width:70ch}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.plan .panel{display:flex;flex-direction:column;gap:8px}
+.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.stat b{display:block;font-size:22px;font-family:var(--mono)}
+.meter{height:6px;background:var(--line2);border-radius:3px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--accent)}
+
+/* ledger tables */
+.ledger-wrap{overflow-x:auto}
+table.ledger{border-collapse:collapse;width:100%;min-width:460px;font-size:14.5px}
+table.ledger td{padding:5px 8px;border-bottom:1px solid var(--line2);vertical-align:middle}
+table.ledger tr.head td{font-weight:700;padding-top:14px;border-bottom:1px solid var(--line)}
+table.ledger tr.total td{font-weight:600}
+table.ledger tr.total td.lab{border-top:1px solid var(--line)}
+table.ledger tr.grand td{font-weight:700;border-bottom:3px double var(--ink)}
+table.ledger td.lab.l1{padding-left:24px} table.ledger td.lab.l2{padding-left:40px}
+table.ledger td.val{width:170px;text-align:right}
+table.ledger td.act{width:64px;text-align:right;white-space:nowrap}
+table.ledger input{width:150px;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;text-align:right;padding:5px 8px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink)}
+table.ledger input.ok{border-color:var(--ok);background:var(--ok-soft)}
+table.ledger input.bad{border-color:var(--bad);background:var(--bad-soft)}
+table.ledger input.shown{border-color:var(--warn);background:var(--warn-soft)}
+.iconbtn{font:inherit;font-size:12px;border:1px solid var(--line);background:none;color:var(--muted);border-radius:4px;padding:2px 6px;cursor:pointer}
+.iconbtn:hover{color:var(--ink);border-color:var(--accent)}
+tr.hintrow td{font-size:13px;color:var(--muted);background:var(--line2);padding:6px 10px 6px 24px}
+.probtext{max-width:78ch;display:flex;flex-direction:column;gap:10px}
+.probtext p{line-height:1.65}
+.mini-bs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 28px;font-size:14px}
+.mini-bs div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
+.mini-bs div.h{font-weight:700;border:none;padding-top:8px}
+.mini-bs div.t{font-weight:600}
+.stmt-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.stmt-tabs button{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.stmt-tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.result{font-size:14px;padding:8px 12px;border-radius:6px}
+.result.ok{background:var(--ok-soft);color:var(--ok)} .result.bad{background:var(--bad-soft);color:var(--bad)}
+.timer{font-family:var(--mono);font-size:15px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+
+/* quiz */
+.q-card{display:flex;flex-direction:column;gap:14px}
+.q-text{font-size:17px;font-weight:500;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;text-align:left;padding:10px 14px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);cursor:pointer;display:flex;gap:10px}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt .k{font-family:var(--mono);font-weight:600;color:var(--muted)}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.explain{border-left:3px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:0 6px 6px 0;font-size:14.5px}
+.progress-line{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+
+/* flashcards */
+.flash{min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;cursor:pointer;padding:28px;user-select:none}
+.flash .front{font-size:22px;font-weight:700}
+.flash .back{font-size:16px;max-width:60ch}
+.flash .tag{font-size:12px;color:var(--muted)}
+
+/* cheat sheet */
+details.sheet{background:var(--paper);border:1px solid var(--line);border-radius:8px}
+details.sheet summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.sheet summary::after{content:"+";color:var(--muted);font-family:var(--mono)}
+details.sheet[open] summary::after{content:"−"}
+details.sheet .body{padding:0 18px 18px;display:flex;flex-direction:column;gap:12px}
+table.simple{border-collapse:collapse;width:100%;font-size:14px}
+table.simple th,table.simple td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.simple th{background:var(--line2);font-weight:600}
+.tw{overflow-x:auto}
+.skel{font-family:var(--mono);font-size:13.5px;line-height:1.7;white-space:pre;overflow-x:auto;background:var(--line2);padding:12px 14px;border-radius:6px}
+@media (max-width:560px){
+  h1{font-size:23px}
+  nav.tabs{margin-left:0;width:100%}
+  table.ledger input{width:118px}
+  table.ledger td.val{width:130px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="topin">
+    <div class="brand">Finance Midterm <small>Managerial Finance · ISM</small></div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="home" aria-selected="true">Главная</button>
+      <button role="tab" data-tab="build">Отчёты</button>
+      <button role="tab" data-tab="quiz">Тесты</button>
+      <button role="tab" data-tab="cards">Карточки</button>
+      <button role="tab" data-tab="sheet">Шпаргалка</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- HOME -->
+<section class="section" id="tab-home">
+  <div class="hero">
+    <span class="eyebrow">Подготовка к мидтерму · без компьютера, только ручка и калькулятор</span>
+    <h1>Научиться собирать четыре отчёта руками и закрыть теорию</h1>
+    <p class="muted">Лектор сказал: решишь задачу уровня FMA Corporation, значит пройдёшь. Поэтому главный раздел здесь «Отчёты». Тесты и карточки закрывают теорию: сферы финансов, формы бизнеса, финансовые институты и рынки, сами отчёты.</p>
+  </div>
+  <div class="statbar" id="homeStats"></div>
+  <h2>План на 3–4 недели</h2>
+  <div class="plan">
+    <div class="panel"><span class="eyebrow">Неделя 1</span><h3>Теория и структура</h3><ul class="clean"><li>Шпаргалка: все блоки</li><li>Тесты: Intro, Forms, Institutions, Markets</li><li>Карточки каждый день по 15 минут</li><li>Задача «Classroom Template» (IS, RE, BS)</li></ul></div>
+    <div class="panel"><span class="eyebrow">Неделя 2</span><h3>FMA целиком</h3><ul class="clean"><li>FMA 2020: сначала с подсказками</li><li>Потом без подсказок, на бумаге, с таймером</li><li>Тесты: Statements и Cash Flow</li></ul></div>
+    <div class="panel"><span class="eyebrow">Неделя 3</span><h3>Новые цифры</h3><ul class="clean"><li>Генератор FMA-задач: минимум 5 штук</li><li>Цель: все три отчёта за 35–40 минут</li><li>Тест «Классификация статей» до 90%+</li></ul></div>
+    <div class="panel"><span class="eyebrow">Последние дни</span><h3>Режим экзамена</h3><ul class="clean"><li>«Экзамен-микс»: 30 вопросов подряд</li><li>Одна генерированная задача на время</li><li>Повтори только ошибки</li></ul></div>
+  </div>
+  <div class="panel stack">
+    <h3>Как тренироваться, раз экзамен на бумаге</h3>
+    <ul class="clean">
+      <li>Открой задачу в «Отчётах», нажми таймер, реши на листе. Потом перенеси цифры в поля и нажми «Проверить».</li>
+      <li>Учи порядок строк наизусть: на экзамене нет шаблона, ты рисуешь отчёт с нуля.</li>
+      <li>Всегда делай проверку: Assets = Liabilities + Equity, а конечный Cash из Cash Flow должен совпасть с Cash в балансе.</li>
+      <li>Решай в таком порядке: Income Statement → Retained Earnings → Balance Sheet → Cash Flow.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- BUILD -->
+<section class="section" id="tab-build" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="stack" style="gap:4px"><span class="eyebrow">Тренажёр отчётов</span><h1 id="probTitle">FMA Corporation</h1></div>
+    <div class="row">
+      <select id="probSelect" aria-label="Задача">
+        <option value="fma">FMA Corporation 2020 (оригинал)</option>
+        <option value="tpl">Classroom Template (попроще)</option>
+        <option value="gen">Новая FMA-задача (генератор)</option>
+      </select>
+      <button class="btn" id="regen" hidden>Другие цифры</button>
+      <span class="timer" id="timer">00:00</span>
+      <button class="btn small" id="timerBtn">Старт</button>
+    </div>
+  </div>
+  <div class="panel probtext" id="probText"></div>
+  <div class="row" style="justify-content:space-between">
+    <div class="stmt-tabs" id="stmtTabs" role="tablist"></div>
+    <div class="row">
+      <button class="btn primary" id="checkBtn">Проверить</button>
+      <button class="btn" id="hintAll">Все подсказки</button>
+      <button class="btn" id="showAll">Показать ответ</button>
+      <button class="btn" id="clearBtn">Очистить</button>
+    </div>
+  </div>
+  <div id="checkResult"></div>
+  <div class="panel ledger-wrap"><table class="ledger" id="ledger"></table></div>
+  <p class="muted" style="font-size:13.5px">Вводи числа как угодно: <span class="num">360000</span>, <span class="num">360,000</span>. В Cash Flow оттоки со знаком минус: <span class="num">-65000</span> или <span class="num">(65,000)</span>. В остальных отчётах вычитаемые строки (COGS, Taxes, Dividends) пиши положительными. Кнопка «?» показывает формулу строки, «👁» показывает ответ.</p>
+</section>
+
+<!-- QUIZ -->
+<section class="section" id="tab-quiz" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="stack" style="gap:4px"><span class="eyebrow">Тесты в формате мини-теста</span><h1>Вопросы с разбором</h1></div>
+    <div class="row">
+      <select id="quizTopic" aria-label="Тема"></select>
+      <button class="btn primary" id="quizStart">Начать</button>
+    </div>
+  </div>
+  <div class="panel q-card" id="quizBox"></div>
+</section>
+
+<!-- CARDS -->
+<section class="section" id="tab-cards" hidden>
+  <div class="row" style="justify-content:space-between">
+    <div class="stack" style="gap:4px"><span class="eyebrow">Карточки памяти</span><h1>Термины на английском</h1></div>
+    <div class="row">
+      <select id="cardTopic" aria-label="Тема карточек"></select>
+      <label class="row" style="gap:6px;font-size:14px"><input type="checkbox" id="cardOnlyUnknown"> только «не знаю»</label>
+    </div>
+  </div>
+  <div class="panel flash" id="flash" tabindex="0" role="button" aria-label="Перевернуть карточку"></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn" id="cardPrev">← Назад</button>
+    <button class="btn" id="cardNo">Не знаю</button>
+    <button class="btn primary" id="cardYes">Знаю</button>
+    <button class="btn" id="cardNext">Дальше →</button>
+  </div>
+  <p class="muted" style="text-align:center;font-size:13.5px" id="cardCount"></p>
+</section>
+
+<!-- SHEET -->
+<section class="section" id="tab-sheet" hidden>
+  <div class="stack" style="gap:4px"><span class="eyebrow">Шпаргалка по лекциям и Gitman</span><h1>Всё, что нужно помнить</h1></div>
+  <div class="stack" id="sheetBox"></div>
+</section>
+</main>
+
+<script>
+/* ---------- utils ---------- */
+const $=s=>document.querySelector(s);
+const fmt=(n,d=0)=>{if(n===null||n===undefined||isNaN(n))return'';const neg=n<0;const s=Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});return (neg?'-':'')+s};
+const money=n=>(n<0?'-$':'$')+fmt(Math.abs(n));
+const pct=x=>(Math.round(x*1000)/10)+'%';
+const store={get(k,d){try{const v=localStorage.getItem('fmt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('fmt_'+k,JSON.stringify(v))}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function parseNum(s){if(s==null)return null;s=String(s).trim();if(!s)return null;let neg=false;if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}s=s.replace(/[$\s,]/g,'').replace(/−/g,'-');if(s.startsWith('-')){neg=!neg;s=s.slice(1)}const n=parseFloat(s);if(isNaN(n))return null;return neg?-n:n}
+
+/* ---------- tabs ---------- */
+const TABS=['home','build','quiz','cards','sheet'];
+function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);if(t==='home')renderHome();window.scrollTo(0,0)}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
+
+/* =====================================================
+   STATEMENT PROBLEMS
+   ===================================================== */
+function solveFMA(p){
+  const b=p.b,e=p.e,v={};
+  v.sales=e.sales; v.cogs=e.sales*e.cogsPct; v.gp=v.sales-v.cogs; v.sga=e.sga; v.dep=e.dep;
+  v.opex=v.sga+v.dep; v.ebit=v.gp-v.opex;
+  v.intNP=b.np*e.npRate; v.intB=b.bonds*e.bondRate; v.int=v.intNP+v.intB;
+  v.ebt=v.ebit-v.int; v.tax=v.ebt*e.tax; v.ni=v.ebt-v.tax; v.eps=v.ni/e.sharesOut;
+  v.reB=b.re; v.div=e.div; v.reE=b.re+v.ni-e.div;
+  v.arE=b.ar*(1+e.arChg); v.invE=b.inv*(1+e.invChg); v.apE=b.ap*(1+e.apChg);
+  v.msE=0; v.gpeE=b.gpe+e.capex; v.adE=b.ad+e.dep; v.npE=b.np-e.npRepay; v.bondsE=b.bonds;
+  v.csE=b.cs+e.newShares*e.par; v.picE=b.pic+e.newShares*(e.price-e.par);
+  v.cfNI=v.ni; v.cfDep=e.dep; v.cfAR=b.ar-v.arE; v.cfInv=b.inv-v.invE; v.cfAP=v.apE-b.ap;
+  v.cfo=v.cfNI+v.cfDep+v.cfAR+v.cfInv+v.cfAP;
+  v.cfCap=-e.capex; v.cfMS=b.ms; v.cfi=v.cfCap+v.cfMS;
+  v.cfNP=-e.npRepay; v.cfStock=e.newShares*e.price; v.cfDiv=-e.div; v.cff=v.cfNP+v.cfStock+v.cfDiv;
+  v.net=v.cfo+v.cfi+v.cff; v.cashB=b.cash; v.cashE=b.cash+v.net;
+  v.cashBS=v.cashE; v.tca=v.cashE+v.msE+v.arE+v.invE; v.nfa=v.gpeE-v.adE; v.ta=v.tca+v.nfa;
+  v.tcl=v.apE+v.npE; v.tl=v.tcl+v.bondsE; v.te=v.csE+v.picE+v.reE; v.tle=v.tl+v.te;
+  return v;
+}
+const FMA_PARAMS={b:{cash:15000,ms:20000,ar:50000,inv:80000,gpe:250000,ad:75000,ap:60000,np:50000,bonds:75000,cs:60000,pic:40000,re:55000},
+  e:{sales:360000,cogsPct:.65,sga:36000,dep:50000,npRate:.10,npRepay:10000,bondRate:.12,arChg:-.05,invChg:.10,apChg:.12,capex:65000,div:10805,newShares:2000,par:1,price:10,tax:.15,sharesOut:62000,authorized:100000},
+  y0:2018,y1:2019};
+
+function fmaRows(p){
+  const b=p.b,e=p.e,Y=p.y1;
+  const R=(id,label,hint,o={})=>Object.assign({id,label,hint},o);
+  return [
+   {name:'Income Statement',sub:`for the year ended December 31, ${Y}`,rows:[
+    R('sales','Sales','Дано в условии'),
+    R('cogs','Less: Cost of goods sold',`COGS = ${pct(e.cogsPct)} × Sales`,{l:1}),
+    R('gp','Gross profit','Sales − COGS',{t:'total'}),
+    {head:'Less: Operating expenses'},
+    R('sga','Selling & administrative expense','Дано в условии',{l:1}),
+    R('dep','Depreciation expense','Дано в условии (non-cash, но это operating expense)',{l:1}),
+    R('opex','Total operating expenses','S&A + Depreciation',{t:'total',l:1}),
+    R('ebit','Operating profit (EBIT)','Gross profit − Total operating expenses',{t:'total'}),
+    {head:'Less: Interest expense'},
+    R('intNP','Interest on notes payable (bank loan)',`${pct(e.npRate)} × начальный остаток Notes payable (${money(b.np)}). Процент платится за год до погашения части долга`,{l:1}),
+    R('intB','Interest on bonds',`${pct(e.bondRate)} × Long-term bonds (${money(b.bonds)})`,{l:1}),
+    R('int','Total interest expense','Сумма двух процентов',{t:'total',l:1}),
+    R('ebt','Earnings before taxes (EBT)','EBIT − Interest',{t:'total'}),
+    R('tax','Less: Taxes',`${pct(e.tax)} × EBT`,{l:1}),
+    R('ni','Net income (Net profits after taxes)','EBT − Taxes',{t:'grand'}),
+    R('eps','Earnings per share (EPS)',`Net income ÷ shares outstanding (${fmt(e.sharesOut)}). Привилегированных акций нет. Ответ с 2–3 знаками`,{dec:3,tol:.006}),
+   ]},
+   {name:'Retained Earnings',sub:`Statement of Retained Earnings for ${Y}`,rows:[
+    R('reB',`Retained earnings, Dec 31, ${p.y0}`,'Из начального баланса'),
+    R('ni','Plus: Net income','Из Income Statement',{l:1}),
+    R('div','Less: Cash dividends','Дано в условии',{l:1}),
+    R('reE',`Retained earnings, Dec 31, ${Y}`,'Begin RE + NI − Dividends',{t:'grand'}),
+   ]},
+   {name:'Balance Sheet',sub:`as of December 31, ${Y}`,rows:[
+    {head:'Current assets'},
+    R('cashBS','Cash','Дано (или = Ending cash из Cash Flow). Это главная проверка',{l:1}),
+    R('msE','Marketable securities','Все ценные бумаги превратили в cash → 0',{l:1}),
+    R('arE','Accounts receivable',`${money(b.ar)} × (1 ${e.arChg<0?'−':'+'} ${pct(Math.abs(e.arChg))})`,{l:1}),
+    R('invE','Inventory',`${money(b.inv)} × (1 ${e.invChg<0?'−':'+'} ${pct(Math.abs(e.invChg))})`,{l:1}),
+    R('tca','Total current assets','Cash + MS + AR + Inventory',{t:'total'}),
+    {head:'Fixed assets'},
+    R('gpeE','Gross plant & equipment',`Начальное ${money(b.gpe)} + новая машина ${money(e.capex)}`,{l:1}),
+    R('adE','Less: Accumulated depreciation',`Начальная ${money(b.ad)} + амортизация за год ${money(e.dep)}`,{l:1}),
+    R('nfa','Net plant & equipment','Gross − Accumulated depreciation',{t:'total',l:1}),
+    R('ta','Total assets','Current assets + Net fixed assets',{t:'grand'}),
+    {head:'Current liabilities'},
+    R('apE','Accounts payable',`${money(b.ap)} × (1 ${e.apChg<0?'−':'+'} ${pct(Math.abs(e.apChg))})`,{l:1}),
+    R('npE','Notes payable',`${money(b.np)} − погашено ${money(e.npRepay)}`,{l:1}),
+    R('tcl','Total current liabilities','AP + Notes payable',{t:'total'}),
+    R('bondsE','Long-term bonds','Не менялись'),
+    R('tl','Total liabilities','Current liabilities + Long-term debt',{t:'total'}),
+    {head:"Stockholders' equity"},
+    R('csE','Common stock (at par)',`Начальное ${money(b.cs)} + ${fmt(e.newShares)} новых акций × par $${e.par}`,{l:1}),
+    R('picE','Paid-in capital in excess of par',`Начальное ${money(b.pic)} + ${fmt(e.newShares)} × ($${e.price} − $${e.par})`,{l:1}),
+    R('reE','Retained earnings','Из Statement of Retained Earnings',{l:1}),
+    R('te',"Total stockholders' equity",'CS + PIC + RE',{t:'total'}),
+    R('tle',"Total liabilities & stockholders' equity",'Должно равняться Total assets',{t:'grand'}),
+   ]},
+   {name:'Cash Flow',sub:`Statement of Cash Flows for ${Y} (indirect method)`,rows:[
+    {head:'Cash flow from operating activities'},
+    R('cfNI','Net income','Из Income Statement',{l:1,signed:1}),
+    R('cfDep','Depreciation','Прибавляем обратно (non-cash expense)',{l:1,signed:1}),
+    R('cfAR','Change in accounts receivable','Уменьшение актива = источник (+), рост = использование (−)',{l:1,signed:1}),
+    R('cfInv','Change in inventory','Рост запасов = отток (−)',{l:1,signed:1}),
+    R('cfAP','Change in accounts payable','Рост обязательства = источник (+)',{l:1,signed:1}),
+    R('cfo','Cash provided by operating activities','Сумма строк выше',{t:'total',signed:1}),
+    {head:'Cash flow from investing activities'},
+    R('cfCap','Purchase of new machine (fixed assets)','Покупка основных средств = отток (−)',{l:1,signed:1}),
+    R('cfMS','Sale of marketable securities','Продали все MS = приток (+)',{l:1,signed:1}),
+    R('cfi','Cash provided by (used in) investing activities','Сумма',{t:'total',signed:1}),
+    {head:'Cash flow from financing activities'},
+    R('cfNP','Repayment of notes payable','Погашение основного долга = отток (−). Проценты уже внутри Net income',{l:1,signed:1}),
+    R('cfStock','Proceeds from sale of common stock',`${fmt(e.newShares)} акций × $${e.price}`,{l:1,signed:1}),
+    R('cfDiv','Cash dividends paid','Отток (−)',{l:1,signed:1}),
+    R('cff','Cash provided by (used in) financing activities','Сумма',{t:'total',signed:1}),
+    R('net','Net increase (decrease) in cash','CFO + CFI + CFF',{t:'total',signed:1}),
+    R('cashB',`Cash, beginning of ${Y}`,'Из начального баланса',{signed:1}),
+    R('cashE',`Cash, end of ${Y}`,'Beginning cash + Net change. Должно совпасть с Cash в балансе',{t:'grand',signed:1}),
+   ]},
+  ];
+}
+
+function fmaText(p,original){
+  const b=p.b,e=p.e;
+  const tca=b.cash+b.ms+b.ar+b.inv, nfa=b.gpe-b.ad, ta=tca+nfa, tcl=b.ap+b.np;
+  const L=(l,v,c='')=>`<div class="${c}"><span>${l}</span><span class="num">${money(v)}</span></div>`;
+  const table=`<div class="mini-bs">
+   <div class="h"><span>Current assets</span><span></span></div>
+   ${L('Cash',b.cash)}${L('Marketable securities',b.ms)}${L('Accounts receivable',b.ar)}${L('Inventory',b.inv)}${L('Total current assets',tca,'t')}
+   <div class="h"><span>Fixed assets</span><span></span></div>
+   ${L('Gross plant & equipment',b.gpe)}${L('Less: accumulated depreciation',b.ad)}${L('Net plant & equipment',nfa,'t')}${L('Total assets',ta,'t')}
+   <div class="h"><span>Current liabilities</span><span></span></div>
+   ${L('Accounts payable',b.ap)}${L('Notes payable',b.np)}${L('Total current liabilities',tcl,'t')}${L('Long-term bonds',b.bonds)}
+   <div class="h"><span>Stockholders’ equity</span><span></span></div>
+   ${L('Common stock',b.cs)}${L('Paid-in capital',b.pic)}${L('Retained earnings',b.re)}${L('Total liabilities & equity',ta,'t')}
+  </div>`;
+  const v=solveFMA(p);
+  const chg=(x,w1,w2)=>x<0?`${w1} by ${pct(-x)}`:`${w2} by ${pct(x)}`;
+  return `<p class="eyebrow">${original?'Оригинальный текст задачи (версия 2020)':'Сгенерированная задача в формате FMA'}</p>
+  <p>The ${p.name||'FMA'} Corporation ended ${p.y0} operations with the following balance sheet (December 31, ${p.y0}):</p>
+  ${table}
+  <p>${p.name||'FMA'}’s sales in ${p.y1} were ${money(e.sales)} with cost of goods sold averaging ${pct(e.cogsPct)} of sales. Selling and administrative expenses were ${money(e.sga)} and depreciation expense for the year was ${money(e.dep)}. On December 31, ${p.y1}, the firm paid interest (${pct(e.npRate)} interest rate per year) on its bank loan (recorded as Notes payable) for the year and also renewed the loan after paying ${money(e.npRepay)} on the principal balance. Interest at a ${pct(e.bondRate)} rate was paid to the firm’s bondholders as well. During ${p.y1}, accounts receivable ${chg(e.arChg,'declined','increased')}, but inventory ${chg(e.invChg,'declined','increased')}. ${e.apChg>=0?'A rise':'A decline'} of ${pct(Math.abs(e.apChg))} in accounts payable ${e.apChg>=0?'provided financing for much of the added inventory':'used some cash'}. The firm purchased a new machine for ${money(e.capex)} in October and paid a total cash dividend of ${money(e.div)} at the end of the year. The management elected to raise ${money(e.newShares*e.price)} by issuing ${fmt(e.newShares)} units of $${e.par} par value stock at the price of $${e.price} per share. All of the marketable securities were converted to cash and used for business operations. At the end of the year, the financial manager has verified that the company has ${money(v.cashE)} cash balance spread over two bank accounts. The firm is in a ${pct(e.tax)} tax bracket.</p>
+  <p>In both ${p.y0} and ${p.y1}, the company had no preferred stock, but in ${p.y1}, the company had ${fmt(e.authorized)} common shares authorized and ${fmt(e.sharesOut)} shares outstanding (including ${fmt(e.newShares)} newly issued shares in ${p.y1}).</p>
+  <p><b>Prepare:</b> (1) an income statement for ${p.y1}; (2) a statement of retained earnings; (3) a balance sheet as of December 31, ${p.y1}; (4) a statement of cash flows for ${p.y1}.</p>`;
+}
+
+/* random FMA generator */
+const rnd=(a,b,s=1)=>a+s*Math.floor(Math.random()*((b-a)/s+1));
+const NAMES=['Baltic Tools','Neris Foods','Amber Tech','Vilnius Print','Kaunas Motors','Nordic Paper','Trakai Furniture','Delta Textiles','Riga Plastics','Orion Logistics'];
+function genFMA(){
+  for(let tries=0;tries<500;tries++){
+    const shares=rnd(40,90)*1000, pic=rnd(20,60,5)*1000;
+    const b={cash:rnd(8,30)*1000,ms:rnd(10,30,5)*1000,ar:rnd(30,80,5)*1000,inv:rnd(50,120,5)*1000,gpe:rnd(200,420,10)*1000,ad:rnd(40,130,5)*1000,ap:rnd(30,90,5)*1000,np:rnd(30,80,10)*1000,bonds:rnd(50,150,25)*1000,cs:shares,pic};
+    const ta=b.cash+b.ms+b.ar+b.inv+b.gpe-b.ad; b.re=ta-b.ap-b.np-b.bonds-b.cs-b.pic;
+    if(b.re<15000||b.re>150000)continue;
+    const newShares=rnd(1,6)*1000, price=rnd(5,15);
+    const e={sales:rnd(300,650,10)*1000,cogsPct:rnd(55,72)/100,sga:rnd(20,60,2)*1000,dep:rnd(25,60,5)*1000,npRate:rnd(6,12)/100,npRepay:rnd(1,4)*5000,bondRate:rnd(8,13)/100,
+      arChg:rnd(-10,10,5)/100,invChg:rnd(5,20,5)/100,apChg:rnd(5,15)/100,capex:rnd(30,90,5)*1000,div:0,newShares,par:1,price,tax:rnd(15,25,5)/100,sharesOut:shares+newShares,authorized:Math.ceil((shares+newShares)*1.5/10000)*10000};
+    if(e.arChg===0)e.arChg=-.05;
+    const p={b,e,y0:2024,y1:2025,name:NAMES[rnd(0,NAMES.length-1)]};
+    const v0=solveFMA(p); if(v0.ebt<8000)continue;
+    e.div=Math.round(v0.ni*rnd(25,55)/100);
+    const v=solveFMA(p); if(v.cashE<5000)continue;
+    return p;
+  }
+  return JSON.parse(JSON.stringify(FMA_PARAMS));
+}
+
+/* Classroom template problem */
+const TPL={
+  v:{rev:110250,cogs:74300,gp:35950,opex:18250,ebit:17700,int:355,ebt:17345,tax:3469,ni:13876,pd:3000,eac:10876,eps:108.76,
+     reB:18871,ni2:13876,div:7000,reE:25747,
+     cash:2040,ms:1241,ar:1910,inv:3560,tca:8751,land:11400,car:23250,carAD:2325,carN:20925,bld:200650,bldAD:47000,bldN:153650,tnca:185975,
+     invB:10200,re8:87420,tinv:97620,pat:300,copy:2700,soft:1200,tint:4200,ta:296546,
+     ap:400,tp:110,wp:1204,rp:105,cpltd:480,tcl:2299,np:3500,bp:105000,tncl:108500,tl:110799,
+     ps:50000,psx:10000,cs:70000,csx:30000,tsc:160000,reE2:25747,te:185747,tle:296546},
+  text:`<p class="eyebrow">Задача по шаблону лекции (Financial Statements Classroom Template 2025)</p>
+  <p><b>Income data for the year:</b> Revenue $110,250; Cost of goods sold $74,300; Operating expenses (S&amp;A, depreciation, other) $18,250 in total; Interest expense $355; Tax rate 20%. Preferred stock dividends $3,000, common stock dividends $4,000. There are 100 common shares outstanding. Beginning retained earnings $18,871.</p>
+  <p><b>Balance sheet data at year end:</b> Cash $2,040; Marketable securities $1,241; Accounts receivable: two customers owe $1,103 and $807; Inventory $3,560. Land $11,400. A car bought for $23,250, useful life 10 years, no salvage value, used for 1 year (straight-line). Office building cost $200,650, accumulated depreciation $47,000. Investments into other businesses $10,200; Real estate held as investment $87,420. Patent $300, Copyright $2,700, Software $1,200.</p>
+  <p>Accounts payable $400; Taxes payable $110; Wages payable $1,204; Rent payable $105; Current portion of long-term debt $480. Long-term notes payable $3,500; Bonds payable $105,000. Preferred stock at par $50,000 and capital in excess of par $10,000; Common stock at par $70,000 and capital in excess of par $30,000.</p>
+  <p><b>Prepare:</b> Income Statement (US format, with EPS), Statement of Retained Earnings, Balance Sheet.</p>`,
+  rows(){const R=(id,label,hint,o={})=>Object.assign({id,label,hint},o);return [
+   {name:'Income Statement',sub:'US format',rows:[
+    R('rev','Revenue','Дано'),R('cogs','Less: Cost of goods sold','Дано',{l:1}),R('gp','Gross profit','Revenue − COGS',{t:'total'}),
+    R('opex','Less: Operating expenses','Дано одной суммой (S&A + Depreciation + Other)',{l:1}),R('ebit','Operating profit (EBIT)','GP − Operating expenses',{t:'total'}),
+    R('int','Less: Interest expense','Дано',{l:1}),R('ebt','Earnings before taxes','EBIT − Interest',{t:'total'}),
+    R('tax','Less: Taxes (20%)','20% × EBT',{l:1}),R('ni','Net income','EBT − Taxes',{t:'total'}),
+    R('pd','Less: Preferred stock dividends','Только в US-формате',{l:1}),R('eac','Earnings available for common stockholders','NI − Preferred dividends',{t:'grand'}),
+    R('eps','Earnings per share','(NI − Preferred dividends) ÷ common shares (100)',{dec:2,tol:.006})]},
+   {name:'Retained Earnings',sub:'Statement of Retained Earnings',rows:[
+    R('reB','Beginning retained earnings','Дано (= конечная RE прошлого периода)'),R('ni2','Plus: Net income','Из IS',{l:1}),
+    R('div','Less: Dividends (preferred 3,000 + common 4,000)','Все дивиденды',{l:1}),R('reE','Ending retained earnings','Begin + NI − Dividends',{t:'grand'})]},
+   {name:'Balance Sheet',sub:'Assets = Liabilities + Equity',rows:[
+    {head:'1. Current assets'},R('cash','Cash','',{l:1}),R('ms','Marketable securities','',{l:1}),R('ar','Accounts receivable','1,103 + 807',{l:1}),R('inv','Inventory','',{l:1}),R('tca','Total current assets','Сумма',{t:'total'}),
+    {head:'2. Non-current (fixed) assets'},R('land','Land','Земля не амортизируется',{l:1}),R('car','Car (cost)','',{l:1}),R('carAD','Less: accumulated depreciation','23,250 ÷ 10 лет × 1 год',{l:2}),R('carN','Car, net','Cost − Acc. dep.',{l:1}),
+    R('bld','Office building (cost)','',{l:1}),R('bldAD','Less: accumulated depreciation','',{l:2}),R('bldN','Office building, net','',{l:1}),R('tnca','Total non-current assets','Land + Car net + Building net',{t:'total'}),
+    {head:'3. Investments'},R('invB','Investments into other businesses','',{l:1}),R('re8','Real estate','',{l:1}),R('tinv','Total investments','',{t:'total'}),
+    {head:'4. Intangible assets'},R('pat','Patent','',{l:1}),R('copy','Copyright','',{l:1}),R('soft','Software','',{l:1}),R('tint','Total intangible assets','',{t:'total'}),
+    R('ta','Total assets','1 + 2 + 3 + 4',{t:'grand'}),
+    {head:'Current liabilities'},R('ap','Accounts payable','',{l:1}),R('tp','Taxes payable','',{l:1}),R('wp','Wages payable','',{l:1}),R('rp','Rent payable','',{l:1}),R('cpltd','Current portion of long-term debt','Часть долга к оплате в течение года',{l:1}),R('tcl','Total current liabilities','',{t:'total'}),
+    {head:'Non-current liabilities'},R('np','Notes payable (long-term)','',{l:1}),R('bp','Bonds payable','',{l:1}),R('tncl','Total non-current liabilities','',{t:'total'}),R('tl','Total liabilities','',{t:'total'}),
+    {head:"Stockholders' equity"},R('ps','Preferred stock, par value','',{l:1}),R('psx','Preferred stock, capital in excess of par','',{l:1}),R('cs','Common stock, par value','',{l:1}),R('csx','Common stock, capital in excess of par','',{l:1}),R('tsc',"Total stockholders' capital",'',{t:'total'}),
+    R('reE2','Retained earnings','Из Statement of RE',{l:1}),R('te',"Total stockholders' equity",'Capital + RE',{t:'total'}),R('tle',"Total liabilities & stockholders' equity",'Должно = Total assets',{t:'grand'})]}
+  ]}
+};
+
+/* builder state */
+let B={key:'fma',params:null,vals:null,stmts:[],cur:0,inputs:{},shown:{},hints:{}};
+function loadProblem(key,fresh){
+  B.key=key;B.inputs={};B.shown={};B.hints={};B.cur=0;
+  $('#regen').hidden=key!=='gen';
+  if(key==='tpl'){B.vals=TPL.v;B.stmts=TPL.rows();$('#probText').innerHTML=TPL.text;$('#probTitle').textContent='Classroom Template'}
+  else{
+    let p;
+    if(key==='fma')p=JSON.parse(JSON.stringify(FMA_PARAMS));
+    else{p=(!fresh&&store.get('genP',null))||genFMA();store.set('genP',p)}
+    B.params=p;B.vals=solveFMA(p);B.stmts=fmaRows(p);
+    $('#probText').innerHTML=fmaText(p,key==='fma');
+    $('#probTitle').textContent=key==='fma'?'FMA Corporation 2020':(p.name+' Corporation');
+  }
+  const saved=store.get('inp_'+key+(key==='gen'?'_'+JSON.stringify(B.params.e.sales)+B.params.b.cash:''),null);
+  if(saved&&!fresh)B.inputs=saved;
+  renderStmtTabs();renderLedger();$('#checkResult').innerHTML='';
+}
+function inpKey(){return 'inp_'+B.key+(B.key==='gen'?'_'+JSON.stringify(B.params.e.sales)+B.params.b.cash:'')}
+function renderStmtTabs(){
+  $('#stmtTabs').innerHTML=B.stmts.map((s,i)=>`<button role="tab" aria-selected="${i===B.cur}" data-i="${i}">${i+1}. ${s.name}</button>`).join('');
+}
+$('#stmtTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;B.cur=+b.dataset.i;renderStmtTabs();renderLedger();$('#checkResult').innerHTML=''});
+function rk(id){return B.cur+':'+id}
+function renderLedger(){
+  const s=B.stmts[B.cur];
+  let h=`<tr class="head"><td colspan="3" style="font-size:16px">${s.name} <span class="muted" style="font-weight:400;font-size:13.5px">· ${s.sub}</span></td></tr>`;
+  s.rows.forEach(r=>{
+    if(r.head){h+=`<tr class="head"><td colspan="3">${r.head}</td></tr>`;return}
+    const k=rk(r.id),val=B.inputs[k]??'';
+    h+=`<tr class="${r.t||''}"><td class="lab l${r.l||0}">${r.label}</td><td class="val"><input id="in_${B.cur}_${r.id}" data-id="${r.id}" inputmode="decimal" autocomplete="off" value="${esc(val)}" class="${B.shown[k]?'shown':''}" aria-label="${esc(r.label)}"></td><td class="act"><button class="iconbtn" data-hint="${r.id}" title="Подсказка">?</button> <button class="iconbtn" data-show="${r.id}" title="Показать ответ">👁</button></td></tr>`;
+    if(B.hints[k])h+=hintRowNoAns(r);
+  });
+  $('#ledger').innerHTML=h;
+}
+function hintRowNoAns(r){return `<tr class="hintrow"><td colspan="3">${r.hint||'Перенеси из условия'}</td></tr>`}
+$('#ledger').addEventListener('input',e=>{const t=e.target;if(t.tagName!=='INPUT')return;B.inputs[rk(t.dataset.id)]=t.value;t.classList.remove('ok','bad');store.set(inpKey(),B.inputs)});
+$('#ledger').addEventListener('click',e=>{
+  const hb=e.target.closest('[data-hint]'),sb=e.target.closest('[data-show]');
+  if(hb){const r=B.stmts[B.cur].rows.find(x=>x.id===hb.dataset.hint);const tr=hb.closest('tr');const k=rk(r.id);
+    if(B.hints[k]){B.hints[k]=0;if(tr.nextElementSibling&&tr.nextElementSibling.classList.contains('hintrow'))tr.nextElementSibling.remove()}
+    else{B.hints[k]=1;tr.insertAdjacentHTML('afterend',hintRowNoAns(r))}}
+  if(sb){const r=B.stmts[B.cur].rows.find(x=>x.id===sb.dataset.show);const k=rk(r.id);B.shown[k]=1;B.inputs[k]=fmt(B.vals[r.id],r.dec?Math.min(r.dec,3):0);store.set(inpKey(),B.inputs);renderLedger()}
+});
+function checkCur(){
+  const s=B.stmts[B.cur];let ok=0,tot=0,empty=0;
+  s.rows.forEach(r=>{if(r.head)return;tot++;const el=document.getElementById(`in_${B.cur}_${r.id}`);const n=parseNum(el.value);el.classList.remove('ok','bad');
+    if(n===null){empty++;return}
+    const ans=B.vals[r.id],tol=r.tol??1;
+    const good=r.signed?Math.abs(n-ans)<=tol:Math.abs(Math.abs(n)-Math.abs(ans))<=tol;
+    el.classList.add(good?'ok':'bad');if(good)ok++});
+  const all=ok===tot;
+  $('#checkResult').innerHTML=`<div class="result ${all?'ok':'bad'}">${all?'Всё верно. ':''}Правильно ${ok} из ${tot}${empty?`, пустых: ${empty}`:''}.${all&&B.cur<B.stmts.length-1?' Переходи к следующему отчёту.':''}</div>`;
+  const prog=store.get('buildProg',{});prog[B.key+':'+B.cur]=Math.max(prog[B.key+':'+B.cur]||0,Math.round(ok/tot*100));store.set('buildProg',prog);
+}
+$('#checkBtn').onclick=checkCur;
+$('#hintAll').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(!r.head)B.hints[rk(r.id)]=1});renderLedger()};
+$('#showAll').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(r.head)return;const k=rk(r.id);B.shown[k]=1;B.inputs[k]=fmt(B.vals[r.id],r.dec?Math.min(r.dec,3):0)});store.set(inpKey(),B.inputs);renderLedger()};
+$('#clearBtn').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(!r.head){delete B.inputs[rk(r.id)];delete B.shown[rk(r.id)];delete B.hints[rk(r.id)]}});store.set(inpKey(),B.inputs);renderLedger();$('#checkResult').innerHTML=''};
+$('#probSelect').onchange=e=>{store.set('prob',e.target.value);loadProblem(e.target.value)};
+$('#regen').onclick=()=>{store.set('genP',null);loadProblem('gen',true)};
+let tStart=null,tInt=null;
+$('#timerBtn').onclick=()=>{if(tInt){clearInterval(tInt);tInt=null;$('#timerBtn').textContent='Старт'}else{tStart=Date.now();$('#timer').textContent='00:00';tInt=setInterval(()=>{const s=Math.floor((Date.now()-tStart)/1000);$('#timer').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000);$('#timerBtn').textContent='Стоп'}};
+
+/* =====================================================
+   QUESTION BANK
+   q: question, o: options, a: index of correct, x: explanation (RU), t: topic
+   ===================================================== */
+const TOPICS={mini:'Мини-тест из класса',intro:'Finance и финансовый менеджер',forms:'Формы бизнеса и корпорация',inst:'Финансовые институты',mkt:'Финансовые рынки',stmt:'Income Statement, BS, RE',cf:'Cash Flow Statement',calc:'Задачи на счёт',cls:'Классификация статей'};
+const TF=['True','False'];
+const Q=[
+// ---- mini test (exact) ----
+{t:'mini',q:'Finance can be defined as',o:['the system of debits and credits.','the science of the production, distribution, and consumption of wealth.','the art and science of managing money.','the art of merchandising products and services.'],a:2,x:'Определение из Gitman: finance = the art and science of managing money. A это бухгалтерия, B это экономика, D маркетинг.'},
+{t:'mini',q:'Which of the following legal forms of organization is most expensive to organize?',o:['Sole proprietorships.','Partnerships.','Corporations.','Limited partnership.'],a:2,x:'Корпорацию дороже всего создать: регистрация, устав, юристы, отчётность. Sole proprietorship самая дешёвая.'},
+{t:'mini',q:'Under which of the following legal forms of organization, is ownership readily transferable?',o:['Sole proprietorships.','Partnerships.','Limited partnership.','Corporation.'],a:3,x:'В корпорации собственность — это акции, их легко продать. В партнёрстве передать долю трудно.'},
+{t:'mini',q:'The true owner(s) of the corporation is (are) the',o:['board of directors','chief executive officer','stockholders','creditors'],a:2,x:'Настоящие владельцы корпорации — акционеры (stockholders). Совет директоров они выбирают, CEO нанимает совет.'},
+{t:'mini',q:'The ________ has/have the ultimate responsibility in guiding corporate affairs and carrying out policies.',o:['board of directors','chief executive officer','stockholders','creditors'],a:0,x:'По Gitman, board of directors has the ultimate authority to guide corporate affairs and make general policy. CEO отвечает за ежедневное управление и выполнение политики совета. Если в вопросе ключевые слова «ultimate responsibility/authority» — это board.'},
+{t:'mini',q:'A major weakness of a partnership is',o:['limited liability.','difficulty liquidating or transferring ownership.','access to capital markets.','low organizational costs.'],a:1,x:'Слабость партнёрства: неограниченная ответственность, трудно ликвидировать или передать долю, партнёрство распадается со смертью партнёра. A и C — сильные стороны корпорации, D — сильная сторона партнёрства.'},
+{t:'mini',q:'The key role of the financial manager is',o:['decision making.','the presentation of financial statements.','the preparation of data for future evaluation.','the collection of financial data.'],a:0,x:'Бухгалтер собирает и представляет данные, финансовый менеджер принимает решения (decision making).'},
+{t:'mini',q:'The ________ is created by a financial relationship between suppliers and demanders of short-term funds.',o:['stock market','capital market','financial market','money market'],a:3,x:'Short-term funds (до 1 года) = money market. Long-term = capital market.'},
+{t:'mini',q:'The over-the-counter (OTC) market is',o:['the Vilnius Stock Exchange.','an organized stock exchange.','a place where securities are bought and sold.','an intangible market for unlisted securities.'],a:3,x:'OTC — неосязаемый рынок (сеть дилеров, компьютеры) для ценных бумаг, которые не котируются на бирже. Биржа (Nasdaq Vilnius) — organized exchange, это другое.'},
+{t:'mini',q:'The major securities traded in the capital markets are',o:['commercial paper and Treasury bills.','Treasury bills and certificates of deposit.','stocks and bonds.','bonds and commercial paper.'],a:2,x:'Capital market = долгосрочные бумаги: акции и облигации. Commercial paper, T-bills, CDs — money market.'},
+{t:'mini',q:'Managerial finance',o:['involves tasks such as budgeting, financial forecasting, cash management, and funds procurement.','involves the design and delivery of advice and financial products.','recognizes funds on an accrual basis.','devotes the majority of its attention to the collection and presentation of financial data.'],a:0,x:'Managerial finance = обязанности финансового менеджера в фирме: бюджеты, прогнозы, управление деньгами, привлечение средств. B — это financial services, C и D — бухгалтерия.'},
+{t:'mini',q:'The area of finance concerned with the design and delivery of advice and financial products to individuals, businesses, and governments is',o:['Managerial Finance.','Accounting.','Financial Services.','none of the above.'],a:2,x:'Financial services: банки, страхование, инвестиционные консультации, недвижимость. Managerial finance — работа финансового менеджера внутри компании.'},
+{t:'mini',q:'True or False: Primary and secondary markets are markets for short-term and long-term securities, respectively.',o:TF,a:1,x:'False. Short-term и long-term — это money и capital markets. Primary = новые выпуски, secondary = перепродажа уже выпущенных бумаг.'},
+{t:'mini',q:'True or False: Financial markets are intermediaries that channel the savings of individuals, businesses and government into loans or investments.',o:TF,a:1,x:'False. Так определяется financial INSTITUTION (посредник). Financial market — это место (forum), где поставщики и потребители капитала совершают сделки напрямую.'},
+{t:'mini',q:'True or False: Money markets involve the trading of securities with maturities of one year or less while capital markets involve the buying and selling of securities with maturities of more than one year.',o:TF,a:0,x:'True. Это точное определение.'},
+{t:'mini',q:'True or False: A financial institution is an intermediary that channels the savings of individuals, businesses, and governments into loans or investments.',o:TF,a:0,x:'True. Определение financial institution из Gitman.'},
+{t:'mini',q:'True or False: A primary market is a financial market in which pre-owned securities are traded.',o:TF,a:1,x:'False. Pre-owned (уже выпущенные) бумаги торгуются на secondary market. Primary — первый выпуск (например, IPO).'},
+
+// ---- intro ----
+{t:'intro',q:'Which discipline provides the financial manager with financial data such as income statements, balance sheets, and statements of cash flows?',o:['Economics','Accounting','Psychology','Statistics'],a:1,x:'Слайд «Input of other disciplines»: Accounting provides financial data in various forms.'},
+{t:'intro',q:'According to the lecture, which discipline tries to explain the irrational behaviour of financial market participants?',o:['Economics','Statistics','Psychology','Accounting'],a:2,x:'Psychology (поведенческие финансы).'},
+{t:'intro',q:'According to the lecture, which discipline tries to quantify risks and the probability of negative events?',o:['Statistics','Psychology','Accounting','Law'],a:0,x:'Statistics квантифицирует риск и вероятность негативных событий.'},
+{t:'intro',q:'Finance links economic theory with',o:['the numbers of accounting.','marketing research.','human resources.','production planning.'],a:0,x:'Слайд лекции: Finance links economic theory with the numbers of accounting.'},
+{t:'intro',q:'The primary emphasis of the financial manager (unlike the accountant) is on',o:['accrual-based profits.','cash flows.','tax records.','bookkeeping.'],a:1,x:'Бухгалтер работает по accrual basis (начисления), финансовый менеджер смотрит на cash flows (реальные деньги) и принимает решения.'},
+{t:'intro',q:'Accountants recognize revenue at the point of sale and expenses when incurred. This is called the',o:['cash basis.','accrual basis.','market basis.','tax basis.'],a:1,x:'Accrual basis. Финансисты используют cash basis — считают деньги, когда они реально пришли или ушли.'},
+{t:'intro',q:'By the 1930s, financial practices mostly revolved around',o:['risk-return relationships and portfolio management.','preservation of capital, reorganization of troubled corporations, and bankruptcy.','capital structure theory and dividend policy.','hedging with derivatives.'],a:1,x:'Эпоха Великой депрессии: сохранение капитала, реорганизация, банкротства.'},
+{t:'intro',q:'By the mid-1950s finance became more analytical. Which topic belongs to this period?',o:['Bankruptcy of railroads','Capital structure theory and dividend policy','Emergence of finance from economics','Cryptocurrency'],a:1,x:'С 1950-х: финансовый капитал покупает реальный капитал, управление cash и запасами, capital structure theory, dividend policy.'},
+{t:'intro',q:'The recent focus of finance has been on',o:['preservation of capital.','separating finance from economics.','risk-return relationships, portfolio management and hedging.','bookkeeping standards.'],a:2,x:'Сейчас: risk-return, максимизация доходности при данном риске, хеджирование, портфели.'},
+{t:'intro',q:'Deciding "when to issue new stocks and bonds" is an example of a',o:['financing decision.','investment decision.','marketing decision.','production decision.'],a:0,x:'Как привлечь деньги — financing decision. «Куда вложить» и «заменять ли старый актив» — investment decisions.'},
+{t:'intro',q:'Deciding "whether or not to replace an old asset" is an example of a(n)',o:['financing decision.','investment decision.','dividend decision.','accounting decision.'],a:1,x:'Investment decision: во что вкладывать деньги (левая сторона баланса).'},
+{t:'intro',q:'The goal of the financial manager, according to Gitman, is to',o:['maximize profit.','maximize the wealth of the firm’s owners (share price).','minimize risk.','maximize sales.'],a:1,x:'Цель — максимизация богатства акционеров (цены акции). Максимизация прибыли игнорирует время, cash flows и риск.'},
+{t:'intro',q:'Profit maximization is not the best goal because it ignores',o:['the timing of returns, cash flows, and risk.','revenues.','costs.','taxes only.'],a:0,x:'Три недостатка profit maximization по Gitman: timing, cash flows (прибыль ≠ деньги), risk.'},
+{t:'intro',q:'The conflict between the goals of a firm’s owners and its managers is called the',o:['agency problem.','liquidity problem.','double taxation.','free-rider problem.'],a:0,x:'Agency problem: менеджеры (агенты) могут действовать в своих интересах, а не акционеров.'},
+{t:'intro',q:'Which field of finance are you studying in this course?',o:['Public finance','Corporate/Managerial/Business finance','Personal finance','International finance'],a:1,x:'Слайд «Fields of finance»: Corporate/Managerial/Business Finance — you are studying!'},
+{t:'intro',q:'Which of the following is NOT listed among the fields of finance in the lecture?',o:['Public Finance','Risk Management','Asset Valuation','Cost Accounting'],a:3,x:'Поля: Corporate, Financial Services/Banking, Personal, Public, International, Investment Management, Asset Valuation, Risk Management.'},
+{t:'intro',q:'Marginal cost-benefit analysis says a financial decision should be made only when',o:['added benefits exceed added costs.','costs are minimized.','the decision increases sales.','accounting profit is positive.'],a:0,x:'Принимаем решение, если marginal benefits > marginal costs.'},
+{t:'intro',q:'True or False: The financial manager’s main job is to collect and present financial data.',o:TF,a:1,x:'False. Это работа бухгалтера. Финансовый менеджер оценивает данные и принимает решения.'},
+
+// ---- forms ----
+{t:'forms',q:'A business owned by one person and operated for his or her own profit is a',o:['partnership.','corporation.','sole proprietorship.','limited partnership.'],a:2,x:'Sole proprietorship (в Литве IĮ).'},
+{t:'forms',q:'The owner of a sole proprietorship has',o:['limited liability.','unlimited liability.','no liability.','liability equal to invested capital.'],a:1,x:'Unlimited liability: личное имущество владельца отвечает по долгам бизнеса.'},
+{t:'forms',q:'Which form of business is a separate legal entity with limited liability for its owners?',o:['Sole proprietorship','General partnership','Corporation','All of the above'],a:2,x:'Corporation (AB, UAB) — отдельное юрлицо, акционеры рискуют только вложенными деньгами.'},
+{t:'forms',q:'A major strength of a sole proprietorship is',o:['easy access to capital.','the owner receives all profits and has independence.','limited liability.','unlimited life.'],a:1,x:'Плюсы: все прибыли владельцу, низкие затраты на создание, доход облагается как личный, независимость, секретность, легко закрыть.'},
+{t:'forms',q:'A major weakness of a corporation is',o:['limited liability.','easy transfer of ownership.','taxes are generally higher because of double taxation.','long life of the firm.'],a:2,x:'Минусы корпорации: double taxation, дорого создать, жёсткое регулирование, нет секретности (раскрытие отчётности).'},
+{t:'forms',q:'"Double taxation" of corporations means that',o:['the corporation pays tax twice a year.','corporate income is taxed, and dividends are taxed again as the owner’s personal income.','both managers and owners pay tax.','taxes are paid in two countries.'],a:1,x:'Сначала налог на прибыль корпорации, потом налог на дивиденды у акционера.'},
+{t:'forms',q:'The members of the board of directors are elected by the',o:['CEO.','creditors.','stockholders.','government.'],a:2,x:'Акционеры голосуют и выбирают совет директоров.'},
+{t:'forms',q:'The ________ is responsible for managing day-to-day operations and carrying out the policies established by the board.',o:['board of directors','president or chief executive officer (CEO)','stockholders','auditor'],a:1,x:'CEO/president ведёт ежедневные операции и выполняет политику, которую установил совет директоров.'},
+{t:'forms',q:'In a limited partnership',o:['all partners have limited liability.','at least one partner has unlimited liability (general partner).','there are no partners.','ownership is traded on an exchange.'],a:1,x:'Хотя бы один general partner с неограниченной ответственностью, остальные — limited partners.'},
+{t:'forms',q:'Which form of organization is most common by NUMBER of firms, and which dominates by revenue/profits?',o:['Corporations; sole proprietorships','Sole proprietorships; corporations','Partnerships; corporations','Corporations; partnerships'],a:1,x:'Больше всего по количеству — sole proprietorships, но доминируют по выручке корпорации.'},
+{t:'forms',q:'Which is a major strength of a partnership compared with a sole proprietorship?',o:['Limited liability for all partners','Can raise more funds and has greater borrowing capacity','Ownership is easily transferable','No income tax at all'],a:1,x:'Партнёров больше → больше денег и кредитоспособность, больше знаний и навыков.'},
+{t:'forms',q:'In Lithuania, AB and UAB correspond to which legal form?',o:['Sole proprietorship','Partnership','Corporation','Credit union'],a:2,x:'Слайд лекции: Corporation (AB ir UAB). Sole proprietorship = IĮ.'},
+{t:'forms',q:'Which form has the longest (unlimited) life?',o:['Sole proprietorship','Partnership','Corporation','All have the same life'],a:2,x:'Корпорация существует независимо от смены владельцев.'},
+{t:'forms',q:'True or False: Stockholders of a corporation can lose more than their investment if the firm goes bankrupt.',o:TF,a:1,x:'False. Limited liability: максимум теряешь то, что вложил.'},
+{t:'forms',q:'True or False: The board of directors has the ultimate authority to guide corporate affairs and make general policy.',o:TF,a:0,x:'True.'},
+
+// ---- institutions ----
+{t:'inst',q:'Which institution accepts both demand (checking) and time (savings) deposits and makes loans directly to borrowers?',o:['Commercial bank','Mutual fund','Pension fund','Insurance company'],a:0,x:'Commercial bank по слайду лекции.'},
+{t:'inst',q:'A savings bank mainly',o:['underwrites stock issues.','holds savings deposits and makes residential real estate loans to individuals.','invests in start-ups.','sets monetary policy.'],a:1,x:'Savings bank: сберегательные депозиты + ипотека физлицам.'},
+{t:'inst',q:'A credit union',o:['deals primarily in transfer of funds between consumers; membership is based on a common bond, such as working for a given employer.','sells insurance policies.','issues government bonds.','trades only derivatives.'],a:0,x:'Кредитный союз: члены связаны общим признаком (работодатель, профессия), деньги переходят между потребителями.'},
+{t:'inst',q:'An institution that pools funds of savers and creates a diversified, professionally managed portfolio of securities to achieve a specified investment objective is a',o:['commercial bank.','credit union.','mutual fund.','central bank.'],a:2,x:'Mutual fund (инвестиционный фонд).'},
+{t:'inst',q:'Which of the following is NOT a typical function of an investment bank?',o:['Underwriting (raising capital)','Mergers and acquisitions advice','Accepting checking deposits from households','Proprietary trading'],a:2,x:'Инвест-банк по слайду: underwriting, M&A, brokerage (sale of securities), proprietary trading, research & consulting. Депозиты принимает commercial bank.'},
+{t:'inst',q:'Underwriting by an investment bank means',o:['insuring cars.','helping firms raise capital by issuing (and often buying and reselling) new securities.','auditing financial statements.','granting mortgages.'],a:1,x:'Underwriting = raising capital, размещение нового выпуска.'},
+{t:'inst',q:'Venture capital funds typically',o:['accept deposits.','invest equity in young, high-risk, high-growth firms.','buy only government bonds.','insure against losses.'],a:1,x:'VC вкладывает в стартапы в обмен на долю.'},
+{t:'inst',q:'Which of the following is a governmental financial entity mentioned in the lecture?',o:['Credit union','Central bank','Brokerage company','Venture capital fund'],a:1,x:'Governmental entities: Treasury, Central Bank, Depositorium.'},
+{t:'inst',q:'A pension fund',o:['collects contributions from employers/employees and invests them to pay retirement benefits.','makes car loans.','sets interest rates.','underwrites IPOs.'],a:0,x:'Пенсионный фонд копит взносы и инвестирует их, чтобы выплачивать пенсии.'},
+{t:'inst',q:'An insurance company obtains funds mainly from',o:['deposits.','premiums paid by policyholders.','central bank loans.','selling shares daily.'],a:1,x:'Страховщик собирает премии, инвестирует их и выплачивает возмещения.'},
+{t:'inst',q:'A brokerage company',o:['matches buyers and sellers of securities and executes trades for clients.','issues money.','accepts time deposits.','regulates banks.'],a:0,x:'Брокер исполняет сделки клиентов за комиссию.'},
+{t:'inst',q:'In the economy as a whole, the NET SUPPLIERS of funds to financial institutions are',o:['businesses.','governments.','individuals (households).','central banks.'],a:2,x:'Gitman: individuals are net suppliers; businesses and governments are net demanders of funds.'},
+{t:'inst',q:'Businesses, as a group, are',o:['net suppliers of funds.','net demanders of funds.','neither suppliers nor demanders.','only suppliers.'],a:1,x:'Фирмы занимают больше, чем сберегают → net demanders.'},
+{t:'inst',q:'Which institution is the one that conducts monetary policy (for Lithuania, within the Eurosystem)?',o:['Commercial bank','Central bank','Mutual fund','Treasury'],a:1,x:'Central bank (Lietuvos bankas в составе Eurosystem, ECB). Treasury (Минфин) управляет госдолгом и бюджетом.'},
+{t:'inst',q:'True or False: Financial institutions and financial markets are completely independent of each other.',o:TF,a:1,x:'False. Институты активно работают на рынках как покупатели и продавцы бумаг.'},
+{t:'inst',q:'True or False: Venture capital funds, brokerage companies and investment banks are non-depository institutions.',o:TF,a:0,x:'True по слайду лекции «Non-depository».'},
+
+// ---- markets ----
+{t:'mkt',q:'A financial market is best described as',o:['a place where buyers and sellers meet and exchange financial securities/instruments.','an intermediary that accepts deposits.','a government agency.','a place to buy consumer goods.'],a:0,x:'Определение со слайда лекции.'},
+{t:'mkt',q:'The market where securities are issued for the very first time is the',o:['secondary market.','primary market.','money market.','OTC market.'],a:1,x:'Primary market, например IPO.'},
+{t:'mkt',q:'An initial public offering (IPO) takes place in the',o:['secondary market.','primary market.','forward market.','derivative market.'],a:1,x:'Первое размещение акций для публики — primary market.'},
+{t:'mkt',q:'Securities that are traded between market participants after issue are traded in the',o:['primary market.','secondary market.','money market only.','central bank.'],a:1,x:'Secondary market.'},
+{t:'mkt',q:'Commercial paper is',o:['a long-term corporate bond.','a short-term unsecured promissory note sold by corporations to finance daily operations.','a share of common stock.','a government pension.'],a:1,x:'Слайд: commercial paper sold by corporations to finance daily operations → money market.'},
+{t:'mkt',q:'Which instrument belongs to the money market?',o:['Common stock','Preferred stock','Certificate of deposit with maturity under 12 months','30-year government bond'],a:2,x:'CD до 12 месяцев, commercial paper, T-bills — money market.'},
+{t:'mkt',q:'Which instrument belongs to the capital market?',o:['Treasury bill','Commercial paper','Preferred stock','3-month CD'],a:2,x:'Capital market: common stock, preferred stock, corporate and government bonds.'},
+{t:'mkt',q:'Classifying markets into "money vs. capital" is based on',o:['nature of claims.','maturity.','issuer involvement.','timing.'],a:1,x:'Слайд: Maturity (money vs. capital).'},
+{t:'mkt',q:'Classifying markets into "primary vs. secondary" is based on',o:['issuer involvement.','complexity.','maturity.','nature of claims.'],a:0,x:'Issuer involvement: в primary эмитент получает деньги, в secondary — нет.'},
+{t:'mkt',q:'Classifying markets into "equity vs. debt" is based on',o:['timing.','nature of claims.','complexity.','maturity.'],a:1,x:'Nature of claims: владение (equity) против долга (debt).'},
+{t:'mkt',q:'Classifying markets into "spot vs. forward" is based on',o:['timing.','issuer involvement.','maturity.','complexity.'],a:0,x:'Timing: spot — поставка сразу, forward — в будущем.'},
+{t:'mkt',q:'Options and futures are examples of',o:['simple securities.','derivative securities.','money market instruments.','deposits.'],a:1,x:'Complexity: simple vs. derivative. Деривативы — производные от другого актива.'},
+{t:'mkt',q:'An organized securities exchange (e.g., Nasdaq Vilnius, NYSE) is',o:['an intangible market for unlisted securities.','a tangible secondary market where listed securities are traded.','a primary market only.','a money market.'],a:1,x:'Биржа — осязаемый вторичный рынок для listed securities. OTC — неосязаемый для unlisted.'},
+{t:'mkt',q:'A bond represents',o:['ownership in the firm.','long-term debt of the issuer.','a short-term bank deposit.','an insurance contract.'],a:1,x:'Облигация = долг. Акция = доля собственности.'},
+{t:'mkt',q:'True or False: Treasury bills are traded in the capital market.',o:TF,a:1,x:'False. T-bills краткосрочные → money market.'},
+{t:'mkt',q:'True or False: The issuing firm receives cash from the sale of its shares in the secondary market.',o:TF,a:1,x:'False. Эмитент получает деньги только в primary market. На secondary акции переходят между инвесторами.'},
+{t:'mkt',q:'True or False: Participants in financial markets include public, private and government institutions.',o:TF,a:0,x:'True (слайд Financial Markets).'},
+
+// ---- statements ----
+{t:'stmt',q:'The income statement shows',o:['the firm’s financial position at a point in time.','the firm’s financial performance (revenues and expenses) over a period of time.','only cash receipts.','changes in stockholders’ equity only.'],a:1,x:'IS — за период (год, квартал). Баланс — на дату.'},
+{t:'stmt',q:'The balance sheet presents',o:['a summary of the firm’s financial position at a given point in time.','operating results over a year.','only cash flows.','dividends paid.'],a:0,x:'Snapshot на конкретную дату: Assets = Liabilities + Stockholders’ equity.'},
+{t:'stmt',q:'The statement of retained earnings reconciles',o:['sales and cost of goods sold.','net income and dividends with the change in retained earnings.','assets and liabilities.','cash and marketable securities.'],a:1,x:'Ending RE = Beginning RE + Net income − Dividends.'},
+{t:'stmt',q:'Gross profit equals',o:['Sales − Cost of goods sold','Sales − Operating expenses','EBIT − Interest','Net income + Depreciation'],a:0,x:'Gross profit = Sales − COGS.'},
+{t:'stmt',q:'Operating profit (EBIT) equals',o:['Gross profit − Operating expenses','Sales − COGS','EBT − Taxes','Net income − Dividends'],a:0,x:'EBIT = Gross profit − (S&A + Depreciation + other operating expenses).'},
+{t:'stmt',q:'Where is depreciation shown on the income statement?',o:['Below EBIT, with interest','As an operating expense (above EBIT)','It is not shown','Only in the balance sheet'],a:1,x:'Depreciation — operating expense, стоит до EBIT. В Cash Flow её прибавляют обратно, потому что это non-cash expense.'},
+{t:'stmt',q:'Interest expense is subtracted from ________ to get earnings before taxes.',o:['sales','gross profit','operating profit (EBIT)','net income'],a:2,x:'EBT = EBIT − Interest. Проценты — финансовый, а не операционный расход.'},
+{t:'stmt',q:'Dividends paid to shareholders',o:['are an operating expense on the income statement.','are not an expense; they reduce retained earnings.','increase retained earnings.','are recorded as interest expense.'],a:1,x:'Дивиденды — распределение прибыли, не расход. Идут в Statement of Retained Earnings.'},
+{t:'stmt',q:'Earnings per share (EPS) equals',o:['Net income ÷ total assets','(Net income − Preferred dividends) ÷ Number of common shares outstanding','Dividends ÷ shares authorized','EBIT ÷ shares issued'],a:1,x:'EPS = Earnings available for common stockholders ÷ common shares outstanding (не authorized и не issued).'},
+{t:'stmt',q:'Earnings available for common stockholders equals',o:['Net income − Preferred stock dividends','Net income − Common dividends','EBIT − Taxes','Net income + Depreciation'],a:0,x:'Сначала платим привилегированным акционерам, остальное — обычным.'},
+{t:'stmt',q:'Which is NOT a current asset?',o:['Accounts receivable','Inventory','Marketable securities','Net plant and equipment'],a:3,x:'Net plant & equipment — fixed (non-current) asset.'},
+{t:'stmt',q:'Which is a current liability?',o:['Long-term bonds','Common stock','Notes payable (bank loan due within a year)','Retained earnings'],a:2,x:'Current liabilities: accounts payable, notes payable, accruals (taxes/wages payable), current portion of LTD.'},
+{t:'stmt',q:'Net fixed assets equal',o:['Gross fixed assets + Accumulated depreciation','Gross fixed assets − Accumulated depreciation','Depreciation expense − Gross fixed assets','Total assets − Current liabilities'],a:1,x:'Net = Gross − Accumulated depreciation. Accumulated depreciation — contra-asset.'},
+{t:'stmt',q:'Assets on the balance sheet are listed in order of',o:['size.','liquidity (most liquid first).','date purchased.','alphabet.'],a:1,x:'Сначала cash, потом marketable securities, AR, inventory, потом fixed assets.'},
+{t:'stmt',q:'A firm issues 5,000 new common shares with $2 par value at $12 per share. Paid-in capital in excess of par increases by',o:['$10,000','$50,000','$60,000','$12,000'],a:1,x:'5,000 × ($12 − $2) = $50,000. Common stock (par) растёт на 5,000 × $2 = $10,000. Всего деньги $60,000.'},
+{t:'stmt',q:'Treasury stock is',o:['stock issued by the government.','shares that the firm has repurchased; they are issued but not outstanding.','shares authorized but never issued.','preferred stock.'],a:1,x:'Authorized ≥ Issued; Issued = Outstanding + Treasury. Treasury stock уменьшает equity.'},
+{t:'stmt',q:'Retained earnings represent',o:['cash kept in the bank.','the cumulative total of earnings reinvested in the firm since its inception.','money raised from selling stock.','current year’s net income only.'],a:1,x:'RE — накопленная нераспределённая прибыль за всё время. Это НЕ деньги в кассе.'},
+{t:'stmt',q:'The basic balance sheet equation is',o:['Assets = Liabilities − Equity','Assets + Liabilities = Equity','Assets = Liabilities + Stockholders’ equity','Assets = Revenue − Expenses'],a:2,x:'A = L + E. Всегда проверяй его в задаче.'},
+{t:'stmt',q:'Accounts payable represent',o:['money customers owe the firm.','money the firm owes suppliers for purchases on credit.','long-term bank loans.','unpaid dividends only.'],a:1,x:'AP — долги поставщикам. AR — долги клиентов нам.'},
+{t:'stmt',q:'In a US-format income statement, which line comes right after Net income?',o:['Taxes','Preferred stock dividends → Earnings available for common stockholders','Gross profit','Interest expense'],a:1,x:'Шаблон лекции: Net income − Preferred dividends = Earnings available for common stockholders (US only), потом EPS.'},
+{t:'stmt',q:'A land purchase is depreciated',o:['over 10 years.','over 40 years.','never; land is not depreciated.','immediately.'],a:2,x:'Земля не амортизируется.'},
+{t:'stmt',q:'The four key financial statements are',o:['Income statement, Statement of retained earnings, Balance sheet, Statement of cash flows','Budget, Forecast, Tax return, Balance sheet','Income statement, Payroll, Inventory list, Cash book','Balance sheet, Audit report, Tax return, Invoice'],a:0,x:'Четыре ключевых отчёта из лекции.'},
+{t:'stmt',q:'True or False: Net income is the same as cash flow.',o:TF,a:1,x:'False. Прибыль по accrual basis, в неё входят non-cash статьи (depreciation), продажи в кредит и т.д.'},
+{t:'stmt',q:'True or False: Paid-in capital in excess of par is the amount received above par value when selling stock.',o:TF,a:0,x:'True.'},
+
+// ---- cash flow ----
+{t:'cf',q:'The three sections of the statement of cash flows are',o:['current, fixed, and equity.','operating, investing, and financing.','revenue, expense, and profit.','primary, secondary, and OTC.'],a:1,x:'Operating, Investing, Financing.'},
+{t:'cf',q:'Under the indirect method, cash flow from operations starts with',o:['sales.','net income.','EBIT.','cash balance.'],a:1,x:'Начинаем с Net income, прибавляем depreciation, корректируем на изменения оборотного капитала.'},
+{t:'cf',q:'Depreciation is added back in the operating section because it is',o:['a cash inflow.','a non-cash expense.','a financing activity.','an investment.'],a:1,x:'Она уменьшила прибыль, но деньги не ушли.'},
+{t:'cf',q:'An INCREASE in accounts receivable is shown in the operating section as',o:['an addition (source of cash).','a subtraction (use of cash).','an investing inflow.','not shown.'],a:1,x:'Рост актива = использование денег (−). Клиенты ещё не заплатили.'},
+{t:'cf',q:'An INCREASE in accounts payable is',o:['a source of cash (+).','a use of cash (−).','an investing outflow.','a financing outflow.'],a:0,x:'Рост обязательства = источник (+): мы ещё не заплатили поставщику.'},
+{t:'cf',q:'A DECREASE in inventory is',o:['a use of cash.','a source of cash.','a financing activity.','not relevant.'],a:1,x:'Уменьшение актива = источник денег.'},
+{t:'cf',q:'Purchase of new machinery is reported under',o:['operating activities.','investing activities.','financing activities.','not reported.'],a:1,x:'Покупка fixed assets — investing, со знаком минус.'},
+{t:'cf',q:'Payment of cash dividends is reported under',o:['operating activities.','investing activities.','financing activities.','the income statement.'],a:2,x:'Financing, отток.'},
+{t:'cf',q:'Repayment of the principal on a bank loan (notes payable) is reported under',o:['operating activities.','investing activities.','financing activities.','not reported.'],a:2,x:'Погашение основного долга — financing. Проценты уже вошли в Net income (operating).'},
+{t:'cf',q:'Issuing new common stock for cash is',o:['an operating inflow.','an investing inflow.','a financing inflow.','a financing outflow.'],a:2,x:'Financing, приток.'},
+{t:'cf',q:'In the FMA problem, the conversion of all marketable securities into cash is shown as',o:['an investing inflow (sale of marketable securities).','a financing outflow.','an operating outflow.','it is ignored.'],a:0,x:'Продажа MS = investing inflow. Только так конечный cash в задаче FMA сходится с данным $42,995. (У Gitman есть вариант, где cash и MS считаются вместе, но в этой задаче считаем отдельно.)'},
+{t:'cf',q:'General rule: a decrease in an asset or an increase in a liability/equity is a',o:['use of cash.','source of cash.','non-cash item.','loss.'],a:1,x:'Sources: ↓assets, ↑liabilities, ↑equity, net income, depreciation. Uses: ↑assets, ↓liabilities, ↓equity (dividends, buybacks), net loss.'},
+{t:'cf',q:'Net increase in cash equals',o:['CFO + CFI + CFF','CFO − CFI','Net income + Dividends','Ending cash + Beginning cash'],a:0,x:'Сумма трёх разделов. Beginning cash + Net change = Ending cash (должно совпасть с балансом).'},
+{t:'cf',q:'Why don’t we put the change in retained earnings into the cash flow statement directly?',o:['Because it is already represented by net income (+) and dividends (−).','Because RE is a current asset.','Because RE never changes.','Because it goes to investing.'],a:0,x:'ΔRE = NI − Dividends. NI стоит в operating, dividends в financing.'},
+{t:'cf',q:'True or False: Interest paid on bonds is shown as a financing outflow in the FMA-style (Gitman/US) statement of cash flows.',o:TF,a:1,x:'False. Проценты уже вычтены при расчёте Net income, значит они в operating. В financing идёт только погашение основной суммы.'},
+{t:'cf',q:'True or False: A firm can have positive net income but negative cash flow from operations.',o:TF,a:0,x:'True. Например, если резко выросли AR и запасы.'},
+
+// ---- calc ----
+{t:'calc',q:'Sales $500,000; COGS 60% of sales; operating expenses $80,000; interest $20,000; tax rate 25%. Net income =',o:['$75,000','$100,000','$60,000','$45,000'],a:0,x:'COGS = 300,000 → GP = 200,000 → EBIT = 200,000 − 80,000 = 120,000 → EBT = 120,000 − 20,000 = 100,000 → Tax 25% = 25,000 → NI = 75,000.'},
+{t:'calc',q:'Beginning retained earnings $40,000; net income $25,000; dividends $10,000. Ending retained earnings =',o:['$55,000','$75,000','$65,000','$50,000'],a:0,x:'40,000 + 25,000 − 10,000 = 55,000.'},
+{t:'calc',q:'Net income $30,000; depreciation $12,000; accounts receivable increased by $5,000; inventory decreased by $3,000; accounts payable increased by $4,000. Cash flow from operations =',o:['$44,000','$36,000','$54,000','$38,000'],a:0,x:'30 + 12 − 5 + 3 + 4 = 44 тыс.'},
+{t:'calc',q:'Net income $120,000; preferred dividends $20,000; 50,000 common shares outstanding. EPS =',o:['$2.40','$2.00','$2.80','$1.60'],a:1,x:'(120,000 − 20,000) / 50,000 = $2.00.'},
+{t:'calc',q:'Gross fixed assets $400,000; accumulated depreciation $150,000 at start of year; depreciation expense this year $40,000; no purchases. Net fixed assets at year end =',o:['$250,000','$210,000','$290,000','$360,000'],a:1,x:'Accum. dep. = 190,000 → Net = 400,000 − 190,000 = 210,000.'},
+{t:'calc',q:'Accounts receivable were $50,000 and declined by 5%. The new AR and the effect on operating cash flow are',o:['$47,500; +$2,500','$52,500; −$2,500','$47,500; −$2,500','$45,000; +$5,000'],a:0,x:'50,000 × 0.95 = 47,500. Уменьшение актива → +2,500 в CFO.'},
+{t:'calc',q:'A firm pays 10% interest on a $50,000 bank loan for the year and then repays $10,000 of principal on December 31. Interest expense for the year is',o:['$4,000','$5,000','$6,000','$10,000'],a:1,x:'Проценты считаются на остаток, который был весь год: 10% × 50,000 = 5,000. Долг после погашения 40,000.'},
+{t:'calc',q:'The firm issues 2,000 shares of $1 par stock at $10. Effect on the cash flow statement:',o:['+$2,000 financing','+$20,000 financing','+$18,000 investing','+$20,000 operating'],a:1,x:'Деньги 2,000 × $10 = $20,000 в financing. В балансе: CS +2,000, PIC +18,000.'},
+{t:'calc',q:'EBIT $40,000; interest $14,000; tax rate 15%. Net income =',o:['$22,100','$26,000','$34,000','$3,900'],a:0,x:'EBT 26,000; tax 3,900; NI 22,100 (это цифры FMA).'},
+{t:'calc',q:'Total assets $368,495; total liabilities $182,200. Stockholders’ equity =',o:['$186,295','$550,695','$182,200','$168,495'],a:0,x:'E = A − L = 368,495 − 182,200 = 186,295 (FMA 2019).'},
+{t:'calc',q:'Beginning cash $15,000; CFO +$73,800; CFI −$45,000; CFF −$805. Ending cash =',o:['$42,995','$27,995','$57,995','$30,000'],a:0,x:'Net change 27,995; ending cash 15,000 + 27,995 = 42,995 (FMA).'},
+];
+
+// classification drill (generated)
+const CLS_BS=[['Cash','Current assets'],['Marketable securities','Current assets'],['Accounts receivable','Current assets'],['Inventory','Current assets'],['Gross plant & equipment','Fixed (non-current) assets'],['Land','Fixed (non-current) assets'],['Accumulated depreciation','Fixed (non-current) assets'],['Patent','Intangible assets'],['Software','Intangible assets'],['Accounts payable','Current liabilities'],['Notes payable (bank loan, 1 year)','Current liabilities'],['Wages payable','Current liabilities'],['Taxes payable','Current liabilities'],['Current portion of long-term debt','Current liabilities'],['Long-term bonds','Long-term liabilities'],['Common stock (par)','Stockholders’ equity'],['Paid-in capital in excess of par','Stockholders’ equity'],['Retained earnings','Stockholders’ equity'],['Preferred stock','Stockholders’ equity'],['Treasury stock','Stockholders’ equity']];
+const BS_CATS=['Current assets','Fixed (non-current) assets','Intangible assets','Current liabilities','Long-term liabilities','Stockholders’ equity'];
+CLS_BS.forEach(([item,cat])=>{const others=shuffle(BS_CATS.filter(c=>c!==cat)).slice(0,3);const o=shuffle([cat,...others]);Q.push({t:'cls',q:`Balance sheet: where does "${item}" belong?`,o,a:o.indexOf(cat),x:`${item} → ${cat}.${item==='Accumulated depreciation'?' Это contra-asset: вычитается из gross fixed assets.':''}${item==='Treasury stock'?' Уменьшает equity (со знаком минус).':''}`})});
+const CLS_CF=[['Net income','Operating (+)'],['Depreciation expense','Operating (+)'],['Increase in accounts receivable','Operating (−)'],['Decrease in accounts receivable','Operating (+)'],['Increase in inventory','Operating (−)'],['Increase in accounts payable','Operating (+)'],['Decrease in accounts payable','Operating (−)'],['Purchase of a new machine','Investing (−)'],['Sale of marketable securities','Investing (+)'],['Sale of old equipment for cash','Investing (+)'],['Repayment of notes payable principal','Financing (−)'],['New bank loan received','Financing (+)'],['Issuing new common stock','Financing (+)'],['Cash dividends paid','Financing (−)'],['Repurchase of shares (treasury stock)','Financing (−)']];
+const CF_CATS=['Operating (+)','Operating (−)','Investing (+)','Investing (−)','Financing (+)','Financing (−)'];
+CLS_CF.forEach(([item,cat])=>{const others=shuffle(CF_CATS.filter(c=>c!==cat)).slice(0,3);const o=shuffle([cat,...others]);Q.push({t:'cls',q:`Statement of cash flows: "${item}" goes to`,o,a:o.indexOf(cat),x:`${item} → ${cat}.`})});
+const CLS_IS=[['Cost of goods sold','Income statement'],['Depreciation expense','Income statement'],['Interest expense','Income statement'],['Taxes','Income statement'],['Dividends paid','Statement of retained earnings'],['Accounts receivable','Balance sheet'],['Purchase of equipment','Statement of cash flows'],['Retained earnings (ending)','Balance sheet']];
+const WHICH=['Income statement','Balance sheet','Statement of retained earnings','Statement of cash flows'];
+CLS_IS.forEach(([item,cat])=>{Q.push({t:'cls',q:`In which statement do you record "${item}" as a line item (main place)?`,o:WHICH,a:WHICH.indexOf(cat),x:`${item} → ${cat}.${item==='Dividends paid'?' Также появляется в financing части Cash Flow, но в IS дивидендов нет никогда.':''}`})});
+
+/* ---------- quiz engine ---------- */
+const topicSel=$('#quizTopic');
+topicSel.innerHTML=`<option value="exam">Экзамен-микс (30 случайных)</option><option value="wrong">Только мои ошибки</option>`+Object.entries(TOPICS).map(([k,v])=>`<option value="${k}">${v} (${Q.filter(q=>q.t===k).length})</option>`).join('');
+Q.forEach((q,i)=>q.id=i);
+let QZ=null;
+function startQuiz(){
+  const t=topicSel.value;const wrong=store.get('wrong',{});
+  let pool=t==='exam'?shuffle(Q).slice(0,30):t==='wrong'?Q.filter(q=>wrong[q.t+'|'+q.q]):shuffle(Q.filter(q=>q.t===t));
+  if(!pool.length){$('#quizBox').innerHTML='<p>Ошибок нет. Выбери другую тему.</p>';return}
+  QZ={pool,i:0,score:0,answered:false,order:null};renderQ();
+}
+function renderQ(){
+  if(QZ.i>=QZ.pool.length){const p=Math.round(QZ.score/QZ.pool.length*100);
+    $('#quizBox').innerHTML=`<span class="eyebrow">Результат</span><h2>${QZ.score} из ${QZ.pool.length} · ${p}%</h2><p class="muted">${p>=90?'Отлично, тема закрыта.':p>=70?'Хорошо. Повтори ошибки через режим «Только мои ошибки».':'Перечитай этот блок в шпаргалке и пройди ещё раз.'}</p><div class="row"><button class="btn primary" id="again">Ещё раз</button></div>`;
+    $('#again').onclick=startQuiz;return}
+  const q=QZ.pool[QZ.i];const keepOrder=q.o===TF||q.t==='mini'||q.o.some(x=>/above/.test(x));
+  QZ.order=keepOrder?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));QZ.answered=false;
+  $('#quizBox').innerHTML=`<div class="progress-line"><span>Вопрос ${QZ.i+1} из ${QZ.pool.length} · <span class="chip">${TOPICS[q.t]}</span></span><span>Верно: ${QZ.score}</span></div>
+  <div class="q-text">${esc(q.q)}</div>
+  <div class="opts">${QZ.order.map((k,j)=>`<button class="opt" data-k="${k}"><span class="k">${'ABCD'[j]})</span><span>${esc(q.o[k])}</span></button>`).join('')}</div>
+  <div id="qex"></div>`;
+}
+$('#quizBox').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(b&&QZ&&!QZ.answered){QZ.answered=true;const q=QZ.pool[QZ.i];const k=+b.dataset.k;const right=k===q.a;
+    document.querySelectorAll('#quizBox .opt').forEach(o=>{o.disabled=true;if(+o.dataset.k===q.a)o.classList.add('correct')});if(!right)b.classList.add('wrong');
+    if(right)QZ.score++;
+    const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);
+    const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st);
+    $('#qex').innerHTML=`<div class="explain"><b>${right?'Верно.':'Неверно.'}</b> ${esc(q.x)}</div><div class="row" style="margin-top:12px"><button class="btn primary" id="nextQ">Дальше →</button></div>`;
+    $('#nextQ').onclick=()=>{QZ.i++;renderQ()};$('#nextQ').focus()}
+});
+$('#quizStart').onclick=startQuiz;
+
+/* =====================================================
+   FLASHCARDS
+   ===================================================== */
+const CARDS=[
+['intro','Finance','The art and science of managing money. (Искусство и наука управления деньгами.)'],
+['intro','Managerial finance','Duties of the financial manager in a firm: budgeting, forecasting, cash management, funds procurement, investment decisions.'],
+['intro','Financial services','Design and delivery of advice and financial products to individuals, businesses and governments (banking, insurance, investments).'],
+['intro','Key role of the financial manager','Decision making (investment and financing decisions). Accountant = collecting and presenting data.'],
+['intro','Accrual basis vs. cash basis','Accountants: revenue at sale, expenses when incurred (accrual). Financial managers: focus on actual cash inflows and outflows.'],
+['intro','Goal of the firm','Maximize shareholder wealth (share price), not just profit.'],
+['intro','Agency problem','Conflict of interest between managers (agents) and owners (stockholders).'],
+['intro','Evolution: 1930s','Preservation of capital, reorganization of troubled firms, bankruptcy.'],
+['intro','Evolution: 1950s','Finance becomes analytical: capital structure theory, dividend policy, cash & inventory management.'],
+['intro','Evolution: recent','Risk-return, portfolio management, hedging with new financial products.'],
+['forms','Sole proprietorship (IĮ)','Owned by one person. Unlimited liability. Low cost to start, owner gets all profits. Hard to raise money, limited life.'],
+['forms','Partnership','Two or more owners. More funds than sole prop. Weakness: unlimited liability, difficulty liquidating or transferring ownership.'],
+['forms','Limited partnership','At least one general partner with unlimited liability + limited partners.'],
+['forms','Corporation (AB, UAB)','Separate legal entity. Limited liability, easy to transfer ownership, unlimited life. Weakness: double taxation, most expensive to organize, regulation.'],
+['forms','Stockholders','True owners of a corporation. Elect the board of directors.'],
+['forms','Board of directors','Ultimate authority/responsibility to guide corporate affairs and make general policy. Hires the CEO.'],
+['forms','CEO / President','Manages day-to-day operations and carries out the policies set by the board.'],
+['forms','Double taxation','Corporate profit is taxed, then dividends are taxed again as personal income.'],
+['inst','Financial institution','Intermediary that channels savings of individuals, businesses and governments into loans or investments.'],
+['inst','Commercial bank','Accepts demand (checking) and time (savings) deposits; makes loans to borrowers.'],
+['inst','Savings bank','Holds savings deposits; makes residential real estate loans to individuals.'],
+['inst','Credit union','Transfers funds between consumers; membership based on a common bond (e.g., same employer).'],
+['inst','Mutual fund','Pools savers’ money into a diversified, professionally managed portfolio with a specified objective.'],
+['inst','Pension fund','Collects retirement contributions and invests them to pay pensions.'],
+['inst','Insurance company','Collects premiums, invests them, pays claims.'],
+['inst','Investment bank','Underwriting (raising capital), M&A, brokerage (sale of securities), proprietary trading, research & consulting.'],
+['inst','Venture capital fund','Invests equity in young high-risk, high-growth companies.'],
+['inst','Governmental entities','Treasury, Central Bank, Depositorium.'],
+['inst','Net suppliers / demanders of funds','Individuals = net suppliers. Businesses and governments = net demanders.'],
+['mkt','Financial market','A place where buyers and sellers meet and exchange financial securities directly.'],
+['mkt','Money market','Short-term securities (≤ 1 year): commercial paper, Treasury bills, CDs.'],
+['mkt','Capital market','Long-term securities (> 1 year): common stock, preferred stock, corporate and government bonds.'],
+['mkt','Primary market','Securities issued for the very first time (IPO). Issuer receives the cash.'],
+['mkt','Secondary market','Pre-owned securities traded between participants.'],
+['mkt','OTC market','Intangible market for unlisted securities (dealer network).'],
+['mkt','Organized exchange','Tangible secondary market for listed securities (NYSE, Nasdaq Vilnius).'],
+['mkt','5 ways to classify markets','Nature of claims (equity/debt); Issuer involvement (primary/secondary); Maturity (money/capital); Complexity (simple/derivative); Timing (spot/forward).'],
+['mkt','Commercial paper','Short-term unsecured note sold by corporations to finance daily operations.'],
+['stmt','Income statement','Performance over a period: Sales − COGS = GP − OpEx = EBIT − Interest = EBT − Taxes = Net income.'],
+['stmt','Balance sheet','Position at a point in time: Assets = Liabilities + Stockholders’ equity.'],
+['stmt','Statement of retained earnings','Beginning RE + Net income − Dividends = Ending RE.'],
+['stmt','EPS','(Net income − Preferred dividends) ÷ Common shares outstanding.'],
+['stmt','Gross profit','Sales − Cost of goods sold.'],
+['stmt','EBIT','Operating profit = Gross profit − Operating expenses (S&A + depreciation + other).'],
+['stmt','Net fixed assets','Gross fixed assets − Accumulated depreciation.'],
+['stmt','Common stock (par) vs. Paid-in capital','Par: shares × par value. Paid-in capital in excess of par: shares × (price − par).'],
+['stmt','Authorized / Issued / Outstanding / Treasury','Authorized ≥ Issued. Issued = Outstanding + Treasury (repurchased).'],
+['stmt','Retained earnings','Cumulative earnings reinvested in the firm since inception. Not cash!'],
+['stmt','Current liabilities','Accounts payable, notes payable, accruals (wages, taxes payable), current portion of LTD.'],
+['cf','3 sections of cash flow','Operating, Investing, Financing.'],
+['cf','Sources of cash','↓ assets, ↑ liabilities, ↑ equity (stock issue), net income, depreciation.'],
+['cf','Uses of cash','↑ assets, ↓ liabilities, dividends, share repurchase, net loss.'],
+['cf','Operating activities','NI + Depreciation ± changes in AR, inventory, AP, accruals.'],
+['cf','Investing activities','Purchase/sale of fixed assets and investments (incl. marketable securities in FMA).'],
+['cf','Financing activities','Borrowing/repaying principal, issuing/repurchasing stock, paying dividends.'],
+['cf','Final check of cash flow','Beginning cash + Net change (CFO + CFI + CFF) = Ending cash on the balance sheet.'],
+];
+const cardTopics={all:'Все темы',intro:'Finance',forms:'Формы бизнеса',inst:'Институты',mkt:'Рынки',stmt:'Отчёты',cf:'Cash flow'};
+$('#cardTopic').innerHTML=Object.entries(cardTopics).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+let CD={list:[],i:0,flip:false};
+function buildDeck(){const t=$('#cardTopic').value,known=store.get('known',{});CD.list=shuffle(CARDS.filter(c=>(t==='all'||c[0]===t)&&(!$('#cardOnlyUnknown').checked||!known[c[1]])));CD.i=0;CD.flip=false;renderCard()}
+function renderCard(){const f=$('#flash');const known=store.get('known',{});
+  if(!CD.list.length){f.innerHTML='<div class="back">Все карточки в этой теме отмечены как «знаю».</div>';$('#cardCount').textContent='';return}
+  const c=CD.list[CD.i];f.innerHTML=CD.flip?`<div class="tag">${cardTopics[c[0]]}</div><div class="front" style="font-size:17px">${esc(c[1])}</div><div class="back">${esc(c[2])}</div>`:`<div class="tag">${cardTopics[c[0]]} · нажми, чтобы перевернуть</div><div class="front">${esc(c[1])}</div>`;
+  const nk=CARDS.filter(x=>known[x[1]]).length;$('#cardCount').textContent=`Карточка ${CD.i+1} из ${CD.list.length} · всего выучено ${nk} из ${CARDS.length}`}
+$('#flash').onclick=()=>{CD.flip=!CD.flip;renderCard()};
+$('#flash').onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();CD.flip=!CD.flip;renderCard()}};
+const step=d=>{if(!CD.list.length)return;CD.i=(CD.i+d+CD.list.length)%CD.list.length;CD.flip=false;renderCard()};
+$('#cardNext').onclick=()=>step(1);$('#cardPrev').onclick=()=>step(-1);
+$('#cardYes').onclick=()=>{const k=store.get('known',{});k[CD.list[CD.i][1]]=1;store.set('known',k);step(1)};
+$('#cardNo').onclick=()=>{const k=store.get('known',{});delete k[CD.list[CD.i][1]];store.set('known',k);step(1)};
+$('#cardTopic').onchange=buildDeck;$('#cardOnlyUnknown').onchange=buildDeck;
+
+/* =====================================================
+   CHEAT SHEET
+   ===================================================== */
+const V=solveFMA(FMA_PARAMS);
+const SHEET=[
+['Порядок решения задачи типа FMA',`
+<ol class="clean">
+<li><b>Income Statement</b>: Sales → COGS (% от продаж) → Gross profit → S&amp;A и Depreciation → EBIT → Interest (отдельно по кредиту и облигациям) → EBT → Taxes → Net income → EPS.</li>
+<li><b>Retained Earnings</b>: начальная RE + Net income − Dividends.</li>
+<li><b>Balance Sheet</b>: каждую статью меняешь по условию (AR −5%, Inventory +10%, AP +12%, машина в Gross P&amp;E, амортизация в Accumulated dep., погашение в Notes payable, новые акции в CS и PIC, новая RE).</li>
+<li><b>Cash Flow</b>: NI + Dep ± изменения оборотки → investing → financing. Net change + начальный cash = конечный cash.</li>
+<li><b>Две проверки</b>: Total assets = Total L&amp;E; конечный cash из Cash Flow = cash в балансе.</li>
+</ol>
+<p class="muted">Типичные ловушки: проценты по кредиту считаются на остаток ДО погашения; дивиденды не расход; депрециация идёт и в IS, и в Accumulated depreciation, и прибавляется в Cash Flow; при выпуске акций деньги делятся на par и excess over par.</p>`],
+['Шаблон Income Statement',`<div class="skel">Sales (Revenue)
+− Cost of goods sold
+= Gross profit
+− Operating expenses
+    Selling &amp; administrative
+    Depreciation
+    Other operating expenses
+= Operating profit (EBIT)
+− Interest expense
+= Earnings before taxes (EBT)
+− Taxes (EBT × tax rate)
+= Net income (Net profits after taxes)
+− Preferred stock dividends          (US only)
+= Earnings available for common stockholders
+EPS = (NI − Preferred dividends) ÷ Common shares outstanding</div>`],
+['Шаблон Statement of Retained Earnings',`<div class="skel">Retained earnings, beginning of year
++ Net income
+− Dividends (preferred + common)
+= Retained earnings, end of year     → идёт в баланс</div>`],
+['Шаблон Balance Sheet',`<div class="skel">ASSETS                               LIABILITIES &amp; STOCKHOLDERS' EQUITY
+Current assets                        Current liabilities
+  Cash                                  Accounts payable
+  Marketable securities                 Notes payable
+  Accounts receivable                   Accruals (wages, taxes payable)
+  Inventory                             Current portion of LT debt
+  Total current assets                  Total current liabilities
+Fixed assets                          Long-term debt (bonds, LT notes)
+  Gross plant &amp; equipment             Total liabilities
+  − Accumulated depreciation          Stockholders' equity
+  Net fixed assets                      Preferred stock
+(Investments, Intangibles)              Common stock (at par)
+TOTAL ASSETS                            Paid-in capital in excess of par
+                                        Retained earnings
+                                        (− Treasury stock)
+                                      TOTAL LIABILITIES &amp; EQUITY</div>
+<p>Assets = Liabilities + Stockholders' equity. Активы идут по ликвидности.</p>`],
+['Шаблон Cash Flow (indirect method) и правило знаков',`<div class="skel">Cash flow from operating activities
+  Net income
+  + Depreciation
+  − Increase in AR / + Decrease in AR
+  − Increase in inventory / + Decrease
+  + Increase in AP / − Decrease in AP
+  = Cash from operating activities (CFO)
+Cash flow from investing activities
+  − Purchase of fixed assets
+  + Sale of marketable securities / fixed assets
+  = CFI
+Cash flow from financing activities
+  + New borrowing / − Repayment of debt principal
+  + Issue of stock / − Repurchase
+  − Dividends paid
+  = CFF
+Net change in cash = CFO + CFI + CFF
+Beginning cash + Net change = Ending cash</div>
+<div class="tw"><table class="simple"><tr><th>Источник денег (+)</th><th>Использование денег (−)</th></tr>
+<tr><td>Уменьшение актива</td><td>Увеличение актива</td></tr>
+<tr><td>Увеличение обязательства</td><td>Уменьшение обязательства</td></tr>
+<tr><td>Net income, depreciation</td><td>Net loss</td></tr>
+<tr><td>Выпуск акций</td><td>Дивиденды, выкуп акций</td></tr></table></div>`],
+['Решение FMA Corporation 2019 (ответы)',`<div class="tw"><table class="simple">
+<tr><th colspan="2">Income Statement 2019</th><th colspan="2">Balance Sheet 31.12.2019</th></tr>
+<tr><td>Sales</td><td class="num">${fmt(V.sales)}</td><td>Cash</td><td class="num">${fmt(V.cashBS)}</td></tr>
+<tr><td>COGS (65%)</td><td class="num">${fmt(V.cogs)}</td><td>Marketable securities</td><td class="num">0</td></tr>
+<tr><td>Gross profit</td><td class="num">${fmt(V.gp)}</td><td>Accounts receivable</td><td class="num">${fmt(V.arE)}</td></tr>
+<tr><td>S&amp;A</td><td class="num">${fmt(V.sga)}</td><td>Inventory</td><td class="num">${fmt(V.invE)}</td></tr>
+<tr><td>Depreciation</td><td class="num">${fmt(V.dep)}</td><td>Total current assets</td><td class="num">${fmt(V.tca)}</td></tr>
+<tr><td>EBIT</td><td class="num">${fmt(V.ebit)}</td><td>Gross P&amp;E</td><td class="num">${fmt(V.gpeE)}</td></tr>
+<tr><td>Interest: notes 10% × 50,000</td><td class="num">${fmt(V.intNP)}</td><td>Accumulated depreciation</td><td class="num">${fmt(V.adE)}</td></tr>
+<tr><td>Interest: bonds 12% × 75,000</td><td class="num">${fmt(V.intB)}</td><td>Net P&amp;E</td><td class="num">${fmt(V.nfa)}</td></tr>
+<tr><td>EBT</td><td class="num">${fmt(V.ebt)}</td><td><b>Total assets</b></td><td class="num"><b>${fmt(V.ta)}</b></td></tr>
+<tr><td>Taxes 15%</td><td class="num">${fmt(V.tax)}</td><td>Accounts payable</td><td class="num">${fmt(V.apE)}</td></tr>
+<tr><td><b>Net income</b></td><td class="num"><b>${fmt(V.ni)}</b></td><td>Notes payable</td><td class="num">${fmt(V.npE)}</td></tr>
+<tr><td>EPS (÷ 62,000)</td><td class="num">${fmt(V.eps,3)}</td><td>Long-term bonds</td><td class="num">${fmt(V.bondsE)}</td></tr>
+<tr><th colspan="2">Retained Earnings</th><td>Common stock</td><td class="num">${fmt(V.csE)}</td></tr>
+<tr><td>Beginning RE</td><td class="num">${fmt(V.reB)}</td><td>Paid-in capital</td><td class="num">${fmt(V.picE)}</td></tr>
+<tr><td>+ Net income − Dividends</td><td class="num">+${fmt(V.ni)} −${fmt(V.div)}</td><td>Retained earnings</td><td class="num">${fmt(V.reE)}</td></tr>
+<tr><td><b>Ending RE</b></td><td class="num"><b>${fmt(V.reE)}</b></td><td><b>Total L &amp; E</b></td><td class="num"><b>${fmt(V.tle)}</b></td></tr>
+</table></div>
+<div class="tw"><table class="simple"><tr><th colspan="2">Statement of Cash Flows 2019</th></tr>
+<tr><td>Net income + Depreciation</td><td class="num">${fmt(V.cfNI)} + ${fmt(V.cfDep)}</td></tr>
+<tr><td>AR decrease / Inventory increase / AP increase</td><td class="num">+${fmt(V.cfAR)} / ${fmt(V.cfInv)} / +${fmt(V.cfAP)}</td></tr>
+<tr><td><b>CFO</b></td><td class="num"><b>${fmt(V.cfo)}</b></td></tr>
+<tr><td>New machine / Sale of marketable securities</td><td class="num">${fmt(V.cfCap)} / +${fmt(V.cfMS)}</td></tr>
+<tr><td><b>CFI</b></td><td class="num"><b>${fmt(V.cfi)}</b></td></tr>
+<tr><td>Notes repaid / Stock issued / Dividends</td><td class="num">${fmt(V.cfNP)} / +${fmt(V.cfStock)} / ${fmt(V.cfDiv)}</td></tr>
+<tr><td><b>CFF</b></td><td class="num"><b>${fmt(V.cff)}</b></td></tr>
+<tr><td>Net increase in cash; 15,000 + ${fmt(V.net)}</td><td class="num"><b>${fmt(V.cashE)}</b> ✓ совпадает с условием</td></tr>
+</table></div>`],
+['Формы бизнеса: плюсы и минусы',`<div class="tw"><table class="simple">
+<tr><th></th><th>Sole proprietorship (IĮ)</th><th>Partnership</th><th>Corporation (AB, UAB)</th></tr>
+<tr><td>Плюсы</td><td>Владелец получает всю прибыль; дёшево создать; налог как с личного дохода; независимость; секретность; легко закрыть</td><td>Больше денег и кредитоспособность; больше знаний и навыков; налог как с личного дохода партнёров</td><td>Limited liability; легко передать собственность (акции); неограниченный срок жизни; доступ к рынкам капитала; можно нанять профессиональных менеджеров</td></tr>
+<tr><td>Минусы</td><td>Unlimited liability; мало капитала; нужен «мастер на все руки»; трудно дать сотрудникам карьеру; жизнь фирмы = жизнь владельца</td><td>Unlimited liability; распадается при смерти партнёра; <b>difficulty liquidating or transferring ownership</b></td><td>Double taxation; <b>most expensive to organize</b>; жёсткое регулирование; нет секретности</td></tr>
+</table></div>
+<p>Структура корпорации: Stockholders (владельцы) → выбирают Board of directors (ultimate authority, general policy) → нанимает CEO/President (day-to-day, carries out policies) → CFO и т.д.</p>`],
+['Финансовые институты (по слайдам лекции)',`<div class="tw"><table class="simple">
+<tr><th>Группа на слайде</th><th>Институт</th><th>Что делает</th></tr>
+<tr><td rowspan="3">Depository</td><td>Commercial bank</td><td>Demand + time deposits; loans</td></tr>
+<tr><td>Savings bank</td><td>Savings deposits; residential real estate loans</td></tr>
+<tr><td>Credit union</td><td>Funds between consumers; common bond (employer)</td></tr>
+<tr><td rowspan="3">Depository II (так на слайде)</td><td>Mutual fund</td><td>Pools funds; diversified professionally managed portfolio</td></tr>
+<tr><td>Pension fund</td><td>Retirement savings</td></tr>
+<tr><td>Insurance company</td><td>Premiums → investments → claims</td></tr>
+<tr><td rowspan="3">Non-depository</td><td>Venture capital funds</td><td>Equity in start-ups</td></tr>
+<tr><td>Brokerage company</td><td>Executes trades</td></tr>
+<tr><td>Investment banks</td><td>Underwriting (raising capital), M&amp;A, brokerage, proprietary trading, research &amp; consulting</td></tr>
+<tr><td>Governmental</td><td>Treasury, Central bank, Depositorium</td><td>Бюджет и госдолг, монетарная политика, хранение ценных бумаг</td></tr>
+</table></div>
+<p class="muted">Внимание: в большинстве учебников mutual/pension funds и страховые считаются non-depository. На слайде лектора они в группе «Depository II». На экзамене ориентируйся на слайды, но если вопрос общий, помни учебное деление.</p>
+<p>Кто поставляет деньги: individuals = net suppliers; businesses и governments = net demanders.</p>`],
+['Финансовые рынки',`<div class="tw"><table class="simple">
+<tr><th>Признак</th><th>Деление</th></tr>
+<tr><td>Nature of claims</td><td>Equity vs. Debt</td></tr>
+<tr><td>Issuer involvement</td><td>Primary (новый выпуск, IPO) vs. Secondary (pre-owned)</td></tr>
+<tr><td>Maturity</td><td>Money (≤ 1 год) vs. Capital (&gt; 1 год)</td></tr>
+<tr><td>Complexity</td><td>Simple vs. Derivative (options, futures)</td></tr>
+<tr><td>Timing</td><td>Spot vs. Forward</td></tr></table></div>
+<ul class="clean"><li><b>Money market</b>: commercial paper, Treasury bills, CDs до 12 месяцев.</li><li><b>Capital market</b>: common stock, preferred stock, corporate and government bonds.</li><li><b>Organized exchange</b>: осязаемый вторичный рынок для listed securities. <b>OTC</b>: неосязаемый рынок для unlisted securities.</li><li><b>Financial market</b> ≠ financial institution: рынок — место прямых сделок; институт — посредник.</li></ul>`],
+['Finance, сферы, история',`<ul class="clean"><li>Finance = the art and science of managing money.</li><li>Fields: Corporate/Managerial, Financial services/Banking, Personal, Public, International, Investment management, Asset valuation, Risk management.</li>
+<li>Economics: структура для решений, картина экономики. Accounting: данные (IS, BS, CF). Psychology: иррациональное поведение. Statistics: риск и вероятности.</li>
+<li>История: начало XX в. отделение от economics → 1930-е preservation of capital, reorganization, bankruptcy → 1950-е analytical: capital structure, dividends, cash &amp; inventory management → сейчас risk-return, portfolio management, hedging.</li>
+<li>Финансовый менеджер: ключевая роль decision making; фокус на cash flows. Бухгалтер: accrual basis, сбор и представление данных.</li>
+<li>Решения компании: куда инвестировать, менять ли старый актив (investment); когда выпускать акции и облигации (financing); платить ли дивиденды (dividend).</li></ul>`],
+];
+$('#sheetBox').innerHTML=SHEET.map(([t,b],i)=>`<details class="sheet"${i===0?' open':''}><summary>${t}</summary><div class="body">${b}</div></details>`).join('');
+
+/* ---------- home stats ---------- */
+function renderHome(){
+  const st=store.get('qstats',{});let c=0,n=0;Object.values(st).forEach(s=>{c+=s.c;n+=s.n});
+  const known=Object.keys(store.get('known',{})).length;const wrong=Object.keys(store.get('wrong',{})).length;
+  const prog=store.get('buildProg',{});const fmaDone=[0,1,2,3].filter(i=>(prog['fma:'+i]||0)===100).length;
+  const tile=(label,val,p)=>`<div class="stat"><span class="eyebrow">${label}</span><b>${val}</b>${p!=null?`<div class="meter"><i style="width:${p}%"></i></div>`:''}</div>`;
+  $('#homeStats').innerHTML=tile('Вопросов в базе',Q.length)+tile('Точность в тестах',n?Math.round(c/n*100)+'%':'—',n?Math.round(c/n*100):0)+tile('Ошибок на повтор',wrong)+tile('Карточек выучено',`${known}/${CARDS.length}`,Math.round(known/CARDS.length*100))+tile('FMA: отчётов без ошибок',`${fmaDone}/4`,fmaDone*25);
+}
+
+/* ---------- init ---------- */
+const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
+buildDeck();
+const h=location.hash.replace('#','');showTab(TABS.includes(h)?h:store.get('tab','home'));
+$('#quizBox').innerHTML='<p class="muted">Выбери тему и нажми «Начать». Вопросы на английском, как на экзамене, разбор на русском. Начни с «Мини-тест из класса».</p>';
+</script>
