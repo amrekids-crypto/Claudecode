@@ -1,4 +1,9 @@
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Finance, Please">
+<meta name="theme-color" content="#23211a">
 <title>Finance Midterm Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Tiny5&display=swap">
@@ -501,7 +506,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 
 <!-- MIX -->
 <section class="section" id="tab-mix" hidden>
-  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Finance, Please</h1><span class="muted" style="font-size:13px">Игра · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppReset" style="margin-left:auto">Начать игру заново</button></div>
+  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Finance, Please</h1><span class="muted" style="font-size:13px">Игра · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppFull" style="margin-left:auto" hidden>⛶ Весь экран</button><button class="btn small" id="ppReset">Начать игру заново</button></div>
   <div class="pp" id="pp">
     <div class="pp-top"><canvas id="ppQueue" width="480" height="120" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div><div class="pp-event" id="ppEvent"></div></div>
     <div class="pp-main">
@@ -3609,6 +3614,16 @@ function drawActorExtra(R,a,x,y,t){
   if(a.t==='gegg'){R(x,y,4,5,'#e0b64a');R(x+1,y-1,2,1,'#e0b64a');R(x+1,y,1,2,'#fff0a0');if(t%4<2)R(x-2,y-2,1,1,'#fff8c0');return true}
   return drawArrestActor(R,a,x,y,t)}
 
+
+/* ---------- fullscreen (F11-like) ---------- */
+{const d=document,el=d.documentElement,btn=$('#ppFull');
+  const can=!!(d.fullscreenEnabled||d.webkitFullscreenEnabled),ios=/iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1&&!can),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  const isFs=()=>!!(d.fullscreenElement||d.webkitFullscreenElement);
+  const upd=()=>{btn.textContent=isFs()?'✕ Свернуть':'⛶ Весь экран'};
+  btn.hidden=standalone||!(can||ios);upd();
+  btn.onclick=async()=>{if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
+    try{if(isFs())await (d.exitFullscreen||d.webkitExitFullscreen).call(d);else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'})}catch(e){toast('Полный экран недоступен','Браузер не разрешил. Попробуй открыть сайт в Chrome или Safari.','#e05a4a')}};
+  d.addEventListener('fullscreenchange',()=>{upd();setTimeout(()=>{try{qsResize();qsDraw()}catch(e){}},200)});d.addEventListener('webkitfullscreenchange',upd)}
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
