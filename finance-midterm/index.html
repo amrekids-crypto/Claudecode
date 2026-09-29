@@ -686,7 +686,7 @@ document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classLis
 const TABS=['home','build','mix','lb','place','quiz','cards','sheet'];
 function cheatCheck(){try{if(typeof B==='undefined'||!B.stmts||typeof PP==='undefined')return;let sk=null,ek=null;B.stmts.forEach((st,i)=>(st.rows||[]).forEach(r=>{if(r.head||!r.label)return;const lb=String(r.label).replace(/<[^>]*>/g,'');if(!sk&&/^\s*(net\s+)?sales\b/i.test(lb))sk=i+':'+r.id;if(!ek&&/\bEPS\b|earnings per share/i.test(lb))ek=i+':'+r.id}));
   const num=v=>parseFloat(String(v==null?'':v).replace(/[,\s$]/g,''));if(!sk||!ek||num(B.inputs[sk])!==100||num(B.inputs[ek])!==100)return;
-  B.inputs[sk]='';B.inputs[ek]='';store.set(inpKey(),B.inputs);try{renderLedger()}catch(e){}PP.cash+=100;ppSave();try{ppBar()}catch(e){}setTimeout(()=>{try{toast('Читкод активирован','+$100 на баланс','#7fe08a');SFX.coin()}catch(e){}},500)}catch(e){}}
+  B.inputs[sk]='';B.inputs[ek]='';store.set(inpKey(),B.inputs);try{renderLedger()}catch(e){}PP.cash+=100;if(PP.beg)PP.beg.cash+=100;if(PD)PD.cheat=(PD.cheat||0)+100;ppSave();try{ppBar()}catch(e){}setTimeout(()=>{try{toast('Читкод активирован','+$100 на баланс','#7fe08a');SFX.coin()}catch(e){}},500)}catch(e){}}
 function showTab(t){if(!TABS.includes(t))t='home';if(t==='mix')setTimeout(cheatCheck,0);TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
@@ -3055,7 +3055,7 @@ const MOB={n:'mob',title:'Самосуд очереди',line:'Очередь р
   if(crew.length<2){temp=true;crew=[0,1,2,3].map(i=>{const L=i%2===0,q={look:newLook(),x:L?-QS.OX-20-i*14:QS.W-QS.OX+10+i*14,y:110,tx:0,ty:110,state:'x',sp:3,side:L?-1:1};QS.people.push(q);return q});ppTalk('Бюро','С обеих сторон улицы бегут разъярённые прохожие!')}
   crew=crew.slice(0,6);ppTalk('Очередь','Держи его! Мы тут час стоим, а он мухлюет!');popText('ДЕРЖИ ЕГО!',352,70,'#ffe060',14);
   crew.forEach((q,i)=>{q.state='x';q.ox=(i%2?1:-1)*(10+Math.floor(i/2)*9)+rint(-3,3);q.oy=rint(-7,7);q.run=true});
-  await tick(()=>{crew.forEach(q=>{q.tx=p.x+q.ox;q.ty=Math.max(96,Math.min(124,p.y+q.oy));q.sp=Math.max(3.6,Math.abs(q.tx-q.x)/18)});return crew.every(q=>Math.abs(q.x-q.tx)<4&&Math.abs(q.y-q.ty)<3)});
+  let caught=false;await tick(()=>{if(!caught&&crew.some(q=>Math.abs(q.x-(p.x+6))<16&&Math.abs(q.y-p.y)<20)){caught=true;p.sp=0;p.tx=p.x;p.ty=p.y;p.run=false;popText('ПОЙМАЛИ!',Math.round(p.x+6),Math.round(p.y-6),'#ffe060',12)}crew.forEach(q=>{q.tx=p.x+q.ox;q.ty=Math.max(96,Math.min(124,p.y+q.oy));q.sp=Math.max(3.6,Math.abs(q.tx-q.x)/18)});return caught&&crew.every(q=>Math.abs(q.x-q.tx)<4&&Math.abs(q.y-q.ty)<3)});
   p.sp=0;p.tx=p.x;p.run=false;crew.forEach(q=>{q.run=false;q.dir=q.x<p.x?1:-1;q.faceL=q.x>p.x});
   const words=['БАМ!','ПОЛУЧАЙ!','ХРЯСЬ!','ЗА ОЧЕРЕДЬ!','БУМ!','ШМЯК!'];
   for(let i=0;i<14;i++){const q=pick(crew);const d=Math.sign(p.x-q.x)||1;q.x+=d*3;setTimeout(()=>{q.x-=d*3},120);q.jy=-2;setTimeout(()=>{q.jy=0},140);
@@ -3375,7 +3375,7 @@ async function ppArrestAnim(cb){
   let done=false;const fin=()=>{if(done)return;done=true;if(PD)PD.anim=false;SPD=1;ppBar();FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
   const ownA=ARRESTS.filter(a=>(PP.arrests||{})[a.n]&&!(PP.arrOff||{})[a.n]&&(a.n!=='petrage'||PP.pet));let v,trial=false;
   if(window.__forceArrest!=null)v=window.__forceArrest==='mob'?MOB:window.__forceArrest<0?null:ARRESTS[window.__forceArrest];
-  else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const alt=pool.filter(a=>(a?a.n:'car')!==PP.lastArrest);v=pick(alt.length?alt:pool);trial=trial&&!!v&&v!==MOB}
+  else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const nm=a=>a?a.n:'car',names=pool.map(nm);let bag=(PP.arrBag||[]).filter(k=>names.includes(k));if(!bag.length){bag=shuffle(names.slice());if(bag.length>1&&bag[0]===PP.lastArrest)bag.push(bag.shift())}const nx=bag.shift();PP.arrBag=bag;v=pool.find(a=>nm(a)===nx)||null;trial=trial&&!!v&&v!==MOB}
   PP.lastArrest=v?v.n:'car';
   try{if(v){ppTalk('Бюро',trial?`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk('Бюро','Патруль, перехватите его!');if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}catch(e){}
   if(!p.f0)p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
@@ -3603,7 +3603,7 @@ function ppSummary(){
   const broke=PP.cash<0;
   stInc('days');stMax('maxDay',d);stMax('maxMedals',PP.medals.length);stMax('maxCash',PP.cash);if(PD.correct===PD.tasks.length&&PD.tasks.length>=5)stInc('perfect');if(broke)stInc('broke');if(PP.pet)stMax('petDays',d+1-PP.pet.since);
   ppOverlay(`<h3>ИТОГИ ДНЯ ${d}</h3>${petFind?`<p class="mono" style="text-align:center">${esc(PP.pet.name)} принёс находку: $${petFind}.</p>`:''}
-   <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>
+   <p class="mono" style="text-align:center">Верно ${PD.correct} из ${PD.tasks.length}. Все четыре отчёта твоего бюро за день, $:</p>${PD.refund?`<p class="mono" style="text-align:center;color:#3a7a3a">Вычеты за ошибки ($${PD.refund}) отменены: инспектор сбит, поэтому их нет в отчётах.</p>`:''}${PD.cheat?`<p class="mono" style="text-align:center;color:#3a7a3a">Читкод: +$${PD.cheat} добавлено к начальному Cash.</p>`:''}
    <div class="pp-sumgrid">
    <table class="pp-is"><tr class="h"><td>Income statement</td><td></td></tr>
    ${row('Revenue (fees)',rev)}${tips?row('Revenue: tips (чаевые)',tips):''}${row('Rent',-rent)}${row('Food',-food)}${row('Heat',-heat)}${rep?row('Repairs (покраска, стол)',-rep):''}${hints?row('Hints (50/50)',-hints):''}${dep?row('Depreciation',-dep):''}${ded?row('Salary deductions (проверки)',-ded):''}${sup?row('Supplies (расходники)',-sup):''}${petf?row('Pet food (корм)',-petf):''}
