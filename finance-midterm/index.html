@@ -220,7 +220,8 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .pp-doc.over{outline:3px solid #e0b64a;outline-offset:2px}
 .pp-ghost{position:fixed;z-index:9999;pointer-events:none;background:#3a2e21;color:#efe6c8;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
 @media (max-width:760px){.pp-build{grid-template-columns:1fr}}
-.pp-seq li[data-i]{touch-action:none;cursor:grab;user-select:none}
+.pp-seq li[data-i]{cursor:grab;user-select:none}.pp-seq li[data-i] .pp-chip,.pp-seq li[data-i] .grip{touch-action:none}
+@media (pointer:coarse){.pp-seq{padding-right:46px;background-image:linear-gradient(to left,rgba(143,131,96,.22) 0 40px,transparent 40px)}.pp-seq li[data-i] .grip{width:22px}}
 .pp-seq li[data-i] .grip{display:inline-block;width:14px;color:#8f8360;font-size:12px;margin-right:4px;letter-spacing:-2px}
 .pp-seq li.dragging{opacity:.9}.pp-seq li.dragging .pp-chip{background:#3a2e21;color:#efe6c8;box-shadow:4px 4px 0 rgba(0,0,0,.3)}
 .pp-pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
@@ -424,7 +425,7 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-aq{width:88px;height:88px;display:grid;place-items:center;background:#3a382c;color:#8a8270;font-size:40px;border:2px solid var(--pp-line)}
 .pp-acard b{font-weight:400;font-size:14px;line-height:1.15}
 .pp-acard small{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;line-height:1.3}
-.pp-acard.got{border-color:var(--pp-green)}
+.pp-acard{border-color:var(--rar,#8f8360)!important;border-width:3px}.pp-acard.got canvas{border-color:var(--rar,var(--pp-line))}.pp-acard:not(.got){border-style:dashed}
 .pp-acard em{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.3;font-style:italic;color:#4a3e2c}
 .pp-eggs{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
 .pp-eggs span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;padding:2px 6px;border:1px dashed #8f8360}
@@ -2513,7 +2514,7 @@ function ppRenderOrder(){const c=PD.cur;if(c.kind==='build')return ppRenderBuild
   if(c.kind==='order')paper.querySelector('.ord').innerHTML=ppOrderHTML(c,`Подать ($${c.fee})`);
   else paper.querySelector('.ord').innerHTML=ppOrderHTML(c,'Дальше: заполнить');ppSeqDrag()}
 function ppSeqDrag(){const seq=$('#ppSeq');if(!seq)return;let st=null;
-  seq.addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-i]');if(!li||e.button>0||e.target.closest('input'))return;st={li,y:e.clientY,moved:false,id:e.pointerId}});
+  seq.addEventListener('pointerdown',e=>{const li=e.target.closest('li[data-i]');if(!li||e.button>0||e.target.closest('input'))return;if(e.pointerType!=='mouse'&&!e.target.closest('.pp-chip,.grip'))return;st={li,y:e.clientY,moved:false,id:e.pointerId}});
   seq.addEventListener('pointermove',e=>{if(!st)return;if(!st.moved){if(Math.abs(e.clientY-st.y)<5)return;st.moved=true;st.li.classList.add('dragging');try{seq.setPointerCapture(st.id)}catch(_){}}
     e.preventDefault();const sibs=[...seq.children].filter(x=>x!==st.li&&x.dataset.i!=null);const tgt=sibs.find(s=>{const r=s.getBoundingClientRect();return e.clientY<r.top+r.height/2});if(tgt!==st.li.nextElementSibling)seq.insertBefore(st.li,tgt||null)});
   const end=()=>{if(!st)return;if(st.moved){const c=PD.cur;c.seq=[...seq.children].filter(x=>x.dataset.i!=null).map(x=>+x.dataset.i);c._drag=true;setTimeout(()=>{c._drag=false},50);SFX.click();ppRenderOrder()}st=null};
@@ -3392,33 +3393,39 @@ const ALBUM=[
  ['old_f','Пенсионерка','Пожилая посетительница',(L,F)=>L.g==='f'&&F.age==='o'&&!L.sp&&!L.special,'Хранит сбережения в банке. В стеклянной, под кроватью.'],
  ['pretty_f','Красавица','Встречается нечасто',(L,F)=>F.pretty&&L.g==='f'&&!L.catgirl&&!L.special,'Очередь пропускает её вперёд. Налоговая нет.'],
  ['pretty_m','Красавчик','Встречается нечасто',(L,F)=>F.pretty&&L.g==='m'&&!L.special,'Смотрит в окошко как в зеркало и поправляет чёлку.'],
- ['glasses','В очках','Обычный посетитель',L=>L.glasses&&!L.special,'Прочитал весь договор мелким шрифтом. С тех пор не спит.'],
+ ['glasses','В очках','Обычный посетитель',L=>L.glasses&&!L.special,['Прочитал весь договор мелким шрифтом. С тех пор не спит.','Прочитала весь договор мелким шрифтом. С тех пор не спит.']],
  ['beard','Бородач','Обычный посетитель',L=>L.beard&&!L.payot&&!L.celeb&&!L.special,'Не брился с последнего квартального отчёта.'],
  ['cap','В кепке','Обычный посетитель',L=>L.hat==='cap'&&!L.special,'Кепка задом наперёд, отчётность тоже.'],
- ['fedora','В шляпе','Обычный посетитель',L=>L.hat==='fedora'&&!L.special,'Говорит «миледи». Вложил все сбережения в NFT.'],
- ['scarf','В платке','Обычная посетительница',L=>L.hat==='scarf'&&!L.sp,'Зашла с рынка сдать декларацию, пока картошка не остыла.'],
+ ['fedora','В шляпе','Обычный посетитель',L=>L.hat==='fedora'&&!L.special,['Говорит «миледи». Вложил все сбережения в NFT.','Говорит «сударь». Вложила все сбережения в NFT.']],
+ ['scarf','В платке','Обычная посетительница',L=>L.hat==='scarf'&&!L.sp,['Зашёл с рынка сдать декларацию, пока картошка не остыла.','Зашла с рынка сдать декларацию, пока картошка не остыла.']],
  ['granny','Бабушка','Её не хочется арестовывать',L=>L.sp==='granny'&&!L.cat,'Принесла инспектору пирожки. Взяткой это не считает.'],
  ['granny_cat','Бабушка с котом','Редкая гостья',L=>!!L.cat,'Кот Барсик официально числится её финансовым консультантом.'],
  ['mom','Мама с малышом','Её не хочется арестовывать',L=>L.sp==='mom'&&!(L.nk>1),'Спит четыре часа в сутки. Отчёт заполняет одной рукой.'],
  ['mom2','Мама двоих детей','Встречается нечасто',L=>L.sp==='mom'&&L.nk===2,'Два ребёнка, ноль свободных минут, минус один нерв.'],
  ['mom3','Многодетная мама','Редкая гостья',L=>L.sp==='mom'&&L.nk===3,'Никогда не испытывала счастливой жизни. Детские пособия считает быстрее любого калькулятора.'],
- ['wheel','В коляске','Его не хочется арестовывать',L=>L.sp==='wheel','Приехал раньше всех. Пандуса у будки так и нет.'],
- ['kippah','В кипе','Встречается нечасто',L=>L.hat==='kippah','Пришёл уточнить один пункт договора. Уточняет третий час.'],
+ ['wheel',['Скоростной колясочник','Скоростная колясочница'],'Не хочется арестовывать',L=>L.sp==='wheel',['Приехал раньше всех. Пандуса у будки так и нет.','Приехала раньше всех. Пандуса у будки так и нет.']],
+ ['kippah','В кипе','Встречается нечасто',L=>L.hat==='kippah',['Пришёл уточнить один пункт договора. Уточняет третий час.','Пришла уточнить один пункт договора. Уточняет третий час.']],
  ['hasid','Хасид','Чёрная шляпа и пейсы',L=>L.hat==='hasid','Спорит о каждой запятой в договоре и всегда оказывается прав.'],
  ['flag_pride','С радужным флагом','Флаг носят только те, кого можно арестовать',L=>L.flag==='pride','Радуга на флаге, красный цвет в балансе.'],
- ['flag_ua','С флагом Украины','Флаг носят только те, кого можно арестовать',L=>L.flag==='ua','Пришёл с флагом даже за справкой о доходах.'],
+ ['pride_mom','Гейша с прицепом','Очень редкая гостья',L=>L.flag==='pride'&&L.sp==='mom','Радужный флаг в одной руке, ребёнок в другой. Отчёт держит зубами.'],
+ ['flag_ua','С флагом Украины','Флаг носят только те, кого можно арестовать',L=>L.flag==='ua',['Пришёл с флагом даже за справкой о доходах.','Пришла с флагом даже за справкой о доходах.']],
  ['flag_ps','С флагом Палестины','Флаг носят только те, кого можно арестовать',L=>L.flag==='ps','Держит флаг крепче, чем свой бюджет.'],
  ['catgirl','Кошкодевочка','Очень редкая гостья',L=>!!L.catgirl,'Мяу. Требует оплату рыбой. Бухгалтерия в замешательстве.'],
  ['biden','Джо Байден','Знаменитость, приходит редко',L=>L.celeb==='biden','Вышел не в ту дверь и оказался в очереди. Остался из вежливости.'],
  ['hitler','Адольф Гитлер','Знаменитость, приходит редко',L=>L.celeb==='hitler','Не прошёл в академию художеств. Теперь не может пройти даже проверку отчёта о движении денежных средств.'],
  ['zelensky','Владимир Зеленский','Знаменитость, приходит редко',L=>L.celeb==='zelensky','Пришёл попросить ещё немного финансирования. Как обычно.'],
- ['inspector','Налоговый инспектор','Приходит каждый вечер',L=>!!L.insp,'Любит порядок, медали и чужие ошибки.'],
+ ['inspector','Налоговый инспектор','Приходит каждый вечер',L=>!!L.insp,['Любит порядок, медали и чужие ошибки. Свои не замечает.','Любит порядок, медали и чужие ошибки. Свои не замечает.']],
  ['boss','Олигарх Скруджев','Босс недели, каждый 7-й день',L=>!!L.boss,'Семь заводов, ноль бухгалтеров. Монокль дороже твоей будки.'],
- ['golden','Золотой клиент','Секрет: длинная серия верных ответов',L=>!!L.golden,'Весь из золота. Даже совесть.'],
- ['ghost','Призрак','Секрет: он не любит дневной свет',L=>!!L.ghost,'Умер, так и не дождавшись возврата налога.'],
- ['deep','Глубокомысленный','Секрет: особенный день',L=>!!L.deep,'Знает ответ на главный вопрос. Сам вопрос забыл.']];
+ ['golden','Золотой клиент','Секрет: длинная серия верных ответов',L=>!!L.golden,['Весь из золота. Даже совесть.','Вся из золота. Даже совесть.']],
+ ['ghost','Призрак','Секрет: он не любит дневной свет',L=>!!L.ghost,['Умер, так и не дождавшись возврата налога.','Умерла, так и не дождавшись возврата налога.']],
+ ['deep','Глубокомысленный','Секрет: особенный день',L=>!!L.deep,['Знает ответ на главный вопрос. Сам вопрос забыл.','Знает ответ на главный вопрос. Сам вопрос забыла.']]];
 const lookClone=L=>JSON.parse(JSON.stringify(L));
-function albumSee(L){if(!L)return;const F=faceOf(L);const got=[];ALBUM.forEach(([k,n,,t])=>{if(!META.album[k]&&t(L,F)){META.album[k]={L:lookClone(L),d:PP.day};got.push(n)}});
+const gtxt=(v,L)=>Array.isArray(v)?v[L&&L.g==='f'?1:0]:(v||'');
+const RARITY=[['Обычный','#8f8360'],['Необычный','#4a9a4a'],['Редкий','#3a7ac8'],['Эпический','#9a4ac8'],['Легендарный','#e0a020']];
+const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_pride:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,pride_mom:3,golden:4,ghost:4,deep:4};
+const albR=k=>ALB_R[k]||0;
+function albumSee(L){if(!L)return;const F=faceOf(L);const got=[];const m=ALBUM.filter(([k,,,t])=>!META.album[k]&&t(L,F)).sort((a,b)=>albR(b[0])-albR(a[0]))[0];
+  if(m){META.album[m[0]]={L:lookClone(L),d:PP.day};got.push(gtxt(m[1],L))}
   if(got.length){metaSave();toast('Новое в альбоме',got.join(', '),'#7fb0e0');achCheck()}}
 
 /* ---------- achievements ---------- */
@@ -3571,7 +3578,7 @@ function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const 
   const nA=Object.keys(META.album).length,nH=Object.keys(META.ach).length,nE=Object.keys(META.eggs).length;
   const tabs=[['album',`Альбом ${nA}/${ALBUM.length}`],['ach',`Достижения ${nH}/${ACH.length}`],['avatar','Инспектор'],['pet',PP.pet?'Питомец: '+PP.pet.name:'Питомец']];
   let body='';
-  if(tab==='album'){body=`<div class="pp-album">${ALBUM.map(([k,n,h,,ds])=>{const e=META.album[k];return e?`<div class="pp-acard got"><canvas width="64" height="64" data-alb="${k}"></canvas><b>${esc(n)}</b><em>${esc(ds||'')}</em><small>впервые: день ${e.d}</small></div>`:`<div class="pp-acard"><div class="pp-aq">?</div><b>???</b><small>${esc(h)}</small></div>`}).join('')}</div>
+  if(tab==='album'){body=`<div class="pp-album">${ALBUM.map(([k,n,h,,ds])=>{const e=META.album[k],rc=RARITY[albR(k)][1];return e?`<div class="pp-acard got" style="--rar:${rc}"><canvas width="64" height="64" data-alb="${k}"></canvas><b>${esc(gtxt(n,e.L))}</b><em>${esc(gtxt(ds,e.L))}</em><small>впервые: день ${e.d}</small></div>`:`<div class="pp-acard" style="--rar:${rc}"><div class="pp-aq">?</div><b>???</b><small>${esc(h)}</small></div>`}).join('')}</div>
     <p class="mono" style="text-align:center">Пасхалки: ${nE} из ${EGGS.length}. Они спрятаны везде: в клавиатуре, в офисе, во времени и в названиях.</p><div class="pp-eggs">${EGGS.map(([k,n])=>`<span class="${META.eggs[k]?'got':''}">${META.eggs[k]?esc(n):'???'}</span>`).join('')}</div>`}
   else if(tab==='ach'){body=`<div class="pp-achs">${ACH.map(([k,n,d,,r])=>`<div class="pp-ach${META.ach[k]?' got':''}"><i>${META.ach[k]?'★':'☆'}</i><div><b>${esc(n)}</b><small>${esc(d)}${r?' · '+esc(rewardText(r)):''}</small></div></div>`).join('')}</div>`}
   else if(tab==='avatar'){const a=avState();body=`<div class="pp-avwrap"><div class="pp-avprev"><canvas id="ppAvBig" width="64" height="64"></canvas><canvas id="ppAvStreet" width="40" height="40"></canvas><small>Так выглядит инспектор, который приходит в конце дня. Новые вещи открываются за достижения.</small></div><div class="pp-avopts">${Object.entries(AV_OPT).filter(([k])=>!(a.g==='f'&&(k==='beard'||k==='stache'))).map(([k,opts])=>`<div class="pp-avrow"><span>${AV_LABEL[k]}</span><div>${opts.map(([v,n])=>{const lock=avLock(k,v);const sw=['skin','hair','coat'].includes(k)?`<i class="sw" style="background:${v}"></i>`:'';return`<button class="pp-chip${String(a[k])===String(v)?' on':''}" data-av="${k}" data-v="${esc(String(v))}" ${lock?'disabled title="Откроется за достижение «'+esc(lock)+'»"':''}>${sw}${lock?'🔒 ':''}${esc(n)}</button>`}).join('')}</div></div>`).join('')}</div></div>`}
