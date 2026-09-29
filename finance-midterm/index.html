@@ -195,6 +195,9 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
   .pp{height:calc(100vh - 110px);min-height:520px;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
   .pp-main{min-height:0}
   .pp-booth,.pp-desk,.pp-side{overflow-y:auto;min-height:0}
+  .pp-booth>*{flex-shrink:0}
+  .pp-window{align-self:center}
+  .pp-window canvas{width:clamp(110px,calc(79vh - 440px),206px);max-width:none}
 }
 @media (max-width:899px){.pp-main{grid-template-columns:1fr}.pp-side{border-left:none;border-top:4px solid var(--pp-line);display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.pp-side .pp-office{grid-column:1/-1}.pp-booth{border-right:none;border-bottom:4px solid var(--pp-line);display:grid;grid-template-columns:120px 1fr;grid-template-areas:"win talk" "clock talk" "btn btn"}.pp-window{grid-area:win}.pp-clockrow{grid-area:clock;flex-direction:column}.pp-talk{grid-area:talk}.pp-booth .horn{grid-area:btn}}
 .pp-window .bars{position:absolute;left:0;right:0;top:0;height:0;z-index:2;background:repeating-linear-gradient(90deg,transparent 0 14px,#15130f 14px 20px),linear-gradient(rgba(163,48,42,.22),rgba(163,48,42,.22));border-bottom:4px solid #15130f;pointer-events:none}
