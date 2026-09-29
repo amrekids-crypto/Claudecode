@@ -1990,10 +1990,10 @@ function drawFace(L,cv,ov){
   if(F.bags&&F.age!=='o'){R(23,29,6,1,sd);R(36,29,6,1,s2)}
   // hair
   const hl=F.hairline;
-  if(L.hat!=='scarf'&&(LS!=='bald'||L.hat)){for(let y=8;y<=21+hl;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round((15-d)*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);if(LS!=='long')for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
+  if(L.hat!=='scarf'&&LS!=='bald'){for(let y=8;y<=21+hl;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round((15-d)*Math.pow(Math.max(0,1-Math.pow(t,4)),.25));if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);if(LS!=='long')for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
     R(17+d,19,3,9,H);R(16+d,19,1,9,OL);R(44-d,19,3,9,H1);R(47-d,19,1,9,OL);const PT=LS==='long'&&!L.hat?(F.bang?'side':'curtain'):F.part;if(PT==='curtain'){R(20+d,20+hl,24-2*d,1,H);for(let y=19;y<=25;y++){const k=y-19,lw=Math.max(0,12-d-k*2);if(lw>0){R(20+d,y,lw,1,H);R(20+d+lw,y,1,1,OL);R(44-d-lw,y,lw,1,H);R(43-d-lw,y,1,1,OL);R(21+d,y,1,1,H2)}}R(31,9,2,10,H1);R(31,9,1,10,shade(H,.55))}else if(PT==='side'){R(20+d,20+hl,24-2*d,2,H);R(20+d,21+hl,24-2*d,1,H1);R(25,19,1,3+hl,H1)}else if(PT==='fringe'){R(20+d,20+hl,24-2*d,3,H);R(20+d,22+hl,24-2*d,1,H1);for(let xx=21+d;xx<43-d;xx+=3)R(xx,23+hl,1,1,H)}else{R(20+d,20+hl,24-2*d,2,H);R(20+d,21+hl,24-2*d,1,H1);R(31,19,2,2,s)}R(24,10,14,1,H2);
     if(F.age==='o'&&hl<0){R(24,17,16,3,s);R(24,17,16,1,sl)}}
-  else if(LS==='bald'&&!L.hat){R(24,12,10,2,sl);R(26,11,6,1,sl);if(F.age!=='y'){R(17,21,2,6,H);R(45,21,2,6,H1)}}
+  else if(LS==='bald'&&L.hat!=='scarf'){if(!L.hat){R(26,13,9,2,sl);R(28,12,5,1,sl)}if(F.age!=='y')for(let y=L.hat?22:21;y<=26;y++){const hw=hwAt(y);if(hw>3){R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}}}
   if(LS==='curly'&&L.hat!=='scarf'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
   if(LS==='bun'&&!L.hat){R(26,3,12,7,OL);R(27,4,10,6,H);R(28,4,8,1,H2);R(35,5,2,4,H1)}
   if(F.pretty&&L.hat!=='scarf'&&LS!=='bald'&&LS!=='curly'){const HG=shade(H,1.55);R(23,10,6,1,HG);R(21,11,5,1,HG);R(20,12,3,1,H2);R(29,9,6,1,H2);if(LS==='long'&&!L.hat)for(let y=24;y<48;y+=1)if(y%6<3){R(18-Math.floor((y-24)/8),y,1,1,H2)}}
@@ -2179,7 +2179,7 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);
   R(px+5,y+7,3,2,sd);
   R(px+3,y+1,7,7,s);R(px+9,y+3,1,4,s);R(px+10,y+4,1,2,sd);R(px+3,y+7,6,1,sd);
-  if(LSt!=='bald'||L.hat){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
+  if(LSt!=='bald'){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
   if(LSt==='long'&&(!L.hat||HAIR_HATS.includes(L.hat)))R(px+2,y+2,2,8,H);
   if(LSt==='bun'&&!L.hat)R(px+1,y,2,3,H);
   if(LSt==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
