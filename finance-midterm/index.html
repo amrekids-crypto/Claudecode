@@ -945,7 +945,7 @@ $('#timerBtn').onclick=()=>{if(tInt){clearInterval(tInt);tInt=null;$('#timerBtn'
    QUESTION BANK
    q: question, o: options, a: index of correct, x: explanation (RU), t: topic
    ===================================================== */
-const TOPICS={mini:'Мини-тест из класса',intro:'Finance и финансовый менеджер',forms:'Формы бизнеса и корпорация',inst:'Финансовые институты',mkt:'Финансовые рынки',stmt:'Income Statement, BS, RE',cf:'Cash Flow Statement',calc:'Задачи на счёт',cls:'Классификация статей'};
+const TOPICS={easy:'Деньги в жизни',mini:'Мини-тест из класса',intro:'Finance и финансовый менеджер',forms:'Формы бизнеса и корпорация',inst:'Финансовые институты',mkt:'Финансовые рынки',stmt:'Income Statement, BS, RE',cf:'Cash Flow Statement',calc:'Задачи на счёт',cls:'Классификация статей'};
 const TF=['True','False'];
 const Q=[
 // ---- mini test (exact) ----
@@ -1883,10 +1883,10 @@ const PPX={
 function ppNorm(p){p=p||{};return Object.assign({candy:0,win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
 let PP=ppNorm(store.get('pp',null));if(!PP.decorMig){PP.decorMig=1;[['street','night'],['booth','olive'],['win','green'],['desk','oak']].forEach(([c,d])=>{if(PP[c]&&PP[c]!==d&&PP.owned[c+':'+PP[c]]==null)PP.owned[c+':'+PP[c]]=(PP.day||1)-10})}
 let PD=null,ppLoop=null;
-const DIFF_N=['','Очень легко','Легко','Нормально','Сложно','Хардкор'],DIFF_M=[0,.6,.8,1,1.25,1.5];
-function ppCosts(){const e=PP.event,D=PP.diff||3,fm=DIFF_M[D];return{fee:Math.max(1,Math.round(({fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE)*fm)),rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
-  heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:Math.max(.6,Math.min(.95,({audit:.9,reform:.7}[e]||.8)+(D-3)*.05)),bonus:Math.round((e==='audit'?20:PPX.BONUS)*fm),fine:Math.round((e==='reform'?25:PPX.FINE)*fm),
-  n:Math.max(3,Math.min(4+PP.day,10)+({rush:3,rain:-2}[e]||0)+(D-3)),end:e==='fire'?960:1080}}
+const DIFF_N=['','Лёгкий (для всех)','Легко','Нормально','Сложно','Хардкор'],DIFF_M=[0,.6,.8,1,1.25,1.5];
+function ppCosts(){const e=PP.event,D=PP.diff||1,EZ=D===1,fm=EZ?1:DIFF_M[D];return{fee:Math.max(1,Math.round(({fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE)*fm)),rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
+  heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:EZ?({audit:.9,reform:.7}[e]||.8):Math.max(.6,Math.min(.95,({audit:.9,reform:.7}[e]||.8)+(D-3)*.05)),bonus:Math.round((e==='audit'?20:PPX.BONUS)*fm),fine:Math.round((e==='reform'?25:PPX.FINE)*fm),
+  n:EZ?Math.min(6,3+Math.floor(PP.day/2)):Math.max(3,Math.min(4+PP.day,10)+({rush:3,rain:-2}[e]||0)+(D-3)),end:e==='fire'?960:1080}}
 const ppSave=()=>{store.set('pp',PP);if(PD&&PD._pp0&&PD.state!=='over')ppShiftSave()};
 const PD_SKIP=new Set(['cur','walking','aim','frozen','slow','arrestFlag','_pp0','state','escort','guarded']);
 function ppShiftSave(){try{const pd={};Object.keys(PD).forEach(k=>{if(!PD_SKIP.has(k))pd[k]=PD[k]});pd.idx=(PD.state==='done'||PD.state==='idle')?PD.idx:PD.idx-1;
@@ -2516,7 +2516,7 @@ const DOCS=[['stmt',docIS],['stmt',docRE],['stmt',docBS],['cf',docCF],['stmt',do
 
 function qDiff(q){if(q._d!=null)return q._d;let d=3;const txt=String(q.q||''),o=q.o||[];if(o===TF||o.length===2)d-=1.5;if(q.t==='mini')d-=.5;if(['calc','tvm','ratio','rr','fsa','cf','stfm'].includes(q.t))d+=1;if((txt.match(/\d[\d,.]*/g)||[]).length>=3)d+=1;if(txt.length>150)d+=.5;else if(txt.length<60)d-=.5;
   if(o.length&&o.join('').length/o.length>40)d+=.5;return q._d=Math.max(1,Math.min(5,d))}
-function qPickD(arr){const D=PP.diff||3;if(D===3||arr.length<2)return pick(arr);const w=arr.map(q=>Math.exp(-Math.abs(qDiff(q)-D)*1.3));let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[arr.length-1]}
+function qPickD(arr){const D=PP.diff||1;if(D===3||arr.length<2)return pick(arr);const w=arr.map(q=>Math.exp(-Math.abs(qDiff(q)-D)*1.3));let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[arr.length-1]}
 function ppPickQs(n,exclude,topics){
   const wrong=store.get('wrong',{});let pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t)&&!exclude.has(q.id));if(pool.length<n)pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t));const weak=shuffle(pool.filter(q=>wrong[q.t+'|'+q.q]));
   const byTopic={};pool.forEach(q=>{(byTopic[q.t]=byTopic[q.t]||[]).push(q)});
@@ -2660,7 +2660,66 @@ function docSpread(t){const bad=a=>a.some((x,i)=>i&&docKey(x)&&docKey(x)===docKe
   for(let k=0;k<40&&bad(t);k++){for(let i=1;i<t.length;i++){const ki=docKey(t[i]);if(!ki||ki!==docKey(t[i-1]))continue;
     const j=t.findIndex((x,jj)=>jj!==i&&jj!==i-1&&docKey(x)!==ki&&(jj===0||docKey(t[jj-1])!==ki||jj-1===i)&&(jj+1>=t.length||docKey(t[jj+1])!==ki||jj+1===i));if(j>=0)[t[i],t[j]]=[t[j],t[i]]}
     if(bad(t)&&k>20)t=shuffle(t)}return t}
+const EASYQ=[
+['Что такое «подушка безопасности»?',['Запас денег на 3–6 месяцев жизни на случай форс-мажора','Кредитная карта с большим лимитом','Страховка автомобиля','Деньги, отложенные на отпуск'],0,'Подушка безопасности: деньги на непредвиденные расходы (потеря работы, болезнь). Обычно 3–6 месяцев обязательных трат.'],
+['Инфляция: это когда…',['На те же деньги можно купить меньше, чем раньше','Банк повышает тебе зарплату','Деньги на вкладе растут быстрее цен','Товары становятся дешевле'],0,'Инфляция: общий рост цен. Деньги «дешевеют», их покупательная способность падает.'],
+['Что обычно выгоднее для накоплений на год?',['Вклад в банке под процент','Держать наличные дома','Держать всё на кредитке','Потратить сейчас, пока не подорожало'],0,'На вкладе деньги приносят процент, а наличные дома только теряют ценность из-за инфляции.'],
+['Сложный процент означает, что…',['Проценты начисляются и на ранее начисленные проценты','Процент меняется каждый месяц','Банк берёт двойную комиссию','Процент считается только с первой суммы'],0,'Сложный процент: «проценты на проценты». Со временем деньги растут всё быстрее.'],
+['Тебе звонят «из банка» и просят назвать код из СМС. Что делать?',['Положить трубку и никому не называть код','Назвать код, раз это банк','Назвать только половину кода','Перезвонить на номер, который они продиктуют'],0,'Настоящий банк никогда не спрашивает коды из СМС. Это классическое мошенничество.'],
+['Что такое диверсификация?',['Распределение денег по разным вложениям, чтобы снизить риск','Вложение всех денег в одну акцию','Перевод денег в другую валюту','Закрытие всех счетов в банке'],0,'«Не клади все яйца в одну корзину»: если одно вложение упадёт, остальные подстрахуют.'],
+['Кредитная карта с льготным периодом: когда проценты НЕ начисляются?',['Если вернуть долг полностью до конца льготного периода','Если снимать с неё наличные','Если платить только минимальный платёж','Никогда, проценты начисляются всегда'],0,'Льготный (грейс) период работает, только если вовремя погасить весь долг. Снятие наличных обычно в него не входит.'],
+['Что обычно самое рискованное вложение?',['Акции одной маленькой компании','Государственные облигации','Вклад в крупном банке','Наличные в сейфе'],0,'Чем выше возможная доходность, тем выше риск. Одна маленькая компания может и вырасти, и разориться.'],
+['Зачем вести учёт личных расходов?',['Чтобы видеть, куда уходят деньги, и находить лишние траты','Чтобы платить меньше налогов','Банк этого требует по закону','Чтобы получить кредит без процентов'],0,'Учёт расходов показывает реальную картину и помогает откладывать.'],
+['Что такое кешбэк?',['Возврат части потраченных денег','Комиссия за снятие наличных','Штраф за просрочку платежа','Налог на покупки'],0,'Кешбэк: банк или магазин возвращает часть суммы покупки.'],
+['Правило «сначала заплати себе» означает…',['Сразу после зарплаты откладывать часть денег, а тратить остаток','Сначала покупать то, что хочется','Сначала гасить все кредиты','Платить себе зарплату с кредитки'],0,'Откладывай в первую очередь, а не «что останется в конце месяца», и накопления будут всегда.'],
+['Акция — это…',['Доля во владении компанией','Долг компании перед тобой с фиксированным процентом','Скидка в магазине','Банковский вклад'],0,'Купив акцию, ты становишься совладельцем компании и можешь получать дивиденды.'],
+['Облигация — это…',['Долговая бумага: ты даёшь в долг и получаешь проценты','Доля в компании','Страховой полис','Валюта другой страны'],0,'Облигация похожа на кредит, который ты выдаёшь компании или государству.'],
+['Что такое дивиденды?',['Часть прибыли компании, которую выплачивают акционерам','Проценты по кредиту','Налог на доход','Комиссия брокера'],0,'Дивиденды: доля прибыли, которую компания делит между владельцами акций.'],
+['Что случится с долгом, если платить по кредитке только минимальный платёж?',['Долг будет гаситься очень долго, а переплата вырастет','Долг спишут через год','Проценты перестанут начисляться','Банк вернёт переплату'],0,'Минимальный платёж в основном покрывает проценты, а сам долг почти не уменьшается.'],
+['Что лучше сделать в первую очередь при нескольких кредитах?',['Гасить досрочно кредит с самой высокой ставкой','Гасить самый маленький по сумме','Взять новый кредит, чтобы отдать старые','Перестать платить все'],0,'Самый дорогой кредит (с самой высокой ставкой) съедает больше всего денег.'],
+['Страховка нужна, чтобы…',['Защититься от крупных неожиданных потерь','Заработать на вложениях','Получить скидку в магазине','Не платить налоги'],0,'Страховка перекладывает риск крупного убытка на страховую компанию за небольшую плату.'],
+['Предложение «гарантированно удвоим деньги за месяц» скорее всего…',['Финансовая пирамида или мошенничество','Надёжный банковский вклад','Государственная программа','Обычный бизнес'],0,'Гарантированной высокой доходности не бывает. Такие обещания: главный признак пирамиды.'],
+['Ставка по вкладу 8%, инфляция 10%. Что с реальной доходностью?',['Она отрицательная: деньги теряют покупательную способность','Она 18%','Она 8%','Она положительная, ведь проценты начисляются'],0,'Реальная доходность ≈ ставка − инфляция = 8% − 10% = −2%.'],
+['Что такое бюджет?',['План доходов и расходов на период','Сумма на банковской карте','Кредитный лимит','Годовая зарплата'],0,'Бюджет: план, сколько денег придёт и на что они уйдут.'],
+['Какой пароль для интернет-банка надёжнее?',['Длинный и уникальный, с цифрами и символами','Дата рождения','Такой же, как в соцсетях','12345678'],0,'Уникальный длинный пароль сложно подобрать, и утечка из другого сервиса его не раскроет.'],
+['Что такое ИИС или пенсионный счёт с налоговой льготой (в целом)?',['Инвестсчёт, по которому государство даёт налоговый бонус за долгосрочные вложения','Обычная дебетовая карта','Кредит на жильё','Страховка жизни'],0,'Такие счета поощряют копить на долгий срок: за это полагается налоговая льгота.'],
+['Курс валют: 1 евро = 1,1 доллара. Сколько долларов стоят 100 евро?',['110','100','91','1100'],0,'100 × 1,1 = 110 долларов.'],
+['Что такое ипотека?',['Кредит на покупку жилья под залог этого жилья','Аренда квартиры','Налог на недвижимость','Страховка дома'],0,'Если не платить по ипотеке, банк может забрать жильё: оно в залоге.'],
+['Почему долгосрочные вложения обычно начинают как можно раньше?',['Сложный процент успевает сработать сильнее','Раньше ставки всегда выше','Молодым не платят налоги','Банки дают бонус за возраст'],0,'Чем дольше срок, тем сильнее эффект «процентов на проценты».'],
+['Импульсивная покупка — это…',['Покупка без плана под влиянием эмоций','Покупка по списку','Оплата в рассрочку','Покупка со скидкой по плану'],0,'Помогает правило «подождать 24 часа» перед незапланированной покупкой.'],
+['Что обычно означает высокий кредитный рейтинг?',['Человек вовремя платит долги, ему проще получить кредит дешевле','У человека много кредитов','Человек никогда не пользовался банком','Человек богатый'],0,'Кредитная история показывает банку, насколько ты надёжный заёмщик.'],
+['Что такое ликвидность актива?',['Как быстро его можно превратить в деньги без потерь','Насколько он дорогой','Сколько он приносит в год','Насколько он рискованный'],0,'Наличные максимально ликвидны, квартира: гораздо меньше.'],
+['Зачем разделять деньги на «нужды», «желания» и «накопления» (правило 50/30/20)?',['Чтобы контролировать траты и регулярно откладывать','Чтобы платить меньше налогов','Чтобы банк повысил ставку','Так требует закон'],0,'Популярная схема: ~50% на необходимое, ~30% на желания, ~20% в накопления.'],
+['Что делать, если потерял банковскую карту?',['Сразу заблокировать её через приложение или банк','Подождать, вдруг найдётся','Сообщить друзьям','Ничего, деньги застрахованы автоматически'],0,'Быстрая блокировка не даст чужим потратить твои деньги.'],
+['Что такое комиссия?',['Плата за услугу банка или сервиса','Проценты по вкладу','Скидка','Налоговый вычет'],0,'Комиссии незаметно съедают доход, их стоит сравнивать.'],
+['Рассрочка «0%» в магазине: что проверить первым делом?',['Нет ли скрытых комиссий и страховок в договоре','Цвет карты','Размер магазина','Время работы магазина'],0,'Иногда «0%» компенсируют обязательной страховкой или комиссией.'],
+['Что такое пассивный доход?',['Доход, который приходит почти без ежедневного труда (проценты, аренда, дивиденды)','Зарплата на основной работе','Подарки на день рождения','Выигрыш в лотерею'],0,'Пассивный доход создают вложенные деньги или имущество.'],
+['Что обычно дешевле: взять кредит на покупку или накопить?',['Накопить: не будет переплаты процентов','Кредит всегда дешевле','Одинаково','Зависит только от цвета товара'],0,'С кредитом ты платишь цену товара плюс проценты.'],
+['Что такое налог на доход (подоходный налог)?',['Часть заработка, которую платят государству','Плата банку за перевод','Штраф за просрочку','Процент по вкладу'],0,'С зарплаты обычно автоматически удерживается подоходный налог.'],
+['Какой вклад обычно даёт больший процент?',['На более долгий срок без права снятия','До востребования, можно снять в любой момент','Вклад без процентов','Все одинаковые'],0,'За то, что банк дольше пользуется деньгами без снятий, он платит больше.'],
+['Ты хочешь купить телефон за $900, а зарабатываешь $300 в месяц и откладываешь $100. Через сколько месяцев накопишь?',['9','3','6','12'],0,'900 ÷ 100 = 9 месяцев.'],
+['Индексный фонд (ETF на индекс) — это…',['Фонд, который покупает сразу много акций из индекса','Одна акция крупной компании','Вклад в банке','Криптовалюта'],0,'Один ETF даёт диверсификацию сразу по многим компаниям.'],
+['Почему нельзя держать все сбережения в одной валюте, если у тебя расходы в разных странах?',['Курс может измениться, и деньги подешевеют относительно нужной валюты','Банк запрещает','Налог выше','Так никто не делает'],0,'Валютный риск: изменение курса может «съесть» часть сбережений.'],
+['Что такое чек (квитанция) и зачем его хранить?',['Подтверждение покупки: пригодится для возврата или гарантии','Бесполезная бумажка','Скидочный купон','Налоговая декларация'],0,'Без чека сложнее вернуть товар или отремонтировать по гарантии.']
+].map((r,i)=>({t:'easy',id:'ez'+i,q:r[0],o:r[1],a:r[2],x:r[3]}));
+function easyGen(){const $m=v=>'$'+(Math.round(v*100)/100).toLocaleString('en-US'),mk=(q,right,wrongs,x)=>{const opts=[right];wrongs.forEach(w=>{if(!opts.includes(w)&&opts.length<4)opts.push(w)});let k=1;while(opts.length<4)opts.push(right+' ('+(k++)+')');const o=shuffle(opts);return{t:'easy',id:'eg'+Math.random().toString(36).slice(2,8),q,o,a:o.indexOf(right),x}};
+  const g=pick(['disc','dep','comp','budget','unit','loan','infl','r72','bill']);
+  if(g==='disc'){const P=rint(4,40)*10,d=pick([10,15,20,25,30,40,50]),r=P*(1-d/100);return mk(`Куртка стоит ${$m(P)}, скидка ${d}%. Сколько ты заплатишь?`,$m(r),[$m(P*d/100),$m(P-d),$m(P*(1+d/100))],`Скидка ${d}% = ${$m(P*d/100)}. Платишь ${$m(P)} − ${$m(P*d/100)} = ${$m(r)}.`)}
+  if(g==='dep'){const S=rint(5,50)*100,r=pick([4,5,6,8,10,12]);return mk(`Кладёшь ${$m(S)} на вклад под ${r}% годовых на 1 год. Сколько будет через год?`,$m(S*(1+r/100)),[$m(S*r/100),$m(S+r),$m(S*(1+2*r/100))],`${$m(S)} × ${r}% = ${$m(S*r/100)} процентов. Итого ${$m(S*(1+r/100))}.`)}
+  if(g==='comp'){const S=rint(1,20)*500,r=pick([5,10,20]);const v=S*Math.pow(1+r/100,2);return mk(`Вклад ${$m(S)} под ${r}% годовых с капитализацией раз в год. Сколько будет через 2 года?`,$m(v),[$m(S*(1+2*r/100)),$m(S*(1+r/100)),$m(S*2*r/100)],`Первый год: ${$m(S*(1+r/100))}. Второй год проценты начисляются уже на эту сумму: ${$m(v)}.`)}
+  if(g==='budget'){const W=rint(12,40)*100,A=rint(3,Math.floor(W/250))*100,F=rint(2,6)*50,T=rint(1,4)*25;return mk(`Зарплата ${$m(W)}. Аренда ${$m(A)}, еда ${$m(F)}, транспорт ${$m(T)}. Сколько остаётся?`,$m(W-A-F-T),[$m(W-A-F),$m(W-A),$m(A+F+T)],`${$m(W)} − ${$m(A)} − ${$m(F)} − ${$m(T)} = ${$m(W-A-F-T)}.`)}
+  if(g==='unit'){const a=rint(3,9),b=a*2+pick([-2,-1,1,2]);const perA=a*2,big=b<perA;return mk(`Сыр: 500 г за ${$m(a)} или 1 кг за ${$m(b)}. Что выгоднее за килограмм?`,big?'1 кг':'500 г',[big?'500 г':'1 кг','Одинаково','Нельзя сказать'],`500 г по ${$m(a)} = ${$m(perA)} за кг. Сравниваем с ${$m(b)} за кг.`)}
+  if(g==='loan'){const L=rint(5,30)*100,N=pick([6,10,12,24]),m=Math.ceil(L*1.2/N/5)*5;return mk(`Кредит ${$m(L)}. Платишь ${$m(m)} в месяц, ${N} месяцев. Сколько переплатишь?`,$m(m*N-L),[$m(m*N),$m(m),$m(L-m)],`Всего отдашь ${$m(m)} × ${N} = ${$m(m*N)}. Переплата = ${$m(m*N)} − ${$m(L)} = ${$m(m*N-L)}.`)}
+  if(g==='infl'){const i=rint(3,12),w=i+pick([-4,-2,2,4]);return mk(`Цены за год выросли на ${i}%, а твоя зарплата на ${w}%. Что с твоей покупательной способностью?`,w>i?'Выросла':'Упала',[w>i?'Упала':'Выросла','Не изменилась','Нельзя сказать'],w>i?`Зарплата росла быстрее цен (${w}% > ${i}%), значит можешь купить больше.`:`Цены росли быстрее зарплаты (${i}% > ${w}%), значит можешь купить меньше.`)}
+  if(g==='r72'){const r=pick([4,6,8,9,12]),y=72/r;return mk(`Примерно за сколько лет удвоятся деньги под ${r}% годовых? (правило 72)`,`${y} лет`,[`${r*2} лет`,`${Math.round(y/2)} лет`,`${y*2} лет`],`Правило 72: 72 ÷ ставку = ${y} лет.`)}
+  const B=rint(6,30)*10,N=pick([2,3,4,5]),v=B*1.1/N;return mk(`Счёт в кафе ${$m(B)} на ${N} человек, плюс чаевые 10%. Сколько с каждого?`,$m(v),[$m(B/N),$m(B*1.1),$m(B/N+10)],`${$m(B)} + 10% = ${$m(B*1.1)}, делим на ${N}: ${$m(v)}.`)}
+function easyTasks(n){const seen=new Set(store.get('ppSeenE',[]));let pool=shuffle(EASYQ.filter(q=>!seen.has(q.id)));if(pool.length<n)pool=shuffle(EASYQ.slice());const t=[];const nGen=Math.max(1,Math.round(n*.4));
+  for(let i=0;i<n;i++){const q=i<nGen?easyGen():pool.pop();t.push({kind:'q',q})}store.set('ppSeenE',[...seen,...t.map(x=>x.q.id).filter(id=>id.startsWith('ez'))].slice(-30));
+  t.forEach(x=>{if(Math.random()>.2)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
+  return t}
+
 function makeTasks(n,ev){
+  if((PP.diff||1)===1)return ppFinishTasks(easyTasks(n));
   const T=ppTopics();
   const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
   const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');const OK=['order','sort','ofill','build'].filter(k=>T.has(k));
@@ -2668,13 +2727,13 @@ function makeTasks(n,ev){
   let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):Math.max(1,Math.round(n*.18))):0;
   let nPlace=canPlace?Math.max(1,Math.round(n*.18)):0,nCard=canCard?Math.max(1,Math.round(n*.15)):0;
   let nAudit=canAudit?Math.max(1,Math.round(n*.2)):0;
-  const special=[];OK.forEach(k=>{special.push(k);if(n-((PP.diff||3)-3)>=8&&Math.random()<.4)special.push(k)});
+  const special=[];OK.forEach(k=>{special.push(k);if(n-((PP.diff||1)-3)>=8&&Math.random()<.4)special.push(k)});
   let nQ=Math.max(0,n-nDoc-nPlace-nCard-nAudit-special.length);
   const seen=new Set(store.get('ppSeen',[]));
   const extra=PP.day>=1?Math.round(nQ*.4):0;const qs=qTopics.length?ppPickQs(nQ+extra,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
   let miss=nQ-Math.min(nQ,qs.length);while(miss-->0){if(docs.length)nDoc++;else if(canAudit)nAudit++;else if(canCard)nCard++;else if(canPlace)nPlace++;else if(OK.length)special.push(pick(OK))}
   const t=[];let qi=0,spare=Math.max(0,qs.length-nQ);
-  for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4+((PP.diff||3)-3)*.08){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
+  for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4+((PP.diff||1)-3)*.08){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
   for(let i=0;i<nAudit;i++)t.push({kind:'audit',au:makeAudit()});
   special.forEach(k=>t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask()));
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
@@ -2682,12 +2741,14 @@ function makeTasks(n,ev){
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
   for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS})}
   {let nb=0;t.forEach((x,i)=>{if(x.big&&nb++)t[i]=x.kind==='build'?buildTask(docRE):ofillTask(docRE)})}
-  t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18+((PP.diff||3)-3)*.05)t[i]=claimQ(x.q)});
+  t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18+((PP.diff||1)-3)*.05)t[i]=claimQ(x.q)});
   {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
-  t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36+((PP.diff||3)-3)*.08)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
+  t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36+((PP.diff||1)-3)*.08)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
-  {const dd=((PP.diff||3)-3)*2;if(dd<0){const rm=Math.min(-dd,Math.max(0,t.length-3));for(let i=0;i<rm;i++)t.splice(rint(0,t.length-1),1)}else if(dd>0){const ex=qTopics.length?ppPickQs(dd,new Set(t.filter(x=>x.q).map(x=>x.q.id)),new Set(qTopics)):[];ex.forEach(q=>t.push({kind:'q',q}));for(let i=ex.length;i<dd&&OK.length;i++){const k=pick(OK);t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask())}}}
+  {const dd=((PP.diff||1)-3)*2;if(dd<0){const rm=Math.min(-dd,Math.max(0,t.length-3));for(let i=0;i<rm;i++)t.splice(rint(0,t.length-1),1)}else if(dd>0){const ex=qTopics.length?ppPickQs(dd,new Set(t.filter(x=>x.q).map(x=>x.q.id)),new Set(qTopics)):[];ex.forEach(q=>t.push({kind:'q',q}));for(let i=ex.length;i<dd&&OK.length;i++){const k=pick(OK);t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask())}}}
+  return ppFinishTasks(t)}
+function ppFinishTasks(t){
   return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
@@ -2712,26 +2773,26 @@ function ppThunk(){SFX.stamp();return;try{const a=sfxCtx();const o=a.createOscil
 function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
 
 /* ---------- day flow ---------- */
-let PRE=null;const preKey=()=>[PP.day,PP.diff||3,PP.event,(PP.topics||[]).join(',')].join('|');
+let PRE=null;const preKey=()=>[PP.day,PP.diff||1,PP.event,(PP.topics||[]).join(',')].join('|');
 function ppPre(){const k=preKey();if(!PRE||PRE.key!==k)PRE={key:k,tasks:makeTasks(ppCosts().n,PP.event)};return PRE.tasks}
 function ppDayIntro(){
   PD=null;drawFace(null);FACE.talkUntil=0;$('#pp').classList.remove('slowmo','aiming');$('#ppDesk').innerHTML='';ppTalk('Бюро','Окошко закрыто.');$('#ppClock').textContent='06:00';
-  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':PP.day%7===0?'boss':pick(w);const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0,saleCash:0,saleBV:0,petFood:0};PP.petMsg=petNewDay();META.st.ev=META.st.ev||{};META.st.ev[PP.event]=1;metaSave();ppSave()}
+  if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':PP.day%7===0?'boss':pick(w);if((PP.diff||1)===1&&['boss','docs'].includes(PP.event))PP.event=pick(w.filter(x=>x!=='docs'&&x!=='boss'))||'normal';const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0,saleCash:0,saleBV:0,petFood:0};PP.petMsg=petNewDay();META.st.ev=META.st.ev||{};META.st.ev[PP.event]=1;metaSave();ppSave()}
   if(Math.round(PP.cash)===404)setTimeout(()=>{toast('404','Деньги не найдены. Но ты держись.','#e05a4a');eggFound('e404')},600);if(EGG.dec)setTimeout(()=>eggFound('december'),900);neonEggs();achCheck();
-  const ev=ppEvent();$('#ppEvent').textContent=ev.t;
+  const EZd=(PP.diff||1)===1;if(EZd&&['boss','docs'].includes(PP.event))PP.event='normal';const ev=ppEvent();$('#ppEvent').textContent=ev.t;
   const CO=ppCosts(),n=CO.n,heat=CO.heat;
   ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
-   <p style="text-align:center">${esc(ev.t)}</p><div class="row" style="justify-content:center;align-items:center;gap:6px"><span class="mono">Сложность дня:</span>${[1,2,3,4,5].map(d=>`<button class="pp-chip${(PP.diff||3)===d?' on':''}" data-diff="${d}" title="${DIFF_N[d]}">${d}</button>`).join('')}<span class="mono"><b>${DIFF_N[PP.diff||3]}</b></span></div><p class="mono" style="text-align:center;font-size:12px;margin-top:0">Сложность меняет сами вопросы (1: простые и «верно/неверно», 5: расчётные и длинные), число посетителей, плату и штраф (×${DIFF_M[PP.diff||3]}), порог медали и долю каверзных заданий. 3: как было.</p>${PP.petMsg?`<p class="mono" style="text-align:center;color:#a3302a">${esc(PP.petMsg)}</p>`:''}
+   <p style="text-align:center">${esc(ev.t)}</p><div class="row" style="justify-content:center;align-items:center;gap:6px"><span class="mono">Сложность дня:</span>${[1,2,3,4,5].map(d=>`<button class="pp-chip${(PP.diff||1)===d?' on':''}" data-diff="${d}" title="${DIFF_N[d]}">${d}</button>`).join('')}<span class="mono"><b>${DIFF_N[PP.diff||1]}</b></span></div>${EZd?`<p class="mono" style="text-align:center;font-size:12px;margin-top:0">Лёгкий уровень для всех, кто разбирается в деньгах в жизни: бюджет, вклады, кредиты, скидки, инфляция, мошенники. Без бухгалтерии, отчётов и договоров. Посетителей от 3 до 6, растёт каждые два дня. Инспектор как обычно.</p>`:`<p class="mono" style="text-align:center;font-size:12px;margin-top:0">Сложность меняет сами вопросы (1: простые и «верно/неверно», 5: расчётные и длинные), число посетителей, плату и штраф (×${DIFF_M[PP.diff||1]}), порог медали и долю каверзных заданий. 3: как было.</p>`}${PP.petMsg?`<p class="mono" style="text-align:center;color:#a3302a">${esc(PP.petMsg)}</p>`:''}
    <p class="mono" style="text-align:center">Посетителей: <b id="ppNVis">${ppPre().length}</b>${PP.event==='boss'?' + Олигарх':''} · плата за верный ответ $${CO.fee}<br>Вечером: аренда $${CO.rent}, еда $${CO.food}, отопление $${heat}${PP.pet?`, корм для питомца $${petInfo().food}`:''}<br>Сбережения сейчас: $${fmt(PP.cash)}</p>
    <p class="mono">Инспекция: ${Math.round(CO.medal*100)}%+ верных → медаль и премия $${CO.bonus}; меньше 60% → штраф $${CO.fine}. Смена до ${CO.end/60}:00 (1 игровая минута = 1 секунда), после ответа часы стоят, пока не позовёшь следующего.</p>
-   <p>Темы на сегодня:</p>
+   <div style="${EZd?'display:none':''}"><p>Темы на сегодня:</p>
    <div class="pp-topics" id="ppTopicBox">${MIXT.map(([k,l])=>`<label><input type="checkbox" value="${k}" ${ppTopics().has(k)?'checked':''}> ${esc(l)}</label>`).join('')}</div>
-   <div class="row"><button class="pp-btn" data-tp="all">Все</button><button class="pp-btn" data-tp="none">Ничего</button><button class="pp-btn" data-tp="t12">Темы 1–2</button><button class="pp-btn" data-tp="t37">Темы 3–7</button></div>
+   <div class="row"><button class="pp-btn" data-tp="all">Все</button><button class="pp-btn" data-tp="none">Ничего</button><button class="pp-btn" data-tp="t12">Темы 1–2</button><button class="pp-btn" data-tp="t37">Темы 3–7</button></div></div>
    <div class="row" style="justify-content:center"><button class="pp-btn" id="ppShopBtn">Магазин офиса</button><button class="pp-btn" id="ppProfBtn">Профиль</button><button class="pp-btn horn" id="ppGo">Открыть окошко</button></div>`);
   const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave();if(PP.topics.length){const nv=$('#ppNVis');if(nv)nv.textContent=ppPre().length}};
   tb.addEventListener('change',syncT);
   $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit','order','sort','ofill','build'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
-  $('#ppOv').querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{PP.diff=+b.dataset.diff;ppSave();ppDayIntro()});$('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
+  $('#ppOv').querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{PP.diff=+b.dataset.diff;ppSave();ppDayIntro()});$('#ppGo').onclick=()=>{if(!EZd&&PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(!EZd&&PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
 const ITEM_BOX={lamp:[56,50,36,36],plant:[0,44,24,42],poster:[86,2,48,38],clock:[116,40,22,22],radio:[92,38,26,24],cat:[128,44,30,20],coffee:[54,64,24,22],calc:[36,82,20,14],heater:[18,68,38,18],book:[112,44,18,18],painting:[86,2,48,38],aquarium:[92,64,36,22],fan:[122,60,26,26],trophy:[143,68,17,18],neon:[86,36,48,16]};
 function officeThumb(id){const off=document.createElement('canvas');off.width=160;off.height=100;drawOffice(off,{owned:{[id]:1},wall:PP.wall,noMedals:1});const [bx,by,bw,bh]=ITEM_BOX[id]||[0,0,160,100];const th=document.createElement('canvas');th.width=bw;th.height=bh;th.getContext('2d').drawImage(off,bx,by,bw,bh,0,0,bw,bh);return th.toDataURL()}
