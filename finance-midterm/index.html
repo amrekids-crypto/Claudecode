@@ -419,6 +419,10 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-toast.out{opacity:0;transform:translateX(24px)}
 @keyframes ppToastIn{from{transform:translateX(40px);opacity:0}}
 .pp-card.prof{max-width:1000px}
+.pp-ov.ov-prof:has(.pp-avwrap){align-items:stretch;overflow:hidden}
+.pp-card.prof:has(.pp-avwrap){display:flex;flex-direction:column;height:100%;overflow:hidden}
+.pp-card.prof .pp-avwrap{flex:1 1 auto;min-height:0}
+.pp-card.prof .pp-avopts{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:6px}
 .pp-tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .pp-chip{font:inherit;font-size:14px;cursor:pointer;background:var(--pp-paper2);border:2px solid #8f8360;padding:4px 8px;color:var(--pp-ink);display:inline-flex;align-items:center;gap:5px;line-height:1.15}
 .pp-chip:hover:not(:disabled){border-color:var(--pp-line)}
@@ -456,7 +460,7 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-petbox>div{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px}
 #ppPetBig{width:144px;height:96px;image-rendering:pixelated;border:3px solid var(--pp-line);background:#4a4838}
 .pp-petc{width:72px;height:48px;image-rendering:pixelated;background:#4a4838;border:2px solid var(--pp-line);align-self:center}
-@media (max-width:700px){.pp-avwrap{grid-template-columns:1fr}.pp-avrow{grid-template-columns:1fr}#ppAvBig{width:128px;height:128px}.pp-album{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-acard canvas,.pp-aq{width:64px;height:64px}.pp-mini{font-size:11px;padding:2px 5px}.pp-profbtn span{display:none}.pp-profbtn canvas{width:22px;height:22px}.pp-toasts{bottom:40px;right:4px}.pp-toast{padding:4px 7px}.pp-toast b{font-size:13px}.pp-achs{grid-template-columns:1fr}}
+@media (max-width:700px){.pp-avwrap{grid-template-columns:1fr;display:flex!important;flex-direction:column;gap:6px}.pp-avprev{flex:none;flex-direction:row!important;justify-content:center;gap:10px!important}.pp-avprev small{display:none}.pp-avopts{flex:1 1 auto;border-top:3px dashed #8f8360;padding-top:6px}.pp-avrow{grid-template-columns:1fr}#ppAvBig{width:128px;height:128px}#ppAvStreet{width:96px;height:96px}.pp-album{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-acard canvas,.pp-aq{width:64px;height:64px}.pp-mini{font-size:11px;padding:2px 5px}.pp-profbtn span{display:none}.pp-profbtn canvas{width:22px;height:22px}.pp-toasts{bottom:40px;right:4px}.pp-toast{padding:4px 7px}.pp-toast b{font-size:13px}.pp-achs{grid-template-columns:1fr}}
 .lb-av{width:28px;height:28px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;border:1px solid #15130f}
 .pp-deskitems{background:rgba(20,16,12,.35);border:3px dashed #8f8360;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
 .pp-deskitems .pp-q{color:#f0e8c8;margin:0}
@@ -3636,7 +3640,7 @@ function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const 
     else{const I=petInfo();body=`<div class="pp-petbox"><canvas id="ppPetBig" width="24" height="16"></canvas><div><p><b>${esc(pe.name)}</b> · ${I.n.toLowerCase()} · с нами ${PP.day-pe.since} дн.</p><p class="mono">${pe.fed?'Сегодня сыт.':pe.hunger>=1?'Голодает со вчера! Покорми, иначе сбежит.':'Ещё не ел сегодня.'} ${pe.petted?'Поглажен.':''}</p>
       <label class="pp-tog">Имя: <input type="text" id="ppPetName" maxlength="12" value="${esc(pe.name)}" style="width:14ch;font:inherit"></label>
       <div class="row"><button class="pp-btn" id="ppPetFeed" ${pe.fed||PP.cash<I.food?'disabled':''}>Покормить · $${I.food}</button><button class="pp-btn" id="ppPetPet">Погладить</button><button class="pp-btn red" id="ppPetBye">Отдать в добрые руки</button></div></div></div>`}}
-  ppOverlay(`<div class="shop-top"><h3>ПРОФИЛЬ</h3><button class="pp-btn horn" id="ppProfBack">${mid?'К окошку':'Назад'}</button></div><div class="pp-tabs">${tabs.map(([k,n])=>`<button class="pp-chip${k===tab?' on':''}" data-ptab="${k}">${esc(n)}</button>`).join('')}</div>${body}`,'prof');
+  const keepAv=(document.querySelector('#ppOv .pp-avopts')||{}).scrollTop||0;ppOverlay(`<div class="shop-top"><h3>ПРОФИЛЬ</h3><button class="pp-btn horn" id="ppProfBack">${mid?'К окошку':'Назад'}</button></div><div class="pp-tabs">${tabs.map(([k,n])=>`<button class="pp-chip${k===tab?' on':''}" data-ptab="${k}">${esc(n)}</button>`).join('')}</div>${body}`,'prof');{const ao=document.querySelector('#ppOv .pp-avopts');if(ao&&tab==='avatar')ao.scrollTop=keepAv}
   $('#ppProfBack').onclick=()=>{SFX.click();if(PD)ppCloseOv();else ppDayIntro()};
   $('#ppOv').querySelectorAll('[data-ptab]').forEach(b=>b.onclick=()=>{SFX.click();ppProfile(b.dataset.ptab)});
   $('#ppOv').querySelectorAll('[data-alb]').forEach(c=>{const e=META.album[c.dataset.alb];if(e)drawFace(e.L,c,{win:PP.win,clean:1})});
