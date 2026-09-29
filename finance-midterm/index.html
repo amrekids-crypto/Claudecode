@@ -511,7 +511,7 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 
 <!-- MIX -->
 <section class="section" id="tab-mix" hidden>
-  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Finance, Please</h1><span class="muted" style="font-size:13px">Игра · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppFull" style="margin-left:auto" hidden>⛶ Весь экран</button><button class="btn small" id="ppReset">Начать игру заново</button></div>
+  <div class="row" style="gap:10px;align-items:baseline"><h1 style="font-size:20px">Finance, Please</h1><span class="muted" style="font-size:13px">Игра · все типы заданий · прогресс сохраняется в этом браузере</span><button class="btn small" id="ppFull" style="margin-left:auto" hidden>⛶ Весь экран</button><button class="btn small" id="ppReset" title="Удерживай, чтобы сбросить весь прогресс" style="-webkit-touch-callout:none;user-select:none;-webkit-user-select:none">Начать игру заново</button><button class="btn small" id="ppWipe" hidden style="background:#a3302a;color:#fff;border-color:#7a1f1a">Сбросить весь прогресс</button></div>
   <div class="pp" id="pp">
     <div class="pp-top"><canvas id="ppQueue" width="480" height="120" aria-label="Очередь у будки"></canvas><div class="pp-date" id="ppDate">ДЕНЬ 1</div><div class="pp-event" id="ppEvent"></div></div>
     <div class="pp-main">
@@ -3359,6 +3359,16 @@ $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.c
   QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro();qsDraw()};
+/* long press on "Начать игру заново" reveals full wipe */
+{const rb=$('#ppReset'),wb=$('#ppWipe'),orig=rb.onclick;let t=null,lp=false,hideT=null;
+  const hideWipe=()=>{wb.hidden=true;delete wb.dataset.sure;wb.textContent='Сбросить весь прогресс'};
+  rb.addEventListener('pointerdown',e=>{if(e.button>0)return;lp=false;clearTimeout(t);t=setTimeout(()=>{lp=true;wb.hidden=false;try{navigator.vibrate&&navigator.vibrate(40)}catch(_){}SFX.click&&SFX.click();clearTimeout(hideT);hideT=setTimeout(hideWipe,10000)},700)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>rb.addEventListener(ev,()=>clearTimeout(t)));
+  rb.addEventListener('contextmenu',e=>e.preventDefault());
+  rb.onclick=e=>{if(lp){lp=false;return}orig(e)};
+  wb.onclick=()=>{if(!wb.dataset.sure){wb.dataset.sure=1;wb.textContent='Точно? Удалятся игра, альбом, достижения, тесты и карточки';clearTimeout(hideT);hideT=setTimeout(hideWipe,8000);return}
+    const keep=['cloud','sfx','tab','pid','nick'];try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('fmt_')&&!keep.includes(k.slice(4)))ks.push(k)}ks.forEach(k=>localStorage.removeItem(k));localStorage.setItem('fmt_wiped','1')}catch(_){}
+    location.reload()}}
 /* =====================================================
    META: album, achievements, easter eggs, avatar, pet, boss
    (META lives outside PP, so it survives "Начать игру заново")
