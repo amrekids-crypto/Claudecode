@@ -1865,7 +1865,7 @@ const PPX={
   FEE:5,RENT:12,FOOD:6,HEAT:4,BONUS:10,FINE:15,
 };
 function ppNorm(p){p=p||{};return Object.assign({candy:0,win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
-let PP=ppNorm(store.get('pp',null));
+let PP=ppNorm(store.get('pp',null));if(!PP.decorMig){PP.decorMig=1;[['street','night'],['booth','olive'],['win','green'],['desk','oak']].forEach(([c,d])=>{if(PP[c]&&PP[c]!==d&&PP.owned[c+':'+PP[c]]==null)PP.owned[c+':'+PP[c]]=(PP.day||1)-10})}
 let PD=null,ppLoop=null;
 function ppCosts(){const e=PP.event;return{fee:{fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE,rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
   heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:{audit:.9,reform:.7}[e]||.8,bonus:e==='audit'?20:PPX.BONUS,fine:e==='reform'?25:PPX.FINE,
@@ -1877,9 +1877,12 @@ function ppShiftSave(){try{const pd={};Object.keys(PD).forEach(k=>{if(!PD_SKIP.h
 function ppFixTF(o,d){if(!o||typeof o!=='object'||d>8)return;for(const k of Object.keys(o)){const v=o[k];if(Array.isArray(v)&&v.length===2&&v[0]==='True'&&v[1]==='False')o[k]=TF;else ppFixTF(v,(d||0)+1)}}
 const has=id=>!!PP.owned[id]&&!(PP.off||{})[id];
 const ppRank=()=>{let r=PPX.RANKS[0][1];PPX.RANKS.forEach(([m,n])=>{if(PP.medals.length>=m)r=n});return r};
-function itemBV(id){const it=PPX.SHOP.find(s=>s.id===id),d=PP.owned[id];if(!it||d==null)return 0;return it.p-it.p/10*Math.min(10,Math.max(0,PP.day-d))}
+const DECOR={street:20,booth:12,win:15,desk:12},DECOR_DEF={street:'night',booth:'olive',win:'green',desk:'oak'};
+function itemPrice(id){const it=PPX.SHOP.find(s=>s.id===id);if(it)return it.p;const c=String(id).split(':')[0];return DECOR[c]||0}
+function itemBV(id){const p=itemPrice(id),d=PP.owned[id];if(!p||d==null)return 0;return p-p/10*Math.min(10,Math.max(0,PP.day-d))}
+const decorOwned=(c,k)=>k===DECOR_DEF[c]||PP.owned[c+':'+k]!=null;
 function salePrice(id){return Math.max(1,Math.round(itemBV(id)))}
-function equip(day){let cost=0,acc=0,dep=0;Object.entries(PP.owned).forEach(([id,d])=>{const it=PPX.SHOP.find(s=>s.id===id);if(!it)return;cost+=it.p;const per=it.p/10;const used=Math.min(10,Math.max(0,day-d));acc+=per*used;if(day>=d&&day<d+10)dep+=per});return{cost,acc,net:cost-acc,dep}}
+function equip(day){let cost=0,acc=0,dep=0;Object.entries(PP.owned).forEach(([id,d])=>{const ip=itemPrice(id);if(!ip)return;cost+=ip;const per=ip/10;const used=Math.min(10,Math.max(0,day-d));acc+=per*used;if(day>=d&&day<d+10)dep+=per});return{cost,acc,net:cost-acc,dep}}
 
 /* ---------- pixel art ---------- */
 const SKIN=['#f0d0ac','#e3b98f','#cf9d70','#b07a50','#8a5a38','#6b432a'];
@@ -2667,11 +2670,12 @@ function ppShop(prev){
   const own=Object.assign({},PP.owned);if(prev.item)own[prev.item]=1;
   const card=(attr,id,title,price,sub,img,owned,dis,cls='')=>`<div class="pp-item${owned?' owned':''}" data-prev="${attr}:${id}" tabindex="0">${img?`<img class="pp-thumb" src="${img}" alt="">`:''}<b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}${owned?(attr==='buy'?`<small>✓ есть · остаточная стоимость $${fmt(itemBV(id),1)}</small><label class="pp-tog"><input type="checkbox" data-tog="${id}" ${(PP.off||{})[id]?'':'checked'}> включено</label>${id==='neon'?`<label class="pp-tog">Надпись: <input type="text" id="ppNeonTxt" maxlength="7" value="${esc(PP.neonText||'БЮРО')}" style="width:9ch;font:inherit;background:#15130f;color:#ff6a9a;border:1px solid #5a2a3a;padding:1px 4px;text-transform:uppercase"></label>`:''}<button class="pp-btn" data-sell="${id}">Продать за $${salePrice(id)}</button>`:'<small><b style="font-size:14px">✓ есть</b></small>'):`<button class="pp-btn ${cls}" data-${attr}="${id}" ${dis?'disabled':''}>$${price}</button>`}</div>`;
   const items=PPX.SHOP.map(s=>card('buy',s.id,s.n,s.p,s.d,officeThumb(s.id),has(s.id),PP.cash<s.p)).join('');
-  const sw=(attr,obj,cur,price,wide)=>Object.entries(obj).map(([k,[n,c]])=>`<div class="pp-item pp-sw${cur===k?' owned':''}" data-prev="${attr}:${k}" tabindex="0"><span class="sw" style="background:${c}"></span><b>${esc(n)}</b>${cur===k?'<small><b style="font-size:14px">✓ сейчас</b></small>':`<button class="pp-btn" data-${attr}="${k}" ${PP.cash<price?'disabled':''}>$${price}</button>`}</div>`).join('');
+  const sw=(attr,obj,cur,price,wide)=>Object.entries(obj).map(([k,[n,c]])=>{const dec=!!DECOR[attr],own=dec&&decorOwned(attr,k),id=attr+':'+k,sell=dec&&PP.owned[id]!=null?`<button class="pp-btn" data-sell="${id}" title="Остаточная стоимость $${fmt(itemBV(id),1)}">Продать $${salePrice(id)}</button>`:'';
+    return `<div class="pp-item pp-sw${cur===k?' owned':''}" data-prev="${attr}:${k}" tabindex="0"><span class="sw" style="background:${c}"></span><b>${esc(n)}</b>${cur===k?`<small><b style="font-size:14px">✓ сейчас</b></small>${sell}`:own?`<small>✓ есть</small><button class="pp-btn" data-use-${attr}="${k}">Выбрать</button>${sell}`:`<button class="pp-btn" data-${attr}="${k}" ${PP.cash<price?'disabled':''}>$${price}</button>`}</div>`}).join('');
   const keepScroll=document.querySelector('#ppOv .shop-r')?document.querySelector('#ppOv .shop-r').scrollTop:0,keepOv=document.querySelector('#ppOv .shop-r')?$('#ppOv').scrollTop:0;
   ppOverlay(`<div class="shop-l"><div class="shop-top"><h3>МАГАЗИН ОФИСА</h3><button class="pp-btn horn" id="ppShopBack">Назад</button></div><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)} · наведи на товар, чтобы примерить</p>
    <div class="pp-prev"><div><canvas id="ppPrevOffice" width="160" height="100"></canvas><small>Офис</small></div><div><div id="ppPrevDesk" class="pp-prevdesk"><span class="pp-prevpaper"></span></div><small>Стол</small></div><div><canvas id="ppPrevWin" width="64" height="64"></canvas><small>Окошко</small></div><div class="wide"><canvas id="ppPrevStreet" width="480" height="120"></canvas><small>Улица и будка</small></div></div>
-   <p class="mono shop-note">Мебель и техника: <b>capital expenditure</b> (investing outflow в CF, Office equipment в балансе, в IS только depreciation 1/10 цены в день). Покраска, стол, окошко, улица: <b>repairs expense</b>. Расходники и анимации ареста: <b>supplies expense</b>.</p></div>
+   <p class="mono shop-note">Мебель и техника: <b>capital expenditure</b> (investing outflow в CF, Office equipment в балансе, в IS только depreciation 1/10 цены в день). Стол, будка, окошко и улица тоже capex: купленное остаётся у тебя, между своими можно переключаться бесплатно, а продать можно по остаточной стоимости. Покраска стен: <b>repairs expense</b>. Расходники и анимации ареста: <b>supplies expense</b>.</p></div>
    <div class="shop-r"><p>Декор и техника</p><div class="pp-shop">${items}</div>
    <p>Стены · $10</p><div class="pp-shop">${sw('wall',PPX.WALLS,PP.wall,10)}</div>
    <p>Стол · $12</p><div class="pp-shop">${sw('desk',PPX.DESKS,PP.desk,12)}</div>
@@ -2684,7 +2688,7 @@ function ppShop(prev){
      <div class="pp-item"><b>Пистолет</b><small>Вечером выстрели в инспектора. Попал: проверки нет, он лежит день, потом приходит с охраной и щитами.</small><small>У тебя: ${PP.gun||0}</small><button class="pp-btn red" data-gun="1" ${PP.cash<25?'disabled':''}>$25</button></div>
      <div class="pp-item"><b>Конфеты для инспектора</b><small>Когда инспектор идёт к будке, конфеты лежат на столе. Угости его: медаль с 70% вместо 80%, штраф только ниже 50%.</small><small>У тебя: ${PP.candy||0}</small><button class="pp-btn" data-candy="1" ${PP.cash<15?'disabled':''}>$15</button></div></div></div>`,'shop');
   const sr=document.querySelector('#ppOv .shop-r');if(sr)sr.scrollTop=keepScroll;$('#ppOv').scrollTop=keepOv;
-  const sample=PD&&PD.cur?PD.cur.look:(ppShop.look||(ppShop.look=newLook()));const renderPrev=pv=>{const o=Object.assign({},PP.owned);Object.keys(PP.off||{}).forEach(k=>delete o[k]);let wall=PP.wall,desk=PP.desk,booth=PP.booth,win=PP.win,street=PP.street;if(pv){const [a,k]=pv.split(':');if(a==='buy')o[k]=1;if(a==='wall')wall=k;if(a==='desk')desk=k;if(a==='booth')booth=k;if(a==='win')win=k;if(a==='street')street=k}
+  const sample=PD&&PD.cur?PD.cur.look:(ppShop.look||(ppShop.look=newLook()));const renderPrev=pv=>{if(!$('#ppPrevOffice'))return;const o=Object.assign({},PP.owned);Object.keys(PP.off||{}).forEach(k=>delete o[k]);let wall=PP.wall,desk=PP.desk,booth=PP.booth,win=PP.win,street=PP.street;if(pv){const [a,k]=pv.split(':');if(a==='buy')o[k]=1;if(a==='wall')wall=k;if(a==='desk')desk=k;if(a==='booth')booth=k;if(a==='win')win=k;if(a==='street')street=k}
     drawOffice($('#ppPrevOffice'),{owned:o,wall});$('#ppPrevDesk').style.background=(PPX.DESKS[desk]||PPX.DESKS.oak)[1];ppShop.face={L:sample,ov:{win}};drawFace(sample,$('#ppPrevWin'),{win});qsDraw($('#ppPrevStreet'),{street,booth,noPeople:1});
     document.querySelectorAll('#ppOv [data-prev]').forEach(el=>el.classList.toggle('previewing',el.dataset.prev===pv))};
   renderPrev(prev.pv);
@@ -2693,13 +2697,17 @@ function ppShop(prev){
   const buy=(cost,fn,pv)=>{if(PP.cash<cost)return;PP.cash-=cost;fn();ppSave();SFX.buy();ppBar();drawOffice();qsDraw();ppShop({pv})};
   $('#ppOv').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const s=PPX.SHOP.find(x=>x.id===b.dataset.buy);buy(s.p,()=>{PP.owned[s.id]=PP.day;if(PP.off)delete PP.off[s.id];PP.pending.capex+=s.p},'buy:'+s.id)});
   $('#ppOv').querySelectorAll('[data-wall]').forEach(b=>b.onclick=()=>buy(10,()=>{PP.wall=b.dataset.wall;PP.pending.repairs+=10}));
-  $('#ppOv').querySelectorAll('[data-desk]').forEach(b=>b.onclick=()=>buy(12,()=>{PP.desk=b.dataset.desk;PP.pending.repairs+=12}));
-  $('#ppOv').querySelectorAll('[data-booth]').forEach(b=>b.onclick=()=>buy(12,()=>{PP.booth=b.dataset.booth;PP.pending.repairs+=12}));
-  $('#ppOv').querySelectorAll('[data-win]').forEach(b=>b.onclick=()=>buy(15,()=>{PP.win=b.dataset.win;PP.pending.repairs+=15}));
-  $('#ppOv').querySelectorAll('[data-street]').forEach(b=>b.onclick=()=>buy(20,()=>{PP.street=b.dataset.street;PP.pending.repairs+=20}));
+  $('#ppOv').querySelectorAll('[data-desk]').forEach(b=>b.onclick=()=>buy(12,()=>{PP.desk=b.dataset.desk;PP.owned['desk:'+b.dataset.desk]=PP.day;PP.pending.capex+=12},'desk:'+b.dataset.desk));
+  $('#ppOv').querySelectorAll('[data-use-desk]').forEach(b=>b.onclick=()=>{PP.desk=b.dataset.useDesk;ppSave();SFX.click();drawOffice();qsDraw();ppShop({pv:'desk:'+PP.desk})});
+  $('#ppOv').querySelectorAll('[data-booth]').forEach(b=>b.onclick=()=>buy(12,()=>{PP.booth=b.dataset.booth;PP.owned['booth:'+b.dataset.booth]=PP.day;PP.pending.capex+=12},'booth:'+b.dataset.booth));
+  $('#ppOv').querySelectorAll('[data-use-booth]').forEach(b=>b.onclick=()=>{PP.booth=b.dataset.useBooth;ppSave();SFX.click();drawOffice();qsDraw();ppShop({pv:'booth:'+PP.booth})});
+  $('#ppOv').querySelectorAll('[data-win]').forEach(b=>b.onclick=()=>buy(15,()=>{PP.win=b.dataset.win;PP.owned['win:'+b.dataset.win]=PP.day;PP.pending.capex+=15},'win:'+b.dataset.win));
+  $('#ppOv').querySelectorAll('[data-use-win]').forEach(b=>b.onclick=()=>{PP.win=b.dataset.useWin;ppSave();SFX.click();drawOffice();qsDraw();ppShop({pv:'win:'+PP.win})});
+  $('#ppOv').querySelectorAll('[data-street]').forEach(b=>b.onclick=()=>buy(20,()=>{PP.street=b.dataset.street;PP.owned['street:'+b.dataset.street]=PP.day;PP.pending.capex+=20},'street:'+b.dataset.street));
+  $('#ppOv').querySelectorAll('[data-use-street]').forEach(b=>b.onclick=()=>{PP.street=b.dataset.useStreet;ppSave();SFX.click();drawOffice();qsDraw();ppShop({pv:'street:'+PP.street})});
   $('#ppOv').querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>buy(8,()=>{PP.ts=(PP.ts||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+8}));
   $('#ppOv').querySelectorAll('[data-gun]').forEach(b=>b.onclick=()=>buy(25,()=>{PP.gun=(PP.gun||0)+1;PP.pending.supplies=(PP.pending.supplies||0)+25}));
-  $('#ppOv').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const id=b.dataset.sell;if(!PP.owned[id])return;const bv=itemBV(id),pr=salePrice(id);delete PP.owned[id];if(PP.off)delete PP.off[id];PP.cash+=pr;PP.pending.saleCash=(PP.pending.saleCash||0)+pr;PP.pending.saleBV=(PP.pending.saleBV||0)+bv;ppSave();SFX.coin();ppBar();drawOffice();ppShop()});
+  $('#ppOv').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const id=b.dataset.sell;if(!PP.owned[id])return;const bv=itemBV(id),pr=salePrice(id);delete PP.owned[id];if(PP.off)delete PP.off[id];{const [dc,dk]=id.split(':');if(dk&&PP[dc]===dk)PP[dc]=DECOR_DEF[dc]}PP.cash+=pr;PP.pending.saleCash=(PP.pending.saleCash||0)+pr;PP.pending.saleBV=(PP.pending.saleBV||0)+bv;ppSave();SFX.coin();ppBar();drawOffice();ppShop()});
   $('#ppOv').querySelectorAll('[data-arr]').forEach(b=>b.onclick=()=>{const a=ARRESTS.find(x=>x.n===b.dataset.arr);buy(a.price,()=>{PP.arrests=Object.assign({},PP.arrests||{},{[a.n]:PP.day});if(PP.arrOff)delete PP.arrOff[a.n];PP.pending.supplies=(PP.pending.supplies||0)+a.price})});
   {const ni=$('#ppNeonTxt');if(ni){ni.onclick=e=>e.stopPropagation();ni.onkeydown=e=>e.stopPropagation();ni.oninput=()=>{PP.neonText=ni.value.toUpperCase().slice(0,7).trim()||'БЮРО';ppSave();neonEggs();drawOffice()}}}
   $('#ppOv').querySelectorAll('[data-tog]').forEach(b=>b.onchange=()=>{PP.off=PP.off||{};if(b.checked)delete PP.off[b.dataset.tog];else PP.off[b.dataset.tog]=1;ppSave();SFX.click();ppBar();drawOffice();ppShop({pv:'buy:'+b.dataset.tog})});
@@ -3493,7 +3501,7 @@ const ACH=[
  ['events8','Всякое бывало','Застань 8 разных событий дня',s=>s.events>=8,null],
  ['broke','Банкрот','Обанкроть бюро',s=>s.broke>=1,null]];
 function achStats(){const S=META.st;return{days:S.days||0,maxDay:Math.max(S.maxDay||0,PP.day),medals:Math.max(S.maxMedals||0,PP.medals.length),perfect:S.perfect||0,bestStreak:S.bestStreak||0,arrests:S.arrests||0,bosses:S.bosses||0,
-  maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).length,allArr:ARRESTS.every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
+  maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).filter(k=>!k.includes(':')).length,allArr:ARRESTS.every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
   petDays:Math.max(S.petDays||0,PP.pet?PP.day-PP.pet.since:0),album:Object.keys(META.album).length,eggs:Object.keys(META.eggs).length,events:Object.keys(S.ev||{}).length,broke:S.broke||0}}
 const REWARD_NAME={hat:{fedora:'шляпа',officer:'фуражка',top:'цилиндр',crown:'корона',halo:'нимб',horns:'рожки',ears:'кошачьи ушки'},gl:{sun:'тёмные очки',mono:'монокль'},tie:{gold:'золотой галстук'},badge:{medal:'орден на грудь',star:'звезда шерифа',heart:'значок-сердечко',egg:'значок пасхальщика'},coat:{'#15130f':'чёрный пиджак','#6a2a4a':'бордовый пиджак','#c9a24a':'золотой пиджак','#2a4a6a':'синий пиджак','#1e2a44':'парадный мундир'}};
 const rewardText=r=>r?'Награда: '+(REWARD_NAME[r[0]][r[1]]||r[1]):'';
