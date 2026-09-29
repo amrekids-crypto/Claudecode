@@ -1979,10 +1979,11 @@ function drawFace(L,cv,ov){
       R(26,44,5,1,SH2);R(33,44,5,1,SH2);R(27,45,4,1,SH2);R(33,45,4,1,SH2);R(28,46,3,1,SH1);R(33,46,3,1,SH1);R(31,44,2,1,SH1)}
     if(F.pend){const pc=F.pc,gc=F.gc;for(let k=0;k<5;k++){R(27+k,44+k,1,1,pc);R(37-k,44+k,1,1,pc)}R(31,49,2,2,gc);R(31,49,1,1,shade(gc,1.4))}}
   if(L.tie){R(31,46,3,2,shade(L.tie,.8));R(30,48,5,7,L.tie);R(31,48,1,6,shade(L.tie,1.2));R(31,55,3,1,shade(L.tie,.7))}
+  // ears (behind the head)
+  const eb=F.ears,ehw=hwAt(29),elx=32-ehw-3-eb,erx=32+ehw;R(elx,25,6+eb,9+eb,OL);R(elx+1,26,4+eb,7+eb,sd);R(elx+1+eb,27,1,4,s2);R(erx-3,25,6+eb,9+eb,OL);R(erx-3,26,4+eb,7+eb,s2);R(erx,27,1,4,s3);if(F.earring&&L.g==='f'){R(elx,34+eb,1,2,'#c8a84a');R(erx+1+eb,34+eb,1,2,'#a8883a')}
   // head
   for(let y=10;y<=45;y++){const hw=y===10?Math.max(3,HW[0]-1):y===45?Math.max(1,HW[33]-1):hwAt(y);if(hw<=0)continue;R(32-hw-1,y,hw*2+2,1,OL)}
   for(let y=11;y<=44;y++){const hw=hwAt(y);R(32-hw,y,hw*2,1,s);if(y>=13){if(F.clean){R(32+hw-3,y,3,1,sd)}else{R(32+hw-4,y,2,1,sd);R(32+hw-2,y,2,1,s2)}R(32-hw,y,1,1,sl)}}
-  const eb=F.ears,ehw=hwAt(29),elx=32-ehw-3-eb,erx=32+ehw;R(elx,25,3+eb,9+eb,OL);R(elx+1,26,1+eb,7+eb,sd);R(elx+1+eb,27,1,4,s2);R(erx,25,3+eb,9+eb,OL);R(erx,26,1+eb,7+eb,s2);R(erx,27,1,4,s3);if(F.earring&&L.g==='f'){R(elx,34+eb,1,2,'#c8a84a');R(erx+1+eb,34+eb,1,2,'#a8883a')}
   if(F.pretty){}else if(F.cheek==='hollow'){R(21,32,4,3,sd);R(40,32,5,3,s2);R(22,34,2,1,s2)}else if(F.cheek==='full'){R(21,31,3,2,sl);R(24,33,2,1,sd)}else{R(21,32,4,2,sd);R(40,32,5,2,s2)}
   if(!F.clean)R(29,43,6,1,sd);R(31,41,3,1,sl);if(F.chin)R(32,42,1,1,s2);
   if(F.age==='o'){R(24,15,16,1,sd);R(26,17,12,1,sd);R(28,19,8,1,sd);R(20,27,1,2,s2);R(44,27,1,2,s3);R(22,30,5,1,s2);R(37,30,5,1,s3);R(26,35,1,5,s2);R(37,35,1,5,s3);R(24,40,2,3,s2);R(38,40,2,3,s3)}
