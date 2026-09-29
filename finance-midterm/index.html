@@ -1982,7 +1982,7 @@ function drawFace(L,cv,ov){
   // head
   for(let y=10;y<=45;y++){const hw=y===10?Math.max(3,HW[0]-1):y===45?Math.max(1,HW[33]-1):hwAt(y);if(hw<=0)continue;R(32-hw-1,y,hw*2+2,1,OL)}
   for(let y=11;y<=44;y++){const hw=hwAt(y);R(32-hw,y,hw*2,1,s);if(y>=13){if(F.clean){R(32+hw-3,y,3,1,sd)}else{R(32+hw-4,y,2,1,sd);R(32+hw-2,y,2,1,s2)}R(32-hw,y,1,1,sl)}}
-  const eb=F.ears;R(17-eb+d,25,3+eb,9+eb,OL);R(18-eb+d,26,1+eb,7+eb,sd);R(18+d,27,1,4,s2);R(45-d,25,3+eb,9+eb,OL);R(45-d,26,1+eb,7+eb,s2);R(45-d,27,1,4,s3);if(F.earring){R(17-eb+d,34+eb,1,2,'#c8a84a');R(46+eb-d,34+eb,1,2,'#a8883a')}
+  const eb=F.ears,ehw=hwAt(29),elx=32-ehw-3-eb,erx=32+ehw;R(elx,25,3+eb,9+eb,OL);R(elx+1,26,1+eb,7+eb,sd);R(elx+1+eb,27,1,4,s2);R(erx,25,3+eb,9+eb,OL);R(erx,26,1+eb,7+eb,s2);R(erx,27,1,4,s3);if(F.earring&&L.g==='f'){R(elx,34+eb,1,2,'#c8a84a');R(erx+1+eb,34+eb,1,2,'#a8883a')}
   if(F.pretty){}else if(F.cheek==='hollow'){R(21,32,4,3,sd);R(40,32,5,3,s2);R(22,34,2,1,s2)}else if(F.cheek==='full'){R(21,31,3,2,sl);R(24,33,2,1,sd)}else{R(21,32,4,2,sd);R(40,32,5,2,s2)}
   if(!F.clean)R(29,43,6,1,sd);R(31,41,3,1,sl);if(F.chin)R(32,42,1,1,s2);
   if(F.age==='o'){R(24,15,16,1,sd);R(26,17,12,1,sd);R(28,19,8,1,sd);R(20,27,1,2,s2);R(44,27,1,2,s3);R(22,30,5,1,s2);R(37,30,5,1,s3);R(26,35,1,5,s2);R(37,35,1,5,s3);R(24,40,2,3,s2);R(38,40,2,3,s3)}
@@ -2023,7 +2023,7 @@ function drawFace(L,cv,ov){
   if(F.scar){R(F.scar,22,1,8,sl);R(F.scar-1,23,1,1,s2);R(F.scar+1,27,1,1,s2)}
   if(F.stubble&&!L.beard)for(let y=36;y<=44;y++){const hw=hwAt(y)-2;if(y%2===0)for(let xx=32-hw+1;xx<32+hw-1;xx+=3)R(xx+(y%4?1:0),y,1,1,shade(s,.8))}
   if(F.blush){if(F.pretty){R(21,31,4,2,pmixHex(s,'#d07a78',.35));R(39,31,4,2,pmixHex(s,'#c06a68',.35))}else{R(21,32,3,1,'#b87a70');R(40,32,3,1,'#a86a60')}}
-  if(F.pretty){R(22,30,3,1,sl);R(40,30,2,1,shade(s,1.08));if(L.g==='m'){R(22,39,2,4,sd);R(41,39,2,4,s2);R(29,44,6,1,sd)}}
+  if(F.pretty){R(22,30,3,1,sl);R(40,30,2,1,shade(s,1.08));if(L.g==='m'){for(let y=39;y<=42;y++){const hw=hwAt(y);if(hw>=11){R(32-hw+1,y,2,1,sd);R(32+hw-3,y,2,1,s2)}}R(29,44,6,1,sd)}}
   // mouth
   const mw=F.mouth==='wide'?10:F.mouth==='small'?6:8,mx=32-mw/2,my=38+Math.max(0,nl);
   const BT=L.beard===true?'full':L.beard||null,STT=L.stache===true?'classic':L.stache||null;
@@ -2041,7 +2041,7 @@ function drawFace(L,cv,ov){
   // hats
   const C=PM(L.hatc||'#3a3a30',.2),C1=shade(C,.7),C2=shade(C,1.25),C3=shade(C,.5);
   const row=(y,x1,x2,c)=>R(x1,y,x2-x1,1,c);const shp=(rows)=>{rows.forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));rows.forEach(([y,x1,x2],j)=>{row(y,x1,x2,C);R(x1,y,2,1,C2);R(x2-4,y,4,1,C1)})};
-  const brimShade=(y,x1,x2)=>{[.42,.34,.24,.13].forEach((al,i)=>{const yy=y+i,w=LS==='bald'?hwAt(yy):Math.max(hwAt(yy),15-d),a=Math.max(x1,32-w),c=Math.min(x2,32+w);if(c>a)R(a,yy,c-a,1,'rgba(10,8,6,'+al+')')})};
+  const brimShade=(y,x1,x2)=>{const y2=Math.max(y+1,21+(F.hairline||0)),n=y2-y+1;for(let i=0;i<n;i++){const al=+(.42-.3*i/Math.max(1,n-1)).toFixed(3),yy=y+i,w=LS==='bald'?hwAt(yy):Math.max(hwAt(yy),15-d),a=Math.max(x1,32-w),c=Math.min(x2,32+w);if(c>a)R(a,yy,c-a,1,'rgba(10,8,6,'+al+')')}};
   if(L.hat==='cap'){brimShade(19,19,45);const rows=[[6,21,43],[7,19,45],[8,18,46]];for(let y=9;y<=15;y++)rows.push([y,17,47]);shp(rows);R(17,13,30,2,C1);R(20,7,10,1,C2);R(31,6,1,9,C1);
     [[16,14,42],[17,14,41],[18,16,38]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(16,14,42,C3);row(17,14,41,C1);row(18,16,38,C3);R(15,16,10,1,C)}
   if(L.hat==='fedora'){brimShade(17,18,46);const rows=[[3,22,30],[3,34,42],[4,21,43],[5,20,44]];for(let y=6;y<=13;y++)rows.push([y,19,45]);shp(rows);R(30,3,4,3,C1);R(31,4,2,4,C1);R(19,11,26,2,'#1a1714');R(19,11,26,1,'#2e2a24');
