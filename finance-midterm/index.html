@@ -2185,9 +2185,11 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   if(LSt==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
   R(px+5,y+3,1,2,sd);
   R(px+8,y+3,1,1,'#1b1914');R(px+7,y+6,2,1,shade(s,.6));
-  if(L.glasses){R(px+7,y+3,3,1,'#1b1914');R(px+5,y+3,2,1,'#1b1914')}
+  {const GF='#1b1914';if(L.gl==='sun'){R(px+5,y+3,3,1,GF);R(px+8,y+2,2,3,GF);R(px+8,y+2,2,1,'#3a3e48');R(px+9,y+3,1,1,'#5a6070')}
+   else if(L.gl==='mono'){R(px+9,y+2,1,3,'#c9a24a');R(px+9,y+3,1,1,'#e8f4ff');R(px+8,y+5,1,1,'#c9a24a');R(px+7,y+6,1,2,'#c9a24a')}
+   else if(L.glasses){R(px+5,y+3,3,1,GF);R(px+9,y+2,1,3,GF);R(px+9,y+3,1,1,'#bfe0f0');R(px+8,y+2,1,1,GF)}}
   if(L.beard==='goatee')R(px+8,y+7,2,1,H);else if(L.beard==='chin'){R(px+5,y+5,1,3,H);R(px+6,y+7,4,1,H)}else if(L.beard)R(px+6,y+6,4,2,H);if(L.stache==='walrus')R(px+7,y+5,3,1,H);else if(L.stache)R(px+8,y+5,2,1,L.stache==='pencil'?shade(H,.7):H);
-  if(L.halo){R(px+3,y-4,7,1,'#ffe680');R(px+2,y-3,1,1,'#ffe680');R(px+10,y-3,1,1,'#ffe680')}if(L.horns){R(px+3,y-2,1,2,'#c0201a');R(px+9,y-2,1,2,'#c0201a')}if((L.ears||L.catgirl)&&!L.hat){R(px+3,y-2,2,2,H);R(px+8,y-2,2,2,H)}if(L.gl==='sun'){R(px+5,y+3,5,1,'#15130f')}if(L.boss){R(px+10,y+6,3,1,'#6a4a2a');R(px+13,y+6,1,1,'#ff6a1a')}
+  if(L.halo){R(px+3,y-4,7,1,'#ffe680');R(px+2,y-3,1,1,'#ffe680');R(px+10,y-3,1,1,'#ffe680')}if(L.horns){R(px+3,y-2,1,2,'#c0201a');R(px+9,y-2,1,2,'#c0201a')}if((L.ears||L.catgirl)&&!L.hat){R(px+3,y-2,2,2,H);R(px+8,y-2,2,2,H)}if(L.boss){R(px+10,y+6,3,1,'#6a4a2a');R(px+13,y+6,1,1,'#ff6a1a')}
   if(L.hat==='officer'){R(px+2,y-1,8,3,'#23241f');R(px+2,y+1,8,1,'#a3302a');R(px+8,y+2,4,1,'#100e0b');R(px+6,y-1,2,1,'#e0b64a')}
   else if(L.hat==='helmet'){R(px+2,y-2,9,5,'#1e2226');R(px+2,y-2,9,1,'#3a4046');R(px+8,y+2,3,2,'#6a8aa0')}
   else if(L.hat==='kippah'){R(px+3,y-1,4,1,L.hatc);R(px+2,y,5,1,L.hatc)}
