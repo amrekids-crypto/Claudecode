@@ -3767,6 +3767,6 @@ window.__cloudDirty=false;cloudUI();
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
 buildDeck();
-const h=location.hash.replace('#','');showTab(TABS.includes(h)?h:store.get('tab','home'));
+const h=location.hash.replace('#','');showTab(TABS.includes(h)?h:'mix');
 $('#quizBox').innerHTML='<p class="muted">Выбери тему и нажми «Начать». Вопросы на английском, как на экзамене, разбор на русском. Начни с «Мини-тест из класса».</p>';
 </script>
