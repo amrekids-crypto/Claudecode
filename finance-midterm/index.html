@@ -2041,7 +2041,7 @@ function drawFace(L,cv,ov){
   // hats
   const C=PM(L.hatc||'#3a3a30',.2),C1=shade(C,.7),C2=shade(C,1.25),C3=shade(C,.5);
   const row=(y,x1,x2,c)=>R(x1,y,x2-x1,1,c);const shp=(rows)=>{rows.forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));rows.forEach(([y,x1,x2],j)=>{row(y,x1,x2,C);R(x1,y,2,1,C2);R(x2-4,y,4,1,C1)})};
-  const brimShade=(y,x1,x2)=>{R(x1,y,x2-x1,2,'rgba(10,8,6,.35)')};
+  const brimShade=(y,x1,x2)=>{for(let yy=y;yy<y+2;yy++){const w=LS==='bald'?hwAt(yy):Math.max(hwAt(yy),15-d),a=Math.max(x1,32-w),c=Math.min(x2,32+w);if(c>a)R(a,yy,c-a,1,'rgba(10,8,6,.35)')}};
   if(L.hat==='cap'){brimShade(19,19,45);const rows=[[6,21,43],[7,19,45],[8,18,46]];for(let y=9;y<=15;y++)rows.push([y,17,47]);shp(rows);R(17,13,30,2,C1);R(20,7,10,1,C2);R(31,6,1,9,C1);
     [[16,14,42],[17,14,41],[18,16,38]].forEach(([y,x1,x2])=>row(y,x1-1,x2+1,OL));row(16,14,42,C3);row(17,14,41,C1);row(18,16,38,C3);R(15,16,10,1,C)}
   if(L.hat==='fedora'){brimShade(17,18,46);const rows=[[3,22,30],[3,34,42],[4,21,43],[5,20,44]];for(let y=6;y<=13;y++)rows.push([y,19,45]);shp(rows);R(30,3,4,3,C1);R(31,4,2,4,C1);R(19,11,26,2,'#1a1714');R(19,11,26,1,'#2e2a24');
