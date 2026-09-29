@@ -1870,7 +1870,11 @@ let PD=null,ppLoop=null;
 function ppCosts(){const e=PP.event;return{fee:{fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE,rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
   heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:{audit:.9,reform:.7}[e]||.8,bonus:e==='audit'?20:PPX.BONUS,fine:e==='reform'?25:PPX.FINE,
   n:Math.max(3,Math.min(4+PP.day,10)+({rush:3,rain:-2}[e]||0)),end:e==='fire'?960:1080}}
-const ppSave=()=>store.set('pp',PP);
+const ppSave=()=>{store.set('pp',PP);if(PD&&PD._pp0&&PD.state!=='over')ppShiftSave()};
+const PD_SKIP=new Set(['cur','walking','aim','frozen','slow','arrestFlag','_pp0','state','escort','guarded']);
+function ppShiftSave(){try{const pd={};Object.keys(PD).forEach(k=>{if(!PD_SKIP.has(k))pd[k]=PD[k]});pd.idx=(PD.state==='done'||PD.state==='idle')?PD.idx:PD.idx-1;
+  store.set('ppShift',{day:PP.day,pp0:PD._pp0,pd:JSON.parse(JSON.stringify(pd))})}catch(e){}}
+function ppFixTF(o,d){if(!o||typeof o!=='object'||d>8)return;for(const k of Object.keys(o)){const v=o[k];if(Array.isArray(v)&&v.length===2&&v[0]==='True'&&v[1]==='False')o[k]=TF;else ppFixTF(v,(d||0)+1)}}
 const has=id=>!!PP.owned[id]&&!(PP.off||{})[id];
 const ppRank=()=>{let r=PPX.RANKS[0][1];PPX.RANKS.forEach(([m,n])=>{if(PP.medals.length>=m)r=n});return r};
 function itemBV(id){const it=PPX.SHOP.find(s=>s.id===id),d=PP.owned[id];if(!it||d==null)return 0;return it.p-it.p/10*Math.min(10,Math.max(0,PP.day-d))}
@@ -2704,15 +2708,15 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;
-  PD={deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
+  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;const pp0=JSON.parse(JSON.stringify(PP));
+  PD={_pp0:pp0,deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   const hr=new Date().getHours();if(hr<5&&PD.tasks.length>2){const t=PD.tasks[rint(1,PD.tasks.length-1)];t.look=ghostLook();t.role='Призрак прошлого квартала'}
   if(PP.day===42&&PD.tasks[0]){PD.tasks[0].look=deepLook();PD.tasks[0].role='Глубокомысленный'}
   if(PP.event==='boss'){const bl=bossLook();const steps=[ofillTask(docCF),buildTask(docIS),{kind:'audit',au:makeAudit()}];steps.forEach((t,i)=>Object.assign(t,{boss:true,bstep:i+1,look:bl,role:'Олигарх Скруджев'}));PD.tasks.push(...steps)}
   qsSetup(PD.tasks.map(t=>t.look));QS.clerkOut=false;
   {const b0=PD.tasks.findIndex(t=>t.boss);if(b0>=0){QS.people[b0+1]=QS.people[b0];QS.people[b0+2]=QS.people[b0];qsTargets()}}
   {const d=new Date();if(PP.day===13||(d.getDay()===5&&d.getDate()===13))setTimeout(blackCat,1500)}
-  ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();
+  ppTalk('Бюро','Окошко открыто. Позови первого посетителя.');ppClock();ppShiftSave();
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>FINANCE, PLEASE</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
   ppBar();
 }
@@ -3354,7 +3358,7 @@ function ppSummary(){
    <table class="pp-is"><tr class="h"><td>Balance sheet</td><td></td></tr>${row('Cash',PP.cash)}${row('Office equipment',eq.cost)}${row('− Accum. depreciation',-(eq.acc+dep))}${row('Total assets',ta,'sub')}${row('Common stock (стартовый капитал)',PP.capital)}${row('Retained earnings',reEnd)}${row('Total L & E',PP.capital+reEnd,'sub')}</table>
    </div>
    ${broke?'<p><b>Cash ушёл в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn red" id="ppAgain">Новая игра</button>':'<button class="pp-btn horn" id="ppNextDay">Следующий день</button>'}`);
-  PP.best=Math.max(PP.best||0,d);if(typeof lbRecordDay==='function')lbRecordDay(PD,d,PP.medals.length);PD=null;banner('');setTimeout(achCheck,400);
+  PP.best=Math.max(PP.best||0,d);if(typeof lbRecordDay==='function')lbRecordDay(PD,d,PP.medals.length);PD=null;store.set('ppShift',null);banner('');setTimeout(achCheck,400);
   if(broke){$('#ppAgain').onclick=()=>{PP=ppNorm({best:PP.best});ppSave();ppDayIntro()}}
   else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
   ppSave();ppBar();
@@ -3378,7 +3382,7 @@ document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!ta
 $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
   QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
-  PP=ppNorm({best:PP.best||0});ppSave();ppDayIntro();qsDraw()};
+  PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();qsDraw()};
 /* long press on "Начать игру заново" reveals full wipe */
 {const rb=$('#ppReset'),wb=$('#ppWipe'),orig=rb.onclick;let t=null,lp=false,hideT=null;
   const hideWipe=()=>{wb.hidden=true;delete wb.dataset.sure;wb.textContent='Сбросить весь прогресс'};
@@ -3665,6 +3669,23 @@ function drawActorExtra(R,a,x,y,t){
   b2.onclick=()=>btn.onclick();btn.onclick=async()=>{if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
     try{if(isFs())await (d.exitFullscreen||d.webkitExitFullscreen).call(d);else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'})}catch(e){toast('Полный экран недоступен','Браузер не разрешил. Попробуй открыть сайт в Chrome или Safari.','#e05a4a')}};
   const re=()=>{upd();[60,250,600].forEach(ms=>setTimeout(()=>{try{qsResize();qsDraw()}catch(e){}},ms))};d.addEventListener('fullscreenchange',re);d.addEventListener('webkitfullscreenchange',re)}
+/* ---------- resume an unfinished shift ---------- */
+function ppResumeShift(sh){ppCloseOv();ppFixTF(sh.pd.tasks,0);
+  PD=Object.assign({deduct:0,correct:0,wrong:0,hints:0,fees:0,min:360,hinted:false},sh.pd,{_pp0:sh.pp0,state:'idle',cur:null});
+  qsSetup(PD.tasks.map(t=>t.look));QS.clerkOut=false;
+  {const b0=PD.tasks.findIndex(t=>t.boss);if(b0>=0){QS.people[b0+1]=QS.people[b0];QS.people[b0+2]=QS.people[b0]}}
+  QS.people.forEach((q,i)=>{if(i<=PD.idx){q.state='gone';q.hide=true}});qsTargets();QS.people.forEach(q=>{if(!q.hide)q.x=q.tx});
+  ppTalk('Бюро','Смена продолжается. Позови следующего посетителя.');ppClock();
+  $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>FINANCE, PLEASE</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Смена восстановлена: принято ${Math.max(0,PD.idx+1)} из ${PD.tasks.length}. Нажми «Следующий!».</p></div>`;
+  ppBar();qsDraw();ppShiftSave()}
+function ppResumePrompt(){const sh=store.get('ppShift',null);if(!sh||!sh.pd||!sh.pp0||sh.day!==PP.day||!Array.isArray(sh.pd.tasks))return;
+  const done=Math.max(0,(sh.pd.idx|0)+1),earned=Math.round(PP.cash-(sh.pp0.cash||0));
+  ppOverlay(`<div class="shop-top"><h3>НЕЗАВЕРШЁННАЯ СМЕНА</h3></div><p>День ${PP.day}. Принято посетителей: ${done} из ${sh.pd.tasks.length}, верных ответов: ${sh.pd.correct||0}. Изменение сбережений за смену: ${earned>=0?'+':'−'}$${Math.abs(earned)}.</p>
+    <p class="pp-q" style="font-size:14px">Можно продолжить с того места, где остановился, или начать эту смену заново. При перезапуске всё заработанное и потраченное за эту смену отменится.</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="pp-btn horn" id="ppResume">Продолжить смену</button><button class="pp-btn" id="ppRestartShift">Начать смену заново</button></div>`);
+  $('#ppResume').onclick=()=>{SFX.click();ppResumeShift(sh)};
+  $('#ppRestartShift').onclick=()=>{SFX.click();PP=ppNorm(sh.pp0);store.set('ppShift',null);ppSave();ppCloseOv();ppDayIntro();qsDraw()}}
+setTimeout(()=>{try{ppResumePrompt()}catch(e){}},50);
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
