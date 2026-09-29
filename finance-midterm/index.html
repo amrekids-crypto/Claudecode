@@ -404,6 +404,8 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 }
 .pp-bar .grp2{display:flex;gap:6px;align-items:center}
 @media (max-width:900px){body.kbd #tab-mix .pp-top,body.kbd #tab-mix .pp-booth,body.kbd #tab-mix>.row:first-child{display:none!important}}
+body.kbd #ppDesk,body.kbd .shop-r,body.kbd .pp-avopts,body.kbd .pp-ov{padding-bottom:calc(var(--kbH,0px) + 16px)!important}
+body.kbd{padding-bottom:var(--kbH,0px)}
 body.fsmode header.top,body.fsmode #tab-mix>.row:first-child{display:none!important}
 body.fsmode #tab-mix.section{padding-top:0!important}
 body.fsmode .pp{height:100dvh!important;min-height:0}
@@ -3718,14 +3720,16 @@ function ppResumePrompt(){const sh=store.get('ppShift',null);if(!sh||!sh.pd||!sh
   $('#ppResume').onclick=()=>{SFX.click();ppResumeShift(sh)};
   $('#ppRestartShift').onclick=()=>{SFX.click();PP=ppNorm(sh.pp0);store.set('ppShift',null);ppSave();ppCloseOv();ppDayIntro();qsDraw()}}
 setTimeout(()=>{try{ppResumePrompt()}catch(e){}},50);
-/* ---------- on-screen keyboard: keep the edited field in view ---------- */
-{const vv=window.visualViewport,isF=el=>el&&/^(INPUT|TEXTAREA)$/.test(el.tagName)&&!/checkbox|radio|range/.test(el.type||'');
-  const ensure=()=>{const el=document.activeElement;if(!isF(el))return;const vh=vv?vv.height+vv.offsetTop:innerHeight,r=el.getBoundingClientRect();const want=Math.max(56,vh*.42);if(r.top>=want-40&&r.bottom<=vh-60)return;
-    const sc=el.closest('#ppDesk,.shop-r,.pp-avopts,.pp-ov');if(sc){sc.scrollTop+=r.top-want}else window.scrollBy(0,r.top-want)};
-  let maxH=window.innerHeight;window.addEventListener('orientationchange',()=>{maxH=0});
-  const kb=()=>{if(!isF(document.activeElement))maxH=Math.max(maxH,window.innerHeight);const open=!!vv&&vv.height<Math.max(maxH,window.innerHeight)*.8&&isF(document.activeElement)&&matchMedia('(max-width:900px)').matches;document.body.classList.toggle('kbd',open);if(open)setTimeout(ensure,60)};
-  if(vv){vv.addEventListener('resize',kb);vv.addEventListener('scroll',()=>{if(document.body.classList.contains('kbd'))setTimeout(ensure,30)})}
-  document.addEventListener('focusin',e=>{if(isF(e.target))[80,320,650].forEach(ms=>setTimeout(()=>{kb();ensure()},ms))});document.addEventListener('focusout',()=>setTimeout(kb,120))}
+/* ---------- on-screen keyboard: lift everything above it ---------- */
+{const vv=window.visualViewport,isF=el=>el&&/^(INPUT|TEXTAREA)$/.test(el.tagName)&&!/checkbox|radio|range|button/.test(el.type||'');
+  const touch=matchMedia('(pointer:coarse)').matches||('ontouchstart' in window);let t=0;
+  const kbH=()=>{const real=vv?Math.max(0,window.innerHeight-vv.height-vv.offsetTop):0;return real>80?real:Math.round(window.innerHeight*.44)};
+  const place=()=>{const el=document.activeElement;if(!isF(el))return;const H=window.innerHeight-(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--kbH'))||0);
+    const r=el.getBoundingClientRect(),want=Math.max(48,H*.3);if(r.top>=want*.6&&r.bottom<=H-70)return;const sc=el.closest('#ppDesk,.shop-r,.pp-avopts,.pp-ov');if(sc)sc.scrollTop+=r.top-want;else window.scrollBy(0,r.top-want)};
+  const open=()=>{if(!touch||!isF(document.activeElement))return;clearTimeout(t);document.documentElement.style.setProperty('--kbH',kbH()+'px');document.body.classList.add('kbd');[60,300,650].forEach(ms=>setTimeout(place,ms))};
+  const close=()=>{clearTimeout(t);t=setTimeout(()=>{if(!isF(document.activeElement)){document.body.classList.remove('kbd');document.documentElement.style.setProperty('--kbH','0px')}},180)};
+  document.addEventListener('focusin',e=>{if(isF(e.target))open()});document.addEventListener('focusout',close);
+  if(vv)vv.addEventListener('resize',()=>{if(document.body.classList.contains('kbd')){document.documentElement.style.setProperty('--kbH',kbH()+'px');setTimeout(place,60)}})}
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
