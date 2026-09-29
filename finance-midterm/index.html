@@ -684,7 +684,10 @@ document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classLis
 
 /* ---------- tabs ---------- */
 const TABS=['home','build','mix','lb','place','quiz','cards','sheet'];
-function showTab(t){if(!TABS.includes(t))t='home';TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
+function cheatCheck(){try{if(typeof B==='undefined'||!B.stmts||typeof PP==='undefined')return;let sk=null,ek=null;B.stmts.forEach((st,i)=>(st.rows||[]).forEach(r=>{if(r.head||!r.label)return;const lb=String(r.label).replace(/<[^>]*>/g,'');if(!sk&&/^\s*(net\s+)?sales\b/i.test(lb))sk=i+':'+r.id;if(!ek&&/\bEPS\b|earnings per share/i.test(lb))ek=i+':'+r.id}));
+  const num=v=>parseFloat(String(v==null?'':v).replace(/[,\s$]/g,''));if(!sk||!ek||num(B.inputs[sk])!==100||num(B.inputs[ek])!==100)return;
+  B.inputs[sk]='';B.inputs[ek]='';store.set(inpKey(),B.inputs);try{renderLedger()}catch(e){}PP.cash+=100;ppSave();try{ppBar()}catch(e){}setTimeout(()=>{try{toast('Читкод активирован','+$100 на баланс','#7fe08a');SFX.coin()}catch(e){}},500)}catch(e){}}
+function showTab(t){if(!TABS.includes(t))t='home';if(t==='mix')setTimeout(cheatCheck,0);TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
 /* =====================================================
@@ -1880,9 +1883,10 @@ const PPX={
 function ppNorm(p){p=p||{};return Object.assign({candy:0,win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
 let PP=ppNorm(store.get('pp',null));if(!PP.decorMig){PP.decorMig=1;[['street','night'],['booth','olive'],['win','green'],['desk','oak']].forEach(([c,d])=>{if(PP[c]&&PP[c]!==d&&PP.owned[c+':'+PP[c]]==null)PP.owned[c+':'+PP[c]]=(PP.day||1)-10})}
 let PD=null,ppLoop=null;
-function ppCosts(){const e=PP.event;return{fee:{fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE,rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
-  heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:{audit:.9,reform:.7}[e]||.8,bonus:e==='audit'?20:PPX.BONUS,fine:e==='reform'?25:PPX.FINE,
-  n:Math.max(3,Math.min(4+PP.day,10)+({rush:3,rain:-2}[e]||0)),end:e==='fire'?960:1080}}
+const DIFF_N=['','Очень легко','Легко','Нормально','Сложно','Хардкор'],DIFF_M=[0,.6,.8,1,1.25,1.5];
+function ppCosts(){const e=PP.event,D=PP.diff||3,fm=DIFF_M[D];return{fee:Math.max(1,Math.round(({fair:6,crisis:4,inflation:7,rush:6}[e]||PPX.FEE)*fm)),rent:{crisis:8,inflation:15,fire:6,blackout:9}[e]??PPX.RENT,food:{inflation:9}[e]||PPX.FOOD,
+  heat:has('heater')?1:Math.round(PPX.HEAT*({cold:2,rain:1.5}[e]||1)),medal:Math.max(.6,Math.min(.95,({audit:.9,reform:.7}[e]||.8)+(D-3)*.05)),bonus:Math.round((e==='audit'?20:PPX.BONUS)*fm),fine:Math.round((e==='reform'?25:PPX.FINE)*fm),
+  n:Math.max(3,Math.min(4+PP.day,10)+({rush:3,rain:-2}[e]||0)+(D-3)),end:e==='fire'?960:1080}}
 const ppSave=()=>{store.set('pp',PP);if(PD&&PD._pp0&&PD.state!=='over')ppShiftSave()};
 const PD_SKIP=new Set(['cur','walking','aim','frozen','slow','arrestFlag','_pp0','state','escort','guarded']);
 function ppShiftSave(){try{const pd={};Object.keys(PD).forEach(k=>{if(!PD_SKIP.has(k))pd[k]=PD[k]});pd.idx=(PD.state==='done'||PD.state==='idle')?PD.idx:PD.idx-1;
@@ -2314,7 +2318,7 @@ function qsDraw(cv,ov){
   (QS.scorch||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-18,d.y,36,3,'#1a1410');R(d.x-14,d.y-1,28,1,'#2a2018');R(d.x-8,d.y+1,3,1,'#6a2a10');R(d.x+6,d.y+1,3,1,'#6a2a10')});
   QS.decals.forEach(d=>{x.globalAlpha=fa(d);drawBlood(R,d.x,d.y)});(QS.scraps||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x,d.y,d.w,d.h,d.c)});x.globalAlpha=1;
   if(ov&&ov.noPeople){x.setTransform(1,0,0,1,0,-20);if(ST.snow)for(let i=0;i<50;i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0);return}
-  (QS.debris||[]).forEach(d=>drawActor(R,d));
+  (QS.debris||[]).forEach(d=>drawActor(R,d));(QS.actors||[]).forEach(a=>{if(a.under)drawActor(R,a)});
   if(PP.downed){drawBlood(R,Math.round(PP.downed.x),Math.round(PP.downed.y));drawLying(R,Math.round(PP.downed.x),Math.round(PP.downed.y),INSPECTOR)}
   QS.people.forEach(p=>{if(p.hide||!p.lying)return;x.globalAlpha=fa(p);const px=Math.round(p.x);if(p.bag){R(px,Math.round(p.y)+22,28,6,'#15130f');R(px+2,Math.round(p.y)+23,24,1,'#3a3a40');R(px+26,Math.round(p.y)+22,3,3,'#8a8a92')}else if(p.flat){const y0=Math.round(p.y)+27,L=QS.soot?sootL(p.look):p.look;R(px-4,y0,36,2,'rgba(0,0,0,.35)');R(px-2,y0-2,6,2,L.skin);R(px-3,y0-2,2,2,L.hair);R(px+4,y0-2,16,2,L.coat);R(px+4,y0-2,16,1,shade(L.coat,1.2));R(px+20,y0-2,9,2,'#1f1c17');R(px+10,y0-3,4,1,L.coat);R(px+6,y0,4,1,'#a3201a')}else if(p.ash){const y0=Math.round(p.y)+27;R(px+1,y0-1,14,2,'#6a6660');R(px+3,y0-3,10,2,'#7e7a72');R(px+5,y0-5,6,2,'#8e8a80');R(px+7,y0-6,2,1,'#a09a90');R(px,y0+1,16,1,'rgba(0,0,0,.3)')}else drawLying(R,px,Math.round(p.y),QS.soot?sootL(p.look):p.look)});
   x.globalAlpha=1;let carDone=!QS.car;const carNow=()=>{if(!carDone){carDone=true;drawCar(R,Math.round(QS.car.x),QS.car.y-4+(QS.car.bump||0),QS.car.dir,QS.tick)}};
@@ -2334,7 +2338,7 @@ function qsDraw(cv,ov){
     if(p.shield){Rm(px+11,py+3,4,21,'#5a6068');Rm(px+11,py+3,1,21,'#a8b0b8');Rm(px+12,py+9,2,3,'#e0b64a')}});carNow();
   QS.fx.forEach(f=>{if(f.t==='line')qsLine(R,f.x1,f.y1,f.x2,f.y2,f.ttl%2?'#fff3b0':'#e0b64a');else if(f.t==='spark'){const r=6-Math.min(5,f.ttl);R(f.x-1,f.y-1,3,3,f.c);R(f.x-r,f.y,1,1,f.c);R(f.x+r,f.y,1,1,f.c);R(f.x,f.y-r,1,1,f.c);R(f.x,f.y+r,1,1,f.c)}});
   x.setTransform(1,0,0,1,0,0);
-  if(QS.actors&&QS.actors.length&&!(ov&&ov.noPeople)){x.setTransform(1,0,0,1,OX,-20);QS.actors.forEach(a=>drawActor(R,a));QS.actors.filter(a=>a.t==='txt').forEach(a=>{x.font=(a.size||12)+'px Tiny5, monospace';x.textAlign='center';x.lineWidth=3;x.strokeStyle='#15130f';x.strokeText(a.text,a.x,a.y);x.fillStyle=a.c||'#ffe060';x.fillText(a.text,a.x,a.y)});x.setTransform(1,0,0,1,0,0)}
+  if(QS.actors&&QS.actors.length&&!(ov&&ov.noPeople)){x.setTransform(1,0,0,1,OX,-20);QS.actors.forEach(a=>{if(!a.under)drawActor(R,a)});QS.actors.filter(a=>a.t==='txt').forEach(a=>{x.font=(a.size||12)+'px Tiny5, monospace';x.textAlign='center';x.lineWidth=3;x.strokeStyle='#15130f';x.strokeText(a.text,a.x,a.y);x.fillStyle=a.c||'#ffe060';x.fillText(a.text,a.x,a.y)});x.setTransform(1,0,0,1,0,0)}
   if(QS.flash&&!(ov&&ov.noPeople)){x.fillStyle=QS.flash%2?'rgba(255,255,240,.7)':'rgba(255,255,255,.35)';x.fillRect(0,0,W,120)}
   if(ST.snow){x.setTransform(1,0,0,1,0,-20);for(let i=0;i<Math.round(W/8);i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0)}
   if(!cv)qsWeather(x,R,W);
@@ -2665,7 +2669,7 @@ function makeTasks(n,ev){
   const extra=PP.day>=1?Math.round(nQ*.4):0;const qs=qTopics.length?ppPickQs(nQ+extra,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
   let miss=nQ-Math.min(nQ,qs.length);while(miss-->0){if(docs.length)nDoc++;else if(canAudit)nAudit++;else if(canCard)nCard++;else if(canPlace)nPlace++;else if(OK.length)special.push(pick(OK))}
   const t=[];let qi=0,spare=Math.max(0,qs.length-nQ);
-  for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
+  for(let v=0;v<Math.min(nQ,qs.length);v++){if(spare>0&&Math.random()<.4+((PP.diff||3)-3)*.08){const k=Math.min(spare,pick([1,1,2]));t.push({kind:'bundle',qs:qs.slice(qi,qi+1+k)});qi+=1+k;spare-=k}else{t.push({kind:'q',q:qs[qi]});qi++}}
   for(let i=0;i<nAudit;i++)t.push({kind:'audit',au:makeAudit()});
   special.forEach(k=>t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask()));
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
@@ -2673,10 +2677,10 @@ function makeTasks(n,ev){
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
   for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS})}
   {let nb=0;t.forEach((x,i)=>{if(x.big&&nb++)t[i]=x.kind==='build'?buildTask(docRE):ofillTask(docRE)})}
-  t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18)t[i]=claimQ(x.q)});
+  t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18+((PP.diff||3)-3)*.05)t[i]=claimQ(x.q)});
   {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
-  t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
+  t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36+((PP.diff||3)-3)*.08)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
   return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);return Object.assign(x,{look,role:roleFor(look)})});
 }
@@ -2708,7 +2712,7 @@ function ppDayIntro(){
   const ev=ppEvent();$('#ppEvent').textContent=ev.t;
   const CO=ppCosts(),n=CO.n,heat=CO.heat;
   ppOverlay(`<div class="pp-title">ДЕНЬ ${PP.day}</div>
-   <p style="text-align:center">${esc(ev.t)}</p>${PP.petMsg?`<p class="mono" style="text-align:center;color:#a3302a">${esc(PP.petMsg)}</p>`:''}
+   <p style="text-align:center">${esc(ev.t)}</p><div class="row" style="justify-content:center;align-items:center;gap:6px"><span class="mono">Сложность дня:</span>${[1,2,3,4,5].map(d=>`<button class="pp-chip${(PP.diff||3)===d?' on':''}" data-diff="${d}" title="${DIFF_N[d]}">${d}</button>`).join('')}<span class="mono"><b>${DIFF_N[PP.diff||3]}</b></span></div><p class="mono" style="text-align:center;font-size:12px;margin-top:0">Сложность меняет число посетителей, плату и штраф (×${DIFF_M[PP.diff||3]}), порог медали и долю каверзных заданий.</p>${PP.petMsg?`<p class="mono" style="text-align:center;color:#a3302a">${esc(PP.petMsg)}</p>`:''}
    <p class="mono" style="text-align:center">Посетителей: ${n}${PP.event==='boss'?' + Олигарх':''} · плата за верный ответ $${CO.fee}<br>Вечером: аренда $${CO.rent}, еда $${CO.food}, отопление $${heat}${PP.pet?`, корм для питомца $${petInfo().food}`:''}<br>Сбережения сейчас: $${fmt(PP.cash)}</p>
    <p class="mono">Инспекция: ${Math.round(CO.medal*100)}%+ верных → медаль и премия $${CO.bonus}; меньше 60% → штраф $${CO.fine}. Смена до ${CO.end/60}:00 (1 игровая минута = 1 секунда), после ответа часы стоят, пока не позовёшь следующего.</p>
    <p>Темы на сегодня:</p>
@@ -2718,7 +2722,7 @@ function ppDayIntro(){
   const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave()};
   tb.addEventListener('change',syncT);
   $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit','order','sort','ofill','build'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
-  $('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
+  $('#ppOv').querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{PP.diff=+b.dataset.diff;ppSave();ppDayIntro()});$('#ppGo').onclick=()=>{if(PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
 const ITEM_BOX={lamp:[56,50,36,36],plant:[0,44,24,42],poster:[86,2,48,38],clock:[116,40,22,22],radio:[92,38,26,24],cat:[128,44,30,20],coffee:[54,64,24,22],calc:[36,82,20,14],heater:[18,68,38,18],book:[112,44,18,18],painting:[86,2,48,38],aquarium:[92,64,36,22],fan:[122,60,26,26],trophy:[143,68,17,18],neon:[86,36,48,16]};
 function officeThumb(id){const off=document.createElement('canvas');off.width=160;off.height=100;drawOffice(off,{owned:{[id]:1},wall:PP.wall,noMedals:1});const [bx,by,bw,bh]=ITEM_BOX[id]||[0,0,160,100];const th=document.createElement('canvas');th.width=bw;th.height=bh;th.getContext('2d').drawImage(off,bx,by,bw,bh,0,0,bw,bh);return th.toDataURL()}
@@ -3179,22 +3183,22 @@ const ARRESTS=[
    for(let i=0;i<26;i++)QS.fx.push({t:'spark',x:cx+rint(-34,34),y:Math.round(p.y+rint(18,30)),ttl:6+i%7,c:i%3?'#8a8270':'#a3201a'});const d={t:'dust',x:cx,y:Math.round(p.y+28),r:6};QS.actors.push(d);
    await tick(()=>{d.r+=3;return d.r>44});QS.actors=QS.actors.filter(a=>a!==d);QS.prints=(QS.prints||[]).concat([{x:cx,y:Math.round(p.y+28)}]);await sleep(700);
    await tick(()=>{f.y-=7;return f.y<-110});QS.actors=QS.actors.filter(a=>a!==f);kaijuRoar(.45);await sleep(900);ppTalk('Бюро','Кайдзю пошёл дальше по своим делам. На асфальте остался отпечаток лапы.')}},
- {n:'swat',title:'Налоговый спецназ',desc:'Чёрный фургон с мигалками, крик «Налоговая! Всем лежать!», светошумовая граната, стяжки на руки, и нарушителя увозят.',price:30,line:'Налоговый спецназ, на выезд!',async run(p){p.sp=2.2;p.faceL=false;
-   const van={t:'van',x:QS.W-QS.OX+30,y:104,door:0};QS.actors.push(van);sMuf(70,1.4,'sawtooth',.06,60,0,500);sNoise(1.2,.06,500,60);ppTalk('Бюро','Из-за угла вылетает чёрный фургон с мигалками!');
-   await tick(()=>{const tx=p.x+48;van.x-=Math.max(2.5,(van.x-tx)*.16);if(QS.tick%2===0)QS.fx.push({t:'spark',x:Math.round(van.x+50),y:124,ttl:3,c:'#6a6254'});return van.x<=tx+1});sNoise(.7,.22,3500,900);popText('СКРРРИП!',Math.round(van.x+24),96,'#e0e0e0',12);
+ {n:'swat',noPolice:true,title:'Налоговый спецназ',desc:'Чёрный фургон с мигалками, крик «Налоговая! Всем лежать!», светошумовая граната, стяжки на руки, и нарушителя увозят.',price:30,line:'Налоговый спецназ, на выезд!',async run(p){p.sp=2.2;p.faceL=false;
+   const van={t:'van',x:QS.W-QS.OX+30,y:104,door:0,under:true};QS.actors.push(van);sMuf(70,1.4,'sawtooth',.06,60,0,500);sNoise(1.2,.06,500,60);ppTalk('Бюро','Из-за угла вылетает чёрный фургон с мигалками!');
+   const vtx=Math.min(QS.W-QS.OX-50,p.x+120);await tick(()=>{const tx=Math.max(vtx,p.x+48);van.x-=Math.max(2.5,(van.x-tx)*.16);if(QS.tick%2===0)QS.fx.push({t:'spark',x:Math.round(van.x+50),y:124,ttl:3,c:'#6a6254'});return van.x<=tx+1});sNoise(.7,.22,3500,900);popText('СКРРРИП!',Math.round(van.x+24),96,'#e0e0e0',12);
    van.door=1;sNoise(.2,.15,1200,200);const qs=QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying);
    const ops=[0,1,2].map(i=>{const o={look:SWATL(),x:van.x+14,y:108,tx:van.x-6-i*6,ty:[102,110,118][i],state:'x',sp:4,run:true};QS.people.push(o);return o});
    ppTalk('Спецназ','НАЛОГОВАЯ! ВСЕМ ЛЕЖАТЬ!');popText('ВСЕМ ЛЕЖАТЬ!',Math.round(van.x),80,'#ffe060',14);qs.forEach(q=>{q.lying=true});sNoise(.3,.2,900);await sleep(700);
    const g={t:'fbang',x:van.x-4,y:100};QS.actors.push(g);const gx0=g.x,gy0=g.y,tx=p.x+8,ty=p.y+24;let k=0;sTone(900,.4,'triangle',.03,400);
-   await tick(()=>{k++;const f=k/14;g.x=gx0+(tx-gx0)*f;g.y=gy0+(ty-gy0)*f-Math.sin(f*Math.PI)*34;return k>=14});await sleep(250);
+   await tick(()=>{k++;const f=k/20;g.x=gx0+(tx-gx0)*f;g.y=gy0+(ty-gy0)*f-Math.sin(f*Math.PI)*58;return k>=20});await sleep(250);
    QS.actors=QS.actors.filter(a=>a!==g);QS.flash=7;shakePP();sNoise(.6,.7,7000,300);sTone(3300,2.6,'sine',.05,3000);p.sp=0;p.tx=p.x;popText('ОГЛУШЁН',Math.round(p.x+6),Math.round(p.y-4),'#ffffff',14);
    for(let i=0;i<18;i++)QS.fx.push({t:'spark',x:Math.round(tx+rint(-14,14)),y:Math.round(ty+rint(-12,4)),ttl:5+i%5,c:i%2?'#ffffff':'#fff3b0'});await sleep(700);
    ops.forEach((o,i)=>{o.tx=p.x+[-12,8,22][i];o.ty=[p.y,p.y+6,p.y-2][i];o.sp=4.5});await tick(()=>ops.every(near));ops.forEach(o=>{o.faceL=o.x>p.x;o.dir=o.x>p.x?-1:1});
    p.lying=true;p.moving=false;sNoise(.25,.3,700);popText('НА ЗЕМЛЮ!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',12);await sleep(500);ops[1].kneel=true;sNoise(.14,.2,5000,2200);popText('ВЖИК!',Math.round(p.x+12),Math.round(p.y+8),'#c8d0d8',12);await sleep(250);sNoise(.14,.2,5000,2200);await sleep(500);
    ppTalk('Спецназ','Гражданин, вы задержаны за искажение отчётности. Грузим.');ops[1].kneel=false;await sleep(500);p.vanished=true;p.vanishMsg='Налоговая уже всё забрала? Ну и ладно. Поехали на обед.';
    ops[0].tx=p.x-6;ops[2].tx=p.x+20;ops[0].ty=ops[2].ty=p.y;ops[0].sp=ops[2].sp=3;await tick(()=>near(ops[0])&&near(ops[2]));popText('ВЗЯЛИ!',Math.round(p.x+8),Math.round(p.y-6),'#c8d0d8',11);await sleep(300);{const y0=p.y,y1=Math.min(ops[0].y,ops[2].y)-13;let k=0;await tick(()=>{k++;p.y=y0+(y1-y0)*Math.min(1,k/6);p.ty=p.y;return k>=6})}
-   ops.forEach(o=>{o.faceL=false;o.sp=2});ops[0].tx=van.x+2;ops[2].tx=van.x+28;ops[1].tx=van.x+14;ops.forEach(o=>o.ty=108);
-   await tick(()=>{p.x=(ops[0].x+ops[2].x)/2-8;p.y=Math.min(ops[0].y,ops[2].y)-13+(QS.tick%4<2?0:1);p.tx=p.x;p.ty=p.y;return ops.every(near)});p.hide=true;sNoise(.2,.2,700,100);ops.forEach(o=>o.hide=true);van.door=0;sNoise(.25,.25,900,100);
+   ops.forEach(o=>{o.faceL=false;o.sp=2.6});ops[0].tx=van.x+2;ops[2].tx=van.x+28;ops[1].tx=van.x+14;ops.forEach(o=>o.ty=108);
+   await tick(()=>{p.x=(ops[0].x+ops[2].x)/2-8;p.y=Math.min(ops[0].y,ops[2].y)-13+(QS.tick%4<2?0:1);p.tx=p.x;p.ty=p.y;return ops.every(near)});p.hide=true;if(p.loaded)p.loaded();sNoise(.2,.2,700,100);ops.forEach(o=>o.hide=true);van.door=0;sNoise(.25,.25,900,100);
    qs.forEach(q=>{q.lying=false});sMuf(70,1.3,'sawtooth',.06,90,0,500);let v=1;await tick(()=>{v=Math.min(14,v*1.25);van.x-=v;return van.x<-QS.OX-70});QS.actors=QS.actors.filter(a=>a!==van);ppTalk('Бюро','Фургон уехал. Очередь поднимается и отряхивается.')}},
  {n:'stamp',title:'Печать «ОТКЛОНЕНО»',desc:'С неба опускается огромная рука главного бухгалтера и с размаху ставит на нарушителя печать «ОТКЛОНЕНО», оставляя оттиск на асфальте.',price:25,line:'Главный бухгалтер берёт печать…',async run(p){p.sp=.8;p.faceL=false;
    const h={t:'hand',x:Math.round(p.x+6),y:-40},s={t:'shadow',x:p.x,y:Math.round(p.y+27),w:6};QS.actors.push(s,h);sMuf(65,2.4,'sawtooth',.05,55,0,300);sMuf(98,2.4,'sawtooth',.03,82,0,300);
@@ -3346,22 +3350,23 @@ async function policeCleanup(p,onArrive){
   p.hide=true;cops.forEach(c=>{c.faceL=false;c.tx=car.x+22});await tick(()=>cops.every(near));cops.forEach(c=>c.hide=true);
   if(p.handler){const c=p.handler;c.faceL=false;c.tx=QS.W-QS.OX+30;c.sp=3.2}if(p.dog){const d=p.dog;d.face='r';d.sit=false;await tick(()=>{if(p.handler)p.handler.tx=Math.max(p.handler.tx,d.x+20);d.x+=14;return d.x>QS.W-QS.OX+10});QS.actors=QS.actors.filter(a=>a!==d)}
   car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null;QS.actors=QS.actors.filter(a=>a.t!=='smoke')}
-function arrestSpot(p){const x0=p.x,lo=Math.max(-QS.OX+30,x0-360),hi=Math.max(lo+24,x0-60),pts=[];const add=(arr,dx)=>(arr||[]).forEach(d=>{if(d&&d.x!=null)pts.push(d.x+dx)});
+function arrestSpot(p){const lo=-QS.OX+30,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-60,340)),pts=[];const add=(arr,dx)=>(arr||[]).forEach(d=>{if(d&&d.x!=null)pts.push(d.x+dx)});
   add(QS.decals,8);add(QS.scorch,-8);add(QS.holes,-6);add(QS.ice,-6);add(QS.scraps,-6);add(QS.shadows,0);add(QS.slime,0);add(QS.prints,0);add(QS.stamps,0);if(QS.crater)pts.push(QS.crater.x-6);(QS.debris||[]).forEach(d=>{try{const b=debrisBox(d);pts.push((b[0]+b[1])/2-6)}catch(e){}});
-  const c=[];for(let x=lo;x<=hi;x+=12){c.push([x,pts.length?Math.min(...pts.map(q=>Math.abs(q-x))):999])}c.sort((a,b)=>b[1]-a[1]);const best=c[0][1],top=c.filter(v=>v[1]>=Math.min(70,best)).slice(0,6);return(top.length?pick(top):c[0])[0]}
+  if(PP.lastSpot!=null)pts.push(PP.lastSpot);const c=[];for(let x=lo;x<=hi;x+=10){c.push([x,pts.length?Math.min(...pts.map(q=>Math.abs(q-x))):999])}
+  const ok=c.filter(v=>v[1]>=70);const r=ok.length?pick(ok):c.sort((a,b)=>b[1]-a[1])[0];PP.lastSpot=r[0];return r[0]}
 async function ppArrestAnim(cb){
   const p=QS.people[PD.idx];const win=document.querySelector('.pp-window');PD.arrestFlag=true;if(PP.pet&&Math.random()<.6){petSound(PP.pet.type==='dog'?'good':'bad');petSay(PP.pet.type==='parrot'?'КРРР! АРЕСТ!':'!')}
   let bars=win.querySelector('.bars');if(!bars){bars=document.createElement('div');bars.className='bars';bars.innerHTML='<span>АРЕСТОВАН</span>';win.appendChild(bars)}
   bars.classList.remove('on');void bars.offsetWidth;bars.classList.add('on');ppTalk(PD.cur.role,'Нет! Я не пойду!');
   if(!p){setTimeout(cb,1200);return}
   p.snap={d:QS.decals.length,sc:(QS.scorch||[]).length,sl:(QS.slime||[]).length,pr:(QS.prints||[]).length,st:(QS.stamps||[]).length,ic:(QS.ice||[]).length,sp:(QS.scraps||[]).length,sh:(QS.shadows||[]).length,cr:QS.crater};
-  p.state='x';p.ty=110;p.tx=arrestSpot(p);p.sp=4.4;p.run=true;let spl={granny:'Сынок, да ты что?! Я ж тебе пирожков принесла!',mom:p.look.nk===3?'Только не при детях!! Все трое, бежим!':p.look.nk===2?'Дети, держитесь за руки, бежим!':'Не при ребёнке!! Мы убегаем!',wheel:'Серьёзно?! Ну догоняй!'}[p.look.sp];if(p.look.cat)spl='Барсик, бежим! Нас не поймают!';ppTalk(PD.cur.role,spl||'Нет! Я не пойду! Бегу!');{const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3}
+  p.state='x';p.ty=110;p.tx=arrestSpot(p);p.sp=Math.max(4.4,Math.abs(p.tx-p.x)/40);p.run=true;let spl={granny:'Сынок, да ты что?! Я ж тебе пирожков принесла!',mom:p.look.nk===3?'Только не при детях!! Все трое, бежим!':p.look.nk===2?'Дети, держитесь за руки, бежим!':'Не при ребёнке!! Мы убегаем!',wheel:'Серьёзно?! Ну догоняй!'}[p.look.sp];if(p.look.cat)spl='Барсик, бежим! Нас не поймают!';ppTalk(PD.cur.role,spl||'Нет! Я не пойду! Бегу!');{const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3}
   let done=false;const fin=()=>{if(done)return;done=true;FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
   const ownA=ARRESTS.filter(a=>(PP.arrests||{})[a.n]&&!(PP.arrOff||{})[a.n]&&(a.n!=='petrage'||PP.pet));let v,trial=false;
   if(window.__forceArrest!=null)v=window.__forceArrest==='mob'?MOB:window.__forceArrest<0?null:ARRESTS[window.__forceArrest];
   else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const alt=pool.filter(a=>(a?a.n:'car')!==PP.lastArrest);v=pick(alt.length?alt:pool);trial=trial&&!!v&&v!==MOB}
   PP.lastArrest=v?v.n:'car';
-  try{if(v){ppTalk('Бюро',trial?`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);await v.run(p);await sleep(v===MOB?0:400)}else ppTalk('Бюро','Патруль, перехватите его!');await policeCleanup(p,fin)}catch(e){}
+  try{if(v){ppTalk('Бюро',trial?`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk('Бюро','Патруль, перехватите его!');if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}catch(e){}
   if(!p.f0)p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
 }
 /* ---------- random events between visitors ---------- */
