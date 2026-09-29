@@ -2903,7 +2903,7 @@ function drawArrestActor2(R0,a,x,y,t){
   if(a.t==='pig'){const f=a.dir<0,M=(xx,w)=>f?2*x+28-xx-w:xx,RS=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c),R=(xx,yy,w,h,c)=>RS(M(xx,w),yy,w,h,c),k=a.k||0,st=Math.floor(k/2)%2,P='#f0a0b0',Pd='#d07888',Pl='#ffc8d0',O='#3a1a20';
     R(x+1,y+2,22,11,O);R(x+2,y+3,20,9,P);R(x+2,y+3,20,2,Pl);R(x+20,y,9,9,O);R(x+21,y+1,7,7,P);R(x+27,y+4,3,4,O);R(x+27,y+5,2,2,Pd);R(x+25,y+3,1,1,O);R(x+21,y-1,3,2,Pd);R(x+24,y-1,2,2,Pd);
     R(x-2,y+3,3,1,Pd);R(x-3,y+2,2,1,Pd);R(x-3,y+1,1,1,Pd);const lg=(lx,o)=>{R(x+lx+(o?1:-1)*(st?1:0),y+12,3,4,Pd);R(x+lx+(o?1:-1)*(st?1:0),y+15,3,1,O)};lg(4,0);lg(8,1);lg(15,0);lg(19,1);
-    R(x+6,y-14,1,16,'#6a4a2a');const w=Math.sin(k/2)*1.5;for(let i=0;i<10;i++)R(x+7+i,y-14+Math.round(Math.sin((k+i)/2)*1),1,7,'#15130f');R(x+10,y-12+Math.round(w/2),3,2,'#f4f0e4');R(x+11,y-10+Math.round(w/2),1,1,'#15130f');R(x+9,y-9,5,1,'#f4f0e4');
+    R(x+6,y-14,1,16,'#6a4a2a');const w=Math.sin(k/2)*1.5;void w;for(let i=0;i<10;i++){const fy=y-15+Math.round(Math.sin((k+i)/2)*1);R(x+7+i,fy,1,3,'#15130f');R(x+7+i,fy+3,1,3,'#2a5ab8');R(x+7+i,fy+6,1,3,'#c0302a')}
     if(a.turn)R(x+10,y-4,6,2,'#ffffff');return true}
   if(a.t==='chunk'){const sp=(t+(a.w|0))%2;R0(x,y,sp?a.w:a.h,sp?a.h:a.w,a.c);R0(x,y+(sp?a.h:a.w),1,1,'#a3201a');return true}
   if(a.t==='sat'){const O='#15130f';for(const sgn of [-1,1]){const px=sgn<0?x-24:x+22;R0(px-1,y-1,20,9,O);R0(px,y,18,7,'#2a4a8a');for(let i=0;i<18;i+=4)R0(px+i,y,1,7,'#6a8ac8');R0(px,y+3,18,1,'#6a8ac8');R0(sgn<0?x-5:x+19,y+3,4,1,'#8a8e96')}
@@ -3311,7 +3311,7 @@ const ARRESTS=[
    k=0;await tick(()=>{k++;pd.ps.forEach(q=>{if(q.d>0){q.d--;return}q.x+=q.vx+Math.sin((q.y+k)/5)*.4;q.y+=q.vy;q.vy-=.02;q.life-=.022});pd.ps=pd.ps.filter(q=>q.life>0);return !pd.ps.length||k>90});
    QS.actors=QS.actors.filter(a=>a!==pd);ppTalk('Бюро','Спутник «Бухучёт-1»: цель рассеяна. От нарушителя осталась только тень на стене.');
    await tick(()=>{sat.x+=10;sat.y-=2.5;return sat.x>QS.W-QS.OX+80||sat.y<-60});QS.actors=QS.actors.filter(a=>a!==sat);await tick(()=>{tn.a=Math.max(0,tn.a-.03);return tn.a<=0});QS.actors=QS.actors.filter(a=>a!==tn)}},
- {n:'pig',noPolice:true,title:'Боевой хряк',desc:'Из-за угла с визгом вылетает боевой хряк с пиратским флагом, на полном ходу таранит нарушителя, и тот разлетается на куски. Хряк тормозит, разворачивается и убегает обратно.',price:30,line:'Где-то вдалеке раздаётся боевой визг…',async run(p){
+ {n:'pig',noPolice:true,title:'Боевой хряк',desc:'Из-за угла с визгом вылетает боевой хряк с флагом ДНР, на полном ходу таранит нарушителя, и тот разлетается на куски. Хряк тормозит, разворачивается и убегает обратно.',price:30,line:'Где-то вдалеке раздаётся боевой визг…',async run(p){
    const fromL=Math.random()<.5,pg={t:'pig',x:fromL?-QS.OX-60:QS.W-QS.OX+30,y:Math.round(p.y-4),dir:fromL?1:-1,k:0};QS.actors.push(pg);ppTalk('Бюро','ХРЮ-Ю-Ю! На нарушителя несётся боевой хряк!');
    for(let i=0;i<3;i++)sMuf(SJ(500,.1),.25,'sawtooth',.05,SJ(900,.1),i*.18,2200);let k=0,hit=false;
    await tickL(()=>{k++;pg.k=k;const sp=Math.min(11,4+k*.35);pg.x+=pg.dir*sp;pg.y=Math.round(p.y-4);if(k%2===0)QS.fx.push({t:'spark',x:Math.round(pg.x+(pg.dir>0?0:52)),y:Math.round(pg.y+30),ttl:4,c:'#8a8270'});if(k%6===0)sNoise(.06,.12,900,200);
