@@ -1884,7 +1884,7 @@ const COAT=['#56664a','#6a4a3a','#44566a','#7a6a48','#5a4a6a','#843a32','#3c5a52
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const c=v=>Math.max(0,Math.min(255,Math.round(v*f)));return'#'+((1<<24)|(c(r)<<16)|(c(g)<<8)|c(b)).toString(16).slice(1)}
 function newLook(){const f=Math.random()<.5;const old=Math.random()<.18;const hair=old?pick(['#8a8a82','#b8b4aa','#e0d8c0']):pick(HAIR.filter(h=>!['#8a8a82','#e0d8c0'].includes(h)));
   const hat=Math.random()<.3?pick(f?['scarf','fedora','cap']:['cap','fedora']):null;
-  return{fs:Math.random(),g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25,stache:!f&&Math.random()<.25,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
+  return{fs:Math.random(),g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25?pick([true,true,'goatee','chin']):false,stache:!f&&Math.random()<.25?pick([true,true,'walrus','pencil']):false,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
 const ROLES_M=['Пекарь','Таксист','Стартапер','Рыбак','Строитель','Сантехник','Учитель','Хозяин автомойки','Почтальон','Студент 1 курса','Стажёр-бухгалтер','Кассир банка','Фермер','Владелец кафе'];
 const ROLES_F=['Фермерша','Владелица кафе','Цветочница','Блогерша','Библиотекарша','Студентка 1 курса','Учительница','Кассирша банка','Стажёрка-бухгалтер','Пекарша','Парикмахерша','Владелица автомойки'];
 const FLAGS={pride:['#e40303','#ff8c00','#ffed00','#008026','#24408e','#732982'],ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700'],ps:['#15130f','#15130f','#f4f4ec','#f4f4ec','#007a3d','#007a3d']};
@@ -2026,10 +2026,16 @@ function drawFace(L,cv,ov){
   if(F.pretty){R(22,30,3,1,sl);R(40,30,2,1,shade(s,1.08));if(L.g==='m'){R(22,39,2,4,sd);R(41,39,2,4,s2);R(29,44,6,1,sd)}}
   // mouth
   const mw=F.mouth==='wide'?10:F.mouth==='small'?6:8,mx=32-mw/2,my=38+Math.max(0,nl);
-  if(L.beard){for(let y=30;y<=34;y++){const hw=hwAt(y);R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}for(let y=35;y<=47;y++){const hw=y<=44?hwAt(y):Math.max(0,HW[33]-1-(y-45)*2);if(hw>0){if(y>44)R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
+  const BT=L.beard===true?'full':L.beard||null,STT=L.stache===true?'classic':L.stache||null;
+  if(BT==='full'){for(let y=30;y<=34;y++){const hw=hwAt(y);R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}for(let y=35;y<=47;y++){const hw=y<=44?hwAt(y):Math.max(0,HW[33]-1-(y-45)*2);if(hw>0){if(y>44)R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,1,shade(s,.7))}
   else{const lip=F.pretty&&L.g==='f'?pmixHex(s,'#b04858',.55):L.g==='f'?'#7a4a44':s2;R(mx+1,my-1,mw-2,1,sd);R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,F.mouth==='full'?2:1,lip);R(mx+2,my+2+(F.mouth==='full'?1:0),mw-4,1,sd);if(F.pretty&&L.g==='f'){R(mx+2,my-1,mw-4,1,shade(lip,.85));R(mx+3,my+1,2,1,shade(lip,1.35))}if(F.mood==='smile'){R(mx-1,my-1,1,1,s3);R(mx+mw,my-1,1,1,s3)}else if(F.mood==='frown'){R(mx-1,my+1,1,1,s3);R(mx+mw,my+1,1,1,s3)}}
   if(talk){R(mx,my-1,mw,3,'#1e100c');R(mx+1,my-1,mw-2,1,'#c8c0b0');R(mx+1,my+1,mw-2,1,'#5a2a24')}
-  if(L.celeb==='hitler'){R(30,my-3,4,3,H);R(33,my-3,1,3,H1);for(let i=0;i<7;i++){const y=18+i,x0=38-i*2;R(x0-5,y,9,1,H);R(x0+3,y,1,1,H1);R(x0-6,y+1,1,1,OL)}}else if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
+  if(BT==='goatee'){for(let y=my-1;y<=my+2;y++){R(mx-1,y,1,1,H1);R(mx+mw,y,1,1,H1)}R(30,my+3,4,1,H);const y1=Math.min(47,my+9);for(let y=my+4;y<=y1;y++){const w=Math.max(2,5-Math.floor((y-my-4)/2));R(32-w-1,y,1,1,OL);R(32+w,y,1,1,OL);R(32-w,y,w*2,1,H);R(32+w-2,y,2,1,H1);if(y%2)R(32-w+1,y,1,1,H2)}R(30,y1+1,4,1,OL)}
+  else if(BT==='chin'){for(let y=28;y<=44;y++){const hw=hwAt(y);if(hw<=0)continue;const bw=y<36?2:3;R(32-hw,y,bw,1,H);R(32+hw-bw,y,bw,1,H1)}for(let y=Math.max(42,my+4);y<=47;y++){const hw=y<=44?hwAt(y):Math.max(0,HW[33]-1-(y-45)*2);if(hw>0){if(y>44)R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-3,y,3,1,H1);if(y%2)R(32-hw+2,y,1,1,H2)}}}
+  if(L.celeb==='hitler'){R(30,my-3,4,3,H);R(33,my-3,1,3,H1);for(let i=0;i<7;i++){const y=18+i,x0=38-i*2;R(x0-5,y,9,1,H);R(x0+3,y,1,1,H1);R(x0-6,y+1,1,1,OL)}}
+  else if(STT==='walrus'){R(mx+1,my-3,mw-2,1,H);R(mx-1,my-2,mw+2,1,H);R(mx-2,my-1,mw+4,1,H);R(mx-2,my,mw+4,1,H1);R(mx+1,my-2,2,1,H2);R(mx+mw-3,my-2,2,1,H2);R(31,my-3,2,1,H1);if(talk)R(mx+1,my+1,mw-2,1,'#1e100c');else for(let xx=mx-2;xx<mx+mw+2;xx+=2)R(xx,my+1,1,1,H1)}
+  else if(STT==='pencil'){const PK=shade(H,.6);R(mx-1,my-2,4,1,PK);R(mx+mw-3,my-2,4,1,PK);R(mx-2,my-1,2,1,PK);R(mx+mw,my-1,2,1,PK);R(mx+1,my-3,2,1,H1);R(mx+mw-3,my-3,2,1,H1)}
+  else if(STT==='classic'){R(mx,my-2,mw,1,H);R(mx-1,my-1,mw+2,1,H);R(31,my-2,2,1,H1);R(mx-1,my-1,1,1,H1);R(mx+mw,my-1,1,1,H1);R(mx-2,my,1,1,H1);R(mx+mw+1,my,1,1,H1);R(mx+1,my-2,2,1,H2);R(mx+mw-3,my-2,2,1,H2)}
   if(LH){for(let y=L.hat?23:19;y<=50;y++){const dr=y>38?Math.floor((y-38)/4):0,w=y<42?4:Math.max(1,4-Math.floor((y-42)/2)),a=17+d-dr,b=a+w;R(a-1,y,1,1,OL);R(a,y,w,1,H);R(b-1,y,1,1,H1);R(b,y,1,1,OL);R(64-b-1,y,1,1,OL);R(64-b,y,w,1,H1);R(64-b,y,1,1,H);R(64-a,y,1,1,OL);if(y%6<2&&w>2)R(a+1,y,1,1,H2)}
     if(F.bang){for(let y=19;y<=24;y++){const w=Math.max(0,18-(y-19)*3);R(19,y,w,1,H);R(19+w,y,1,1,OL);if(y<22)R(21+(y-19)*2,y,3,1,H2)}}}
   // hats
@@ -2159,7 +2165,7 @@ function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:
 function qsTargets(){let k=0;[...new Set(QS.people)].forEach(p=>{if(p.state==='q'){p.tx=352-k*20;p.ty=92;k++}else if(p.state==='booth'){p.tx=382;p.ty=92}else if(p.state==='gone'){p.tx=-QS.OX-40;p.ty=110}})}
 const COP=()=>({g:'m',skin:pick(SKIN),hair:'#1f1812',coat:'#1c2a44',shirt:'#c8d0d8',style:'short',hat:'police',hatc:'#1c2a44',tie:'#1a1a1a',beard:false,stache:Math.random()<.3,glasses:false});
 const GUARD=()=>({g:'m',skin:pick(SKIN),hair:'#1f1812',coat:'#2c3238',shirt:'#3a4046',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true});
-function drawPerson(R,px,py,L,frame,moving){
+function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}const LSt=L&&L._f&&L._f.long?'long':L&&L.style;
   R(px,py+27,13,2,'rgba(0,0,0,.35)');
   const c=L.coat,cd=shade(c,.72),cl=shade(c,1.15),s=L.skin,sd=shade(s,.8),H=L.hair;
   const f=moving?frame%4:0;const lg=[[0,0],[2,-2],[0,0],[-2,2]][f];const arm=[0,2,0,-2][f];const bob=moving&&(f===1||f===3)?-1:0;
@@ -2173,15 +2179,15 @@ function drawPerson(R,px,py,L,frame,moving){
   R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);
   R(px+5,y+7,3,2,sd);
   R(px+3,y+1,7,7,s);R(px+9,y+3,1,4,s);R(px+10,y+4,1,2,sd);R(px+3,y+7,6,1,sd);
-  if(L.style!=='bald'||L.hat){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
-  if(L.style==='long'&&(!L.hat||HAIR_HATS.includes(L.hat)))R(px+2,y+2,2,8,H);
-  if(L.style==='bun'&&!L.hat)R(px+1,y,2,3,H);
-  if(L.style==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
+  if(LSt!=='bald'||L.hat){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
+  if(LSt==='long'&&(!L.hat||HAIR_HATS.includes(L.hat)))R(px+2,y+2,2,8,H);
+  if(LSt==='bun'&&!L.hat)R(px+1,y,2,3,H);
+  if(LSt==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
   R(px+5,y+3,1,2,sd);
   R(px+8,y+3,1,1,'#1b1914');R(px+7,y+6,2,1,shade(s,.6));
   if(L.glasses){R(px+7,y+3,3,1,'#1b1914');R(px+5,y+3,2,1,'#1b1914')}
-  if(L.beard)R(px+6,y+6,4,2,H);if(L.stache)R(px+8,y+5,2,1,H);
-  if(L.halo){R(px+3,y-4,7,1,'#ffe680');R(px+2,y-3,1,1,'#ffe680');R(px+10,y-3,1,1,'#ffe680')}if(L.horns){R(px+3,y-2,1,2,'#c0201a');R(px+9,y-2,1,2,'#c0201a')}if(L.ears&&!L.hat){R(px+3,y-2,2,2,H);R(px+8,y-2,2,2,H)}if(L.gl==='sun'){R(px+5,y+3,5,1,'#15130f')}if(L.boss){R(px+10,y+6,3,1,'#6a4a2a');R(px+13,y+6,1,1,'#ff6a1a')}
+  if(L.beard==='goatee')R(px+8,y+7,2,1,H);else if(L.beard==='chin'){R(px+5,y+5,1,3,H);R(px+6,y+7,4,1,H)}else if(L.beard)R(px+6,y+6,4,2,H);if(L.stache==='walrus')R(px+7,y+5,3,1,H);else if(L.stache)R(px+8,y+5,2,1,L.stache==='pencil'?shade(H,.7):H);
+  if(L.halo){R(px+3,y-4,7,1,'#ffe680');R(px+2,y-3,1,1,'#ffe680');R(px+10,y-3,1,1,'#ffe680')}if(L.horns){R(px+3,y-2,1,2,'#c0201a');R(px+9,y-2,1,2,'#c0201a')}if((L.ears||L.catgirl)&&!L.hat){R(px+3,y-2,2,2,H);R(px+8,y-2,2,2,H)}if(L.gl==='sun'){R(px+5,y+3,5,1,'#15130f')}if(L.boss){R(px+10,y+6,3,1,'#6a4a2a');R(px+13,y+6,1,1,'#ff6a1a')}
   if(L.hat==='officer'){R(px+2,y-1,8,3,'#23241f');R(px+2,y+1,8,1,'#a3302a');R(px+8,y+2,4,1,'#100e0b');R(px+6,y-1,2,1,'#e0b64a')}
   else if(L.hat==='helmet'){R(px+2,y-2,9,5,'#1e2226');R(px+2,y-2,9,1,'#3a4046');R(px+8,y+2,3,2,'#6a8aa0')}
   else if(L.hat==='kippah'){R(px+3,y-1,4,1,L.hatc);R(px+2,y,5,1,L.hatc)}
@@ -3484,7 +3490,7 @@ const AV_OPT={
  skin:SKIN.map((c,i)=>[c,'Тон '+(i+1)]),
  hair:['#1f1812','#3f2a1a','#6a4526','#9a6a34','#c9a24a','#b0442c','#8a8a82','#e0d8c8','#2a2436','#d88aa8'].map((c,i)=>[c,'Цвет '+(i+1)]),
  style:[['short','Короткая'],['long','Длинная'],['bun','Пучок'],['curly','Кудри'],['bald','Лысина']],
- beard:[[false,'Без бороды'],[true,'Борода']],stache:[[false,'Без усов'],[true,'Усы']],
+ beard:[[false,'Без бороды'],[true,'Борода'],['goatee','Эспаньолка'],['chin','Шкиперская']],stache:[[false,'Без усов'],[true,'Классические'],['walrus','Моржовые'],['pencil','Тонкие']],
  coat:[['#3b3d3a','Мундир'],['#56664a','Оливковый'],['#44566a','Серо-синий'],['#6a4a3a','Коричневый'],['#843a32','Кирпичный'],['#5a4a6a','Сливовый'],['#15130f','Чёрный'],['#2a4a6a','Синий'],['#6a2a4a','Бордовый'],['#c9a24a','Золотой'],['#1e2a44','Парадный']],
  tie:[['none','Без галстука'],['#1a1a1a','Чёрный'],['#8a2a22','Красный'],['#2a3a6a','Синий'],['#3a5a2a','Зелёный'],['gold','Золотой']],
  gl:[['none','Без очков'],['round','Очки'],['sun','Тёмные очки'],['mono','Монокль']],
