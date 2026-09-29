@@ -264,6 +264,7 @@ body.mixwide .wrap{max-width:none;padding-inline:12px}
 .shop-l .pp-prevpaper{left:17%;top:16%;width:60%;height:52%}
 .pp-tog{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;margin-top:2px}.pp-tog input{width:16px;height:16px;accent-color:#6a8a4a;cursor:pointer}
 .shop-note{font-size:11.5px!important;line-height:1.3}
+.shop-cash b{font-family:"Tiny5",monospace;font-weight:400;font-size:26px;color:#1f9a3c;text-shadow:1px 1px 0 #0d3a18;letter-spacing:1px}
 .shop-r{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:8px;padding-right:8px;border-left:3px dashed #8f8360;padding-left:14px}
 .shop-r>p{margin-top:6px}
 @media (max-width:820px){.pp-ov.ov-shop{align-items:stretch;overflow:hidden}.pp-card.shop{display:flex;flex-direction:column;height:100%;overflow:hidden;gap:8px}.shop-l{flex:none}.shop-r{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-left:none;border-top:3px dashed #8f8360;padding:8px 4px 0 0}}
@@ -398,7 +399,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
   .pp-thumb{max-height:56px;object-fit:cover}
   .shop-note{display:none}
   .shop-hint{display:none}
-  .shop-l{gap:4px}.shop-l>p.mono{font-size:12px}.shop-l .pp-prev{padding:4px;gap:4px}.shop-l .pp-prev small{display:none}.shop-l .pp-prev>div{gap:0}.shop-top .pp-btn{padding:4px 10px;font-size:14px}
+  .shop-l{gap:4px}.shop-l>p.mono{font-size:12px}.shop-cash b{font-size:22px}.shop-l .pp-prev{padding:4px;gap:4px}.shop-l .pp-prev small{display:none}.shop-l .pp-prev>div{gap:0}.shop-top .pp-btn{padding:4px 10px;font-size:14px}
   .shop-top h3{font-size:18px}
 }
 .pp-bar .grp2{display:flex;gap:6px;align-items:center}
@@ -2678,7 +2679,7 @@ function ppShop(prev){
   const sw=(attr,obj,cur,price,wide)=>Object.entries(obj).map(([k,[n,c]])=>{const dec=!!DECOR[attr],own=dec&&decorOwned(attr,k),id=attr+':'+k,sell=dec&&PP.owned[id]!=null?`<button class="pp-btn" data-sell="${id}" title="Остаточная стоимость $${fmt(itemBV(id),1)}">Продать $${salePrice(id)}</button>`:'';
     return `<div class="pp-item pp-sw${cur===k?' owned':''}" data-prev="${attr}:${k}" tabindex="0"><span class="sw" style="background:${c}"></span><b>${esc(n)}</b>${cur===k?`<small><b style="font-size:14px">✓ сейчас</b></small>${sell}`:own?`<small>✓ есть</small><button class="pp-btn" data-use-${attr}="${k}">Выбрать</button>${sell}`:`<button class="pp-btn" data-${attr}="${k}" ${PP.cash<price?'disabled':''}>$${price}</button>`}</div>`}).join('');
   const keepScroll=document.querySelector('#ppOv .shop-r')?document.querySelector('#ppOv .shop-r').scrollTop:0,keepOv=document.querySelector('#ppOv .shop-r')?$('#ppOv').scrollTop:0;
-  ppOverlay(`<div class="shop-l"><div class="shop-top"><h3>МАГАЗИН ОФИСА</h3><button class="pp-btn horn" id="ppShopBack">Назад</button></div><p class="mono" style="text-align:center">Сбережения: $${fmt(PP.cash)}<span class="shop-hint"> · наведи на товар, чтобы примерить</span></p>
+  ppOverlay(`<div class="shop-l"><div class="shop-top"><h3>МАГАЗИН ОФИСА</h3><button class="pp-btn horn" id="ppShopBack">Назад</button></div><p class="mono shop-cash" style="text-align:center"><b>$${fmt(PP.cash)}</b><span class="shop-hint"> · наведи на товар, чтобы примерить</span></p>
    <div class="pp-prev"><div><canvas id="ppPrevOffice" width="160" height="100"></canvas><small>Офис</small></div><div><div id="ppPrevDesk" class="pp-prevdesk"><span class="pp-prevpaper"></span></div><small>Стол</small></div><div><canvas id="ppPrevWin" width="64" height="64"></canvas><small>Окошко</small></div><div class="wide"><canvas id="ppPrevStreet" width="480" height="120"></canvas><small>Улица и будка</small></div></div>
    <p class="mono shop-note">Мебель и техника: <b>capital expenditure</b> (investing outflow в CF, Office equipment в балансе, в IS только depreciation 1/10 цены в день). Стол, будка, окошко и улица тоже capex: купленное остаётся у тебя, между своими можно переключаться бесплатно, а продать можно по остаточной стоимости. Покраска стен: <b>repairs expense</b>. Расходники и анимации ареста: <b>supplies expense</b>.</p></div>
    <div class="shop-r"><p>Декор и техника</p><div class="pp-shop">${items}</div>
