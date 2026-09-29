@@ -2171,7 +2171,7 @@ Object.assign(SFX,{
     ()=>{sMuf(SJ(130),.45,'sawtooth',.08,SJ(95),0,800);sMuf(SJ(124),.45,'sawtooth',.06,SJ(90),.03,800)},
     ()=>{sMuf(SJ(98),.14,'square',.08,null,0,600);sMuf(SJ(98),.14,'square',.08,null,.18,600);sMuf(SJ(73),.3,'square',.08,null,.36,600)},
     ()=>{sMuf(SJ(165),.6,'sawtooth',.07,SJ(82),0,700);sNoise(.2,.05,500)}])},
-  coin(){sMuf(SJ(880,.02),.12,'sine',.035,null,0,2400);sMuf(SJ(1320,.02),.22,'sine',.025,null,.06,2400)},
+  coin(){sMuf(SJ(880,.02),.12,'sine',.0175,null,0,2400);sMuf(SJ(1320,.02),.22,'sine',.0125,null,.06,2400)},
   fanfare(){[[523,.12],[659,.12],[784,.12],[1047,.4]].reduce((t,[f,d])=>{sMuf(f,d,'square',.05,null,t,1800);sMuf(f/2,d,'triangle',.05,null,t,1200);return t+d*.9},0)},
   sad(){[392,370,349,311].forEach((f,i)=>sMuf(f,i===3?.7:.3,'sawtooth',.05,i===3?260:null,i*.3,900))},
   buy(){SFX.coin();sMuf(523,.18,'triangle',.035,null,.08,1600);sMuf(659,.28,'triangle',.03,null,.16,1600)},
@@ -2375,7 +2375,7 @@ function ppNoise(dur,vol,lp){try{const a=sfxCtx();const n=Math.floor(a.sampleRat
   SFX.ok=()=>sPlay('right',.5,{lp:2600})||o.ok();SFX.bad=()=>sPlay('wrong',.5,{lp:2400})||o.bad();SFX.next=()=>sPlay('next',.5)||o.next();
   SFX.click=()=>{if(performance.now()-(window.__uiT||0)<120)return;UI.click()};
   SFX.barkAtk=big=>sPlay(['bark1','bark2'],.7,{rate:big?.82:1+Math.random()*.12,multi:1})||o.bark(big);SFX.growl=()=>sPlay('growl',.7)||o.growl();
-  SFX.soft=UI.soft;SFX.coinSt=()=>sPlay('coin',.5,{multi:1,lp:3000})||SFX.coin();SFX.hit=()=>sPlay('hit',.6,{lp:3000})||SFX.crash()}
+  SFX.soft=UI.soft;SFX.coinSt=()=>sPlay('coin',.25,{multi:1,lp:3000})||SFX.coin();SFX.hit=()=>sPlay('hit',.6,{lp:3000})||SFX.crash()}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,input[type=checkbox]');if(!b||b.disabled||!b.closest('#pp,#ppOv'))return;const id=b.id||'';window.__uiT=performance.now();
   if(id==='ppNext'||id==='ppNextDay')return;
   if(b.matches('[data-sarrest],[data-claim=arrest],[data-audit=arrest]')){const k=Math.random()<.5?'arrest1':'arrest2';if(sPlay(k,.49))sPlay('arrestB',.49,{delay:SND[k].duration*.9})}
