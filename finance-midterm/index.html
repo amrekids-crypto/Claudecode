@@ -3053,8 +3053,8 @@ const tick=fn=>until(fn,9000);const tickL=fn=>until(fn,24000);
 const MOB={n:'mob',title:'Самосуд очереди',line:'Очередь решила сама разобраться с нарушителем!',async run(p){p.panic=false;{const lo=-QS.OX+14,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-40,360)),cur=p.x<p.tx-1?1:p.x>p.tx+1?-1:(p.faceL||p.dir<0?-1:1);let d=cur;p.tx=d<0?lo:hi;p.run=true;p.sp=2.6;p.faceL=d<0}
   let crew=QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying),temp=false;
   if(crew.length<2){temp=true;crew=[0,1,2,3].map(i=>{const L=i%2===0,q={look:newLook(),x:L?-QS.OX-20-i*14:QS.W-QS.OX+10+i*14,y:110,tx:0,ty:110,state:'x',sp:3,side:L?-1:1};QS.people.push(q);return q});ppTalk('Бюро','С обеих сторон улицы бегут разъярённые прохожие!')}
-  crew=crew.slice(0,6);ppTalk('Очередь','Держи его! Мы тут час стоим, а он мухлюет!');popText('ДЕРЖИ ЕГО!',352,70,'#ffe060',14);
-  crew.forEach((q,i)=>{q.state='x';q.ox=(i%2?1:-1)*(10+Math.floor(i/2)*9)+rint(-3,3);q.oy=rint(-7,7);q.run=true});
+  ppTalk('Очередь','Держи его! Мы тут час стоим, а он мухлюет!');popText('ДЕРЖИ ЕГО!',352,70,'#ffe060',14);
+  crew.forEach((q,i)=>{q.state='x';const ring=Math.floor(i/2);q.ox=(i%2?1:-1)*(10+Math.min(ring,4)*8+Math.max(0,ring-4)*4)+rint(-3,3);q.oy=ring>4?rint(-12,12):rint(-7,7);q.run=true});
   let caught=false;await tick(()=>{if(!caught&&crew.some(q=>Math.abs(q.x-(p.x+6))<16&&Math.abs(q.y-p.y)<20)){caught=true;p.sp=0;p.tx=p.x;p.ty=p.y;p.run=false;popText('ПОЙМАЛИ!',Math.round(p.x+6),Math.round(p.y-6),'#ffe060',12)}crew.forEach(q=>{q.tx=p.x+q.ox;q.ty=Math.max(96,Math.min(124,p.y+q.oy));q.sp=Math.max(3.6,Math.abs(q.tx-q.x)/18)});return caught&&crew.every(q=>Math.abs(q.x-q.tx)<4&&Math.abs(q.y-q.ty)<3)});
   p.sp=0;p.tx=p.x;p.run=false;crew.forEach(q=>{q.run=false;q.dir=q.x<p.x?1:-1;q.faceL=q.x>p.x});
   const words=['БАМ!','ПОЛУЧАЙ!','ХРЯСЬ!','ЗА ОЧЕРЕДЬ!','БУМ!','ШМЯК!'];
