@@ -1917,6 +1917,7 @@ const FACES={oval:[6,9,10,11,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,
  long:[5,8,9,10,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,12,12,11,11,11,10,10,10,9,9,8,7,6,4],
  heart:[7,10,12,13,13,13,13,13,13,13,13,13,13,13,13,13,12,12,12,11,11,11,10,10,9,9,8,7,6,5,5,4,3,2]};
 function pmixHex(c1,c2,t){const a=parseInt(c1.slice(1),16),b=parseInt(c2.slice(1),16);const m=sh=>Math.round(((a>>sh)&255)*(1-t)+((b>>sh)&255)*t);return'#'+((1<<24)|(m(16)<<16)|(m(8)<<8)|m(0)).toString(16).slice(1)}
+const HAIR_HATS=['cap','fedora','officer','top','crown','police'];
 function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['avatar',L.g,L.fs].join('|'):[L.skin,L.hair,L.coat,L.shirt,L.style,L.hat,L.g,L.tie,L.hatc,L.fs].join('|');for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}
   let st=h>>>0;const rnd=()=>{st=(Math.imul(st^(st>>>15),2246822507)+0x9e3779b9)>>>0;return (st>>>8)/16777216};const pk=a=>a[Math.floor(rnd()*a.length)];
   const f=(L.insp&&!L.avatar)||L.hat==='police'||L.hat==='helmet'?{shape:'square',age:'m',build:'wide',ears:0,cheek:'hollow',eye:'small',eyeY:0,eyeGap:0,brow:'angry',nose:'normal',mouth:'normal',mood:'frown',iris:'#15120f',look:0,hairline:0,part:'side'}:{
@@ -1958,9 +1959,9 @@ function drawFace(L,cv,ov){
   const s=PM(L.skin),sd=shade(s,.8),sl=shade(s,1.16),s2=shade(s,.6),s3=shade(s,.42),OL='#15120f',hd=shade(PM(L.hair),.7);
   const ph=((L.skin.charCodeAt(2)||0)*7+(L.coat.charCodeAt(3)||0)*3)%53,tk=QS.tick+ph,blink=tk%53<2||(tk%197>=6&&tk%197<8),bob=Math.floor(tk/9)%2,talk=!cv&&Date.now()<FACE.talkUntil&&Math.floor(QS.tick/2)%2===0;
   x.save();x.translate(0,bob);
-  const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);const F=faceOf(L),LS=F.long?'long':L.style,d=F.narrow||0;
+  const H=PM(L.hair),H1=shade(H,.7),H2=shade(H,1.25),CO=PM(L.coat),CO1=shade(CO,.7),CO2=shade(CO,1.2);const F=faceOf(L),LS=F.long?'long':L.style,d=F.narrow||0,LH=LS==='long'&&(!L.hat||HAIR_HATS.includes(L.hat));
   let HW=FACES[F.shape].map(v=>Math.max(2,v-Math.round(d*Math.min(1,v/8))));if(F.age==='o')for(let i=26;i<34;i++)HW[i]+=1;if(F.age==='y')for(let i=28;i<34;i++)HW[i]=Math.max(2,HW[i]-1);for(let i=6;i<34;i++)HW[i]=Math.min(HW[i],HW[i-1]);const hwAt=y=>y<11||y>44?0:HW[y-11];
-  if(LS==='long'&&!L.hat){const bw=16-d;for(let y=15;y<=50;y++){const hw=bw-(y>44?(y-44)*2:0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H1);R(32-hw+1,y,2,1,H)}}}
+  if(LH){const bw=16-d;for(let y=15;y<=50;y++){const hw=bw-(y>44?(y-44)*2:0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H1);R(32-hw+1,y,2,1,H)}}}
   // shoulders
   const shw=(F.build==='wide'?31:F.build==='thin'?25:29)-(L.g==='f'?3:0);for(let y=44;y<64;y++){const dy=y-44,RR=F.rsh?9:5;const w=F.rsh?(dy<RR?Math.round(16+(shw-16)*Math.sqrt(1-Math.pow((RR-dy-1)/RR,2))):shw):Math.min(shw,17+dy*4);R(32-w-1,y,w*2+2,1,OL);R(32-w,y,w*2,1,CO);R(32-w,y,3,1,CO2);R(32+w-4,y,4,1,CO1);if(dy===1)R(32-w+3,y,w*2-7,1,CO2)}
 
@@ -2029,7 +2030,7 @@ function drawFace(L,cv,ov){
   else{const lip=F.pretty&&L.g==='f'?pmixHex(s,'#b04858',.55):L.g==='f'?'#7a4a44':s2;R(mx+1,my-1,mw-2,1,sd);R(mx,my,mw,1,s3);R(mx+1,my+1,mw-2,F.mouth==='full'?2:1,lip);R(mx+2,my+2+(F.mouth==='full'?1:0),mw-4,1,sd);if(F.pretty&&L.g==='f'){R(mx+2,my-1,mw-4,1,shade(lip,.85));R(mx+3,my+1,2,1,shade(lip,1.35))}if(F.mood==='smile'){R(mx-1,my-1,1,1,s3);R(mx+mw,my-1,1,1,s3)}else if(F.mood==='frown'){R(mx-1,my+1,1,1,s3);R(mx+mw,my+1,1,1,s3)}}
   if(talk){R(mx,my-1,mw,3,'#1e100c');R(mx+1,my-1,mw-2,1,'#c8c0b0');R(mx+1,my+1,mw-2,1,'#5a2a24')}
   if(L.celeb==='hitler'){R(30,my-3,4,3,H);R(33,my-3,1,3,H1);for(let i=0;i<7;i++){const y=18+i,x0=38-i*2;R(x0-5,y,9,1,H);R(x0+3,y,1,1,H1);R(x0-6,y+1,1,1,OL)}}else if(L.stache){R(mx-1,my-2,mw+2,2,H);R(mx-1,my-1,mw+2,1,H1)}
-  if(LS==='long'&&!L.hat){for(let y=19;y<=50;y++){const dr=y>38?Math.floor((y-38)/4):0,w=y<42?4:Math.max(1,4-Math.floor((y-42)/2)),a=17+d-dr,b=a+w;R(a-1,y,1,1,OL);R(a,y,w,1,H);R(b-1,y,1,1,H1);R(b,y,1,1,OL);R(64-b-1,y,1,1,OL);R(64-b,y,w,1,H1);R(64-b,y,1,1,H);R(64-a,y,1,1,OL);if(y%6<2&&w>2)R(a+1,y,1,1,H2)}
+  if(LH){for(let y=L.hat?23:19;y<=50;y++){const dr=y>38?Math.floor((y-38)/4):0,w=y<42?4:Math.max(1,4-Math.floor((y-42)/2)),a=17+d-dr,b=a+w;R(a-1,y,1,1,OL);R(a,y,w,1,H);R(b-1,y,1,1,H1);R(b,y,1,1,OL);R(64-b-1,y,1,1,OL);R(64-b,y,w,1,H1);R(64-b,y,1,1,H);R(64-a,y,1,1,OL);if(y%6<2&&w>2)R(a+1,y,1,1,H2)}
     if(F.bang){for(let y=19;y<=24;y++){const w=Math.max(0,18-(y-19)*3);R(19,y,w,1,H);R(19+w,y,1,1,OL);if(y<22)R(21+(y-19)*2,y,3,1,H2)}}}
   // hats
   const C=PM(L.hatc||'#3a3a30',.2),C1=shade(C,.7),C2=shade(C,1.25),C3=shade(C,.5);
@@ -2173,7 +2174,7 @@ function drawPerson(R,px,py,L,frame,moving){
   R(px+5,y+7,3,2,sd);
   R(px+3,y+1,7,7,s);R(px+9,y+3,1,4,s);R(px+10,y+4,1,2,sd);R(px+3,y+7,6,1,sd);
   if(L.style!=='bald'||L.hat){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
-  if(L.style==='long'&&!L.hat)R(px+2,y+2,2,8,H);
+  if(L.style==='long'&&(!L.hat||HAIR_HATS.includes(L.hat)))R(px+2,y+2,2,8,H);
   if(L.style==='bun'&&!L.hat)R(px+1,y,2,3,H);
   if(L.style==='curly'&&!L.hat){R(px+2,y-1,6,2,H);R(px+8,y,1,1,H)}
   R(px+5,y+3,1,2,sd);
