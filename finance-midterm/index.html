@@ -2658,7 +2658,7 @@ function ppBar(){
   $('#ppCash').textContent=(PP.cash<0?'-$':'$')+fmt(Math.abs(PP.cash),PP.cash%1?1:0);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?`${PD.correct}/${PD.tasks.length}`:'—';$('#ppDate').textContent=`ДЕНЬ ${PP.day}`;$('#ppRank').textContent=ppRank();
   const cur=PD&&PD.cur;const canHint=PD&&PD.state==='asking'&&!PD.hinted&&cur&&cur.kind==='q'&&cur.q.o.length===4;$('#ppHint').disabled=!canHint;$('#ppHint').textContent=`50/50 · $${has('calc')?1:2}`;
   $('#ppBook').hidden=!has('book');$('#ppBook').disabled=!(PD&&PD.state==='asking');
-  $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'))||QS.people.some(q=>q.fallen&&!q.hide);
+  $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'))||!!(PD&&QS.people[PD.idx+1]&&QS.people[PD.idx+1].fallen);
   $('#ppGun').textContent=`Пистолет · ${PP.gun||0}`;$('#ppGun').disabled=!(PD&&PD.walking&&!PD.aim&&(PP.gun||0)>0);
   $('#ppDesk').style.setProperty('--pp-desk',(PPX.DESKS[PP.desk]||PPX.DESKS.oak)[1]);
   $('#ppTS').textContent=`Таймстоп · ${PP.ts||0}`;$('#ppTS').disabled=!(PD&&PD.state==='asking'&&!PD.frozen&&(PP.ts||0)>0);
@@ -3271,7 +3271,7 @@ const EVENTS=[
    for(let i=0;i<4;i++){b.x+=3;await sleep(120);b.x-=3;sNoise(.08,.3,700);QS.fx.push({t:'spark',x:Math.round(a.x+2),y:Math.round(a.y+6),ttl:4,c:'#f3e6a0'});await sleep(150)}
    a.lying=true;a.knocked=true;PD.evDone=Object.assign(PD.evDone||{},{fight:1});QS.decals.push({x:Math.round(a.x),y:Math.round(a.y)});SFX.crash();ppTalk('Бюро','Один лежит и встанет, только когда до него дойдёт очередь. Драк сегодня больше не будет.');await sleep(1200)}},
  {n:'quake',async run(){ppTalk('Бюро','ЗЕМЛЕТРЯСЕНИЕ!');sNoise(1.6,.4,200);const pp=$('#pp');for(let i=0;i<4;i++){pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake');await sleep(320)}
-   PD.evDone=Object.assign(PD.evDone||{},{quake:1});const q=QS.people.filter(p=>p.state==='q'&&!p.hide&&!p.lying&&p.x>-QS.OX+2&&p.x<QS.W-QS.OX-30);q.forEach(p=>{p.lying=true;p.fallen=true});if(q.length){PD.bannerUntil=Date.now()+3000;banner('НАЖМИ НА КАЖДОГО УПАВШЕГО, ЧТОБЫ ПОДНЯТЬ');setTimeout(()=>{if(PD&&PD.bannerUntil&&Date.now()>=PD.bannerUntil-50)banner('')},3000);ppTalk('Бюро','Все попадали! Подними каждого: нажми на него. Пока все не встанут, следующего не позвать.')}}}
+   PD.evDone=Object.assign(PD.evDone||{},{quake:1});const q=QS.people.filter(p=>p.state==='q'&&!p.hide&&!p.lying&&p.x>-QS.OX+2&&p.x<QS.W-QS.OX-30);q.forEach(p=>{p.lying=true;p.fallen=true});if(q.length){PD.bannerUntil=Date.now()+3000;banner('ПОДНИМИ ПЕРВОГО В ОЧЕРЕДИ: НАЖМИ НА НЕГО');setTimeout(()=>{if(PD&&PD.bannerUntil&&Date.now()>=PD.bannerUntil-50)banner('')},3000);ppTalk('Бюро','Все попадали! Нажми на человека, чтобы поднять. Пока первый в очереди лежит, следующего не позвать.')}}}
 ];
 async function ppRandomEvent(){if(!PD||PD.evCount>=2||PD.idx<0||(window.__forceEvent==null&&Math.random()>0.22))return;PD.evCount=(PD.evCount||0)+1;const prev=PD.state;PD.state='event';ppBar();
   try{await (window.__forceEvent!=null?EVENTS[window.__forceEvent]:pick(EVENTS.filter(e=>!(PD.evDone||{})[e.n]).length?EVENTS.filter(e=>!(PD.evDone||{})[e.n]):EVENTS.filter(e=>e.n==='money'))).run()}catch(e){}QS.onClick=null;if(!(PD&&PD.bannerUntil>Date.now()))banner('');PD.state=prev;ppBar()}
