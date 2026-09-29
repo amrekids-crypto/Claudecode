@@ -461,8 +461,8 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-avrow .pp-chip{font-size:12.5px;padding:3px 6px}
 .pp-petbox{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .pp-petbox>div{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px}
-#ppPetBig{width:144px;height:96px;image-rendering:pixelated;border:3px solid var(--pp-line);background:#4a4838}
-.pp-petc{width:72px;height:48px;image-rendering:pixelated;background:#4a4838;border:2px solid var(--pp-line);align-self:center}
+#ppPetBig{width:288px;height:192px;max-width:100%;aspect-ratio:3/2;image-rendering:pixelated;border:3px solid var(--pp-line);background:#4a4838}
+.pp-petc{width:144px;height:96px;max-width:100%;image-rendering:pixelated;background:#4a4838;border:2px solid var(--pp-line);align-self:center}
 @media (max-width:700px){.pp-avwrap{grid-template-columns:1fr;display:flex!important;flex-direction:column;gap:6px}.pp-avprev{flex:none;flex-direction:row!important;justify-content:center;gap:10px!important}.pp-avprev small{display:none}.pp-avopts{flex:1 1 auto;border-top:3px dashed #8f8360;padding-top:6px}.pp-avrow{grid-template-columns:1fr}#ppAvBig{width:128px;height:128px}#ppAvStreet{width:96px;height:96px}.pp-album{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-acard canvas,.pp-aq{width:64px;height:64px}.pp-mini{font-size:11px;padding:2px 5px}.pp-profbtn span{display:none}.pp-profbtn canvas{width:22px;height:22px}.pp-toasts{bottom:40px;right:4px}.pp-toast{padding:4px 7px}.pp-toast b{font-size:13px}.pp-achs{grid-template-columns:1fr}}
 .lb-av{width:28px;height:28px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;border:1px solid #15130f}
 .pp-deskitems{background:rgba(20,16,12,.35);border:3px dashed #8f8360;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
@@ -2301,7 +2301,7 @@ function qsDraw(cv,ov){
   if(QS.crater){x.globalAlpha=fa(QS.crater);const cx=QS.crater.x,cy=QS.crater.y;for(let k=-6;k<=6;k++){const w=Math.round(34*Math.sqrt(1-(k/7)*(k/7)));R(cx-w,cy+k,w*2,1,k<-3?'#5a5046':k<0?'#2a2420':'#15110e')}R(cx-26,cy-1,52,2,'#0c0a08');for(let i=0;i<5;i++)R(cx-20+i*9,cy+1,3,1,QS.tick%(6+i)<3?'#e05a1a':'#8a2a10');R(cx-40,cy+5,80,1,'rgba(0,0,0,.25)');x.globalAlpha=1}
   drawStreetDecals(x,R);
   (QS.scorch||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x-18,d.y,36,3,'#1a1410');R(d.x-14,d.y-1,28,1,'#2a2018');R(d.x-8,d.y+1,3,1,'#6a2a10');R(d.x+6,d.y+1,3,1,'#6a2a10')});
-  QS.decals.forEach(d=>{x.globalAlpha=fa(d);drawBlood(R,d.x,d.y)});x.globalAlpha=1;
+  QS.decals.forEach(d=>{x.globalAlpha=fa(d);drawBlood(R,d.x,d.y)});(QS.scraps||[]).forEach(d=>{x.globalAlpha=fa(d);R(d.x,d.y,d.w,d.h,d.c)});x.globalAlpha=1;
   if(ov&&ov.noPeople){x.setTransform(1,0,0,1,0,-20);if(ST.snow)for(let i=0;i<50;i++)R((i*53+QS.tick*(1+i%3))%W,20+(i*37+QS.tick*(1+i%2))%120,1,1,'#f0f4f8');x.setTransform(1,0,0,1,0,0);return}
   (QS.debris||[]).forEach(d=>drawActor(R,d));
   if(PP.downed){drawBlood(R,Math.round(PP.downed.x),Math.round(PP.downed.y));drawLying(R,Math.round(PP.downed.x),Math.round(PP.downed.y),INSPECTOR)}
@@ -2351,9 +2351,10 @@ function ppAnimate(){
   if(QS.debris&&QS.debris.length){moving=true;const car=QS.car;QS.debris.forEach(d=>{if(!d.fly&&car&&car.sp){const [a,b]=debrisBox(d);if(car.x+46>a&&car.x<b){d.fly=1;d.vx=(car.dir||1)*rint(9,14);d.vy=-rint(7,11);SFX.crash();sNoise(.3,.35,900);popText('БАМ!',Math.round((a+b)/2),Math.round(debrisBox(d)[2]-24),'#ffe060',14);for(let k=0;k<8;k++)QS.fx.push({t:'spark',x:Math.round((a+b)/2+rint(-10,10)),y:Math.round(debrisBox(d)[2]-rint(0,14)),ttl:4+k%4,c:'#e0d8c0'})}}
     if(d.fly){d.x+=d.vx;d.y+=d.vy;d.vy+=1.1;if(d.x<-QS.OX-220||d.x>QS.W-QS.OX+220||d.y>420)d.gone=1}});QS.debris=QS.debris.filter(d=>!d.gone)}
   if(moving||QS.tick%6===0||PP.street==='snow'||['rain','fire','holiday','blackout'].includes(PP.event)||EGG.matrix||EGG.dec)qsDraw();
-  if(QS.tick%5===0)drawOffice();
+  if(petStreetStep())moving=true;
+  if(QS.tick%(PP.pet?2:5)===0)drawOffice();
   if(FACE.L||FACE.tv)drawFace(FACE.L);
-  if(!$('#ppOv').hidden){const ab=$('#ppAvBig');if(ab&&QS.tick%2===0)drawFace(INSPECTOR,ab,{win:PP.win,clean:1});if($('#ppPetBig')&&ppProfile.petDraw&&QS.tick%3===0)ppProfile.petDraw()}else if(QS.tick%10===0)avMini();
+  if(!$('#ppOv').hidden){const ab=$('#ppAvBig');if(ab&&QS.tick%2===0)drawFace(INSPECTOR,ab,{win:PP.win,clean:1});if(ppProfile.petDraw&&ppProfile.tab==='pet')ppProfile.petDraw()}else if(QS.tick%10===0)avMini();
   const pw=document.querySelector('#ppOv:not([hidden]) #ppPrevWin');if(pw&&ppShop.face)drawFace(ppShop.face.L,pw,ppShop.face.ov);
 }
 function qsToLogical(ev){const c=$('#ppQueue'),r=c.getBoundingClientRect();const sc=r.width/c.width;return{x:(ev.clientX-r.left)/sc-QS.OX,y:(ev.clientY-r.top)/sc+20}}
@@ -2666,7 +2667,23 @@ function ppBar(){
   {const armed=!!(PD&&PD.walking&&!PD.aim&&(PP.gun||0)>0);$('#ppGun').classList.toggle('pp-blink',armed);const dg=$('#ppDeskGun');if(dg){dg.disabled=!armed;dg.querySelector('span').textContent='Пистолет · '+(PP.gun||0)}}
   {const pb=$('#ppPetBtn');if(pb){const pe=PP.pet;pb.hidden=!pe;if(pe){const I=petInfo();pb.textContent=pe.fed?`Погладить: ${pe.name}`:`Покормить · $${I.food}`;pb.classList.toggle('hungry',!pe.fed&&(pe.hunger||0)>=1)}}if(typeof avMini==='function')avMini()}
 }
-function ppTalk(who,text){if(FACE.L&&PD&&PD.cur&&(who===PD.cur.role||(FACE.L===INSPECTOR&&/Инспектор/.test(who))))FACE.talkUntil=Date.now()+Math.min(3000,500+String(text).length*40);$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
+function talkVoice(who,text){try{if(!SFX.on)return;const now=Date.now();if(now-(talkVoice.t||0)<120)return;talkVoice.t=now;who=String(who||'');text=String(text||'');
+  if(PP.pet&&who===PP.pet.name)return;const h=[...who].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);
+  let L=null;if(PD&&PD.cur&&who===PD.cur.role)L=FACE.L||(QS.people[PD.idx]||{}).look;else if(/Инспектор/.test(who))L=INSPECTOR;
+  let base=160,wave='square',lp=1400,v=.035,dur=.07,gap=.085,vib=0,noise=0,radio=false;
+  if(/^(Бюро|Полиция|Пилот|Кинолог|Спецназ|Диспетчер)/.test(who)){radio=true;base=who==='Бюро'?240:130;wave='square';lp=1100;noise=1}
+  else if(/Дракон|Кайдзю|Демон/.test(who)){base=70;wave='sawtooth';lp=500;v=.07;dur=.12;gap=.13}
+  else if(/Олигарх/.test(who)){base=105;wave='sawtooth';lp=800;dur=.1;gap=.12}
+  else if(L){if(L.celeb==='hitler'){base=150;wave='sawtooth';lp=1800;dur=.05;gap=.06;v=.045}else if(L.celeb==='biden'){base=125;wave='triangle';lp=1000;dur=.1;gap=.14;vib=6}
+    else if(L.celeb){base=140;wave='square';lp=1300}
+    else{base=L.g==='f'?300:150;if(L.old){base*=L.g==='f'?.85:.9;gap=.11;vib=5}if(L.ghost){wave='sine';vib=8;lp=3000}if(L.robot||L.golden)wave='square';
+      wave=L.ghost?'sine':['square','triangle','sawtooth'][h%3];lp=L.g==='f'?2200:1300}}
+  else{base=[140,170,210,260,300][h%5];wave=['square','triangle'][h%2]}
+  base*=1+((h%9)-4)*.035;const n=Math.max(2,Math.min(9,Math.ceil(text.replace(/[^а-яёa-z0-9]/gi,'').length/5))),q=/\?\s*$/.test(text),ex=/!/.test(text);
+  for(let i=0;i<n;i++){let f=base*(1+((h>>(i%8))&3)*.07-.1+Math.random()*.08);if(q&&i>=n-2)f*=1.25+.1*(i-n+2);if(ex)f*=1.08;if(i===n-1&&!q)f*=.9;
+    const t=i*gap*(.85+Math.random()*.3);sMuf(f,dur,wave,v*(ex?1.3:1),vib?f*(1+(i%2?.04:-.04)):f*(.97+Math.random()*.06),t,lp);if(radio&&i%2===0)sNoise(dur,.012,3000,800,t)}
+  if(radio){sNoise(.05,.03,4000,1200);sNoise(.05,.03,4000,1200,n*gap+.05)}}catch(e){}}
+function ppTalk(who,text){talkVoice(who,text);if(FACE.L&&PD&&PD.cur&&(who===PD.cur.role||(FACE.L===INSPECTOR&&/Инспектор/.test(who))))FACE.talkUntil=Date.now()+Math.min(3000,500+String(text).length*40);$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
 function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=Math.floor(PD.min%60);$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
 function ppOverlay(html,cls){const o=$('#ppOv');o.className='pp-ov'+(cls?' ov-'+cls:'');o.innerHTML=`<div class="pp-card${cls?' '+cls:''}">${html}</div>`;o.hidden=false;o.scrollTop=0}
 function ppCloseOv(){$('#ppOv').hidden=true}
@@ -2713,7 +2730,7 @@ function ppShop(prev){
    <p>Будка · $12</p><div class="pp-shop">${sw('booth',PPX.BOOTHS,PP.booth,12)}</div>
    <p>Окошко посетителей · $15</p><div class="pp-shop">${sw('win',Object.fromEntries(Object.entries(PPX.WINS).map(([k,v])=>[k,[v[0],v[4]||v[1]]])),PP.win,15)}</div>
    <p>Улица · $20</p><div class="pp-shop">${sw('street',Object.fromEntries(Object.entries(PPX.STREETS).map(([k,v])=>[k,[v.n,`linear-gradient(${v.sky[4]} 0 45%,${v.wall} 45% 70%,${v.path} 70%)`]])),PP.street,20)}</div>
-   <p>Анимации ареста</p><div class="pp-shop">${ARRESTS.map(a=>{const o=(PP.arrests||{})[a.n];return `<div class="pp-item${o?' owned':''}"><b>${esc(a.title)}</b>${o?`<small><b style="font-size:14px">✓ есть</b></small><label class="pp-tog"><input type="checkbox" data-atog="${a.n}" ${(PP.arrOff||{})[a.n]?'':'checked'}> в ротации</label>`:`<button class="pp-btn" data-arr="${a.n}" ${PP.cash<a.price?'disabled':''}>$${a.price}</button>`}</div>`}).join('')}<div class="pp-item owned"><b>Полицейская машина</b><label class="pp-tog"><input type="checkbox" data-atog="car" ${(PP.arrOff||{}).car?'':'checked'}> в ротации</label></div><div class="pp-item owned"><b>Самосуд очереди</b><label class="pp-tog"><input type="checkbox" data-atog="mob" ${(PP.arrOff||{}).mob?'':'checked'}> в ротации</label></div><div class="pp-item"><small>Галочкой выбираешь, какие анимации могут выпасть. Одна и та же подряд не повторяется. Хотя бы одна должна остаться включённой.</small></div></div>
+   <p>Анимации ареста</p><div class="pp-shop">${ARRESTS.filter(a=>!a.secret||(PP.arrests||{})[a.n]).map(a=>{const o=(PP.arrests||{})[a.n];return `<div class="pp-item${o?' owned':''}"><b>${esc(a.title)}</b>${a.secret?'<small style="color:#e05a4a">секретная · работает, пока есть питомец</small>':''}${o?`<small><b style="font-size:14px">✓ есть</b></small><label class="pp-tog"><input type="checkbox" data-atog="${a.n}" ${(PP.arrOff||{})[a.n]?'':'checked'}> в ротации</label>`:`<button class="pp-btn" data-arr="${a.n}" ${PP.cash<a.price?'disabled':''}>$${a.price}</button>`}</div>`}).join('')}<div class="pp-item owned"><b>Полицейская машина</b><label class="pp-tog"><input type="checkbox" data-atog="car" ${(PP.arrOff||{}).car?'':'checked'}> в ротации</label></div><div class="pp-item owned"><b>Самосуд очереди</b><label class="pp-tog"><input type="checkbox" data-atog="mob" ${(PP.arrOff||{}).mob?'':'checked'}> в ротации</label></div><div class="pp-item"><small>Галочкой выбираешь, какие анимации могут выпасть. Одна и та же подряд не повторяется. Хотя бы одна должна остаться включённой.</small></div></div>
    <p>Расходники</p><div class="pp-shop">
      <div class="pp-item"><b>Таймстоп</b><small>Часы стоят, пока не закончишь с текущим посетителем.</small><small>У тебя: ${PP.ts||0}</small><button class="pp-btn" data-ts="1" ${PP.cash<8?'disabled':''}>$8</button></div>
      <div class="pp-item"><b>Пистолет</b><small>Вечером выстрели в инспектора. Попал: проверки нет, он лежит день, потом приходит с охраной и щитами.</small><small>У тебя: ${PP.gun||0}</small><button class="pp-btn red" data-gun="1" ${PP.cash<25?'disabled':''}>$25</button></div>
@@ -2747,7 +2764,7 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.debris=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;const pp0=JSON.parse(JSON.stringify(PP));
+  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.debris=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;const pp0=JSON.parse(JSON.stringify(PP));
   PD={_pp0:pp0,deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   const hr=new Date().getHours();if(hr<5&&PD.tasks.length>2){const t=PD.tasks[rint(1,PD.tasks.length-1)];t.look=ghostLook();t.role='Призрак прошлого квартала'}
   if(PP.day===42&&PD.tasks[0]){PD.tasks[0].look=deepLook();PD.tasks[0].role='Глубокомысленный'}
@@ -2856,7 +2873,11 @@ function sTheremin(dur){try{const a=sfxCtx(),t=a.currentTime,o=a.createOscillato
 function kaijuRoar(v){sMuf(230,2.6,'sawtooth',.09*v,68,0,750);sMuf(172,2.6,'square',.05*v,52,.06,520);sMuf(310,1.6,'sawtooth',.04*v,120,.2,900);sNoise(2.3,.2*v,1300,180)}
 const SWATL=()=>({g:'m',skin:'#2a2a2e',hair:'#15130f',coat:'#15130f',shirt:'#2a2a30',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true,swat:true});
 function drawArrestActor2(R0,a,x,y,t){
-  if(a.t==='petrun'){if(!PP.pet)return true;const left=a.vx<0,Rm=left?((xx,yy,w,h,c)=>R0(2*x+14-xx-w,yy,w,h,c)):R0;drawPetSprite(Rm,x,y,a.type,petCol(),Math.floor(t/2),'happy');return true}
+  if(a.t==='petrun'){if(!PP.pet)return true;const cx=x+(PET_AX[a.type]||6),left=a.vx<0,Rm=left?((xx,yy,w,h,c)=>R0(2*cx-xx-w,yy,w,h,c)):R0;drawPetSprite(Rm,x,y,a.type,petCol(),Math.floor(t/2),a.type==='parrot'?'fly':(a.mode||'happy'));return true}
+  if(a.t==='brawl'){const k=a.k||0;for(let pass=0;pass<3;pass++)for(let i=0;i<9;i++){const an=i/9*Math.PI*2+k*.35,r=7+((k+i)%3),px=x+Math.cos(an)*10,py=y+Math.sin(an)*8;if(pass===0)pxEll(R0,px,py,r+1,r*.8+1,'#5a5448');else if(pass===1)pxEll(R0,px,py,r,r*.8,'#d8d4c8');else pxEll(R0,px-1,py-2,r*.5,r*.35,'#f4f0e4')}
+    const L=a.L||{},pos=[[-18,-4],[14,-8],[-13,9],[16,7],[-2,-17],[4,13]];for(let i=0;i<3;i++){const [px,py]=pos[(Math.floor(k/2)+i*2)%6];if(i===0){R0(x+px,y+py,6,2,L.coat||'#444');R0(x+px+(px<0?-2:6),y+py,2,2,L.skin||'#e0b090')}else if(i===1){R0(x+px,y+py,2,6,'#2a2a2e');R0(x+px-1,y+py+6,4,2,'#15130f')}else if(a.type==='parrot'){R0(x+px,y+py,5,2,a.col);R0(x+px+5,y+py,2,1,'#e0b64a')}else{R0(x+px,y+py,2,5,a.col);R0(x+px+1,y+py-1,1,1,a.col)}}
+    for(let i=0;i<3;i++){const an=k*.5+i*2.1,sx=x+Math.round(Math.cos(an)*19),sy=y-6+Math.round(Math.sin(an)*10);R0(sx,sy-1,1,3,'#ffe060');R0(sx-1,sy,3,1,'#ffe060')}return true}
+  if(a.t==='scrap'){const sp=(t+(a.ph||0))%2;R0(x,y,sp?a.w:a.h,sp?a.h:a.w,a.c);return true}
   if(a.t==='star'){for(let i=1;i<9;i++)R0(x-i*a.vx*.6,y-i*a.vy*.6,2,1,'rgba(255,243,176,'+(0.8-i*.09).toFixed(2)+')');R0(x-1,y-1,3,3,'#fff8d0');R0(x,y-2,1,5,'#ffffff');R0(x-2,y,5,1,'#ffffff');return true}
   if(a.t==='bat'){const up=(t+a.ph)%4<2;R0(x,y,4,3,'#15130f');R0(x+1,y-1,1,1,'#15130f');R0(x+2,y-1,1,1,'#15130f');R0(x+1,y+1,1,1,'#e04a4a');if(up){R0(x-4,y-2,4,2,'#2a2622');R0(x+4,y-2,4,2,'#2a2622')}else{R0(x-4,y+2,4,2,'#2a2622');R0(x+4,y+2,4,2,'#2a2622')}return true}
   if(a.t==='flash1'){for(let k=0;k<12;k++){const w=2+k*2;R0(x-w/2+6,y+k*2-18,w,2,'rgba(255,250,210,'+(0.28-k*.02).toFixed(2)+')')}return true}
@@ -3211,14 +3232,34 @@ const ARRESTS=[
    await sleep(500);ppTalk('Бюро','Чёрная дыра схлопывается!');await tick(()=>{bh.r-=.8;pull();return bh.r<=1});QS.actors=QS.actors.filter(a=>a!==bh);
    QS.flash=6;shakePP();sNoise(1.4,.5,6000,300);sMuf(40,1.6,'sine',.4,20,0,200);const ring={t:'ring',x:cx,y:cy,r:3};QS.actors.push(ring);
    for(let i=0;i<36;i++){const an=i/36*Math.PI*2;QS.fx.push({t:'spark',x:Math.round(cx+Math.cos(an)*rint(8,44)),y:Math.round(cy+Math.sin(an)*rint(6,24)),ttl:6+i%6,c:i%2?'#c8a0ff':'#ffffff'})}
-   k=0;await tick(()=>{k++;ring.r+=6;return k>=14});QS.actors=QS.actors.filter(a=>a!==ring);ppTalk('Бюро','Тишина. Будто никого и не было.')}}
+   k=0;await tick(()=>{k++;ring.r+=6;return k>=14});QS.actors=QS.actors.filter(a=>a!==ring);ppTalk('Бюро','Тишина. Будто никого и не было.')}},
+ {n:'petrage',secret:true,title:'Питомец в ярости',desc:'Секретная анимация: твой питомец догоняет нарушителя и разрывает его в клочья.',price:0,line:'Кажется, кто-то разозлил питомца…',async run(p){
+   const pe=PP.pet||{type:'dog',name:'Питомец'},type=pe.type,[sx,sy]=petStreetPos();p.sp=1;PETST.chasing=true;const ch={t:'petrun',type,x:sx,y:sy,vx:-1};QS.actors.push(ch);
+   try{petSound('bad')}catch(_){}ppTalk(pe.name,{dog:'РРРР… ГАВ!!!',cat:'ШШШШШ! МЯААУ!!!',parrot:'КРРРА! В АТАКУ!!!',hamster:'ПИ-ПИ-ПИИИИ!!!'}[type]);
+   const sp=Math.max(9,p.sp*2.4),ty=()=>p.y+(type==='parrot'?10:28);
+   await tickL(()=>{const dx=p.x+6-ch.x,dy=ty()-ch.y,dd=Math.hypot(dx,dy)||1;ch.x+=dx/dd*Math.min(sp,dd);ch.y+=dy/dd*Math.min(sp,dd);ch.vx=dx;if(QS.tick%5===0&&type==='dog')SFX.bark(true);return dd<=sp+2});
+   p.sp=0;p.tx=p.x;p.run=false;p.moving=false;QS.actors=QS.actors.filter(a=>a!==ch);popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);ppTalk(PD.cur.role,type==='hamster'?'Хомяк?! Ха-ха, что ты мне сделаешь… АААА!!!':'Уберите его! Уберите его от меня!!');
+   const L=p.look,br={t:'brawl',x:Math.round(p.x+6),y:Math.round(p.y+16),k:0,type,col:petCol(),L};QS.actors.push(br);p.hide=true;
+   const cols=[L.coat,L.coat,L.shirt,L.hair,L.tie||L.coat,L.hatc||L.coat,'#15130f'].filter(Boolean),gy=Math.round(p.y+28),fl=[];
+   const upd=()=>{fl.forEach(s=>{if(s.done)return;s.x+=s.vx;s.y+=s.vy;s.vy+=1.1;s.vx*=.94;if(s.vy>0&&s.y>=s.gy){s.done=1;QS.scraps=QS.scraps||[];QS.scraps.push({x:Math.round(s.x),y:Math.round(s.gy),w:s.w,h:s.h,c:s.c})}});QS.actors=QS.actors.filter(a=>!(a.t==='scrap'&&a.done))};
+   let k=0;await tick(()=>{k++;br.k=k;upd();
+     if(k%3===0)sNoise(.12,.22,2600,300);if(k%5===0){if(type==='dog')SFX.bark(true);else if(type==='cat')sNoise(.3,.1,7000,2500);else if(type==='parrot')sTone(SJ(1500,.2),.08,'square',.04,SJ(2200,.2));else sTone(SJ(2800,.1),.06,'sine',.05,SJ(3400))}
+     if(k%2===0&&k<46)for(let q=0;q<2;q++){const s={t:'scrap',x:br.x+rint(-6,6),y:br.y+rint(-8,6),vx:rint(-8,8),vy:-rint(4,11),c:pick(cols),w:rint(2,4),h:rint(1,3),gy:gy+rint(-4,3),ph:rint(0,1)};fl.push(s);QS.actors.push(s)}
+     if(k%8===0)popText(pick(['ХРЯСЬ!','ТРЫНЬ!','ВЖУХ!','АЙ!','КУСЬ!','ЦАП!']),br.x+rint(-16,16),br.y-rint(12,22),'#ffe060',12);if(k%10===0)shakePP();return k>=52});
+   QS.actors=QS.actors.filter(a=>a!==br);QS.decals.push({x:Math.round(p.x),y:Math.round(p.y)});QS.flash=1;sNoise(.5,.3,3000,200);
+   p.vanished=true;p.vanishMsg='Тут только клочья пиджака и одна пуговица. Задерживать некого. Уезжаем.';
+   ch.x=br.x-6;ch.y=type==='parrot'?gy-2:gy;ch.mode='happy';ch.vx=1;QS.actors.push(ch);await tick(()=>{upd();return fl.every(s=>s.done)});
+   for(let i=0;i<3;i++)popText('♥',Math.round(ch.x+4+i*4),Math.round(ch.y-16-i*3),'#e04a5a',12);try{petSound('good')}catch(_){}
+   ppTalk(pe.name,{dog:'Гав! (гордо виляет хвостом, в зубах галстук)',cat:'Мяу. (облизывается и умывается)',parrot:'КРРР! ОТЧЁТНОСТЬ ПРИНЯТА!',hamster:'Пи. (довольно жуёт пуговицу)'}[type]);await sleep(1600);
+   const [hx,hy]=petStreetPos();await tickL(()=>{const dx=hx-ch.x,dy=hy-ch.y,dd=Math.hypot(dx,dy)||1;ch.x+=dx/dd*Math.min(7,dd);ch.y+=dy/dd*Math.min(7,dd);ch.vx=dx;return dd<1});
+   QS.actors=QS.actors.filter(a=>a!==ch);PETST.chasing=false;ppTalk('Бюро',`От нарушителя остались одни клочья. ${pe.name} заслужил двойную порцию корма.`)}},
 ];
 function debrisBox(d){const x=d.x,y=d.y;switch(d.t){case 'apple':return[x-(d.r||24),x+(d.r||24),y+(d.r||24)];case 'tank':return[x,x+96,y+40];case 'anvil':return[x,x+40,y+22];case 'petunia':return[x-10,x+10,y+2];case 'ufowreck':return[x-24,x+24,y+6];case 'snowman':return[x-8,x+8,y+1];default:return[x-10,x+10,y+4]}}
 function toDebris(a){if(!a)return;QS.actors=(QS.actors||[]).filter(x=>x!==a);a.fire=false;a.wave=false;QS.debris=(QS.debris||[]).concat([a])}
 function fadeRemains(p){const now=Date.now(),sn=p.snap||{};const mark=(arr,i0)=>{(arr||[]).slice(i0||0).forEach(o=>o.f0=now)};
-  mark(QS.decals,sn.d);mark(QS.scorch,sn.sc);mark(QS.slime,sn.sl);mark(QS.prints,sn.pr);mark(QS.stamps,sn.st);mark(QS.ice,sn.ic);if(QS.crater&&QS.crater!==sn.cr)QS.crater.f0=now;if(p.ash&&!p.hide)p.f0=now}
+  mark(QS.decals,sn.d);mark(QS.scorch,sn.sc);mark(QS.slime,sn.sl);mark(QS.prints,sn.pr);mark(QS.stamps,sn.st);mark(QS.ice,sn.ic);mark(QS.scraps,sn.sp);if(QS.crater&&QS.crater!==sn.cr)QS.crater.f0=now;if(p.ash&&!p.hide)p.f0=now}
 const fa=o=>o&&o.f0?Math.max(0,1-(Date.now()-o.f0)/10000):1;
-function fadeSweep(){let any=false;const keep=o=>{if(!o.f0)return true;any=true;return fa(o)>0};QS.decals=QS.decals.filter(keep);['scorch','slime','prints','stamps','ice'].forEach(k=>{if(QS[k])QS[k]=QS[k].filter(keep)});
+function fadeSweep(){let any=false;const keep=o=>{if(!o.f0)return true;any=true;return fa(o)>0};QS.decals=QS.decals.filter(keep);['scorch','slime','prints','stamps','ice','scraps'].forEach(k=>{if(QS[k])QS[k]=QS[k].filter(keep)});
   if(QS.crater&&QS.crater.f0){any=true;if(fa(QS.crater)<=0)QS.crater=null}QS.people.forEach(q=>{if(q.f0&&!q.hide){any=true;if(fa(q)<=0)q.hide=true}});return any}
 async function policeCleanup(p,onArrive){
   await until(()=>!QS.car,20000);const arrive=()=>{if(onArrive){const f=onArrive;onArrive=null;f()}};
@@ -3245,10 +3286,10 @@ async function ppArrestAnim(cb){
   let bars=win.querySelector('.bars');if(!bars){bars=document.createElement('div');bars.className='bars';bars.innerHTML='<span>АРЕСТОВАН</span>';win.appendChild(bars)}
   bars.classList.remove('on');void bars.offsetWidth;bars.classList.add('on');ppTalk(PD.cur.role,'Нет! Я не пойду!');
   if(!p){setTimeout(cb,1200);return}
-  p.snap={d:QS.decals.length,sc:(QS.scorch||[]).length,sl:(QS.slime||[]).length,pr:(QS.prints||[]).length,st:(QS.stamps||[]).length,ic:(QS.ice||[]).length,cr:QS.crater};
+  p.snap={d:QS.decals.length,sc:(QS.scorch||[]).length,sl:(QS.slime||[]).length,pr:(QS.prints||[]).length,st:(QS.stamps||[]).length,ic:(QS.ice||[]).length,sp:(QS.scraps||[]).length,cr:QS.crater};
   p.state='x';p.ty=110;p.tx=-QS.OX+20;p.sp=3.6;p.run=true;let spl={granny:'Сынок, да ты что?! Я ж тебе пирожков принесла!',mom:p.look.nk===3?'Только не при детях!! Все трое, бежим!':p.look.nk===2?'Дети, держитесь за руки, бежим!':'Не при ребёнке!! Мы убегаем!',wheel:'Серьёзно?! Ну догоняй!'}[p.look.sp];if(p.look.cat)spl='Барсик, бежим! Нас не поймают!';ppTalk(PD.cur.role,spl||'Нет! Я не пойду! Бегу!');await sleep(2200);
   let done=false;const fin=()=>{if(done)return;done=true;FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
-  const ownA=ARRESTS.filter(a=>(PP.arrests||{})[a.n]&&!(PP.arrOff||{})[a.n]);let v,trial=false;
+  const ownA=ARRESTS.filter(a=>(PP.arrests||{})[a.n]&&!(PP.arrOff||{})[a.n]&&(a.n!=='petrage'||PP.pet));let v,trial=false;
   if(window.__forceArrest!=null)v=window.__forceArrest==='mob'?MOB:window.__forceArrest<0?null:ARRESTS[window.__forceArrest];
   else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const alt=pool.filter(a=>(a?a.n:'car')!==PP.lastArrest);v=pick(alt.length?alt:pool);trial=trial&&!!v&&v!==MOB}
   PP.lastArrest=v?v.n:'car';
@@ -3261,11 +3302,11 @@ const EVENTS=[
  {n:'thief',async run(){const th={look:THIEF,x:QS.W-QS.OX-10,y:104,tx:-QS.OX-40,ty:104,state:'x',sp:Math.max(3.2,(QS.W+30)/70),run:true,dir:-1};QS.people.push(th);ppTalk('Посетитель','Держи вора! Он украл мой кошелёк!');banner('КЛИКНИ ПО ВОРУ: +$5');sTone(900,.1,'square',.04);
    let caught=false;QS.onClick=L=>{if(L.x>=th.x-4&&L.x<=th.x+16&&L.y>=th.y-4&&L.y<=th.y+30&&!caught){caught=true;stInc('thief');achCheck();th.run=false;th.lying=true;th.tx=th.x;th.ty=th.y;SFX.crash();PP.cash+=5;PD.fees+=5;SFX.coin();ppTalk('Бюро','Вор споткнулся! Награда $5.');ppBar();ppSave()}};
    const pe=PP.pet,petGo=!!pe&&pe.type!=='hamster'&&Math.random()<.5;let ch=null,byPet=false;const t0=Date.now();
-   await until(()=>{if(petGo&&!caught&&!ch&&Date.now()-t0>700){const sx=pe.type==='cat'?442:pe.type==='parrot'?452:456,sy=pe.type==='cat'||pe.type==='parrot'?31:121;ch={t:'petrun',type:pe.type,x:sx,y:sy,vx:-1};PETST.chasing=true;QS.actors.push(ch);try{petSound('good')}catch(_){}try{ppTalk(pe.name||'Питомец',pe.type==='parrot'?'КРРР! ДЕРЖИ ВОРА!':pe.type==='dog'?'ГАВ-ГАВ!':'МЯУ!')}catch(_){}}
+   await until(()=>{if(petGo&&!caught&&!ch&&Date.now()-t0>700){const [sx,sy]=petStreetPos();ch={t:'petrun',type:pe.type,x:sx,y:sy,vx:-1};PETST.chasing=true;QS.actors.push(ch);try{petSound('good')}catch(_){}try{ppTalk(pe.name||'Питомец',pe.type==='parrot'?'КРРР! ДЕРЖИ ВОРА!':pe.type==='dog'?'ГАВ-ГАВ!':'МЯУ!')}catch(_){}}
      if(ch&&!caught){const tx=th.x+6,ty=th.y+28,dx=tx-ch.x,dy=ty-ch.y,dd=Math.hypot(dx,dy)||1,sp=Math.max(th.sp*1.7,7);ch.x+=dx/dd*Math.min(sp,dd);ch.y+=dy/dd*Math.min(sp,dd);ch.vx=dx;
        if(dd<=sp+2){caught=true;byPet=true;th.run=false;th.lying=true;th.tx=th.x;th.ty=th.y;SFX.crash();PP.cash+=5;PD.fees+=5;SFX.coin();popText('+$5',Math.round(th.x+6),Math.round(th.y-4),'#ffe060',14);ppTalk('Бюро',`${pe.name} поймал вора и принёс кошелёк обратно! +$5.`);ppBar();ppSave()}}
      return caught||th.x<=-QS.OX-30},20000);QS.onClick=null;banner('');
-   if(ch){const hx=pe.type==='cat'?442:pe.type==='parrot'?452:456,hy=pe.type==='cat'||pe.type==='parrot'?31:121;await until(()=>{const dx=hx-ch.x,dy=hy-ch.y,dd=Math.hypot(dx,dy)||1;ch.x+=dx/dd*Math.min(9,dd);ch.y+=dy/dd*Math.min(9,dd);ch.vx=dx;return dd<1},15000);QS.actors=QS.actors.filter(a=>a!==ch);PETST.chasing=false}
+   if(ch){const [hx,hy]=petStreetPos();await until(()=>{const dx=hx-ch.x,dy=hy-ch.y,dd=Math.hypot(dx,dy)||1;ch.x+=dx/dd*Math.min(9,dd);ch.y+=dy/dd*Math.min(9,dd);ch.vx=dx;return dd<1},15000);QS.actors=QS.actors.filter(a=>a!==ch);PETST.chasing=false}
    if(caught){await sleep(1200);th.lying=false;th.sp=Math.max(3,(th.x+QS.OX+40)/40);th.run=false;th.tx=-QS.OX-40;await tick(()=>th.x<=-QS.OX-30)}else ppTalk('Бюро','Вор сбежал.');th.hide=true}},
  {n:'ufo',async run(){let cand=QS.people.map((p,i)=>[p,i]).filter(([p,i])=>i>PD.idx&&p.state==='q'&&!p.hide);if(!cand.length)return;const vis=cand.filter(([p])=>p.x>-QS.OX+8&&p.x<QS.W-QS.OX-40);if(vis.length)cand=vis;const kn=cand.find(([p])=>p.knocked&&p.lying);const [v,j]=kn||cand[cand.length-1];
    const u={t:'ufo',x:v.x-6,y:-14};QS.actors.push(u);ppTalk('Бюро','Что это над очередью?! Нажми на тарелку, чтобы сбить её!');sTone(200,2.2,'sine',.05,800);banner('НАЖМИ НА ТАРЕЛКУ');
@@ -3492,7 +3533,7 @@ document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!ta
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
 $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
-  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
+  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();qsDraw()};
 /* long press on "Начать игру заново" reveals full wipe */
@@ -3606,7 +3647,7 @@ const ACH=[
  ['broke','Банкрот','Обанкроть бюро',s=>s.broke>=1,null],
  ['deadweight','Мёртвый груз','Позволь летающей тарелке утащить того, кто лежит после драки',s=>s.deadweight>=1,null]];
 function achStats(){const S=META.st;return{days:S.days||0,maxDay:Math.max(S.maxDay||0,PP.day),medals:Math.max(S.maxMedals||0,PP.medals.length),perfect:S.perfect||0,bestStreak:S.bestStreak||0,arrests:S.arrests||0,bosses:S.bosses||0,
-  maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).filter(k=>!k.includes(':')).length,allArr:ARRESTS.every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
+  maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).filter(k=>!k.includes(':')).length,allArr:ARRESTS.filter(a=>!a.secret).every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
   petDays:Math.max(S.petDays||0,PP.pet?PP.day-PP.pet.since:0),album:Object.keys(META.album).length,eggs:Object.keys(META.eggs).length,events:Object.keys(S.ev||{}).length,broke:S.broke||0,deadweight:S.deadweight||0}}
 const REWARD_NAME={hat:{fedora:'шляпа',officer:'фуражка',top:'цилиндр',crown:'корона',halo:'нимб',horns:'рожки',ears:'кошачьи ушки'},gl:{sun:'тёмные очки',mono:'монокль'},tie:{gold:'золотой галстук'},badge:{medal:'орден на грудь',star:'звезда шерифа',heart:'значок-сердечко',egg:'значок пасхальщика'},coat:{'#15130f':'чёрный пиджак','#6a2a4a':'бордовый пиджак','#c9a24a':'золотой пиджак','#2a4a6a':'синий пиджак','#1e2a44':'парадный мундир'}};
 const rewardText=r=>r?'Награда: '+(REWARD_NAME[r[0]][r[1]]||r[1]):'';
@@ -3643,43 +3684,157 @@ function petInfo(){return PP.pet?PETS[PP.pet.type]:null}
 const PETST={x:40,dir:1,mode:'walk',until:0,heart:0};
 function petIsGarfield(){return PP.pet&&PP.pet.type==='cat'&&/^(гарфилд|garfield)$/i.test((PP.pet.name||'').trim())}
 function petCol(){return petIsGarfield()?'#e0842a':PP.pet.col}
-function petSay(txt){const pe=PP.pet;if(!pe)return;const st=pe.type==='cat'||pe.type==='parrot';popText(txt,st?446:462,st?16:104,'#f0e8c8',10)}
+function petSay(txt){const pe=PP.pet;if(!pe)return;const [sx,sy]=petStreetPos();popText(txt,Math.round(sx+6),Math.round(sy-18),'#f0e8c8',10)}
 function petSound(kind){const t=PP.pet&&PP.pet.type;if(!t)return;
   if(t==='cat'){if(kind==='good'){sMuf(SJ(720),.12,'triangle',.05,SJ(900),0,2400);sMuf(SJ(900),.3,'triangle',.05,SJ(560),.1,2400)}else if(kind==='bad'){sNoise(.45,.12,6000,1800)}else{for(let i=0;i<5;i++)sMuf(SJ(38),.18,'sawtooth',.05,null,i*.2,180)}}
   else if(t==='dog'){if(kind==='bad'){sMuf(SJ(900),.5,'sine',.04,SJ(600),0,2000)}else SFX.bark(false)}
   else if(t==='parrot'){for(let i=0;i<3;i++)sMuf(SJ(kind==='bad'?700:1300,.2),.07,'square',.035,SJ(kind==='bad'?500:1800,.2),i*.09,3000)}
   else{sMuf(SJ(2400,.1),.06,'sine',.04,SJ(3000),0,5000);sMuf(SJ(2600,.1),.06,'sine',.04,SJ(3200),.1,5000)}}
-function petReact(good){if(!PP.pet||Math.random()>.55)return;PETST.mode=good?'happy':'sad';PETST.until=QS.tick+30;petSound(good?'good':'bad');
-  if(PP.pet.type==='parrot')petSay(good?pick(['КРРР! ВЕРНО!','ДЕБЕТ!','КРЕДИТ!','A = L + E!']):pick(['КРРР! ОШИБКА!','ШТРАФ! ШТРАФ!','КУДА СМОТРИШЬ?']));
+function petReact(good){if(!PP.pet)return;PETST.mode=good?'happy':'sad';PETST.until=QS.tick+(good?30:45);PETST.pat=null;if(Math.random()<.6)petSound(good?'good':'bad');
+  if(PP.pet.type==='parrot'&&Math.random()<.55)petSay(good?pick(['КРРР! ВЕРНО!','ДЕБЕТ!','КРЕДИТ!','A = L + E!']):pick(['КРРР! ОШИБКА!','ШТРАФ! ШТРАФ!','КУДА СМОТРИШЬ?']));
   else if(good&&Math.random()<.4)petSay(pick(['♥','♥ ♥']))}
 function petFeed(){const pe=PP.pet;if(!pe||pe.fed)return;const f=petInfo().food;PP.cash-=f;PP.pending.petFood=(PP.pending.petFood||0)+f;pe.fed=true;pe.hunger=0;PETST.mode='eat';PETST.until=QS.tick+40;
   sNoise(.25,.08,3000,900);setTimeout(()=>petSound('good'),500);ppTalk(pe.name,petIsGarfield()?'Лазанья! Наконец-то. Ненавижу понедельники.':'Ням-ням! Спасибо!');if(petIsGarfield())eggFound('garfield');ppSave();ppBar();drawOffice()}
-function petPet(){const pe=PP.pet;if(!pe)return;pe.petted=true;PETST.mode='happy';PETST.until=QS.tick+30;PETST.heart=QS.tick;petSound(pe.type==='cat'?'purr':'good');petSay('♥');ppSave();ppBar()}
+function petPet(){const pe=PP.pet;if(!pe)return;pe.petted=true;PETST.pat=QS.tick;PETST.mode='happy';PETST.until=QS.tick+60;const tp=pe.type;
+  try{if(tp==='cat'){petSound('purr');sMuf(SJ(900),.3,'triangle',.05,SJ(600),2.2,2400)}else if(tp==='dog'){SFX.bark(false);sTone(160,3,'sawtooth',.02,460,1.1);sNoise(3,.05,1800,400,1.1);SFX.bark(false)}
+  else if(tp==='parrot'){[784,988,1175,988,1319,1175,988,784,1568].forEach((f,i)=>sMuf(f,.12,'square',.035,null,.8+i*.14,3000))}else{for(let i=0;i<4;i++)sMuf(SJ(2600,.1),.06,'sine',.04,SJ(3300),i*.12,5000);sTone(300,.5,'sine',.05,1200,2.7);sNoise(.3,.08,6000,2000,2.8)}}catch(_){}
+  const say={cat:'МРРР ♥',dog:'ГАВ! ♥',parrot:`${(pe.name||'Кеша').toUpperCase()} ХОРОШИЙ!`,hamster:'ПИ-ПИ ♥'}[tp];petSay(say);ppSave();ppBar()}
 function petNewDay(){const pe=PP.pet;if(!pe)return null;if(pe.fed)pe.hunger=0;else pe.hunger=(pe.hunger||0)+1;pe.fed=false;pe.petted=false;
   if(pe.hunger>=2){const msg=`${pe.name} сбежал${pe.type==='cat'||pe.type==='dog'?'':''}: его не кормили два дня подряд.`;PP.pet=null;return msg}
   stMax('petDays',PP.day-pe.since);return pe.hunger===1?`${pe.name} голодает со вчера! Покорми сегодня, иначе сбежит.`:null}
+const PET_HOME={cat:[442,121],parrot:[452,64],dog:[456,121],hamster:[456,121]},PET_RANGE={cat:[384,462],parrot:[386,462],dog:[378,464],hamster:[392,464]},PET_AX={cat:7,dog:7,parrot:4,hamster:5};
+function petStreetPos(){const pe=PP.pet;if(!pe)return[456,121];const h=PET_HOME[pe.type];return[PETST.sx==null?h[0]:PETST.sx,PETST.sy==null?h[1]:PETST.sy]}
+function petStreetStep(){const pe=PP.pet;if(!pe||PETST.chasing)return false;const t=QS.tick,[a,b]=PET_RANGE[pe.type],h=PET_HOME[pe.type];
+  if(PETST.sx==null||PETST.st!==pe.type){PETST.sx=h[0];PETST.sy=h[1];PETST.sdir=-1;PETST.srest=0;PETST.st=pe.type}
+  const busy=(PETST.pat!=null&&t-PETST.pat<60)||PETST.mode==='happy'||PETST.mode==='sad'||PETST.mode==='eat';
+  if(pe.type==='parrot'){const perch=PETST.srest>t&&PETST.sx>=406&&PETST.sx<=428,ty=perch?82:62+Math.sin(t/4)*4;PETST.sy+=(ty-PETST.sy)*.3;PETST.perch=perch&&Math.abs(PETST.sy-82)<1;if(busy||PETST.srest>t)return true}
+  else{PETST.sy=h[1];if(busy)return true;if(PETST.srest>t)return false}
+  const sp=pe.type==='dog'?1.8:pe.type==='hamster'?1:pe.type==='parrot'?1.5:1.1;PETST.sx+=PETST.sdir*sp;
+  if(PETST.sx<=a){PETST.sx=a;PETST.sdir=1}if(PETST.sx>=b){PETST.sx=b;PETST.sdir=-1}
+  if(Math.random()<.015){PETST.srest=t+rint(25,80);if(Math.random()<.5)PETST.sdir*=-1}return true}
+function pxEll(R,cx,cy,rx,ry,c){const n=Math.ceil(ry);for(let k=-n;k<=n;k++){const q=1-(k*k)/(ry*ry);if(q<0)continue;const w=Math.round(rx*Math.sqrt(q));R(Math.round(cx)-w,Math.round(cy)+k,w*2+1,1,c)}}
+function petHeartPx(R,x,y,c){c=c||'#e04a5a';R(x,y,2,1,c);R(x+3,y,2,1,c);R(x,y+1,5,1,c);R(x+1,y+2,3,1,c);R(x+2,y+3,1,1,c)}
+function drawPetMini(R,x,y,type,col,t,mode,left){const pa=PETST.pat!=null?t-PETST.pat:999;let dy=0,dx=0,m=mode,flip=!!left;
+  if(pa>=0&&pa<60){m='happy';if(type==='cat'){dx=pa%2;if(pa>30)m='sleep'}else if(type==='dog'){dy=-Math.round(Math.sin(pa/60*Math.PI)*12);flip=Math.floor(pa/2)%2===0}else if(type==='parrot'){dx=[0,1,2,1,0,-1,-2,-1][pa%8];dy=-(pa%4<2?1:0)}else dy=-Math.round(Math.abs(Math.sin(pa/7))*9)}
+  else if(m==='happy')dy=-[0,2,4,5,4,2,0,0][t%8];
+  const ax=PET_AX[type]||6,hy=y-(type==='parrot'?(m==='fly'?16:12):10),cx=x+ax;
+  const Rb=(xx,yy,w,h,c)=>R(xx+dx,yy+dy,w,h,c),Rd=flip?(xx,yy,w,h,c)=>Rb(2*cx-xx-w,yy,w,h,c):Rb;
+  drawPetSprite(Rd,x,y,type,col,Math.floor(t/2),m);
+  if(pa>=0&&pa<60){for(let k=0;k<3;k++){const q=(pa+k*20)%60;if(q<40)petHeartPx(R,cx+dx-2+(k-1)*6+Math.round(Math.sin(q/4)),hy+dy-5-Math.floor(q/3))}
+    if(type==='parrot'&&pa%12<8){const nx=cx+6,ny=hy-6-(pa%12);R(nx,ny,1,4,'#f4f0e4');R(nx-2,ny+3,2,2,'#f4f0e4');R(nx+1,ny,2,1,'#f4f0e4')}
+    if(type==='hamster'&&pa>20&&pa<44)for(let k=0;k<4;k++){const q=(pa-20+k*5)%24;R(cx+(k%2?q:-q)/2,hy+dy+Math.round(q*q/40)-4,1,1,'#e8d0a0')}
+    if(type==='cat'&&pa>30&&pa%10<6){R(cx+8,hy-4-(pa%10),1,1,'#f4f0e4');R(cx+10,hy-6-(pa%10),1,1,'#f4f0e4')}}
+  else if(m==='happy'){if(t%6<4){R(cx-8,hy+dy-1,1,1,'#fff8c0');R(cx+8,hy+dy-3,1,1,'#fff8c0');R(cx,hy+dy-6,1,1,'#fff8c0')}}
+  else if(m==='sad'){const kx=cx-4,ky=hy-8;R(kx,ky,9,3,'#8a8e96');R(kx+2,ky-1,5,1,'#a0a6ae');for(let k=0;k<3;k++){const q=(t+k*3)%7;R(kx+1+k*3,ky+3+q,1,1,'#7ab0e0')}}
+  else if(m==='sleep'&&t%24<16){const q=(t%24)/4;R(cx+6,hy-2-q,3,1,'#e0e0d0');R(cx+8,hy-1-q,1,1,'#e0e0d0');R(cx+6,hy-q,3,1,'#e0e0d0')}}
+function drawPetBig(cv,type,col,t,mode,pa,fed,gar){const W=cv.width,H=cv.height,X=cv.getContext('2d');X.imageSmoothingEnabled=false;X.setTransform(1,0,0,1,0,0);X.clearRect(0,0,W,H);const R=P(X),OL='#2a2018';
+  const pat=pa>=0&&pa<60;
+  // room
+  R(0,0,W,H,'#4a4232');for(let i=4;i<W;i+=8)R(i,0,1,H-18,'#524a38');R(0,H-18,W,2,'#2e2418');R(0,H-16,W,16,'#6a4a2e');R(0,H-11,W,1,'#5a3e26');R(0,H-5,W,1,'#5a3e26');for(let i=10;i<W;i+=22)R(i,H-16,1,5,'#5a3e26');
+  R(8,6,14,12,'#2e2418');R(9,7,12,10,'#8ab0d8');R(9,13,12,4,'#6a9a5a');R(14,7,1,10,'#2e2418');R(9,11,12,1,'#2e2418');
+  if(type==='hamster'){pxEll(R,78,34,15,15,'#8a8e96');pxEll(R,78,34,13,13,'#4a4232');for(let i=0;i<8;i++){const an=i/8*Math.PI*2+(pat?pa*.5:t*.05);R(Math.round(78+Math.cos(an)*9),Math.round(34+Math.sin(an)*9),1,1,'#8a8e96')}R(77,33,3,3,'#6a6e76');R(76,48,5,4,'#6a6e76');for(let i=0;i<24;i++)R((i*37)%W,H-14+(i*13)%12,2,1,i%2?'#e8d0a0':'#d8b880')}
+  else if(type==='parrot'){R(W/2-30,H-11,60,3,'#6a4a2a');R(W/2-30,H-11,60,1,'#8a6a3a');R(W/2+22,H-8,3,8,'#5a3e22');R(W/2-26,H-8,3,8,'#5a3e22');R(82,4,1,20,'#8a8270');pxEll(R,82,26,3,3,'#e0b64a');R(81,28,3,1,'#a8842a')}
+  else{const bc=type==='cat'?'#8a3a4a':'#3a5a8a';pxEll(R,W/2,H-6,26,5,shade(bc,.7));pxEll(R,W/2,H-7,24,4,bc);R(W/2-20,H-9,40,1,shade(bc,1.25));
+    if(type==='cat'){pxEll(R,84,H-8,4,4,'#4a7ac0');R(81,H-9,7,1,'#3a5a90');R(83,H-11,1,6,'#3a5a90');R(70,H-5,12,1,'#4a7ac0')}else{R(8,H-6,9,2,'#f0e8d8');pxEll(R,8,H-6,1.5,1.5,'#f0e8d8');pxEll(R,17,H-6,1.5,1.5,'#f0e8d8')}}
+  if(type!=='parrot'){R(W-14,H-8,12,5,'#c04a3a');R(W-14,H-8,12,1,'#e06a5a');if(fed)R(W-13,H-9,10,1,gar?'#d85a2a':'#a8784a')}
+  // transform
+  const tr={dx:0,dy:0,rot:0,flip:false,sx:1,sy:1};
+  if(pat){if(type==='cat'){if(pa>=14&&pa<26)tr.dx=pa%2?1:-1;else if(pa>=26&&pa<50){const q=(pa-26)/24;tr.rot=q*Math.PI*2;tr.dy=-Math.round(Math.sin(q*Math.PI)*6)}}
+    else if(type==='dog'){if(pa>=14){const q=(pa-14)/46;tr.dy=-Math.round(Math.sin(q*Math.PI)*16)}}
+    else if(type==='parrot'){if(pa>=14){tr.dx=[0,1,2,2,1,0,-1,-2,-2,-1][pa%10];tr.flip=Math.floor((pa-14)/8)%2===1;tr.dy=-(pa%4<2?1:0)}}
+    else if(pa>=34&&pa<52){const q=(pa-34)/18;tr.dy=-Math.round(Math.sin(q*Math.PI)*18);tr.rot=-q*Math.PI*2}}
+  else if(mode==='happy')tr.dy=-Math.round(Math.abs(Math.sin(t/2.2))*6);
+  else if(mode==='sad'){tr.sy=.92;tr.sx=1.05;tr.dy=2}
+  // shadow
+  const sh=Math.max(.3,1+tr.dy/30);pxEll(R,W/2+tr.dx,H-7+(type==='parrot'?-4:0),Math.round(15*sh),2,'rgba(0,0,0,.28)');
+  const off=drawPetBig.off||(drawPetBig.off=document.createElement('canvas'));off.width=64;off.height=56;const o=off.getContext('2d');o.clearRect(0,0,64,56);
+  petBigBody(P(o),type,col,t,mode,pa,gar);
+  X.save();X.translate(W/2+tr.dx,H-8-26+tr.dy-(type==='parrot'?4:0));X.rotate(tr.rot);X.scale(tr.flip?-tr.sx:tr.sx,tr.sy);X.drawImage(off,-32,-26);X.restore();
+  // fx
+  const cy=H-8-26+tr.dy,top=cy-16;
+  const txt=(s,y,c)=>{X.font='8px Tiny5, monospace';X.textAlign='center';const x0=W/2;X.fillStyle=OL;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([a,b])=>X.fillText(s,x0+a,y+b));X.fillStyle=c||'#fff0c8';X.fillText(s,x0,y)};
+  const heart=(x,y,c)=>{c=c||'#e04a5a';R(x,y,3,2,c);R(x+4,y,3,2,c);R(x,y+2,7,1,c);R(x+1,y+3,5,1,c);R(x+2,y+4,3,1,c);R(x+3,y+5,1,1,c);R(x+1,y,1,1,'#ff9aa8')};
+  if(pat){for(let k=0;k<4;k++){const q=(pa+k*15)%60;if(q<44)heart(W/2-22+k*13+Math.round(Math.sin(q/4)*2),top-Math.floor(q/2)+14)}
+    if(type==='cat'&&pa>=10&&pa<50)txt(pa<26?'мррр…':'мяу ♥',9,'#ffd0e0');
+    if(type==='dog'&&pa>=16&&pa<56){txt('ВЖЖЖЖ!',9,'#fff0a0');for(let k=0;k<3;k++)R(W/2-8+k*7,H-10-((pa+k*3)%6),1,3,'#f4f0e4')}
+    if(type==='parrot'&&pa>=10){const nm=((PP.pet&&PP.pet.name)||'Кеша').toUpperCase();X.font='8px Tiny5, monospace';if(X.measureText(nm+' ХОРОШИЙ!').width>W-6){txt(nm,9);txt('ХОРОШИЙ!',17)}else txt(nm+' ХОРОШИЙ!',9);
+      for(let k=0;k<3;k++){const q=(pa+k*7)%21,nx=W/2+22-k*20+Math.round(Math.sin(q/3)*3),ny=40-q;R(nx,ny,1,5,'#f4f0e4');R(nx-2,ny+4,2,2,'#f4f0e4');R(nx+1,ny,2,1,'#f4f0e4');R(nx+2,ny+1,1,1,'#f4f0e4')}}
+    if(type==='hamster'){if(pa>=18&&pa<34)txt('ХОМЯЧУ…',9,'#fff0a0');if(pa>=34&&pa<52){txt('ПФФ!',9,'#fff0a0');for(let k=0;k<10;k++){const q=pa-34,an=k/10*Math.PI*2;R(Math.round(W/2+Math.cos(an)*q*2.2),Math.round(cy-4+Math.sin(an)*q*1.6+q*q/30),2,1,k%2?'#e8d0a0':'#5a4a2a')}}}}
+  else if(mode==='happy'){for(let k=0;k<5;k++){const q=(t+k*5)%16;if(q<10){const sx=W/2-26+k*13,sy=top+18-q;R(sx,sy-1,1,3,'#fff8c0');R(sx-1,sy,3,1,'#fff8c0')}}}
+  else if(mode==='sad'){pxEll(R,W/2,7,13,4,'#6a6e76');pxEll(R,W/2-5,5,6,3,'#8a8e96');pxEll(R,W/2+5,6,7,3,'#8a8e96');for(let k=0;k<6;k++){const q=(t+k*4)%14;R(W/2-11+k*4,12+q,1,2,'#7ab0e0')}}
+  else if(mode==='sleep'){X.font='8px Tiny5, monospace';X.textAlign='left';for(let k=0;k<3;k++){const q=(t+k*8)%24;X.fillStyle='rgba(232,232,216,'+(1-q/24).toFixed(2)+')';X.fillText(k%2?'z':'Z',W/2+14+k*4,top+10-q)}}
+  else if(mode==='eat'&&t%6<3){R(W/2-2,cy+10,1,1,'#a8784a');R(W/2+3,cy+11,1,1,'#a8784a')}}
+function petBigBody(R,type,col,t,mode,pa,gar){const OL='#2a2018',d=shade(col,.72),l=shade(col,1.18),pat=pa>=0&&pa<60;
+  const part=f=>{[[-1,0],[1,0],[0,-1],[0,1]].forEach(([a,b])=>f((x,y,w,h)=>R(x+a,y+b,w,h,OL)));f(R)};const E=(r,cx,cy,rx,ry,c)=>pxEll(r,cx,cy,rx,ry,c);
+  const T=(r,ax,ay,b1,b2,by,c)=>{for(let y=ay;y<=by;y++){const f=(y-ay)/((by-ay)||1),a=Math.round(ax+(b1-ax)*f),b=Math.round(ax+(b2-ax)*f);r(Math.min(a,b),y,Math.abs(b-a)+1,1,c)}};
+  const happy=mode==='happy'||mode==='eat'||pat,sad=mode==='sad'&&!pat;
+  let est=mode==='sleep'||(type==='cat'&&pa>=14&&pa<60)?'closed':happy?'happy':sad?'sad':(t%48<2?'closed':'open');
+  const eye=(cx,cy,iris,s,sm)=>{if(est==='happy'){[[-3,1],[-2,0],[-1,-1],[0,-1],[1,-1],[2,0],[3,1]].forEach(([a,b])=>R(cx+a,cy+b,1,1,OL));return}
+    if(est==='closed'){[[-3,-1],[-2,0],[-1,1],[0,1],[1,1],[2,0],[3,-1]].forEach(([a,b])=>R(cx+a,cy+b,1,1,OL));return}
+    if(sm){E(R,cx,cy,2,2.5,'#15130f');R(cx-1,cy-2,1,1,'#ffffff');R(cx+1,cy+1,1,1,'#ffffff')}
+    else{E(R,cx,cy,3,4,'#15130f');E(R,cx,cy+1,2,2.2,iris);R(cx-1,cy,2,2,'#15130f');R(cx-2,cy-3,2,2,'#ffffff');R(cx+1,cy+2,1,1,'#ffffff')}
+    if(est==='sad'){const o=cx+3*s,i=cx-2*s;R(s<0?o:o-1,cy-(sm?4:6),2,1,OL);R(s<0?i-1:i,cy-(sm?5:7),2,1,OL);R(cx+(s<0?2:-2),cy+(sm?3:5),1,2,'#7ab0e0')}};
+  const blush=(y,a,b)=>{R(a,y,3,1,'rgba(240,110,130,.75)');R(b,y,3,1,'rgba(240,110,130,.75)')};
+  if(type==='cat'){const belly='#f4ead8',sw=Math.round(Math.sin(t/5)*2),ey=sad?3:0;
+    part(r=>[[44,49],[48,47],[51,44],[52,40],[51,36],[50+sw,33]].forEach(([a,b])=>E(r,a,b,2.5,2.5,col)));E(R,50+sw,33,2,2,d);
+    part(r=>E(r,32,42,12,10,col));E(R,32,45,6,6,belly);R(21,40,3,1,d);R(20,43,3,1,d);R(41,40,3,1,d);R(42,43,3,1,d);
+    part(r=>{E(r,27,51,3,2,belly);E(r,37,51,3,2,belly)});R(26,52,1,1,'#c8b8a0');R(28,52,1,1,'#c8b8a0');R(36,52,1,1,'#c8b8a0');R(38,52,1,1,'#c8b8a0');
+    part(r=>{T(r,20,5+ey,18,27,15,col);T(r,44,5+ey,37,46,15,col)});T(R,21,8+ey,20,25,14,'#e8a0a8');T(R,43,8+ey,39,44,14,'#e8a0a8');
+    part(r=>{E(r,32,22,14,11,col);E(r,19,26,3,3,col);E(r,45,26,3,3,col)});R(29,12,1,4,d);R(32,11,1,5,d);R(35,12,1,4,d);if(gar){R(20,18,3,1,d);R(42,18,3,1,d);R(19,21,2,1,d);R(43,21,2,1,d)}
+    E(R,32,28,5,3,belly);eye(25,21,'#5ab04a',-1);eye(39,21,'#5ab04a',1);
+    if(gar&&est==='open'){R(21,17,9,4,col);R(35,17,9,4,col);R(22,20,7,1,OL);R(36,20,7,1,OL)}
+    R(31,26,3,1,'#e07a8a');R(32,27,1,1,'#e07a8a');
+    if(happy){R(31,29,3,2,'#c0404a');R(30,28,1,1,OL);R(34,28,1,1,OL)}else if(sad){R(30,30,1,1,OL);R(31,29,3,1,OL);R(34,30,1,1,OL)}else{R(30,29,1,1,OL);R(31,30,1,1,OL);R(32,29,1,1,OL);R(33,30,1,1,OL);R(34,29,1,1,OL)}
+    blush(25,20,41);R(12,27,5,1,'#f4f0e4');R(12,29,5,1,'#f4f0e4');R(47,27,5,1,'#f4f0e4');R(47,29,5,1,'#f4f0e4')}
+  else if(type==='dog'){const belly='#f0e0c0',prop=pat&&pa>=14,wag=sad?0:Math.round(Math.sin(t*(happy?1.6:.6))*3);
+    if(prop){if(t%2){E(R,48,36,8,1.5,'rgba(244,240,228,.55)');E(R,48,36,7,1,col)}else{E(R,48,36,1.5,8,'rgba(244,240,228,.55)');E(R,48,36,1,7,col)}pxEll(R,48,36,1,1,d)}
+    else if(sad)part(r=>E(r,45,48,2.5,3,col));else part(r=>E(r,46+wag,37,2.5,5,col));
+    part(r=>E(r,32,42,12,10,col));E(R,32,44,6,7,belly);
+    part(r=>{E(r,27,51,3,2,belly);E(r,37,51,3,2,belly)});R(26,52,1,1,'#c8b090');R(28,52,1,1,'#c8b090');R(36,52,1,1,'#c8b090');R(38,52,1,1,'#c8b090');
+    part(r=>E(r,32,21,13,11,col));E(R,38,19,4,4,d);R(23,14,2,1,l);R(38,14,2,1,l);
+    eye(26,20,'#7a4a22',-1);eye(38,20,'#7a4a22',1);
+    part(r=>E(r,32,28,6,3.5,belly));E(R,32,25.5,2,1.3,'#15130f');R(31,25,1,1,'#7a7a82');R(32,27,1,2,OL);
+    if(happy){R(29,29,3,1,OL);R(33,29,3,1,OL);R(31,30,3,4,'#e0607a');R(32,31,1,2,'#c04060')}else if(sad){R(29,30,3,1,OL);R(33,30,3,1,OL)}else{R(29,29,3,1,OL);R(33,29,3,1,OL)}
+    const eo=happy?-3:sad?4:0;part(r=>{E(r,19,21+eo,4,8,d);E(r,45,21+eo,4,8,d)});R(18,17+eo,2,6,shade(d,1.15));R(46,17+eo,2,6,shade(d,1.15));
+    R(23,32,19,2,'#c0302a');R(23,32,19,1,'#e04a3a');E(R,32,35,1.5,1.5,'#e0b64a');blush(24,21,41)}
+  else if(type==='parrot'){const cr=happy?4:0,wu=pat&&pa%4<2;
+    part(r=>{E(r,27,47,2.5,7,'#c0302a');E(r,31,48,2.5,7,'#2a6ab0')});
+    part(r=>{E(r,30,6-cr,1.5,4+cr/2,'#e0b64a');E(r,34,5-cr,1.5,5+cr/2,l);E(r,38,7-cr,1.5,4,'#e0b64a')});
+    part(r=>E(r,32,36,10,12,col));E(R,34,40,6,8,l);
+    R(29,48,2,4,'#8a8270');R(35,48,2,4,'#8a8270');R(27,52,5,1,'#8a8270');R(33,52,5,1,'#8a8270');
+    part(r=>E(r,wu?23:26,wu?30:36,5,9,d));R(wu?20:23,wu?33:39,5,1,shade(d,.8));R(wu?20:23,wu?36:42,5,1,shade(d,.8));R(wu?21:24,wu?39:45,4,1,'#2a6ab0');
+    part(r=>E(r,34,17,10,9,col));E(R,38,16,4,4,'#f4f0e4');eye(38,16,'#15130f',1,true);
+    part(r=>E(r,45,19,4,4,'#e0b64a'));R(46,22,3,2,'#e0b64a');R(48,22,1,3,'#b08a2a');R(42,21,4,2,'#6a5a3a');if(happy)R(43,23,3,1,'#e0607a');
+    R(35,21,3,1,'rgba(240,110,130,.8)')}
+  else{const belly='#fff4e0',pink='#f0a0a8',puff=pat?(pa>=14&&pa<34?Math.min(1,(pa-14)/12):pa>=34&&pa<40?1-(pa-34)/6:0):0;
+    part(r=>{E(r,21,17,4,4,col);E(r,43,17,4,4,col)});E(R,21,17,2,2,pink);E(R,43,17,2,2,pink);
+    part(r=>E(r,32,35,16,15,col));E(R,32,41,10,9,belly);R(31,21,2,4,d);R(28,22,1,3,d);R(35,22,1,3,d);
+    const cr=5+puff*6;part(r=>{E(r,20-puff*3,33,cr,cr*.8,belly);E(r,44+puff*3,33,cr,cr*.8,belly)});R(Math.round(17-puff*3),33,3,1,'rgba(240,110,130,.75)');R(Math.round(44+puff*3),33,3,1,'rgba(240,110,130,.75)');
+    eye(25,27,'#15130f',-1,true);eye(39,27,'#15130f',1,true);
+    R(31,31,3,2,pink);R(32,33,1,1,OL);R(31,34,1,1,OL);R(33,34,1,1,OL);if(happy&&!puff){R(31,35,3,2,'#ffffff');R(32,35,1,2,'#d8d0c0')}
+    part(r=>{E(r,28,42,1.5,1.5,pink);E(r,36,42,1.5,1.5,pink)});if(mode==='eat'||(pat&&pa<14)){part(r=>E(r,32,41,2,3,'#5a4a2a'));R(32,39,1,5,'#e8d0a0')}
+    part(r=>{E(r,24,51,4,2,pink);E(r,40,51,4,2,pink)})}
+  if(pa>=0&&pa<14){const hx=32+Math.round(Math.sin(pa*.9)*5),hy=type==='parrot'?6:type==='hamster'?18:9;part(r=>{E(r,hx,hy,6,3,'#f0c8a8');E(r,hx+8,hy-1,3,3,'#3a4a6a')});R(hx-3,hy+1,1,2,'#c89878');R(hx,hy+1,1,2,'#c89878');R(hx+3,hy+1,1,2,'#c89878')}}
 function drawPetSprite(R,x,y,type,col,f,mode){const d=shade(col,.72),l=shade(col,1.2),OL='#15130f';
   if(type==='cat'){if(mode==='sleep'){R(x,y-4,11,4,col);R(x+1,y-5,8,1,l);R(x+8,y-6,4,4,col);R(x+8,y-7,1,1,col);R(x+11,y-7,1,1,col);R(x-2,y-2,3,2,col);R(x+9,y-5,2,1,d);return}
     const b=f%2;R(x,y-5,10,4,col);R(x,y-5,10,1,l);R(x+8,y-8,5,5,col);R(x+8,y-9,1,1,col);R(x+12,y-9,1,1,col);R(x+10,y-7,1,1,mode==='sad'?d:'#3a8a3a');R(x+12,y-7,1,1,mode==='sad'?d:'#3a8a3a');R(x+11,y-5,1,1,'#e08a8a');
     R(x+1+b,y-1,1,1,d);R(x+7-b,y-1,1,1,d);R(x-2,y-7+(mode==='happy'?-1:0),1,3,col);R(x-3,y-8+(mode==='happy'?-1:0),1,2,col);if(petIsGarfield()){R(x+2,y-5,1,3,'#8a4a10');R(x+5,y-5,1,3,'#8a4a10');R(x+9,y-8,1,1,'#8a4a10')}}
   else if(type==='dog'){const b=f%2;R(x,y-6,11,4,col);R(x,y-6,11,1,l);R(x+9,y-9,5,5,col);R(x+13,y-7,2,2,d);R(x+14,y-7,1,1,OL);R(x+11,y-8,1,1,OL);R(x+9,y-9,2,3,d);R(x+1+b,y-2,2,2,d);R(x+7-b,y-2,2,2,d);R(x-2,y-7-(mode==='happy'?(f%2):0),2,1,col);if(mode==='sleep'){R(x+11,y-8,1,1,col)}}
+  else if(type==='parrot'&&mode==='fly'){const up=f%2===0;R(x-3,y-8,4,2,'#c0302a');R(x-4,y-7,2,1,'#2a6ab0');R(x,y-10,8,4,col);R(x,y-10,8,1,l);R(x+7,y-13,4,4,col);R(x+8,y-12,1,1,OL);R(x+11,y-12,2,2,'#e0b64a');if(up){R(x+2,y-15,4,5,d);R(x+1,y-16,3,2,d)}else{R(x+2,y-7,4,4,d);R(x+1,y-4,3,2,d)}}
   else if(type==='parrot'){const b=mode==='happy'?(f%2):0;R(x+2,y-8-b,5,6,col);R(x+2,y-8-b,5,1,l);R(x+3,y-11-b,4,4,col);R(x+5,y-10-b,1,1,OL);R(x+7,y-10-b,2,2,'#e0b64a');R(x+1,y-6-b,2,4,'#2a6ab0');R(x+3,y-2,4,3,'#c0302a');R(x+3,y,1,1,'#6a6254');R(x+5,y,1,1,'#6a6254')}
   else{R(x,y-4,8,4,col);R(x,y-4,8,1,l);R(x+6,y-6,3,3,col);R(x+6,y-7,1,1,'#e0a0a0');R(x+8,y-5,1,1,OL);R(x+9,y-4,1,1,'#e08a8a');R(x+1,y-1,1,1,d);R(x+5,y-1,1,1,d);if(mode==='happy'&&f%2)R(x+2,y-5,3,1,'#fff0d0')}}
 function drawPetOffice(R){const pe=PP.pet;if(!pe)return;const t=QS.tick;
   if(PETST.until&&t>PETST.until){PETST.mode='walk';PETST.until=0}
   if(PETST.mode==='walk'&&t%60===0&&Math.random()<.3){PETST.mode='sleep';PETST.until=t+rint(60,140)}
-  if(PETST.mode==='walk'){PETST.x+=PETST.dir*.5;if(PETST.x>74||PETST.x<22)PETST.dir*=-1}
+  if(PETST.mode==='walk'){PETST.x+=PETST.dir*.25;if(PETST.x>74||PETST.x<22)PETST.dir*=-1}
   const px=Math.round(PETST.mode==='eat'?26:PETST.x),py=pe.type==='parrot'?58:95;const fr=Math.floor(t/3);
   if(pe.type!=='parrot'){R(20,93,9,3,'#6a3a2a');R(21,93,7,1,pe.fed?(petIsGarfield()?'#d85a2a':'#a8784a'):'#3a2a1c')}
   if(pe.type==='parrot'){R(28,58,14,1,'#5a3a1e');R(34,58,1,26,'#5a3a1e')}
-  const Rm=PETST.dir<0&&pe.type!=='parrot'?(x0,y0,w,h,c)=>R(2*px+12-x0-w,y0,w,h,c):R;drawPetSprite(Rm,pe.type==='parrot'?30:px,py,pe.type,petCol(),fr,PETST.mode);
-  if(PETST.mode==='sleep'&&t%24<12){R(px+12,py-12-(t%24)/6,2,1,'#e0e0d0');R(px+13,py-13-(t%24)/6,1,1,'#e0e0d0')}
-  if(PETST.heart&&t-PETST.heart<24){const hy=py-14-Math.floor((t-PETST.heart)/3);R(px+4,hy,2,1,'#e04a5a');R(px+7,hy,2,1,'#e04a5a');R(px+4,hy+1,5,1,'#e04a5a');R(px+5,hy+2,3,1,'#e04a5a');R(px+6,hy+3,1,1,'#e04a5a')}
+  drawPetMini(R,pe.type==='parrot'?30:px,py,pe.type,petCol(),t,PETST.mode,PETST.dir<0&&pe.type!=='parrot');
   if(pe.hunger>=1&&!pe.fed&&t%20<10){R(px+4,py-16,1,4,'#e04a3a');R(px+4,py-11,1,1,'#e04a3a')}}
-function drawPetStreet(R){const pe=PP.pet;if(!pe||PETST.chasing)return;const f=Math.floor(QS.tick/4),m=PETST.mode==='walk'?'idle':PETST.mode;
-  if(pe.type==='cat')drawPetSprite(R,442,31,'cat',petCol(),f,m==='idle'?'sleep':m);
-  else if(pe.type==='parrot')drawPetSprite(R,452,31,'parrot',petCol(),f,m);
-  else drawPetSprite(R,456,121,pe.type,petCol(),f,m)}
+function drawPetStreet(R){const pe=PP.pet;if(!pe||PETST.chasing)return;const t=QS.tick,[sx,sy]=petStreetPos(),rest=PETST.srest>t;
+  let m=PETST.mode==='walk'||PETST.mode==='sleep'?(rest?'idle':'walk'):PETST.mode;if(pe.type==='cat'&&m==='idle')m='sleep';if(pe.type==='parrot'&&!PETST.perch&&m!=='sad')m=m==='happy'?'fly':'fly';
+  drawPetMini(R,Math.round(sx),Math.round(sy),pe.type,petCol(),t,m,PETST.sdir<0)}
 
 /* ---------- boss ---------- */
 function bossLook(){return{boss:true,special:true,g:'m',old:false,skin:'#f0c8a8',hair:'#d8d4c8',style:'short',hat:'top',hatc:'#15130f',coat:'#3a1a2e',shirt:'#f4f0e4',tie:'#e0b64a',beard:false,stache:true,glasses:false,gl:'mono',brow:1,fs:.777}}
@@ -3731,8 +3886,8 @@ function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const 
   else if(tab==='avatar'){const a=avState();body=`<div class="pp-avwrap"><div class="pp-avprev"><canvas id="ppAvBig" width="64" height="64"></canvas><canvas id="ppAvStreet" width="40" height="40"></canvas><small>Так выглядит инспектор, который приходит в конце дня. Новые вещи открываются за достижения.</small></div><div class="pp-avopts">${Object.entries(AV_OPT).filter(([k])=>!(a.g==='f'&&(k==='beard'||k==='stache'))).map(([k,opts])=>`<div class="pp-avrow"><span>${AV_LABEL[k]}</span><div>${opts.map(([v,n])=>{const lock=avLock(k,v);const sw=['skin','hair','coat'].includes(k)?`<i class="sw" style="background:${v}"></i>`:'';return`<button class="pp-chip${String(a[k])===String(v)?' on':''}" data-av="${k}" data-v="${esc(String(v))}" ${lock?'disabled title="Откроется за достижение «'+esc(lock)+'»"':''}>${sw}${lock?'🔒 ':''}${esc(n)}</button>`}).join('')}</div></div>`).join('')}</div></div>`}
   else if(tab==='pet'){const pe=PP.pet;
     if(!pe)body=`<p style="text-align:center">Питомец живёт в офисе и у будки, радуется верным ответам и расстраивается из-за ошибок. Корм списывается в Income Statement как <b>Pet food</b>. Если не кормить два дня подряд, питомец сбежит. Покормленный и поглаженный питомец иногда приносит находку в Other income.</p>${PP.petLeft?`<p class="mono" style="text-align:center">${esc(PP.petLeft)}</p>`:''}
-      <div class="pp-shop">${Object.entries(PETS).map(([k,v])=>`<div class="pp-item"><canvas class="pp-petc" width="24" height="16" data-pet="${k}"></canvas><b>${v.n}</b><small>Корм $${v.food} в день</small><button class="pp-btn" data-adopt="${k}" ${PP.cash<v.price?'disabled':''}>Завести · $${v.price}</button></div>`).join('')}</div>`;
-    else{const I=petInfo();body=`<div class="pp-petbox"><canvas id="ppPetBig" width="24" height="16"></canvas><div><p><b>${esc(pe.name)}</b> · ${I.n.toLowerCase()} · с нами ${PP.day-pe.since} дн.</p><p class="mono">${pe.fed?'Сегодня сыт.':pe.hunger>=1?'Голодает со вчера! Покорми, иначе сбежит.':'Ещё не ел сегодня.'} ${pe.petted?'Поглажен.':''}</p>
+      <div class="pp-shop">${Object.entries(PETS).map(([k,v])=>`<div class="pp-item"><canvas class="pp-petc" width="96" height="64" data-pet="${k}"></canvas><b>${v.n}</b><small>Корм $${v.food} в день</small><button class="pp-btn" data-adopt="${k}" ${PP.cash<v.price?'disabled':''}>Завести · $${v.price}</button></div>`).join('')}</div>`;
+    else{const I=petInfo();body=`<div class="pp-petbox"><canvas id="ppPetBig" width="96" height="64"></canvas><div><p><b>${esc(pe.name)}</b> · ${I.n.toLowerCase()} · с нами ${PP.day-pe.since} дн.</p><p class="mono">${pe.fed?'Сегодня сыт.':pe.hunger>=1?'Голодает со вчера! Покорми, иначе сбежит.':'Ещё не ел сегодня.'} ${pe.petted?'Поглажен.':''}</p>
       <label class="pp-tog">Имя: <input type="text" id="ppPetName" maxlength="12" value="${esc(pe.name)}" style="width:14ch;font:inherit"></label>
       <div class="row"><button class="pp-btn" id="ppPetFeed" ${pe.fed||PP.cash<I.food?'disabled':''}>Покормить · $${I.food}</button><button class="pp-btn" id="ppPetPet">Погладить</button><button class="pp-btn red" id="ppPetBye">Отдать в добрые руки</button></div></div></div>`}}
   const keepAv=(document.querySelector('#ppOv .pp-avopts')||{}).scrollTop||0;ppOverlay(`<div class="shop-top"><h3>ПРОФИЛЬ</h3><button class="pp-btn horn" id="ppProfBack">${mid?'К окошку':'Назад'}</button></div><div class="pp-tabs">${tabs.map(([k,n])=>`<button class="pp-chip${k===tab?' on':''}" data-ptab="${k}">${esc(n)}</button>`).join('')}</div>${body}`,'prof');{const ao=document.querySelector('#ppOv .pp-avopts');if(ao&&tab==='avatar')ao.scrollTop=keepAv}
@@ -3741,9 +3896,9 @@ function ppProfile(tab){tab=tab||ppProfile.tab||'album';ppProfile.tab=tab;const 
   $('#ppOv').querySelectorAll('[data-alb]').forEach(c=>{const e=META.album[c.dataset.alb];if(e)drawFace(e.L,c,{win:PP.win,clean:1})});
   if(tab==='avatar'){const upd=()=>{const L=inspLook();drawFace(L,$('#ppAvBig'),{win:PP.win,clean:1});const sc=$('#ppAvStreet'),sx=sc.getContext('2d');sx.clearRect(0,0,40,40);sx.fillStyle='#34322a';sx.fillRect(0,0,40,40);drawPerson(P(sx),13,6,L,0,false);avMini()};upd();ppProfile.upd=upd;
     $('#ppOv').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>{const k=b.dataset.av;let v=b.dataset.v;if(k==='face')v=+v;if(v==='true')v=true;if(v==='false')v=false;META.av=Object.assign(avState(),{[k]:v});metaSave();inspLook();SFX.click();ppProfile('avatar');qsDraw()})}
-  if(tab==='pet'){$('#ppOv').querySelectorAll('[data-pet]').forEach(c=>{const x=c.getContext('2d');drawPetSprite(P(x),6,15,c.dataset.pet,PETS[c.dataset.pet].col,0,'idle')});
-    $('#ppOv').querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{const k=b.dataset.adopt,v=PETS[k];if(PP.cash<v.price)return;PP.cash-=v.price;PP.pending.supplies=(PP.pending.supplies||0)+v.price;PP.pet={type:k,name:v.def,col:v.col,fed:false,hunger:0,since:PP.day,petted:false};PP.petLeft=null;stMax('pet',1);ppSave();SFX.buy();petSound('good');achCheck();ppBar();drawOffice();ppProfile('pet')});
-    if(PP.pet){const draw=()=>{const c=$('#ppPetBig');if(!c)return;const x=c.getContext('2d');x.clearRect(0,0,24,16);drawPetSprite(P(x),6,15,PP.pet.type,petCol(),Math.floor(QS.tick/4),PETST.mode==='walk'?'idle':PETST.mode)};draw();ppProfile.petDraw=draw;
+  ppProfile.petDraw=null;if(tab==='pet'){ppProfile.petDraw=()=>{document.querySelectorAll('#ppOv canvas[data-pet]').forEach((c,i)=>drawPetBig(c,c.dataset.pet,PETS[c.dataset.pet].col,QS.tick+i*13,'idle',999,true,false));const c=$('#ppPetBig');if(c&&PP.pet)drawPetBig(c,PP.pet.type,petCol(),QS.tick,PETST.mode==='walk'?'idle':PETST.mode,PETST.pat!=null?QS.tick-PETST.pat:999,PP.pet.fed,petIsGarfield())};ppProfile.petDraw();
+    $('#ppOv').querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{const k=b.dataset.adopt,v=PETS[k];if(PP.cash<v.price)return;PP.cash-=v.price;PP.pending.supplies=(PP.pending.supplies||0)+v.price;PP.pet={type:k,name:v.def,col:v.col,fed:false,hunger:0,since:PP.day,petted:false};PP.petLeft=null;PETST.sx=null;if(!(PP.arrests||{}).petrage){PP.arrests=Object.assign({},PP.arrests||{},{petrage:PP.day});setTimeout(()=>{toast('Секретная анимация ареста!','«Питомец в ярости» уже в магазине с галочкой','#e05a4a');SFX.fanfare()},700)}stMax('pet',1);ppSave();SFX.buy();petSound('good');achCheck();ppBar();drawOffice();ppProfile('pet')});
+    if(PP.pet){
       const ni=$('#ppPetName');ni.onkeydown=e=>e.stopPropagation();ni.oninput=()=>{PP.pet.name=ni.value.trim().slice(0,12)||petInfo().def;ppSave();ppBar();if(petIsGarfield())eggFound('garfield')};
       $('#ppPetFeed').onclick=()=>{petFeed();ppProfile('pet')};$('#ppPetPet').onclick=()=>{petPet();ppProfile('pet')};$('#ppPetBye').onclick=e=>{const bt=e.currentTarget;if(!bt.dataset.sure){bt.dataset.sure=1;bt.textContent='Точно? Нажми ещё раз';return}PP.petLeft=`${PP.pet.name} теперь живёт у бабушки Нины. Всё хорошо.`;PP.pet=null;ppSave();ppBar();drawOffice();ppProfile('pet')}}}}
 function drawBoothClerk(R){if(QS.clerkOut)return;const L=avatarLook(),s=L.skin,H=L.hair,x=409,y=65;
