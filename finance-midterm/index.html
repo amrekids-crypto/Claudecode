@@ -3050,13 +3050,13 @@ function kill(p,color){p.run=false;p.moving=false;p.lying=true;p.tx=p.x;p.ty=p.y
 function popText(text,x,y,c,size){QS.actors.push({t:'txt',text,x,y,c,size:size||14,ttl:16,rise:1})}
 function shakePP(){const pp=$('#pp');pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake')}
 const tick=fn=>until(fn,9000);const tickL=fn=>until(fn,24000);
-const MOB={n:'mob',title:'Самосуд очереди',line:'Очередь решила сама разобраться с нарушителем!',async run(p){p.panic=false;p.sp=0;p.tx=p.x;p.run=false;
+const MOB={n:'mob',title:'Самосуд очереди',line:'Очередь решила сама разобраться с нарушителем!',async run(p){p.panic=false;{const lo=-QS.OX+14,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-40,360)),cur=p.x<p.tx-1?1:p.x>p.tx+1?-1:(p.faceL||p.dir<0?-1:1);let d=cur;p.tx=d<0?lo:hi;p.run=true;p.sp=2.6;p.faceL=d<0}
   let crew=QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying),temp=false;
   if(crew.length<2){temp=true;crew=[0,1,2,3].map(i=>{const L=i%2===0,q={look:newLook(),x:L?-QS.OX-20-i*14:QS.W-QS.OX+10+i*14,y:110,tx:0,ty:110,state:'x',sp:3,side:L?-1:1};QS.people.push(q);return q});ppTalk('Бюро','С обеих сторон улицы бегут разъярённые прохожие!')}
-  crew=crew.slice(0,6);p.sp=1.4;ppTalk('Очередь','Держи его! Мы тут час стоим, а он мухлюет!');popText('ДЕРЖИ ЕГО!',352,70,'#ffe060',14);
+  crew=crew.slice(0,6);ppTalk('Очередь','Держи его! Мы тут час стоим, а он мухлюет!');popText('ДЕРЖИ ЕГО!',352,70,'#ffe060',14);
   crew.forEach((q,i)=>{q.state='x';q.ox=(i%2?1:-1)*(10+Math.floor(i/2)*9)+rint(-3,3);q.oy=rint(-7,7);q.run=true});
-  await tick(()=>{crew.forEach(q=>{q.tx=p.x+q.ox;q.ty=Math.max(96,Math.min(124,p.y+q.oy));q.sp=Math.max(3.2,Math.abs(q.tx-q.x)/18)});return crew.every(q=>Math.abs(q.x-q.tx)<4&&Math.abs(q.y-q.ty)<3)});
-  p.sp=0;p.tx=p.x;crew.forEach(q=>{q.run=false;q.dir=q.x<p.x?1:-1;q.faceL=q.x>p.x});
+  await tick(()=>{crew.forEach(q=>{q.tx=p.x+q.ox;q.ty=Math.max(96,Math.min(124,p.y+q.oy));q.sp=Math.max(3.6,Math.abs(q.tx-q.x)/18)});return crew.every(q=>Math.abs(q.x-q.tx)<4&&Math.abs(q.y-q.ty)<3)});
+  p.sp=0;p.tx=p.x;p.run=false;crew.forEach(q=>{q.run=false;q.dir=q.x<p.x?1:-1;q.faceL=q.x>p.x});
   const words=['БАМ!','ПОЛУЧАЙ!','ХРЯСЬ!','ЗА ОЧЕРЕДЬ!','БУМ!','ШМЯК!'];
   for(let i=0;i<14;i++){const q=pick(crew);const d=Math.sign(p.x-q.x)||1;q.x+=d*3;setTimeout(()=>{q.x-=d*3},120);q.jy=-2;setTimeout(()=>{q.jy=0},140);
     QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-5,5)),y:Math.round(p.y+rint(6,22)),ttl:4,c:i>5?'#a3201a':'#f3e6a0'});sNoise(.07,.3,rint(500,900));
