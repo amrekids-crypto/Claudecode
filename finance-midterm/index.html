@@ -2305,6 +2305,8 @@ function qsDraw(cv,ov){
   R(446,64,26,60,'#1c1a16');if(QS.door){R(448,66,22,58,'#0c0b09');R(450,70,18,54,'#4a3a22');R(450,70,18,2,'#6a5432')}else{R(448,66,22,58,'#2a2820');R(466,92,2,4,'#c9a24a')}
   R(426,44,24,10,'#23211a');R(427,45,22,8,'#8a2a22');R(435,46,6,6,'#e0b64a');
   R(470,6,2,26,'#6a6254');R(472,6,12,8,'#8a2a22');R(472,9,12,2,'#e0b64a');
+  if(!cv&&QS.boothDmg){const H='#15130f',D='#2a2620';R(452,40,10,8,H);R(454,42,6,4,'#3a342c');for(const [a,b,c,d] of [[450,48,456,60],[456,60,452,70],[462,44,470,52],[470,52,468,60],[440,50,436,58]])qsLine(R,a,b,c,d,D);R(410,60,2,2,H);R(424,62,3,2,H);R(430,66,2,3,H);qsLine(R,406,60,414,70,'rgba(20,18,15,.7)');qsLine(R,428,60,420,72,'rgba(20,18,15,.7)');R(470,30,3,4,H);R(474,76,6,5,H);R(475,77,4,3,'#3a342c');for(let i=0;i<6;i++)R(472+i*2,82+i%2,1,1,D)}
+  (QS.holes||[]).forEach(h=>{const X=h.x,Y=h.y;R(X-11,Y,22,4,'#15110e');R(X-9,Y-1,18,1,'#2a2420');R(X-7,Y+4,14,1,'#2a2420');R(X-13,Y+1,2,2,'#4a4238');R(X+11,Y+2,3,1,'#4a4238');R(X-15,Y-2,2,1,'#5a5046');R(X+14,Y-1,2,1,'#5a5046');R(X-3,Y+1,5,1,'#0c0a08')});
   if(!cv)drawPetStreet(R);
   if(QS.crater){x.globalAlpha=fa(QS.crater);const cx=QS.crater.x,cy=QS.crater.y;for(let k=-6;k<=6;k++){const w=Math.round(34*Math.sqrt(1-(k/7)*(k/7)));R(cx-w,cy+k,w*2,1,k<-3?'#5a5046':k<0?'#2a2420':'#15110e')}R(cx-26,cy-1,52,2,'#0c0a08');for(let i=0;i<5;i++)R(cx-20+i*9,cy+1,3,1,QS.tick%(6+i)<3?'#e05a1a':'#8a2a10');R(cx-40,cy+5,80,1,'rgba(0,0,0,.25)');x.globalAlpha=1}
   drawStreetDecals(x,R);
@@ -2770,7 +2772,7 @@ function ppShop(prev){
   $('#ppShopBack').onclick=()=>{SFX.click();ppDayIntro()};
 }
 function ppStartDay(){
-  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.debris=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;const pp0=JSON.parse(JSON.stringify(PP));
+  ppCloseOv();SFX.bell();QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.holes=[];QS.boothDmg=0;QS.debris=[];QS.soot=false;FACE.tv=null;const n=ppCosts().n;const pp0=JSON.parse(JSON.stringify(PP));
   PD={_pp0:pp0,deduct:0,tasks:makeTasks(n,PP.event),idx:-1,correct:0,wrong:0,hints:0,fees:0,min:360,state:'idle',cur:null,hinted:false};
   const hr=new Date().getHours();if(hr<5&&PD.tasks.length>2){const t=PD.tasks[rint(1,PD.tasks.length-1)];t.look=ghostLook();t.role='Призрак прошлого квартала'}
   if(PP.day===42&&PD.tasks[0]){PD.tasks[0].look=deepLook();PD.tasks[0].role='Глубокомысленный'}
@@ -3110,10 +3112,18 @@ const ARRESTS=[
  {n:'svo',title:'Специальная операция',desc:'Окошко ловит помехи, Путин объявляет специальную операцию против нарушителя, а потом лично проезжает по нему на огромном танке.',price:45,line:'Внимание! Экстренное обращение…',async run(p){p.sp=1.2;
    await tvOn('putin');tvSay('Владимир Путин','Уважаемые граждане. Ситуация с отчётностью у этого гражданина стала нетерпимой.');await sleep(2500);
    tvSay('Владимир Путин','Мною принято решение о проведении специальной военной операции. Цель: дебухгалтеризация нарушителя.');await sleep(2800);await tvOff();
-   const tk={t:'tank',x:-QS.OX-120,y:Math.round(p.y+27-40),wave:true};QS.actors.push(tk);const eng=()=>{sMuf(48,1.2,'sawtooth',.08,52,0,250);sNoise(1.2,.08,300,40)};eng();ppTalk('Бюро','По улице с грохотом едет огромный танк…');p.sp=1.6;p.tx=QS.W-QS.OX+40;p.faceL=false;
-   let k=0,hit=false,t0=Date.now(),lt=t0;const squash=()=>{hit=true;p.flat=true;kill(p);shakePP();sNoise(.4,.5,500);popText('ХРУСТЬ!',Math.round(p.x+6),Math.round(p.y),'#ffe060',18);tk.y-=3;setTimeout(()=>tk.y+=3,300);ppTalk('Владимир Путин','Цели операции достигнуты.')};
-   await until(()=>{k++;const now=Date.now(),dt=Math.min(.25,(now-lt)/1000);lt=now;tk.x+=Math.min(300,120+(now-t0)*.12)*dt;if(k%14===0)eng();if(k%2===0)QS.actors.push({t:'smoke',x:tk.x+rint(0,10),y:tk.y+34+rint(0,4),life:1});if(!hit&&k===18){tk.fire=true;ppGunshot();sNoise(.8,.5,600);popText('БАХ!',Math.round(tk.x+120),Math.round(tk.y+6),'#ffe060',14);setTimeout(()=>tk.fire=false,160)}
-     if(!hit&&tk.x+96>=p.x)squash();return hit&&tk.x>=p.x+30},25000);if(!hit){tk.x=p.x-96;squash();await sleep(600)}
+   const tk={t:'tank',x:-QS.OX-120,y:Math.round(p.y+27-40),wave:true};QS.actors.push(tk);const eng=()=>{sMuf(48,1.2,'sawtooth',.08,52,0,250);sNoise(1.2,.08,300,40)};eng();ppTalk('Бюро','По улице с грохотом едет огромный танк…');
+   p.run=true;p.sp=2.4;p.faceL=false;const bx0=p.x;let dir=1;const dodge=()=>{dir*=-1;p.tx=Math.max(-QS.OX+10,Math.min(QS.W-QS.OX-40,bx0+dir*rint(30,55)));p.faceL=p.tx<p.x};dodge();
+   let lt=Date.now(),k=0;const stopX=()=>p.x-230;await tickL(()=>{k++;const now=Date.now(),dt=Math.min(.25,(now-lt)/1000);lt=now;if(tk.x<stopX())tk.x=Math.min(stopX(),tk.x+220*dt);if(k%14===0)eng();if(k%3===0)QS.actors.push({t:'smoke',x:tk.x+rint(0,10),y:tk.y+34+rint(0,4),life:1});if(Math.abs(p.x-p.tx)<2)dodge();return tk.x>=stopX()-2});
+   ppTalk(PD.cur.role,'Не стреляйте!! А-а-а!');
+   const shoot=async(tx,ty,what)=>{tk.fire=true;ppGunshot();sNoise(.6,.45,700);QS.fx.push({t:'line',x1:Math.round(tk.x+118),y1:Math.round(tk.y+8),x2:Math.round(tx),y2:Math.round(ty),ttl:3});popText('БАХ!',Math.round(tk.x+118),Math.round(tk.y+2),'#ffe060',14);setTimeout(()=>tk.fire=false,160);
+     await sleep(90);QS.flash=1;shakePP();sNoise(.5,.4,1200,150);for(let i=0;i<18;i++)QS.fx.push({t:'spark',x:Math.round(tx+rint(-10,10)),y:Math.round(ty+rint(-8,4)),ttl:4+i%5,c:i%3?'#ff8a20':'#8a8278'});for(let i=0;i<5;i++)QS.actors.push({t:'smoke',x:tx+rint(-6,6),y:ty-rint(0,8),life:1});
+     if(what==='road'){QS.holes=QS.holes||[];QS.holes.push({x:Math.round(tx),y:Math.round(ty)});popText('БУМ!',Math.round(tx),Math.round(ty-12),'#ffb040',14)}else if(what==='booth'){QS.boothDmg=(QS.boothDmg||0)+1;popText('ХРЯСЬ!',Math.round(tx),Math.round(ty-8),'#ffb040',14);ppTalk('Бюро','Снаряд попал в будку! Стена треснула.')}};
+   const run=async ms=>{const t0=Date.now();await until(()=>{if(Math.abs(p.x-p.tx)<2)dodge();return Date.now()-t0>ms},ms+500)};
+   await run(900);await shoot(p.x+(dir>0?-22:28),p.y+30,'road');await run(1100);await shoot(452,64,'booth');await run(1000);
+   await shoot(p.x+6,p.y+18,'hit');p.run=false;p.sp=0;p.tx=p.x;p.lying=true;p.moving=false;QS.decals.push({x:Math.round(p.x),y:Math.round(p.y)});popText('ПОПАЛ!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',16);ppTalk('Владимир Путин','Цель поражена. Завершаем.');await sleep(900);
+   let hit=false;lt=Date.now();k=0;const squash=()=>{hit=true;p.flat=true;kill(p);shakePP();sNoise(.4,.5,500);popText('ХРУСТЬ!',Math.round(p.x+6),Math.round(p.y),'#ffe060',18);tk.y-=3;setTimeout(()=>tk.y+=3,300);ppTalk('Владимир Путин','Цели операции достигнуты.')};
+   await tickL(()=>{k++;const now=Date.now(),dt=Math.min(.25,(now-lt)/1000);lt=now;tk.x+=180*dt;if(k%14===0)eng();if(k%2===0)QS.actors.push({t:'smoke',x:tk.x+rint(0,10),y:tk.y+34+rint(0,4),life:1});if(!hit&&tk.x+96>=p.x)squash();return hit&&tk.x>=p.x+30});if(!hit){tk.x=p.x-96;squash();await sleep(600)}
    ppTalk('Бюро','Танк невозмутимо едет дальше.');let lt2=Date.now();await tickL(()=>{const now=Date.now(),dt=Math.min(.25,(now-lt2)/1000);lt2=now;tk.x+=260*dt;if(QS.tick%14===0)eng();if(QS.tick%2===0)QS.actors.push({t:'smoke',x:tk.x+rint(0,10),y:tk.y+34+rint(0,4),life:1});return tk.x>QS.W-QS.OX+20});QS.actors=QS.actors.filter(a=>a!==tk);ppTalk('Бюро','Танк скрылся за поворотом.')}},
  {n:'hell',title:'Врата ада',desc:'Асфальт трескается, из разлома бьёт пламя, чертёнок с вилами утаскивает нарушителя прямо в ад.',price:30,line:'Земля под нарушителем дрожит…',async run(p){p.sp=0;p.tx=p.x;p.run=false;
    const gx=Math.round(p.x+6),gy=Math.round(p.y+27);sMuf(40,2.5,'sawtooth',.08,30,0,200);sNoise(2.5,.2,300);shakePP();const cr={t:'crack',seg:[]};QS.actors.push(cr);popText('?!',gx,gy-32,'#ffe060',14);
@@ -3568,7 +3578,7 @@ document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!ta
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
 $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
-  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
+  QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.holes=[];QS.boothDmg=0;QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();qsDraw()};
 /* long press on "Начать игру заново" reveals full wipe */
