@@ -1935,7 +1935,7 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['ava
     shape:fm?pk(['oval','heart','oval']):pk(['square','oval']),age:rnd()<.7?'y':'m',build:fm?'thin':pk(['normal','wide']),cheek:fm?'normal':'hollow',chin:!fm,
     eye:fm?'big':'normal',eyeY:0,eyeGap:0,brow:fm?'arch':pk(['flat','thick']),nose:'small',mouth:fm?'full':'normal',mood:pk(['neutral','smile','smile']),look:0,
     iris:pk(['#3a6a9a','#4a7a5a','#6a4228','#5a7a90','#2a2420']),blush:fm,stubble:!fm&&rnd()<.35,hairline:0,long:fm&&!L.hat&&rnd()<.75,bang:fm&&rnd()<.5,quiff:!fm&&rnd()<.6});
-    L.stache=false;L.beard=!fm&&rnd()<.15;L.glasses=rnd()<.12;if(['#8a8a82','#e0d8c8','#d8d4c8'].includes(L.hair))L.hair=pk(['#1f1812','#3f2a1a','#6a4526','#c89a4a','#a8402a'])}
+    if(!L.avatar){L.stache=false;L.beard=!fm&&rnd()<.15;L.glasses=rnd()<.12;if(['#8a8a82','#e0d8c8','#d8d4c8'].includes(L.hair))L.hair=pk(['#1f1812','#3f2a1a','#6a4526','#c89a4a','#a8402a'])}}
   if(L.celeb==='floyd'){L.beard=true;L.stache=true;L.glasses=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'square',build:'wide',narrow:0,mood:'neutral',iris:'#2a1a10',neck:'crew',shirt:'#2a2a2e',clean:true,brow:'flat',nose:'wide',mouth:'full',eye:'normal',rsh:false,pend:false})}
   else if(L.celeb==='kirk'){L.beard=false;L.glasses=false;L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:true,age:'y',shape:'long',build:'thin',narrow:2,mood:'smile',iris:'#4a3a2a',neck:'collar',shirt:'#f0f0f0',clean:true,brow:'flat',hairline:0,part:'side',nose:'normal',mouth:'normal',eye:'small',eyeGap:0,rsh:false,pend:false,stubble:false})}
   else if(L.celeb==='hitler'){L.beard=false;L.glasses=false;L.stache=true;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'long',build:'thin',narrow:2,mood:'frown',iris:'#3a4a5a',neck:'collar',shirt:L.shirt,clean:true,brow:'angry',hairline:0,part:'side',nose:'normal',mouth:'small',eye:'normal',eyeGap:0,rsh:true,pend:false,stubble:false,bags:false,look:0})}
@@ -2594,7 +2594,7 @@ function makeTasks(n,ev){
    const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
-  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());return Object.assign(x,{look,role:roleFor(look)})});
+  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
