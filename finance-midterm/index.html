@@ -1,7 +1,7 @@
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Finance, Please">
 <meta name="theme-color" content="#23211a">
 <title>Finance Midterm Trainer</title>
@@ -36,7 +36,7 @@
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;margin:0}
 .wrap{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 .topin{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .brand{font-weight:700;letter-spacing:.01em;display:flex;align-items:baseline;gap:8px}
 .brand small{font-weight:500;color:var(--muted);font-size:12px;font-family:var(--mono)}
@@ -396,6 +396,10 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
   .shop-top h3{font-size:18px}
 }
 .pp-bar .grp2{display:flex;gap:6px;align-items:center}
+body.fsmode header.top,body.fsmode #tab-mix>.row:first-child{display:none!important}
+body.fsmode #tab-mix.section{padding-top:0!important}
+body.fsmode .pp{height:100dvh!important;min-height:0}
+body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-mini{font:inherit;font-size:13px;cursor:pointer;background:#7b7155;color:#1b1914;border:2px solid var(--pp-line);box-shadow:inset -2px -2px 0 #574f3a,inset 2px 2px 0 #a79a74;padding:3px 8px;text-transform:uppercase;letter-spacing:.03em;display:inline-flex;align-items:center;gap:6px;line-height:1.1}
 .pp-mini:hover{filter:brightness(1.08)}
 .pp-mini.hungry{background:#a3302a;color:#f4f0e4;box-shadow:inset -2px -2px 0 #6a1f1a,inset 2px 2px 0 #c86a5a;animation:ppBlink 1s steps(2) infinite}
@@ -526,7 +530,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
         <button class="pp-btn" id="ppSnd">Звук: вкл</button>
       </div>
     </div>
-    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp2"><button class="pp-mini" id="ppPetBtn" hidden></button></div></div>
+    <div class="pp-bar"><div class="grp"><span>Сбережения: <b id="ppCash">$0</b></span><span>Сегодня: <b id="ppToday">0/0</b></span><span>Штрафов: <b id="ppFines">0</b></span></div><div class="grp2"><button class="pp-mini" id="ppFull2" hidden title="Полный экран">⛶</button><button class="pp-mini" id="ppPetBtn" hidden></button></div></div>
     <div class="pp-ov" id="ppOv" hidden></div>
   </div>
 </section>
@@ -3619,11 +3623,11 @@ function drawActorExtra(R,a,x,y,t){
 {const d=document,el=d.documentElement,btn=$('#ppFull');
   const can=!!(d.fullscreenEnabled||d.webkitFullscreenEnabled),ios=/iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1&&!can),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
   const isFs=()=>!!(d.fullscreenElement||d.webkitFullscreenElement);
-  const upd=()=>{btn.textContent=isFs()?'✕ Свернуть':'⛶ Весь экран'};
-  btn.hidden=standalone||!(can||ios);upd();
-  btn.onclick=async()=>{if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
+  const b2=$('#ppFull2');const upd=()=>{const f=isFs();btn.textContent=f?'✕ Свернуть':'⛶ Весь экран';b2.textContent=f?'✕':'⛶';b2.title=f?'Выйти из полноэкранного режима':'Полный экран';document.body.classList.toggle('fsmode',f)};
+  btn.hidden=b2.hidden=standalone||!(can||ios);upd();
+  b2.onclick=()=>btn.onclick();btn.onclick=async()=>{if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
     try{if(isFs())await (d.exitFullscreen||d.webkitExitFullscreen).call(d);else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'})}catch(e){toast('Полный экран недоступен','Браузер не разрешил. Попробуй открыть сайт в Chrome или Safari.','#e05a4a')}};
-  d.addEventListener('fullscreenchange',()=>{upd();setTimeout(()=>{try{qsResize();qsDraw()}catch(e){}},200)});d.addEventListener('webkitfullscreenchange',upd)}
+  const re=()=>{upd();[60,250,600].forEach(ms=>setTimeout(()=>{try{qsResize();qsDraw()}catch(e){}},ms))};d.addEventListener('fullscreenchange',re);d.addEventListener('webkitfullscreenchange',re)}
 setInterval(ppTick,1000);setInterval(ppAnimate,80);
 qsResize();qsSetup([newLook(),newLook(),newLook(),newLook()]);QS.people.forEach(p=>p.x=p.tx);ppDayIntro();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawOffice()});
