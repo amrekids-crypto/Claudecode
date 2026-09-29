@@ -3433,12 +3433,12 @@ $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.c
   PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();qsDraw()};
 /* long press on "Начать игру заново" reveals full wipe */
 {const rb=$('#ppReset'),wb=$('#ppWipe'),orig=rb.onclick;let t=null,lp=false,hideT=null;
-  const hideWipe=()=>{wb.hidden=true;delete wb.dataset.sure;wb.textContent='Сбросить весь прогресс'};
+  const hideWipe=()=>{clearTimeout(hideT);wb.hidden=true;delete wb.dataset.sure;wb.textContent='Сбросить весь прогресс'};window.ppHideWipe=hideWipe;
   rb.addEventListener('pointerdown',e=>{if(e.button>0)return;lp=false;clearTimeout(t);t=setTimeout(()=>{lp=true;wb.hidden=false;try{navigator.vibrate&&navigator.vibrate(40)}catch(_){}SFX.click&&SFX.click();clearTimeout(hideT);hideT=setTimeout(hideWipe,10000)},700)});
   ['pointerup','pointerleave','pointercancel'].forEach(ev=>rb.addEventListener(ev,()=>clearTimeout(t)));
   rb.addEventListener('contextmenu',e=>e.preventDefault());
-  rb.onclick=e=>{if(lp){lp=false;return}orig(e)};
-  wb.onclick=()=>{if(!wb.dataset.sure){wb.dataset.sure=1;wb.textContent='Точно? Удалятся игра, альбом, достижения, тесты и карточки';clearTimeout(hideT);hideT=setTimeout(hideWipe,8000);return}
+  rb.onclick=e=>{if(lp){lp=false;return}hideWipe();orig(e)};
+  wb.onclick=()=>{if(!wb.dataset.sure){wb.dataset.sure=1;wb.textContent='Точно? Удалить всё';wb.title='Удалятся игра, альбом, достижения, тесты и карточки';clearTimeout(hideT);hideT=setTimeout(hideWipe,8000);return}
     const keep=['cloud','sfx','tab','pid','nick'];try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('fmt_')&&!keep.includes(k.slice(4)))ks.push(k)}ks.forEach(k=>localStorage.removeItem(k));localStorage.setItem('fmt_wiped','1')}catch(_){}
     location.reload()}}
 /* =====================================================
@@ -3714,7 +3714,7 @@ function drawActorExtra(R,a,x,y,t){
   const isFs=()=>!!(d.fullscreenElement||d.webkitFullscreenElement);
   const b2=$('#ppFull2');const upd=()=>{const f=isFs();btn.textContent=f?'✕ Свернуть':'⛶ Весь экран';b2.textContent=f?'✕':'⛶';b2.title=f?'Выйти из полноэкранного режима':'Полный экран';document.body.classList.toggle('fsmode',f)};
   btn.hidden=b2.hidden=standalone||!(can||ios);upd();
-  b2.onclick=()=>btn.onclick();btn.onclick=async()=>{if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
+  b2.onclick=()=>btn.onclick();btn.onclick=async()=>{if(window.ppHideWipe)window.ppHideWipe();if(!can){toast('Полный экран на iPhone','Safari: Поделиться → «На экран Домой». Игра откроется с иконки без панелей браузера, прогресс сохранится.','#7fb0e0');return}
     try{if(isFs())await (d.exitFullscreen||d.webkitExitFullscreen).call(d);else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'})}catch(e){toast('Полный экран недоступен','Браузер не разрешил. Попробуй открыть сайт в Chrome или Safari.','#e05a4a')}};
   const re=()=>{upd();[60,250,600].forEach(ms=>setTimeout(()=>{try{qsResize();qsDraw()}catch(e){}},ms))};d.addEventListener('fullscreenchange',re);d.addEventListener('webkitfullscreenchange',re)}
 /* ---------- resume an unfinished shift ---------- */
