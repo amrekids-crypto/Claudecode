@@ -2860,7 +2860,7 @@ function ppStartDay(){
   $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>FINANCE, PLEASE</span><span>ДЕНЬ ${PP.day}</span></h4><p class="pp-q">Нажми «Следующий!», чтобы позвать посетителя к окошку.</p></div>`;
   ppBar();
 }
-function ppTick(){if(!PD||PD.frozen||PD.state!=='asking'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;PD.min+=has('coffee')?.67:1;ppClock();if(PD.min>=ppCosts().end){ppTalk('Бюро',(ppCosts().end/60)+':00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
+function ppTick(){if(!PD||PD.frozen||PD.state!=='asking'||$('#tab-mix').hidden||!$('#ppOv').hidden)return;const endM=ppCosts().end,wasM=PD.min;PD.min+=has('coffee')?.67:1;ppClock();if(wasM<endM-60&&PD.min>=endM-60&&!PD.warned1){PD.warned1=true;toast('До закрытия 1 минута!',`В ${endM/60}:00 окошко закроется, придёт инспектор`,'#e0b64a');ppTalk('Бюро','Внимание! До закрытия осталась одна минута.');try{SFX.bell()}catch(e){}banner('ДО ЗАКРЫТИЯ 1 МИНУТА');setTimeout(()=>{if(PD&&PD.warned1)banner('')},3000)}if(PD.min>=ppCosts().end){ppTalk('Бюро',(ppCosts().end/60)+':00. Смена окончена. Остальных не успели принять.');ppEndDay()}}
 async function ppCall(){
   if(!PD||(PD.state!=='idle'&&PD.state!=='done'))return;
   const nx=PD.tasks[PD.idx+1],cont=!!(nx&&nx.boss&&nx.bstep>1);
@@ -2869,7 +2869,7 @@ async function ppCall(){
   PD.idx++;SFX.next();
   {const t=PD.tasks[PD.idx];if(t&&PD.goldenNext&&!t.boss&&QS.people[PD.idx]){PD.goldenNext=false;const gl=goldenLook();t.look=gl;t.golden=true;t.role='Золотой клиент';QS.people[PD.idx].look=gl}}
   if(PD.idx>=PD.tasks.length){qsTargets();drawFace(null);ppEndDay();return}
-  const p=QS.people[PD.idx];if(p.knocked||p.fallen){p.lying=false;p.knocked=false;p.fallen=false;if(!QS.people.some(q=>q.fallen))banner('')}p.state='booth';qsTargets();
+  const p=QS.people[PD.idx];if(p.knocked&&p.lying)popText('Ох… встаю…',Math.round(p.x+6),Math.round(p.y-4),'#e0e0e0',11);if(p.knocked||p.fallen){p.lying=false;p.knocked=false;p.fallen=false;if(!QS.people.some(q=>q.fallen))banner('')}p.state='booth';qsTargets();
   const c=PD.tasks[PD.idx];PD.cur=c;PD.hinted=false;PD.step=1;
   if(Math.abs(p.x-p.tx)>24){p.run=true;p.sp=Math.max(4.5,Math.abs(p.tx-p.x)/28);PD.state='arriving';drawFace(null);ppTalk('Бюро','Посетитель бежит к окошку…');
     $('#ppDesk').innerHTML=`<div class="pp-paper"><h4><span>ЗАПРОС № ${String(PP.day).padStart(2,'0')}-${String(PD.idx+1).padStart(2,'0')}</span><span>…</span></h4><p class="pp-q">Посетитель бежит к окошку. Часы стоят.</p></div>`;ppBar();
@@ -3496,7 +3496,7 @@ const EVENTS=[
    g.hover=false;n=0;await tick(()=>{n++;g.x+=Math.max(gs,8);g.y-=4;return g.x>QS.W-QS.OX+20||g.y<-30});QS.actors=QS.actors.filter(a=>a!==g);banner('')}},
  {n:'fight',async run(){const q=QS.people.filter((p,i)=>i>PD.idx&&p.state==='q'&&!p.hide&&!(PD.tasks[i]&&PD.tasks[i].boss));if(q.length<2)return;const a=q[0],b=q[1];ppTalk('Бюро','В очереди драка!');
    for(let i=0;i<4;i++){b.x+=3;await sleep(120);b.x-=3;sNoise(.08,.3,700);QS.fx.push({t:'spark',x:Math.round(a.x+2),y:Math.round(a.y+6),ttl:4,c:'#f3e6a0'});await sleep(150)}
-   a.lying=true;a.knocked=true;PD.evDone=Object.assign(PD.evDone||{},{fight:1});{const j=QS.people.indexOf(a);if(j>PD.idx){const [t]=PD.tasks.splice(j,1);QS.people.splice(j,1);PD.tasks.push(t);QS.people.push(a);qsTargets();ppSave()}}QS.decals.push({x:Math.round(a.x),y:Math.round(a.y)});SFX.crash();ppTalk('Бюро','Один лежит без сознания. Его примут последним, когда очередь опустеет. Драк сегодня больше не будет.');await sleep(1200)}},
+   a.lying=true;a.knocked=true;PD.evDone=Object.assign(PD.evDone||{},{fight:1});{const j=QS.people.indexOf(a);if(j>PD.idx){const [t]=PD.tasks.splice(j,1);QS.people.splice(j,1);PD.tasks.push(t);QS.people.splice(PD.tasks.length-1,0,a);qsTargets();ppSave()}}QS.decals.push({x:Math.round(a.x),y:Math.round(a.y)});SFX.crash();ppTalk('Бюро','Один лежит без сознания. Его примут последним, когда очередь опустеет. Драк сегодня больше не будет.');await sleep(1200)}},
  {n:'quake',async run(){ppTalk('Бюро','ЗЕМЛЕТРЯСЕНИЕ!');sNoise(1.6,.4,200);const pp=$('#pp');for(let i=0;i<4;i++){pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake');await sleep(320)}
    PD.evDone=Object.assign(PD.evDone||{},{quake:1});const q=QS.people.filter(p=>p.state==='q'&&!p.hide&&!p.lying&&p.x>-QS.OX+2&&p.x<QS.W-QS.OX-30);q.forEach(p=>{p.lying=true;p.fallen=true});if(q.length){PD.bannerUntil=Date.now()+3000;banner('ПОДНИМИ ПЕРВОГО В ОЧЕРЕДИ: НАЖМИ НА НЕГО');setTimeout(()=>{if(PD&&PD.bannerUntil&&Date.now()>=PD.bannerUntil-50)banner('')},3000);ppTalk('Бюро','Все попадали! Нажми на человека, чтобы поднять. Пока первый в очереди лежит, следующего не позвать.')}}},
  // ---- night street
@@ -3641,6 +3641,7 @@ async function ppEndDay(){
     if(guarded){PD.escort=[{look:GUARD(),x:ins.x-18,y:92,tx:0,ty:92,state:'x',sp:2.2},{look:GUARD(),x:ins.x+18,y:92,tx:0,ty:92,state:'x',sp:2.2}];QS.people.push(...PD.escort)}
   }
   PD.ins=ins;ins.tx=356;ins.ty=92;ins.sp=Math.max(2.2,(356-ins.x)/80);if(PD.escort){PD.escort[0].tx=338;PD.escort[1].tx=376;PD.escort.forEach(g=>{g.ty=92;g.sp=Math.max(2.2,(g.tx-g.x)/80)})}
+  {const lf=QS.people.filter((q,i)=>i>PD.idx&&i<PD.tasks.length&&(q.state==='q'||q.state==='booth')&&!q.hide);lf.forEach((q,k)=>{const L=k%2===0;q.state='x';q.lying=false;q.fallen=false;q.knocked=false;q.run=false;q.tx=L?-QS.OX-40-k*8:QS.W-QS.OX+40+k*8;q.ty=q.y;q.sp=Math.max(3,Math.abs(q.tx-q.x)/55);q.faceL=L});if(lf.length){(async()=>{await until(()=>lf.every(q=>Math.abs(q.x-q.tx)<2),20000);lf.forEach(q=>q.hide=true)})();setTimeout(()=>popText('Расходимся…',352,64,'#e0e0e0',11),300)}}
   ppTalk('Налоговый инспектор','Добрый вечер. Плановая проверка.');
   PD.walking=true;ppBar();ppDeskItems();
   await until(()=>PD!==me||me.shotDown||near(ins),60000);if(PD!==me)return;
