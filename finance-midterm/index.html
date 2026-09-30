@@ -2938,7 +2938,7 @@ function ppSubmitBundle(){
   ppFinish(all,lines.join('\n'),ai,all?ppBundleFee(c.qs.length):0,all?'':`<p>Верно ${ok} из ${c.qs.length}. В пакете нужна каждая позиция.</p>`);
   document.querySelectorAll('#ppDesk .pp-good p, #ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line');
 }
-function ppSiren(dur=1.4){try{const a=sfxCtx(),t=a.currentTime;const o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();o.type='sawtooth';o2.type='square';f.type='lowpass';f.frequency.value=2200;
+function ppSiren(dur=1.4){dur=Math.min(dur,3);try{const a=sfxCtx(),t=a.currentTime;const o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();o.type='sawtooth';o2.type='square';f.type='lowpass';f.frequency.value=2200;
   const md=Math.floor(Math.random()*3);if(md===0){for(let k=0,tt=t;tt<t+dur;k++,tt+=.42){const hi=k%2===0;o.frequency.setValueAtTime(hi?960:720,tt);o2.frequency.setValueAtTime(hi?962:722,tt)}}else{const per=md===1?1.3:.32;o.frequency.setValueAtTime(620,t);o2.frequency.setValueAtTime(622,t);for(let tt=t;tt<t+dur;tt+=per){o.frequency.linearRampToValueAtTime(1250,tt+per*.55);o.frequency.linearRampToValueAtTime(620,tt+per);o2.frequency.linearRampToValueAtTime(1252,tt+per*.55);o2.frequency.linearRampToValueAtTime(622,tt+per)}}
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.035,t+.08);g.gain.setValueAtTime(.035,t+dur-.3);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(f);o2.connect(f);f.connect(g).connect(a.destination);o.start(t);o2.start(t);o.stop(t+dur);o2.stop(t+dur);return{stop(){try{const n=a.currentTime;g.gain.cancelScheduledValues(n);g.gain.setValueAtTime(g.gain.value||.05,n);g.gain.exponentialRampToValueAtTime(.0001,n+.35);o.stop(n+.4);o2.stop(n+.4)}catch(e){}}}}catch(e){return{stop(){}}}}
 /* =====================================================
@@ -3005,7 +3005,7 @@ function drawArrestActor2(R0,a,x,y,t){
   if(a.t==='tornado'){const top=a.top,bot=y,h=bot-top;for(let yy=top;yy<bot;yy+=2){const f=(bot-yy)/h,w=Math.round(3+f*f*30+f*5),ox=Math.round(Math.sin((yy+t*4)/8)*4*(1-f*.5)+Math.sin(t/3)*2*f);const band=((yy+t*5)%12)<4;
       R0(x+ox-w,yy,w*2,2,band?'rgba(150,145,130,.85)':'rgba(100,98,90,.8)');R0(x+ox-w,yy,2,2,'rgba(60,58,52,.85)');R0(x+ox+w-3,yy,3,2,'rgba(70,68,60,.85)')}
     R0(x-16,bot-2,32,3,'rgba(120,110,90,.5)');for(let i=0;i<7;i++){const an=t*.5+i*.9;R0(Math.round(x+Math.cos(an)*(10+i*3)),Math.round(bot-6-i*9+Math.sin(an)*2),2,2,i%2?'#5a4a30':'#8a7a5a')}return true}
-  if(a.t==='dragon'){const R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);const G='#a8302a',Gd='#6a1a18',Gl='#d0503a',W='#5a1a18',up=Math.floor(t/3)%2===0;
+  if(a.t==='dragon'){const RR=a.faceL?(X,Y,w,h,c)=>R0(2*(x+33)-X-w,Y,w,h,c):R0,R=(xx,yy,w,h,c)=>RR(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);const G='#a8302a',Gd='#6a1a18',Gl='#d0503a',W='#5a1a18',up=Math.floor(t/3)%2===0;
     if(up){for(let k=0;k<8;k++)R(x+11+k,y+4-k,Math.max(1,9-k),1,k%3?W:Gd)}
     R(x-2,y+8,3,3,Gd);R(x,y+9,6,2,G);R(x+4,y+8,4,2,G);R(x+6,y+5,16,9,'#15130f');R(x+7,y+6,14,7,G);R(x+7,y+6,14,1,Gl);R(x+9,y+11,10,2,'#e0c070');R(x+9,y+13,2,3,Gd);R(x+17,y+13,2,3,Gd);R(x+8,y+16,3,1,'#e8e0c0');R(x+16,y+16,3,1,'#e8e0c0');
     for(let i=0;i<5;i++)R(x+8+i*3,y+5,1,1,'#e0c070');R(x+20,y+3,4,6,G);R(x+23,y+1,3,5,G);R(x+25,y,8,6,'#15130f');R(x+26,y+1,6,4,G);R(x+31,y+2,3,3,G);R(x+26,y+1,6,1,Gl);
@@ -3321,9 +3321,9 @@ const ARRESTS=[
    const tx=p.x-80;await tick(()=>{d.x+=Math.max(3,(tx-d.x)*.07);d.y=30+Math.sin(QS.tick/5)*3;return d.x>=tx-1});
    p.sp=0;p.tx=p.x;popText('?!',Math.round(p.x+6),Math.round(p.y-4),'#ffe060',14);ppTalk('Дракон','Ррр… Кто тут не сдал отчётность?');await sleep(1400);ppTalk(PD.cur.role,'Н-не я…');await sleep(900);
    d.fire=1;kaijuRoar(.8);sNoise(2.2,.35,1800,200);const fl={t:'flame',x1:d.x+66,y1:d.y+10,x2:p.x+6,y2:p.y+16};QS.actors.push(fl);let k=0;
-   await tick(()=>{k++;d.y=30+Math.sin(QS.tick/5)*1;fl.x1=d.x+66;fl.y1=d.y+10;if(k%2===0)for(let q=0;q<4;q++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(-4,16)),y:Math.round(p.y+rint(0,28)),ttl:4+q,c:q%2?'#ff6a1a':'#ffe060'});
+   await tick(()=>{k++;d.y=30+Math.sin(QS.tick/5)*1;d.faceL=p.x+6<d.x+33;fl.x1=d.faceL?d.x:d.x+66;fl.y1=d.y+10;fl.x2=p.x+6;fl.y2=p.y+16;if(k%2===0)for(let q=0;q<4;q++)QS.fx.push({t:'spark',x:Math.round(p.x+rint(-4,16)),y:Math.round(p.y+rint(0,28)),ttl:4+q,c:q%2?'#ff6a1a':'#ffe060'});
      if(k===16){p.lying=true;p.ash=true;p.run=false;p.moving=false;p.tx=p.x;QS.flash=2;popText('ПШШШ!',Math.round(p.x+6),Math.round(p.y-4),'#ff8a20',16)}return k>=26});
-   QS.actors=QS.actors.filter(a=>a!==fl);d.fire=0;QS.scorch=(QS.scorch||[]).concat([{x:Math.round(p.x+8),y:Math.round(p.y+28)}]);for(let i=0;i<10;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,14),y:p.y+rint(10,26),life:1});
+   QS.actors=QS.actors.filter(a=>a!==fl);d.fire=0;d.faceL=false;QS.scorch=(QS.scorch||[]).concat([{x:Math.round(p.x+8),y:Math.round(p.y+28)}]);for(let i=0;i<10;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,14),y:p.y+rint(10,26),life:1});
    ppTalk('Дракон','Отчётность принята. Хрум.');await sleep(1000);kaijuRoar(.4);await tick(()=>{d.x+=8;d.y-=2.5;return d.y<-70||d.x>QS.W-QS.OX+40});QS.actors=QS.actors.filter(a=>a!==d);ppTalk('Бюро','Дракон улетел в горы. От нарушителя остался пепел.')}},
  {n:'freeze',title:'Ледяной аудит',desc:'Начинается метель, нарушитель вмерзает в глыбу льда, лёд трескается и разлетается на осколки.',price:35,line:'Температура на улице резко падает…',async run(p){p.sp=1;p.faceL=false;
    const tint={t:'tint',rgb:'120,170,230',a:0},sn={t:'blizz'};QS.actors.unshift(tint);QS.actors.push(sn);sNoise(6,.1,3000,600);sTone(1200,3,'sine',.025,1800);
