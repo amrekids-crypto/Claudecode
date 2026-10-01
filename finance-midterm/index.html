@@ -3748,7 +3748,7 @@ function arrestSpot(p){const lo=-QS.OX+30,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-
   const ok=c.filter(v=>v[1]>=70);const r=ok.length?pick(ok):c.sort((a,b)=>b[1]-a[1])[0];PP.lastSpot=r[0];return r[0]}
 
 /* ---------- arrest combos (3+ correct arrests in a row) ---------- */
-function comboStart(p,name){const n=PP.arrCombo||3;banner(LG(`КОМБО ×${n}! ${name}`,`COMBO ×${n}! ${name}`));popText(LG('КОМБО ×','COMBO ×')+n+'!',Math.round(QS.W/2-QS.OX),40,'#ffe060',22);QS.flash=2;shakePP();
+function comboStart(p,name){const n=PP.arrCombo||3,rw=Math.min(10,2*Math.max(1,n-2));if(PD){PD.fees+=rw;PP.cash+=rw;setTimeout(()=>{popText('+$'+rw,Math.round(p.x+6),Math.round(p.y-14),'#ffe060',16);try{SFX.coinSt()}catch(_){}ppBar();ppSave()},600)}banner(LG(`КОМБО ×${n}! ${name}`,`COMBO ×${n}! ${name}`));popText(LG('КОМБО ×','COMBO ×')+n+'!',Math.round(QS.W/2-QS.OX),40,'#ffe060',22);QS.flash=2;shakePP();
   try{[262,330,392,523,659,784].forEach((f,i)=>sMuf(f,.18,'square',.04,null,i*.06,3000));sMuf(65,1.2,'sawtooth',.12,40,0,400)}catch(_){}p.sp=0;p.tx=p.x;p.ty=p.y;p.run=false;p.moving=false}
 async function gibs(p,power,extra){power=power||1;const L=p.look||{},cols=[L.skin||'#e0b090',L.skin||'#e0b090',L.coat||'#444',L.coat||'#444',L.shirt||'#ddd',L.hair||'#222',L.tie||L.coat||'#444','#a3201a','#7a1010'],gy=Math.round(p.y+28),bits=[];
   p.hide=true;p.vanished=true;QS.flash=2;shakePP();SFX.crash();try{sNoise(.9,.6,900,120)}catch(_){}
