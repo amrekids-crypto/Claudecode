@@ -3401,9 +3401,11 @@ function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;if(d
   else if(a.t==='shadow'){R(x,y,a.w,2,'rgba(0,0,0,.45)')}
   else if(a.t==='bolt'){let px=a.x,py=20;const c=t%2?'#fff8c8':'#e0f4ff';while(py<a.y){const nx=px+rint(-6,6),ny=Math.min(a.y,py+rint(6,12));qsLine(R,px,py,nx,ny,c);qsLine(R,px+1,py,nx+1,ny,c);px=nx;py=ny}}
   else if(a.t==='dog'){if(a.face!=='r'){const R0=R;R=(xx,yy,w,h,c)=>R0(2*x+15-xx-w,yy,w,h,c)}if(a.k9&&!a.col){a.col='#b8894a';a.col2='#2a2218'}if(!a.col){const dc=pick([['#6a4a2a','#4a3218'],['#2a2a2e','#15130f'],['#c8a060','#8a6a30'],['#e8e4d8','#a8a49a'],['#8a5a30','#e8e4d8'],['#5a5a60','#3a3a40'],['#b07040','#2a1a10']]);a.col=dc[0];a.col2=dc[1];a.spot=Math.random()<.4}const DC=a.col,DD=a.col2;const f=Math.floor(t/2)%2;R(x,y+2,12,5,DC);R(x+10,y,5,5,DC);R(x+14,y+2,2,2,shade(DC,.6));R(x+12,y+1,1,1,'#15130f');R(x+11,y-1,2,2,DD);R(x-3,y+2,3,1,DC);R(x+1+f,y+7,2,3,DD);R(x+8-f,y+7,2,3,DD);if(a.spot){R(x+3,y+2,3,2,DD);R(x+8,y+4,2,2,DD)}if(a.k9){R(x+1,y+2,9,2,'#2a2218');R(x+3,y+3,6,3,'#2a4a8a');R(x+5,y+4,2,1,'#e8e8e8');R(x+11,y-2,2,1,'#2a2218')}if(a.bark&&t%6<3){R(x+17,y-2,1,1,'#e0d8c0');R(x+19,y-4,1,1,'#e0d8c0')}}
-else if(a.t==='rocket'&&a.down){R(x,y,3,9,'#c8c8c0');R(x,y+8,3,2,'#a3302a');R(x-1,y-2,5,2,'#7a7a74');R(x,y-5,3,3,t%2?'#ffb040':'#ff6020');R(x+1,y-7,1,2,'#ffe080')}
-  else if(a.t==='rocket'&&a.tx!=null&&a.tx<a.x+1){R(x,y,9,3,'#c8c8c0');R(x,y,2,3,'#a3302a');R(x+9,y-1,2,5,'#7a7a74');R(x+11,y,3,3,t%2?'#ffb040':'#ff6020');R(x+14,y+1,2,1,'#ffe080')}
-    else if(a.t==='rocket'){R(x,y,9,3,'#c8c8c0');R(x+8,y,2,3,'#a3302a');R(x-2,y-1,2,5,'#7a7a74');R(x-5,y,3,3,t%2?'#ffb040':'#ff6020');R(x-7,y+1,2,1,'#ffe080')}
+else if(a.t==='rocket'){if(a._lx!=null){const mx=a.x-a._lx,my=a.y-a._ly;if(Math.hypot(mx,my)>.4)a.ang=Math.atan2(my,mx)}a._lx=a.x;a._ly=a.y;
+      if(a.ang==null)a.ang=a.tx!=null?Math.atan2(a.ty-a.y,a.tx-a.x):a.down?Math.PI/2:Math.PI;
+      const ca=Math.cos(a.ang),sa=Math.sin(a.ang),fl=t%2?'#ffb040':'#ff6020';
+      const pix=(u,v)=>{if(u>=6&&u<=7&&v>=-1&&v<=1)return '#a3302a';if(u>=-2&&u<=5&&v>=-1&&v<=1)return '#c8c8c0';if(u>=-4&&u<=-3&&v>=-2&&v<=2)return '#7a7a74';if(u>=-7&&u<=-5&&v>=-1&&v<=1)return fl;if(u>=-9&&u<=-8&&v===0)return '#ffe080';return null};
+      for(let py=-10;py<=10;py++)for(let px=-10;px<=10;px++){const u=Math.round(px*ca+py*sa),v=Math.round(-px*sa+py*ca),c=pix(u,v);if(c)R(x+px,y+py,1,1,c)}}
   else if(a.t==='boom'){const r=a.r;for(let i=0;i<24;i++){const an=i/24*Math.PI*2;R(Math.round(x+Math.cos(an)*r),Math.round(y+Math.sin(an)*r*.7),3,3,i%3?'#ff8a20':'#ffe060')}R(x-r/3,y-r/4,r*.66,r*.5,'rgba(255,200,80,.5)')}
   else if(a.t==='smoke'){R(x,y,4,4,'rgba(80,80,80,.6)');R(x+2,y-2,3,3,'rgba(110,110,110,.5)')}
   else if(a.t==='ufo'){R(x+6,y,12,4,'#8ab0c8');R(x,y+4,24,4,'#9a9aa8');R(x+2,y+8,20,2,'#6a6a78');for(let i=0;i<4;i++)R(x+3+i*5,y+5,2,2,(t+i)%4<2?'#7fe08a':'#ffe060');if(a.beam){const g='rgba(127,224,138,.28)';for(let yy=y+10;yy<a.beam;yy+=2){const w=8+Math.round((yy-y)/5);R(x+12-w/2,yy,w,2,g)}}}
@@ -3533,7 +3535,7 @@ const ARRESTS=[
      if(!hit&&ap.x+ap.r>=p.x+4){hit=true;p.flat=true;kill(p,'#7ad040');for(let i=0;i<20;i++)QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-12,20)),y:Math.round(p.y+rint(10,28)),ttl:5+i%6,c:i%2?'#8ad050':'#a3201a'});shakePP();sNoise(.3,.5,1500,300);sMuf(90,.3,'sine',.3,40,0,400);popText(I18L('ХРУСТЬ!'),Math.round(p.x+6),Math.round(p.y),'#b8f080',18)}
      if(hit)ap.vx*=.88;return (hit&&ap.vx<.35)||ap.x-ap.r>QS.W-QS.OX+10});if(ap.x-ap.r>QS.W-QS.OX+10)QS.actors=QS.actors.filter(a=>a!==ap);else toDebris(ap);ppTalk(I18L('Бюро'),I18L('Яблоко остановилось посреди дороги. Витамины!'))}},
  {n:'rocket',title:I18L('Ракета'),desc:I18L('Самонаводящаяся ракета и взрыв.'),price:25,line:I18L('Запуск ракеты по нарушителю.'),async run(p){p.sp=1.5;const r={t:'rocket',x:QS.W-QS.OX,y:24};QS.actors.push(r);sNoise(1,.08,1200);
-   await tick(()=>{const dx=p.x+4-r.x,dy=p.y+14-r.y,dd=Math.hypot(dx,dy);r.x+=dx/dd*10;r.y+=dy/dd*10;QS.actors.push({t:'smoke',x:r.x+6,y:r.y,life:1});return dd<10});
+   await tick(()=>{const dx=p.x+4-r.x,dy=p.y+14-r.y,dd=Math.hypot(dx,dy);r.x+=dx/dd*10;r.y+=dy/dd*10;r.ang=Math.atan2(dy,dx);QS.actors.push({t:'smoke',x:r.x-Math.cos(r.ang)*9,y:r.y-Math.sin(r.ang)*9,life:1});return dd<10});
    QS.actors=QS.actors.filter(a=>a!==r);const b={t:'boom',x:p.x+6,y:p.y+16,r:4};QS.actors.push(b);kill(p);ppGunshot();sNoise(.8,.6,700);const pp=$('#pp');pp.classList.remove('shake');void pp.offsetWidth;pp.classList.add('shake');
    await tick(()=>{b.r+=3;return b.r>26});QS.actors=QS.actors.filter(a=>a!==b)}},
  {n:'abduct',title:I18L('Похищение НЛО'),desc:I18L('Над улицей зависает летающая тарелка, пришелец пищит, зелёный луч поднимает нарушителя, и тарелка улетает вместе с ним.'),price:35,line:I18L('Радары фиксируют неопознанный объект…'),async run(p){p.sp=0;p.tx=p.x;p.run=false;
@@ -3795,7 +3797,7 @@ const COMBOS=[
      tank.x+=8;if(!blown&&tank.x+92>=px){blow();popText(LG('ХРУСЬ!','CRUNCH!'),Math.round(px),Math.round(py-14),'#ffe060',16)}if(k%2===0)QS.fx.push({t:'spark',x:Math.round(tank.x+4),y:Math.round(tank.y+38),ttl:4,c:'#8a8270'});
      // rockets from all sides
      let left=false;salvo.forEach(r=>{if(r.done)return;left=true;if(k<r.delay)return;if(!r.on){r.on=1;QS.actors.push(r);try{sNoise(.25,.06,1400,400)}catch(_){}}
-       const dx=r.tx-r.x,dy=r.ty-r.y,dd=Math.hypot(dx,dy)||1;r.x+=dx/dd*12;r.y+=dy/dd*12;if(QS.tick%2===0)QS.actors.push({t:'smoke',x:r.x+(r.down?1:4),y:r.y-(r.down?4:0),life:1});
+       const dx=r.tx-r.x,dy=r.ty-r.y,dd=Math.hypot(dx,dy)||1;r.x+=dx/dd*12;r.y+=dy/dd*12;r.ang=Math.atan2(dy,dx);if(QS.tick%2===0)QS.actors.push({t:'smoke',x:r.x-Math.cos(r.ang||0)*9,y:r.y-Math.sin(r.ang||0)*9,life:1});
        if(dd<12){r.done=1;QS.actors=QS.actors.filter(a=>a!==r);boom(r.tx,r.ty)}});
      QS.actors=QS.actors.filter(a=>!(a.t==='smoke'&&Math.random()<.12));
      return !left&&k>40&&tank.x>R0+40&&(heli.x>R0||heli.y<-40)});
