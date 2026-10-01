@@ -2664,12 +2664,12 @@ const DOCS=[['cf',docCF2],['stmt',docIS],['stmt',docRE],['stmt',docBS],['cf',doc
 
 function qDiff(q){if(q._d!=null)return q._d;let d=3;const txt=String(q.q||''),o=q.o||[];if(o===TF||o.length===2)d-=1.5;if(q.t==='mini')d-=.5;if(['calc','tvm','ratio','rr','fsa','cf','stfm'].includes(q.t))d+=1;if((txt.match(/\d[\d,.]*/g)||[]).length>=3)d+=1;if(txt.length>150)d+=.5;else if(txt.length<60)d-=.5;
   if(o.length&&o.join('').length/o.length>40)d+=.5;return q._d=Math.max(1,Math.min(5,d))}
-function qPickD(arr){const D=PP.diff||1;if(D===3||arr.length<2)return pick(arr);const w=arr.map(q=>Math.exp(-Math.abs(qDiff(q)-D)*1.3));let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[arr.length-1]}
+function qPickD(arr){const D=ppRamp().D;if(Math.abs(D-3)<.01||arr.length<2)return pick(arr);const w=arr.map(q=>Math.exp(-Math.abs(qDiff(q)-D)*1.3));let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[arr.length-1]}
 function ppPickQs(n,exclude,topics){
   const wrong=store.get('wrong',{});let pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t)&&!exclude.has(q.id));if(pool.length<n)pool=Q.filter(q=>q.t!=='place'&&topics.has(q.t));const weak=shuffle(pool.filter(q=>wrong[q.t+'|'+q.q]));
   const byTopic={};pool.forEach(q=>{(byTopic[q.t]=byTopic[q.t]||[]).push(q)});
   const out=[];const used=new Set();const nWeak=Math.min(weak.length,Math.floor(n/3));for(let i=0;i<nWeak;i++){out.push(weak[i]);used.add(weak[i].id)}
-  const tks=shuffle(Object.keys(byTopic));let k=0;while(out.length<n&&k<800&&tks.length){const t=tks[k%tks.length];const q=qPickD(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
+  const tks=shuffle(Object.keys(byTopic));let k=0;while(out.length<n&&k<800&&tks.length){const t=k<Math.min(tks.length,Math.ceil(n/3))?tks[k]:wpick(tks,tw);const q=qPickD(byTopic[t]);if(!used.has(q.id)){out.push(q);used.add(q.id)}k++}
   return out;
 }
 const MIXT=[['mini',LG('Мини-тесты из класса (1 и 2)','Class mini-tests (1 and 2)')],['intro',I18L('Finance и фин. менеджер')],['forms',I18L('Формы бизнеса')],['inst',I18L('Фин. институты')],['mkt',I18L('Фин. рынки')],['stmt',I18L('Отчёты: IS, BS, RE')],['cf','Cash flow'],['calc',I18L('Задачи на счёт')],['cls',I18L('Классификация статей')],['pairs',I18L('Пары IS vs BS')],['place',I18L('Где статья (2 шага)')],['card',I18L('Карточки-термины')],['ratio','Financial ratios'],['fsa',I18L('Анализ отчётов, DuPont')],['tvm','Time value of money'],['rr',I18L('Ставки, risk & return')],['stfm','Short-term fin. mgmt'],['personal',I18L('Личные финансы')],['audit',I18L('Проверка документа (арест)')],['order',I18L('Порядок строк отчёта')],['sort',I18L('Раскидать по категориям')],['ofill',I18L('Порядок + заполнение')],['build',I18L('Собери документ сам')]];
@@ -2949,16 +2949,27 @@ function easyTasks(n){const seen=new Set(store.get('ppSeenE',[]));let pool=shuff
   t.forEach(x=>{if(Math.random()>.2)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
   return t}
 
+
+/* ---------- adaptive topics + difficulty ramp ---------- */
+function ppTopicKeys(c){if(!c)return[];if(c.tk)return[c.tk];if(c.kind==='q')return[c.q&&c.q.t||'q'];if(c.kind==='bundle')return[...new Set(c.qs.map(q=>q.t))];if(c.kind==='claim')return[c.q?c.q.t:'claim'];return[c.kind]}
+function ppTrack(c,ok){if(!c||c.boss||c.trader||c.golden)return;PP.tst=PP.tst||{};ppTopicKeys(c).forEach(k=>{const s=PP.tst[k]=PP.tst[k]||{n:0,w:0};s.n++;if(!ok)s.w++})}
+function ppTstDecay(){if(PP.tstDay===PP.day)return;PP.tstDay=PP.day;Object.values(PP.tst||{}).forEach(s=>{s.n*=.75;s.w*=.75})}
+function tw(k){const s=(PP.tst||{})[k];if(!s||s.n<1.5)return 1;const er=(s.w+.3)/(s.n+1);return Math.max(.35,Math.min(2.5,.35+er*4))}
+function wpick(arr,f){const w=arr.map(f),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[arr.length-1]}
+const wr=x=>Math.floor(x)+(Math.random()<x%1?1:0);
+function ppRamp(){const D=PP.diff||1,day=PP.day||1;if(day<10)return{cap:Math.min(1+Math.floor(day/3),[0,2,2,3,5,99][D]),spread:true,D:1+(D-1)*Math.min(1,day/10),early:true};return{cap:[0,2,2,3,5,99][D],spread:D<=3,D,early:false}}
+function isHeavy(x){return x.kind==='build'||x.kind==='ofill'||(x.kind==='doc'&&(x.big||(x.doc&&x.doc.rows&&x.doc.rows.length>=8)))||(x.kind==='bundle'&&x.qs.length>=3)}
+function ppFocus(){const T=ppTopics();return Object.keys(PP.tst||{}).filter(k=>T.has(k)&&tw(k)>=1.3).sort((a,b)=>tw(b)-tw(a)).slice(0,3).map(k=>(MIXT.find(m=>m[0]===k)||[k,k])[1])}
 function makeTasks(n,ev){
-  if((PP.diff||1)===1)return ppFinishTasks(easyTasks(n));
+  ppTstDecay();if((PP.diff||1)===1)return ppFinishTasks(easyTasks(n));
   const T=ppTopics();
-  const docs=DOCS.filter(d=>T.has(d[0])).map(d=>d[1]);
+  const docsT=DOCS.filter(d=>T.has(d[0])),docs=docsT.map(d=>d[1]);
   const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');const OK=['order','sort','ofill','build'].filter(k=>T.has(k));
   const qTopics=[...T].filter(t=>!['place','card','audit','order','sort','ofill','build'].includes(t));
-  let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):Math.max(1,Math.round(n*.18))):0;
-  let nPlace=canPlace?Math.max(1,Math.round(n*.18)):0,nCard=canCard?Math.max(1,Math.round(n*.15)):0;
-  let nAudit=canAudit?Math.max(1,Math.round(n*.2)):0;
-  const special=[];OK.forEach(k=>{special.push(k);if(n-((PP.diff||1)-3)>=8&&Math.random()<.4)special.push(k)});
+  let nDoc=docs.length?(ev==='docs'?Math.min(3,Math.max(2,Math.round(n*.3))):wr(Math.max(1,n*.18)*docsT.reduce((a,d)=>a+tw(d[0]),0)/docsT.length)):0;
+  let nPlace=canPlace?wr(Math.max(1,n*.18)*tw('place')):0,nCard=canCard?wr(Math.max(1,n*.15)*tw('card')):0;
+  let nAudit=canAudit?wr(Math.max(1,n*.2)*tw('audit')):0;
+  const special=[];OK.forEach(k=>{const w=tw(k);if(Math.random()<Math.min(1,w))special.push(k);if(n-((PP.diff||1)-3)>=8&&Math.random()<.4*w)special.push(k)});
   let nQ=Math.max(0,n-nDoc-nPlace-nCard-nAudit-special.length);
   const seen=new Set(store.get('ppSeen',[]));
   const extra=PP.day>=1?Math.round(nQ*.4):0;const qs=qTopics.length?ppPickQs(nQ+extra,seen,new Set(qTopics)):[];store.set('ppSeen',[...seen,...qs.map(q=>q.id)].slice(-150));
@@ -2970,17 +2981,27 @@ function makeTasks(n,ev){
   const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));
   for(let i=0;i<nCard;i++)t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});
   for(let i=0;i<nPlace;i++)t.push({kind:'place',it:pick(ITEMS)});
-  for(let i=0;i<nDoc;i++){const g=pick(docs);t.push([docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS||g===docCF2})}
+  for(let i=0;i<nDoc;i++){const dt=wpick(docsT,d=>tw(d[0])),g=dt[1];const x=[docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS||g===docCF2};if(x.kind==='doc')x.tk=dt[0];t.push(x)}
   {let nb=0;t.forEach((x,i)=>{if(x.big&&nb++)t[i]=x.kind==='build'?buildTask(docRE):ofillTask(docRE)})}
   t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18+((PP.diff||1)-3)*.05)t[i]=claimQ(x.q)});
   {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
-   const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const cl=pick(gens)();if(qi>=0)t[qi]=cl;else t.push(cl)}}
+   const GK=new Map([[claimPlace,'place'],[claimRatio,'ratio'],[claimTVM,'tvm'],[claimCF,'cf'],[claimBS,'stmt']]);const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const gg=wpick(gens,g=>tw(GK.get(g))),cl=gg();cl.tk=T.has(GK.get(gg))?GK.get(gg):(GK.get(gg)==='place'?'cls':GK.get(gg)==='ratio'?'fsa':'calc');if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36+((PP.diff||1)-3)*.08)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
   {const dd=((PP.diff||1)-3)*2;if(dd<0){const rm=Math.min(-dd,Math.max(0,t.length-3));for(let i=0;i<rm;i++)t.splice(rint(0,t.length-1),1)}else if(dd>0){const ex=qTopics.length?ppPickQs(dd,new Set(t.filter(x=>x.q).map(x=>x.q.id)),new Set(qTopics)):[];ex.forEach(q=>t.push({kind:'q',q}));for(let i=ex.length;i<dd&&OK.length;i++){const k=pick(OK);t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask())}}}
+  {const RP=ppRamp();let hv=t.filter(isHeavy);const used=new Set(t.filter(x=>x.q).map(x=>x.q.id));
+   while(hv.length>RP.cap){const x=hv.splice(rint(0,hv.length-1),1)[0],i=t.indexOf(x);let y=null;
+     if(x.kind==='bundle')y={kind:'q',q:x.qs[0]};
+     else if((x.kind==='build'||x.kind==='ofill')&&T.has('order'))y=orderTask();
+     else if((x.kind==='build'||x.kind==='ofill')&&T.has('sort'))y=sortTask();
+     if(!y&&qTopics.length){const q=ppPickQs(1,used,new Set(qTopics))[0];if(q){used.add(q.id);y={kind:'q',q}}}
+     if(!y)y=canAudit?{kind:'audit',au:makeAudit()}:{kind:'q',q:cardTask(null)};t[i]=y}}
   return ppFinishTasks(t)}
+function heavySpread(t){const RP=ppRamp();if(!RP.spread)return t;const H=x=>isHeavy(x);
+  if(RP.early){const nh=t.filter(H),lt=t.filter(x=>!H(x));if(nh.length&&lt.length){const out=[];const lead=Math.min(lt.length,PP.day<5?2:1);for(let i=0;i<lead;i++)out.push(lt.shift());const gap=Math.max(1,Math.floor(lt.length/Math.max(1,nh.length)));while(nh.length||lt.length){if(nh.length&&(!out.length||!H(out[out.length-1])))out.push(nh.shift());for(let g=0;g<gap&&lt.length;g++)out.push(lt.shift());if(!lt.length&&nh.length)out.push(nh.shift())}return out}}
+  for(let k=0;k<30;k++){let moved=false;for(let i=1;i<t.length;i++){if(!(H(t[i])&&H(t[i-1])))continue;const j=t.findIndex((x,jj)=>!H(x)&&(jj===0||!H(t[jj-1])||jj-1===i)&&(jj+1>=t.length||!H(t[jj+1])||jj+1===i)&&jj!==i-1);if(j>=0){[t[i],t[j]]=[t[j],t[i]];moved=true}}if(!moved)break}return t}
 function ppFinishTasks(t){
-  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};if(look.celeb==='trader')x=traderTask();return Object.assign(x,{look,role:roleFor(look)})});
+  return heavySpread(docSpread(shuffle(t))).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};if(look.celeb==='trader')x=traderTask();return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
@@ -3023,7 +3044,7 @@ function ppDayIntro(){
   const tb=$('#ppTopicBox');const syncT=()=>{PP.topics=[...tb.querySelectorAll('input:checked')].map(i=>i.value);$('#ppGo').disabled=!PP.topics.length;ppSave();if(PP.topics.length){const nv=$('#ppNVis');if(nv)nv.textContent=ppPre().length}};
   tb.addEventListener('change',syncT);
   $('#ppOv').querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const sets={all:MIXT.map(x=>x[0]),none:[],t12:['mini','intro','forms','inst','mkt','stmt','cf','calc','cls','pairs','place','card','audit','order','sort','ofill','build'],t37:['ratio','fsa','tvm','rr','stfm','personal']};const S=new Set(sets[b.dataset.tp]);tb.querySelectorAll('input').forEach(i=>i.checked=S.has(i.value));syncT()});
-  $('#ppOv').querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{PP.diff=+b.dataset.diff;ppSave();ppDayIntro()});$('#ppGo').onclick=()=>{if(!EZd&&PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(!EZd&&PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
+  $('#ppOv').querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{PP.diff=+b.dataset.diff;ppSave();ppDayIntro()});$('#ppGo').onclick=()=>{if(!EZd&&PP.topics&&!PP.topics.length)return;SFX.open();ppStartDay()};{const f=EZd?[]:ppFocus(),g=$('#ppGo');if(f.length&&g)g.parentNode.insertAdjacentHTML('beforebegin','<p class="mono" style="text-align:center;font-size:12px;color:#a3302a;margin:4px 0">'+LG('Сегодня больше заданий там, где были ошибки: ','More tasks today where you made mistakes: ')+esc(f.join(', '))+'</p>')}$('#ppShopBtn').onclick=ppShop;$('#ppProfBtn').onclick=()=>{SFX.click();ppProfile()};ppBar();drawOffice();if(!EZd&&PP.topics&&!PP.topics.length)$('#ppGo').disabled=true;
 }
 const ITEM_BOX={lamp:[56,50,36,36],plant:[0,44,24,42],poster:[86,2,48,38],clock:[116,40,22,22],radio:[92,38,26,24],cat:[128,44,30,20],coffee:[54,64,24,22],calc:[36,82,20,14],heater:[18,68,38,18],book:[112,44,18,18],painting:[86,2,48,38],aquarium:[92,64,36,22],fan:[122,60,26,26],trophy:[143,68,17,18],neon:[86,36,48,16]};
 function officeThumb(id){const off=document.createElement('canvas');off.width=160;off.height=100;drawOffice(off,{owned:{[id]:1},wall:PP.wall,noMedals:1});const [bx,by,bw,bh]=ITEM_BOX[id]||[0,0,160,100];const th=document.createElement('canvas');th.width=bw;th.height=bh;th.getContext('2d').drawImage(off,bx,by,bw,bh,0,0,bw,bh);return th.toDataURL()}
@@ -3978,7 +3999,7 @@ function toast(title,sub,color){const pp=$('#pp');if(!pp)return;let box=pp.query
 function chime(){sMuf(784,.18,'triangle',.05,null,0,2600);sMuf(1047,.22,'triangle',.05,null,.12,2600);sMuf(1319,.35,'triangle',.05,null,.24,2600)}
 
 /* ---------- answer hooks ---------- */
-function ppOnCorrect(){if(!PD)return;const c=PD.cur;PD.streak=(PD.streak||0)+1;META.st.streak=(META.st.streak||0)+1;stMax('bestStreak',META.st.streak);stInc('correct');
+function ppOnCorrect(){if(!PD)return;const c=PD.cur;ppTrack(c,true);PD.streak=(PD.streak||0)+1;META.st.streak=(META.st.streak||0)+1;stMax('bestStreak',META.st.streak);stInc('correct');
   if(PD.arrestFlag){stInc('arrests');PD.arrestFlag=false}
   if(PP.event==='holiday'){const tip=rint(1,3);PD.tips=(PD.tips||0)+tip;PP.cash+=tip;setTimeout(()=>{popText('+$'+tip+I18L(' ЧАЕВЫЕ'),352,64,'#ffe060',12);SFX.coin()},650)}
   if(c&&c.golden&&(c.kind==='claim'||c.kind==='audit'||c.suspect)){PD.fees+=15;PP.cash+=15}
@@ -3986,7 +4007,7 @@ function ppOnCorrect(){if(!PD)return;const c=PD.cur;PD.streak=(PD.streak||0)+1;M
   if(META.st.streak>0&&META.st.streak%10===0)PD.goldenNext=true;
   if(c&&c.boss)bossStep(true);
   petReact(true);achCheck();ppBar()}
-function ppOnWrong(){if(!PD)return;PD.streak=0;META.st.streak=0;metaSave();PD.arrestFlag=false;if(PD.cur&&PD.cur.boss)bossStep(false);petReact(false);ppBar()}
+function ppOnWrong(){if(!PD)return;ppTrack(PD.cur,false);PD.streak=0;META.st.streak=0;metaSave();PD.arrestFlag=false;if(PD.cur&&PD.cur.boss)bossStep(false);petReact(false);ppBar()}
 
 /* ---------- album ---------- */
 const ALBUM=[
