@@ -1944,7 +1944,8 @@ function sympLook(){const L=newLook(),sp=pick(['granny','mom','wheel','cat']);L.
   if(sp==='mom'){const r=Math.random(),KC=['#e0b64a','#6aa0c8','#d87a8a','#7ac070','#b07ad0','#e07a3a','#40b0b0','#e0e0e0','#c84040'],kh=()=>pick(HAIR.filter(h=>!['#8a8a82','#e0d8c8'].includes(h)));L.nk=r<.6?1:r<.85?2:3;if(L.nk>=2)L.kid2={k:Math.random()<.7?L.kid:pick(SKIN),c:pick(KC),h:kh()};if(L.nk===3)L.kid3={k:L.kid,c:pick(['#f0e0e8','#d8e8f4','#f4ecd0','#e0f0dc'])}}
   return L}
 function catLook(){const L=newLook();Object.assign(L,{catgirl:true,g:'f',old:false,hat:null,style:'long',beard:false,stache:false,tie:null,brow:0,hair:pick(['#1c1a24','#2a2436','#e8e0d0','#c89a4a','#d88aa8','#8a5a3a','#4a4a6a'])});return L}
-function celebLook(){const k=pick(['biden','zelensky','hitler','floyd','kirk','bibi','agent']),L=newLook();
+function celebLook(){const k=pick(['biden','zelensky','hitler','floyd','kirk','bibi','agent','trader']),L=newLook();
+  if(k==='trader'){Object.assign(L,{cash:true,celeb:k,g:'m',old:false,skin:'#e8bc98',hair:'#c89a4a',style:'short',hat:null,coat:'#4a2a6a',shirt:'#15130f',tie:null,beard:false,stache:false,glasses:false,brow:1});return L}
   if(k==='bibi'){Object.assign(L,{celeb:k,g:'m',old:true,skin:'#e4bc9c',hair:'#d8d4cc',style:'short',hat:null,coat:'#1c2232',shirt:'#eef0f2',tie:'#2a4a9a',beard:false,stache:false,glasses:false,brow:1});return L}
   if(k==='agent'){Object.assign(L,{chub:true,celeb:k,g:'m',old:false,skin:'#d8ae8c',hair:'#2a221c',style:'bald',hat:null,coat:'#121216',shirt:'#f2f2ee',tie:'#0a0a0c',beard:false,stache:false,glasses:true,gl:'sun',brow:1});return L}
   if(k==='hitler'){Object.assign(L,{celeb:k,g:'m',old:false,skin:'#e8c4a4',hair:'#1f1812',style:'short',hat:null,coat:'#6a5e40',shirt:'#8a7c56',tie:'#15130f',beard:false,stache:true,glasses:false,brow:1});return L}
@@ -1954,7 +1955,7 @@ function celebLook(){const k=pick(['biden','zelensky','hitler','floyd','kirk','b
   if(k==='biden')Object.assign(L,{celeb:k,g:'m',old:true,skin:'#e8c4a8',hair:'#e8e4dc',style:'short',hat:null,coat:'#1f2a44',shirt:'#eef0f2',tie:'#2a4a8a',beard:false,stache:false,glasses:false,brow:0});
   else Object.assign(L,{celeb:k,g:'m',old:false,skin:'#dcb498',hair:'#2a2420',style:'short',hat:null,coat:'#4a5238',shirt:'#4a5238',tie:null,beard:'chin',stache:true,glasses:false,brow:1});
   return L}
-function roleFor(L){if(L.celeb==='bibi')return I18L('Нетаньяху');if(L.celeb==='agent')return LG('Агент Пирожок','Agent Dumpling');if(L.celeb==='kirk')return I18L('Кирк');if(L.celeb==='floyd')return I18L('Флойд');if(L.celeb==='hitler')return I18L('Адольф Гитлер');if(L.celeb==='biden'||L.celeb==='zelensky')return L.celeb==='biden'?I18L('Джо Байден'):I18L('Владимир Зеленский');if(L.cat)return pick([I18L('Бабушка с котом Барсиком'),I18L('Бабушка с котом Мурзиком'),I18L('Бабуля и её кот')]);if(L.sp==='granny')return pick([I18L('Бабушка Нина'),I18L('Бабушка Валя'),I18L('Бабуля с пенсией')]);if(L.sp==='mom')return L.nk===3?pick([I18L('Многодетная мама'),I18L('Мама троих детей')]):L.nk===2?pick([I18L('Мама двоих детей'),I18L('Мама с двойняшками')]):pick([I18L('Мама с малышом'),I18L('Молодая мама'),I18L('Мама-одиночка')]);if(L.sp==='wheel')return L.g==='f'?I18L('Женщина в коляске'):pick([I18L('Ветеран в коляске'),I18L('Мужчина в коляске')]);
+function roleFor(L){if(L.celeb==='trader')return LG('Крипто-трейдер','Crypto trader');if(L.celeb==='bibi')return I18L('Нетаньяху');if(L.celeb==='agent')return LG('Агент Пирожок','Agent Dumpling');if(L.celeb==='kirk')return I18L('Кирк');if(L.celeb==='floyd')return I18L('Флойд');if(L.celeb==='hitler')return I18L('Адольф Гитлер');if(L.celeb==='biden'||L.celeb==='zelensky')return L.celeb==='biden'?I18L('Джо Байден'):I18L('Владимир Зеленский');if(L.cat)return pick([I18L('Бабушка с котом Барсиком'),I18L('Бабушка с котом Мурзиком'),I18L('Бабуля и её кот')]);if(L.sp==='granny')return pick([I18L('Бабушка Нина'),I18L('Бабушка Валя'),I18L('Бабуля с пенсией')]);if(L.sp==='mom')return L.nk===3?pick([I18L('Многодетная мама'),I18L('Мама троих детей')]):L.nk===2?pick([I18L('Мама двоих детей'),I18L('Мама с двойняшками')]):pick([I18L('Мама с малышом'),I18L('Молодая мама'),I18L('Мама-одиночка')]);if(L.sp==='wheel')return L.g==='f'?I18L('Женщина в коляске'):pick([I18L('Ветеран в коляске'),I18L('Мужчина в коляске')]);
   if(L.old)return L.g==='f'?pick([I18L('Пенсионерка-инвестор'),I18L('Бабушка-вкладчица'),I18L('Пенсионерка')]):pick([I18L('Пенсионер-инвестор'),I18L('Дедушка-вкладчик'),I18L('Пенсионер')]);return pick(L.g==='f'?ROLES_F:ROLES_M)}
 const INSPECTOR={skin:'#dcb48c',hair:'#1a1a1a',coat:'#3b3d3a',shirt:'#d8d0c0',style:'short',hat:'officer',hatc:'#23241f',beard:false,stache:true,glasses:false,tie:'#1a1a1a',insp:true,brow:1};
 const CLERK={special:true,g:'m',skin:'#e3b98f',hair:'#3f2a1a',style:'short',hat:null,hatc:'#3a3a30',coat:'#56664a',shirt:'#d8d0c0',tie:'#8a2a22',beard:false,stache:false,glasses:false,brow:1};
@@ -1988,6 +1989,7 @@ function faceOf(L){if(L._f)return L._f;let h=2166136261;const str=L.avatar?['ava
   if(L.celeb==='floyd'){L.beard=true;L.stache=true;L.glasses=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'square',build:'wide',narrow:0,mood:'neutral',iris:'#2a1a10',neck:'crew',shirt:'#2a2a2e',clean:true,brow:'flat',nose:'wide',mouth:'full',eye:'normal',rsh:false,pend:false})}
   else if(L.celeb==='kirk'){L.beard=false;L.glasses=false;L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'y',shape:'long',build:'thin',narrow:2,mood:'smile',iris:'#4a3a2a',neck:'collar',shirt:'#f0f0f0',clean:true,brow:'flat',hairline:0,part:'side',nose:'normal',mouth:'normal',eye:'small',eyeGap:0,rsh:false,pend:false,stubble:false})}
   else if(L.celeb==='hitler'){L.beard=false;L.glasses=false;L.stache=true;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'long',build:'thin',narrow:2,mood:'frown',iris:'#3a4a5a',neck:'collar',shirt:L.shirt,clean:true,brow:'angry',hairline:0,part:'side',nose:'normal',mouth:'small',eye:'normal',eyeGap:0,rsh:true,pend:false,stubble:false,bags:false,look:0})}
+  else if(L.celeb==='trader'){L.beard=false;L.glasses=false;L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:true,age:'y',shape:'oval',build:'normal',narrow:1,mood:'smile',iris:'#3a6a9a',neck:'open',shirt:'#15130f',clean:true,brow:'raised',hairline:0,part:'side',nose:'normal',mouth:'wide',eye:'normal',eyeY:0,eyeGap:0,bags:false,rsh:false,pend:true,pc:'#e0b64a',gc:'#fff0a0',stubble:true,freckles:false,mole:null,scar:0,look:0})}
   else if(L.celeb==='bibi'){L.beard=false;L.glasses=false;L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'o',shape:'round',build:'wide',narrow:0,mood:'neutral',iris:'#5a6a78',neck:'collar',shirt:'#eef0f2',clean:true,brow:'thick',hairline:-1,part:'side',nose:'long',mouth:'wide',eye:'small',eyeGap:0,bags:true,rsh:true,pend:false,stubble:false,freckles:false,mole:null,scar:0,look:0})}
   else if(L.celeb==='agent'){L.beard=false;L.glasses=true;L.gl='sun';L.stache=false;Object.assign(f,{pretty:false,long:false,quiff:false,age:'m',shape:'round',build:'wide',narrow:0,mood:'neutral',iris:'#15120f',neck:'collar',shirt:'#f2f2ee',clean:true,brow:'flat',hairline:-2,part:'middle',nose:'normal',mouth:'small',eye:'normal',eyeY:0,eyeGap:0,bags:false,rsh:true,pend:false,stubble:false,freckles:false,mole:null,scar:0,chin:false,cheek:'full',ears:0,look:0})}
   else if(L.celeb){L.beard=false;L.glasses=false;L.stache=false}
@@ -2100,6 +2102,9 @@ function drawFace(L,cv,ov){
   else if(STT==='classic'){R(mx,my-2,mw,1,H);R(mx-1,my-1,mw+2,1,H);R(31,my-2,2,1,H1);R(mx-1,my-1,1,1,H1);R(mx+mw,my-1,1,1,H1);R(mx-2,my,1,1,H1);R(mx+mw+1,my,1,1,H1);R(mx+1,my-2,2,1,H2);R(mx+mw-3,my-2,2,1,H2)}
   if(LH){for(let y=L.hat?23:19;y<=50;y++){const dr=y>38?Math.floor((y-38)/4):0,w=y<42?4:Math.max(1,4-Math.floor((y-42)/2)),a=17+d-dr,b=a+w;R(a-1,y,1,1,OL);R(a,y,w,1,H);R(b-1,y,1,1,H1);R(b,y,1,1,OL);R(64-b-1,y,1,1,OL);R(64-b,y,w,1,H1);R(64-b,y,1,1,H);R(64-a,y,1,1,OL);if(y%6<2&&w>2)R(a+1,y,1,1,H2)}
     if(F.bang){for(let y=19;y<=24;y++){const w=Math.max(0,18-(y-19)*3);R(19,y,w,1,H);R(19+w,y,1,1,OL);if(y<22)R(21+(y-19)*2,y,3,1,H2)}}}
+  if(L.cash){const fl=tk%10<5?0:1,G1='#3e8a3e',G2='#6ab86a',G3='#24502a';R(40,56,9,8,s);R(40,56,9,1,sl);R(39,57,1,7,OL);R(40,60,9,2,'#e0b64a');R(41,60,3,1,'#fff0a0');
+    [[42,45-fl,0],[45,44,1],[48,45+fl,2]].forEach(([bx,by,i])=>{R(bx-1,by-1,7,13,OL);R(bx,by,5,11,i===1?G2:G1);R(bx,by,5,1,G2);R(bx+1,by+2,3,7,i===1?G1:G3);R(bx+2,by+4,1,3,'#d8f0c0');R(bx+1,by+5,3,1,'#d8f0c0')});
+    if(tk%24<3){R(56,42,1,3,'#fff8c0');R(55,43,3,1,'#fff8c0')}if(tk%30>14&&tk%30<17){R(37,47,1,3,'#fff8c0');R(36,48,3,1,'#fff8c0')}}
   if(L.celeb==='agent'){const SG='#0b0c10',SG1='#262a34',SG2='#4a5262',a0=lx-4,a1=rx+ew+4;
     R(17+d,ey-1,a0-17-d,1,SG);R(a1,ey-1,47-d-a1,1,SG);R(a0-1,ey-2,a1-a0+2,eh+4,OL);R(a0,ey-1,a1-a0,eh+2,SG);R(a0,ey-1,a1-a0,1,SG2);R(a0+1,ey,a1-a0-2,1,SG1);R(31,ey+eh,2,1,s);R(30,ey+eh+1,4,1,s);R(31,ey+eh+1,2,1,sd);
     const g=tk%64;if(g<12){const gx=a0+g*3;for(let k=0;k<eh+2;k++){const px3=gx+k;if(px3>=a0&&px3<a1-1){R(px3,ey+eh-k,1,1,'rgba(235,240,255,.85)');if(px3+1<a1)R(px3+1,ey+eh-k,1,1,'rgba(235,240,255,.4)')}}}
@@ -2107,7 +2112,7 @@ function drawFace(L,cv,ov){
     const ex=32+hwAt(ey+3);R(ex,ey+2,3,3,OL);R(ex+1,ey+3,1,1,'#d8d8d0');for(let k=0;k<15;k++){const cx2=ex+1-Math.round(k*.45),cy=ey+5+k;R(cx2+(k%2),cy,1,1,k%2?'#b8b8b0':'#e8e8e0')}
     {const BZ=pmixHex(s,H,.72),BZ1=shade(BZ,.8);for(let y=10;y<=19;y++){const hw=y===10?Math.max(3,HW[0]-1):hwAt(y);R(32-hw,y,hw*2,1,BZ);R(32+hw-4,y,4,1,BZ1);for(let xx=32-hw+1;xx<32+hw-1;xx++)if((xx*13+y*7)%9===0)R(xx,y,1,1,H)}R(26,11,7,1,shade(BZ,1.25))}for(let y=22;y<=27;y++){const hw=hwAt(y);R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}if(!talk){R(mx+mw,my-1,1,1,s3);R(mx+mw-2,my,2,1,sd)}for(let y=29;y<=45;y++){const hw=y<=44?hwAt(y):HW[33]-1,e=Math.round(3.2*Math.sin(Math.PI*(y-29)/16));if(e<=0)continue;R(32-hw-e-1,y,1,1,OL);R(32-hw-e,y,e+1,1,y>38?sd:s);R(32-hw-e,y,1,1,sl);R(32+hw-1,y,e+1,1,s2);R(32+hw+e,y,1,1,OL)}
     R(20,34,4,2,sl);R(40,34,3,2,shade(s,1.06));R(21,36,3,1,pmixHex(s,'#d07a70',.3));R(40,36,3,1,pmixHex(s,'#c06a60',.3));
-    R(26,42,12,1,sd);R(22,45,20,1,s2);R(21,46,22,1,OL);R(23,44,18,1,s);R(24,45,16,1,s);R(26,45,12,1,sd);
+    {const bw=hwAt(44);R(32-bw+3,43,(bw-3)*2,1,sd);R(32-bw+4,44,(bw-4)*2,1,s);R(32-bw-1,45,bw*2+2,1,OL);R(32-bw,45,bw*2,1,s);R(32+bw-3,45,3,1,s2);const w=bw-2;R(32-w-1,46,w*2+2,1,OL);R(32-w,46,w*2,1,sd);R(32-w+2,47,w*2-4,1,OL)}
     R(27,51,1,1,'#d8a050');R(36,54,1,1,'#c88a40');R(33,49,1,1,'#d8a050');
     R(42,59,9,5,s);R(42,59,9,1,sl);R(41,60,1,4,OL);
     {const PR=[[0,4,8],[1,2,11],[2,1,12],[3,1,12],[4,2,11],[5,4,8]],px0=42,py0=52;PR.forEach(([dy,a,w])=>{R(px0+a-1,py0+dy,w+2,1,OL)});R(px0+3,py0-1,7,1,OL);
@@ -2259,7 +2264,7 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   if(L.insp){R(px+3,y+9,6,1,'#e0b64a');R(px+4,y+13,4,2,'#a3302a')}
   if(L.hat==='police'){R(px+3,y+12,6,1,'#e0e0e0');R(px+7,y+11,1,2,'#e0b64a')}
   R(px+5+lg[0],y+20,2,7-bob,'#2a2620');R(px+5+lg[0],py+26,4,2,'#15130f');
-  R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);
+  R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);if(L.cash){R(px+6+arm,y+15,4,3,'#3e8a3e');R(px+6+arm,y+15,4,1,'#6ab86a');R(px+7+arm,y+16,1,1,'#d8f0c0')}
   R(px+5,y+7,3,2,sd);
   R(px+3,y+1,7,7,s);R(px+9,y+3,1,4,s);R(px+10,y+4,1,2,sd);R(px+3,y+7,6,1,sd);
   if(LSt!=='bald'){R(px+3,y,6,2,H);R(px+3,y+1,3,4,H);R(px+2,y+1,1,4,shade(H,.8))}else R(px+3,y+2,1,3,H);
@@ -2775,8 +2780,35 @@ function foodGen(){const D=PP.diff||1,$m=v=>'$'+(Math.round(v*100)/100).toLocale
 const PIE_OPEN=[['Мне по-быстрому, у меня обед стынет.','Make it quick, my lunch is getting cold.'],['Секретное задание. Очень секретное. Про еду.','A secret mission. Very secret. About food.'],['Я из спецслужбы. Служба доставки еды, если что.','I\'m from a special service. The food delivery service, to be exact.'],['Начальство не знает, что я здесь. Оно думает, я на обеде. Я и правда на обеде.','My bosses don\'t know I\'m here. They think I\'m at lunch. I am at lunch.'],['Посчитайте, а я пока доем.','You count, I\'ll finish eating.']];
 const PIE_THX=[['Отлично. Это надо отметить пирожком.','Great. This calls for a pie.'],['Миссия выполнена. Иду на второй обед.','Mission accomplished. Off to my second lunch.']];
 const PIE_BAD=[['Ошибка в расчётах портит аппетит. Почти.','A math mistake ruins the appetite. Almost.'],['Я доложу начальству. После десерта.','I\'ll report this to my bosses. After dessert.']];
+
+function traderTask(){const $m=v=>'$'+Math.round(v).toLocaleString('en-US'),g=pick(['roi','dbl','bot','lambo','subs']);let st,cl;
+  if(g==='roi'){const I=rint(1,9)*100,V=I*rint(800,5000),X=Math.round((V-I)/I*100).toLocaleString('en-US');st=LG(`Вложил ${$m(I)} в мемкоин $PIROZHOK по сигналу из телеграм-канала @miilionas. Через 3 дня на счёте ${$m(V)}.`,`Put ${$m(I)} into the $PIROZHOK memecoin on a signal from the Telegram channel @miilionas. Three days later the account shows ${$m(V)}.`);cl=LG(`Доходность (${$m(V)} − ${$m(I)}) ÷ ${$m(I)} = ${X}%. Подписывайтесь на @miilionas!`,`Return (${$m(V)} − ${$m(I)}) ÷ ${$m(I)} = ${X}%. Subscribe to @miilionas!`)}
+  else if(g==='dbl'){const S=pick([100,200,500]),n=pick([7,8,10,12]),V=S*Math.pow(2,n);st=LG(`Удваиваю депозит каждый день по стратегии из @miilionas. Начал с ${$m(S)}.`,`I double my deposit every day with the strategy from @miilionas. Started with ${$m(S)}.`);cl=LG(`Через ${n} дней будет ${$m(S)} × 2^${n} = ${$m(V)}. Изи.`,`In ${n} days that's ${$m(S)} × 2^${n} = ${$m(V)}. Easy.`)}
+  else if(g==='bot'){const h=rint(5,20)*1000,V=h*24*30;st=LG(`Мой торговый бот из @miilionas приносит ${$m(h)} в час. Круглосуточно, без выходных.`,`My trading bot from @miilionas makes ${$m(h)} an hour. Around the clock, no days off.`);cl=LG(`За 30 дней это ${$m(h)} × 24 × 30 = ${$m(V)}.`,`Over 30 days that's ${$m(h)} × 24 × 30 = ${$m(V)}.`)}
+  else if(g==='lambo'){const P=rint(30,50)*10000,D=rint(40,90)*1000,N=(P/D).toFixed(1);st=LG(`Ламба стоит ${$m(P)}. На сигналах @miilionas я поднимаю ${$m(D)} в день.`,`A Lambo costs ${$m(P)}. On @miilionas signals I make ${$m(D)} a day.`);cl=LG(`Значит, ламба будет через ${$m(P)} ÷ ${$m(D)} ≈ ${N} дня.`,`So the Lambo is ${$m(P)} ÷ ${$m(D)} ≈ ${N} days away.`)}
+  else{const N=rint(200,900)*1000,V=Math.round(N*9.99);st=LG(`В моём канале @miilionas ${N.toLocaleString('en-US')} подписчиков. VIP стоит $9.99 в месяц, и платят все.`,`My channel @miilionas has ${N.toLocaleString('en-US')} subscribers. VIP costs $9.99 a month and everyone pays.`);cl=LG(`Выручка ${N.toLocaleString('en-US')} × $9.99 = ${$m(V)} в месяц.`,`Revenue ${N.toLocaleString('en-US')} × $9.99 = ${$m(V)} a month.`)}
+  return{kind:'claim',trader:true,title:LG('Крипто-отчёт','Crypto report'),story:st,claim:cl,ok:false,why:''}}
+const TRD_OPEN=[['Йоу! Видел мой канал @miilionas? Там такие иксы!','Yo! Seen my channel @miilionas? Insane gains there!'],['Деньги не проблема. Смотри, пачка. И ещё пачка.','Money\'s no problem. Look, a stack. And another stack.'],['Я на минутку, у меня созвон с Илоном.','Just a minute, I have a call with Elon.'],['Пока ты считаешь, я заработал ещё $10,000.','While you count, I made another $10,000.'],['Бро, подпишись на @miilionas, и тебе не надо будет тут сидеть.','Bro, subscribe to @miilionas and you won\'t have to sit here.']];
+const TRD_THX=[['Изи. Подписывайся на @miilionas!','Easy. Subscribe to @miilionas!'],['Вот это я понимаю сервис. Держи на чай, брат.','Now that\'s service. Here\'s a tip, bro.']];
+const TRD_BAD=[['Ты просто не понимаешь крипту. Читай @miilionas.','You just don\'t get crypto. Read @miilionas.'],['Это FUD! Всё в @miilionas!','That\'s FUD! It\'s all in @miilionas!']];
+async function traderBribe(p,fin){
+  await tick(()=>near(p));p.run=false;p.faceL=true;
+  const car={x:-QS.OX-70,y:118,dir:1,sp:Math.max(7,(p.x-90+QS.OX+70)/24)};QS.car=car;const siren=ppSiren(3);SFX.engine();ppTalk(I18L('Полиция'),LG('Финансовая полиция! Гражданин трейдер, вы в розыске!','Financial police! Mister trader, you are wanted!'));
+  await tick(()=>car.x>=p.x-90);siren.stop();car.sp=0;await sleep(400);
+  const cop={look:COP(),x:car.x+22,y:108,tx:p.x-16,ty:108,state:'x',sp:2.6};QS.people.push(cop);await tick(()=>near(cop));
+  ppTalk(PD.cur.role,LG('Стоп-стоп-стоп! Давай договоримся. И подпишись на @miilionas!','Whoa, whoa! Let\'s make a deal. And subscribe to @miilionas!'));await sleep(900);
+  p.look.cash=false;const bills=[];for(let i=0;i<10;i++){const b={t:'bill',x:p.x+4,y:p.y+12,vx:rint(-30,30)/10,vy:-rint(30,60)/10,gy:rint(126,134)};bills.push(b);QS.actors.push(b)}
+  SFX.coinSt();popText('$$$',Math.round(p.x+6),Math.round(p.y-4),'#6ab86a',16);
+  await tick(()=>{let all=true;bills.forEach(b=>{if(b.y<b.gy){b.x+=b.vx;b.y+=b.vy;b.vy+=.6;all=false}else b.y=b.gy});return all});
+  ppTalk(I18L('Полиция'),LG('Хм… Я ничего не видел.','Hmm… I didn\'t see anything.'));
+  p.run=true;p.faceL=false;p.tx=QS.W-QS.OX+40;p.sp=4.6;popText(LG('ПОКА!','BYE!'),Math.round(p.x+6),Math.round(p.y-6),'#ffe060',12);fin();
+  bills.sort((a,b)=>a.x-b.x);for(const b of bills){cop.tx=Math.round(b.x-6);cop.faceL=cop.tx<cop.x;cop.sp=2.4;await tick(()=>near(cop));QS.actors=QS.actors.filter(a=>a!==b);sTone(1200,.06,'triangle',.03);await sleep(120)}
+  ppTalk(I18L('Полиция'),LG('Нарушитель скрылся. Улики изъяты.','The suspect got away. The evidence has been seized.'));
+  await until(()=>p.x>=QS.W-QS.OX+20,6000);p.hide=true;cop.faceL=true;cop.tx=car.x+22;await tick(()=>near(cop));cop.hide=true;await sleep(250);
+  car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null}
 function ppTraitLines(L,kind){const F=faceOf(L),o=L.old||F.age==='o',y=F.age==='y',fm=L.g==='f',r=[];const A=(ru,en)=>r.push([ru,en]);
   if(L.celeb==='agent')return kind==='open'?PIE_OPEN:kind==='thx'?PIE_THX:PIE_BAD;
+  if(L.celeb==='trader')return kind==='open'?TRD_OPEN:kind==='thx'?TRD_THX:TRD_BAD;
   if(kind==='open'){
     if(L.celeb==='bibi')A('Проверьте внимательно. Я тоже умею проверять.','Check it carefully. I know how to check things too.');
     if(L.celeb==='kirk')A('Готов поспорить, что мой ответ верный. Докажите, что нет.','I bet my answer is right. Prove me wrong.');
@@ -2807,7 +2839,7 @@ function ppTraitLines(L,kind){const F=faceOf(L),o=L.old||F.age==='o',y=F.age==='
   else{if(o)A('Эх, молодёжь. Ничего считать не умеют.','Oh, young people. Can\'t count at all.');if(y)A('Серьёзно? Я же отзыв напишу.','Seriously? I\'m going to leave a review.');
     if(L.sp==='mom')A('Мне некогда с этим разбираться, я вообще-то с детьми.','I have no time for this, I have kids with me.');if(L.celeb==='kirk')A('Видите? Я же говорил. Докажите обратное.','See? I told you so. Prove otherwise.');if(L.celeb==='bibi')A('Неправильно. Охрана!','Wrong. Security!');if(L.catgirl)A('Ш-ш-ш!','Hisss!')}
   return r}
-function ppLine(c,kind,base){const ls=c.look?ppTraitLines(c.look,kind):[];const sp=c.look&&(c.look.celeb||c.look.catgirl);if(ls.length&&(c.look.celeb==='agent'||Math.random()<(sp?.7:.4))){const l=pick(ls);return LG(l[0],l[1])}return pick(base)}
+function ppLine(c,kind,base){const ls=c.look?ppTraitLines(c.look,kind):[];const sp=c.look&&(c.look.celeb||c.look.catgirl);if(ls.length&&(c.look.celeb==='agent'||c.look.celeb==='trader'||Math.random()<(sp?.7:.4))){const l=pick(ls);return LG(l[0],l[1])}return pick(base)}
 
 function easyTasks(n){const seen=new Set(store.get('ppSeenE',[]));let pool=shuffle(EASYQ.filter(q=>!seen.has(q.id)));if(pool.length<n)pool=shuffle(EASYQ.slice());const t=[];const nGen=Math.max(1,Math.round(n*.4));
   for(let i=0;i<n;i++){const q=i<nGen?easyGen():pool.pop();t.push({kind:'q',q})}store.set('ppSeenE',[...seen,...t.map(x=>x.q.id).filter(id=>id.startsWith('ez'))].slice(-30));
@@ -2845,7 +2877,7 @@ function makeTasks(n,ev){
   {const dd=((PP.diff||1)-3)*2;if(dd<0){const rm=Math.min(-dd,Math.max(0,t.length-3));for(let i=0;i<rm;i++)t.splice(rint(0,t.length-1),1)}else if(dd>0){const ex=qTopics.length?ppPickQs(dd,new Set(t.filter(x=>x.q).map(x=>x.q.id)),new Set(qTopics)):[];ex.forEach(q=>t.push({kind:'q',q}));for(let i=ex.length;i<dd&&OK.length;i++){const k=pick(OK);t.push(k==='order'?orderTask():k==='sort'?sortTask():k==='build'?buildTask():ofillTask())}}}
   return ppFinishTasks(t)}
 function ppFinishTasks(t){
-  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};return Object.assign(x,{look,role:roleFor(look)})});
+  return docSpread(shuffle(t)).map(x=>{const look=Math.random()<.05?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&Math.random()<.3)look.flag=pick(Object.keys(FLAGS));if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};if(look.celeb==='trader')x=traderTask();return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
@@ -3205,6 +3237,7 @@ function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;if(d
   else if(a.t==='boom'){const r=a.r;for(let i=0;i<24;i++){const an=i/24*Math.PI*2;R(Math.round(x+Math.cos(an)*r),Math.round(y+Math.sin(an)*r*.7),3,3,i%3?'#ff8a20':'#ffe060')}R(x-r/3,y-r/4,r*.66,r*.5,'rgba(255,200,80,.5)')}
   else if(a.t==='smoke'){R(x,y,4,4,'rgba(80,80,80,.6)');R(x+2,y-2,3,3,'rgba(110,110,110,.5)')}
   else if(a.t==='ufo'){R(x+6,y,12,4,'#8ab0c8');R(x,y+4,24,4,'#9a9aa8');R(x+2,y+8,20,2,'#6a6a78');for(let i=0;i<4;i++)R(x+3+i*5,y+5,2,2,(t+i)%4<2?'#7fe08a':'#ffe060');if(a.beam){const g='rgba(127,224,138,.28)';for(let yy=y+10;yy<a.beam;yy+=2){const w=8+Math.round((yy-y)/5);R(x+12-w/2,yy,w,2,g)}}}
+  else if(a.t==='bill'){R(x-1,y-1,7,5,'#15130f');R(x,y,5,3,'#3e8a3e');R(x,y,5,1,'#6ab86a');R(x+2,y+1,1,1,'#d8f0c0')}
   else if(a.t==='coin'){R(x,y,4,4,t%4<2?'#e0b64a':'#f3d884');R(x+1,y+1,2,2,'#9b7424')}
   else if(a.t==='pigeon'){const f=Math.floor(t/(a.hover?1:2))%2;const R0=R;R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);R(x,y+4,4,3,'#5a5a64');R(x+3,y+3,10,6,'#9a9aa6');R(x+4,y+8,8,1,'#7a7a86');R(x+11,y+1,4,5,'#6a8a7a');R(x+12,y+2,2,2,'#8a5a9a');R(x+13,y-2,4,4,'#a8a8b4');R(x+15,y-1,1,1,'#c03020');R(x+17,y,2,1,'#e0a030');R(x+5,y+9,1,2,'#d06060');R(x+9,y+9,1,2,'#d06060');if(f){R(x+4,y-4,7,6,'#7a7a86');R(x+5,y-5,5,1,'#8a8a96')}else{R(x+4,y+6,7,6,'#7a7a86');R(x+5,y+11,5,1,'#6a6a72')}}
   else if(a.t==='poop'){const R0=R;R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);R(x,y,4,4,'#f0f0e8');R(x+1,y-3,2,3,'rgba(240,240,232,.6)');R(x+1,y+1,1,1,'#9a9a90')}
@@ -3555,7 +3588,7 @@ async function ppArrestAnim(cb){
   p.state='x';p.ty=110;p.tx=arrestSpot(p);if(v===MOB&&QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying).length>=2)p.tx=Math.max(p.tx,-QS.OX+QS.W/2);p.sp=Math.max(4.4,Math.abs(p.tx-p.x)/40);p.run=true;let spl={granny:I18L('Сынок, да ты что?! Я ж тебе пирожков принесла!'),mom:p.look.nk===3?I18L('Только не при детях!! Все трое, бежим!'):p.look.nk===2?I18L('Дети, держитесь за руки, бежим!'):I18L('Не при ребёнке!! Мы убегаем!'),wheel:I18L('Серьёзно?! Ну догоняй!')}[p.look.sp];if(p.look.cat)spl=I18L('Барсик, бежим! Нас не поймают!');ppTalk(PD.cur.role,spl||I18L('Нет! Я не пойду! Бегу!'));{const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3;p.panicMode=Math.random()<.5?'dash':'zig';p.pdir=null;panicNext(p)}
   let done=false;const fin=()=>{if(done)return;done=true;if(PD)PD.anim=false;SPD=1;ppBar();FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
 
-  try{if(v){ppTalk(I18L('Бюро'),trial?I18T`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk(I18L('Бюро'),I18L('Патруль, перехватите его!'));if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}catch(e){}
+  try{if(PD.cur&&PD.cur.bribed){await traderBribe(p,fin)}else{if(v){ppTalk(I18L('Бюро'),trial?I18T`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk(I18L('Бюро'),I18L('Патруль, перехватите его!'));if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}}catch(e){}
   if(!p.f0)p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
 }
 /* ---------- random events between visitors ---------- */
@@ -3675,13 +3708,14 @@ function ppSuspectArrest(){
 }
 function ppClaim(arrest){
   const c=PD.cur,right=arrest===!c.ok;document.querySelectorAll('#ppPaper [data-claim]').forEach(b=>b.disabled=true);
+  if(c.trader){c.why=arrest?LG('Ошибок в документе нет, но вы молодец, что арестовали. Трейдер был в розыске.','There are no mistakes in the document, but well done for arresting him. The trader was wanted.'):LG('Ошибок в расчёте нет, но трейдер был в розыске. Его нужно было арестовать.','The math has no mistakes, but the trader was wanted. He should have been arrested.');if(arrest&&Math.random()<.5){c.bribed=true;c.why+=' '+LG('Правда, он откупился: кинул деньги на землю и сбежал. Решение всё равно верное.','He did buy his way out though: threw cash on the ground and ran. Your call was still right.')}}
   const expl=c.why,ai=I18T`Проверь, прав ли посетитель, и объясни по шагам. Я студент 1 курса, Managerial Finance (Gitman).\nТема: ${c.title}\nУсловие: ${c.story}\nПосетитель утверждает: ${c.claim}\nМоё решение: ${arrest?I18L('я решил, что посетитель ошибается, и арестовал его'):I18L('я решил, что посетитель прав, и одобрил')}. Прав ли я?\nПо ключу игры: ${c.ok?I18L('посетитель прав'):I18L('посетитель ошибается')}.`;
   const finish=()=>{PD.state='done';ppUnfreeze();$('#ppDesk').classList.add('answered');ppThunk();
     $('#ppPaper').insertAdjacentHTML('beforeend',`<div class="ink ${right?'ok':'no'}">${arrest?I18L('АРЕСТ'):I18L('ОДОБРЕНО')}</div>`);
     if(right){PD.correct++;ppOnCorrect();PD.fees+=15;PP.cash+=15;setTimeout(()=>{SFX.ok();setTimeout(SFX.coin,220)},90)}else{PD.wrong++;ppOnWrong();PD.deduct+=15;PP.cash-=15;setTimeout(SFX.bad,90)}
-    if(!arrest)ppTalk(c.role,c.ok?I18L('Спасибо, что поверили.'):I18L('Хе-хе. Спасибо за печать!'));
+    if(!arrest)ppTalk(c.role,c.trader?LG('Хе-хе. Подписывайся на @miilionas!','Heh-heh. Subscribe to @miilionas!'):c.ok?I18L('Спасибо, что поверили.'):I18L('Хе-хе. Спасибо за печать!'));
     setTimeout(ppScrollDesk,80);
-    $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${arrest?I18L('ЛЖЕЦ ЗАДЕРЖАН'):I18L('ВЕРНОЕ ОДОБРЕНИЕ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:I18T`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${arrest?I18L('АРЕСТ БЕЗ ОСНОВАНИЙ'):I18L('ПРОПУЩЕНА ЛОЖЬ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
+    $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${c.trader?LG('ТРЕЙДЕР В РОЗЫСКЕ','WANTED TRADER'):arrest?I18L('ЛЖЕЦ ЗАДЕРЖАН'):I18L('ВЕРНОЕ ОДОБРЕНИЕ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:I18T`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${c.trader?LG('ОТПУЩЕН ТРЕЙДЕР В РОЗЫСКЕ','WANTED TRADER LET GO'):arrest?I18L('АРЕСТ БЕЗ ОСНОВАНИЙ'):I18L('ПРОПУЩЕНА ЛОЖЬ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
     ppSave();ppBar()};
   if(arrest){PD.state='anim';ppBar();ppArrestAnim(finish)}else finish();
 }
@@ -3886,6 +3920,7 @@ const ALBUM=[
  ['floyd',I18L('Флойд'),I18L('Знаменитость, приходит редко'),L=>L.celeb==='floyd',I18L('Самый большой в очереди и самый спокойный. Никого не толкает и ждёт молча.')],
  ['bibi',I18L('Нетаньяху'),I18L('Знаменитость, приходит редко'),L=>L.celeb==='bibi',LG('Если посчитаешь неправильно, арестуют уже тебя.','Get the math wrong and you\'re the one getting arrested.')],
  ['agent',LG('Агент Пирожок','Agent Dumpling'),I18L('Очень редкий гость'),L=>L.celeb==='agent',LG('Любит вкусненько покушать перед работой, и после работы, и вместо работы...','Loves a tasty bite before work, and after work, and instead of work...')],
+ ['trader',LG('Крипто-трейдер','Crypto trader'),I18L('Знаменитость, приходит редко'),L=>L.celeb==='trader',LG('Флексит пачками денег и ведёт телеграм-канал @miilionas. Находится в розыске, но в канале об этом не пишет.','Flexes stacks of cash and runs the Telegram channel @miilionas. He is wanted, but doesn\'t post about it in the channel.')],
  ['inspector',I18L('Налоговый инспектор'),I18L('Приходит каждый вечер'),L=>!!L.insp,[I18L('Любит порядок, медали и чужие ошибки. Свои не замечает.'),I18L('Любит порядок, медали и чужие ошибки. Свои не замечает.')]],
  ['boss',I18L('Олигарх Скруджев'),I18L('Босс недели, каждый 7-й день'),L=>!!L.boss,I18L('Семь заводов, ноль бухгалтеров. Монокль дороже твоей будки.')],
  ['golden',I18L('Золотой клиент'),I18L('Секрет: длинная серия верных ответов'),L=>!!L.golden,[I18L('Весь из золота. Даже совесть.'),I18L('Вся из золота. Даже совесть.')]],
@@ -3894,7 +3929,7 @@ const ALBUM=[
 const lookClone=L=>JSON.parse(JSON.stringify(L));
 const gtxt=(v,L)=>Array.isArray(v)?v[L&&L.g==='f'?1:0]:(v||'');
 const RARITY=[[I18L('Обычный'),'#8f8360'],[I18L('Необычный'),'#4a9a4a'],[I18L('Редкий'),'#3a7ac8'],[I18L('Эпический'),'#9a4ac8'],[I18L('Легендарный'),'#e0a020']];
-const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_pride:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,pride_mom:3,golden:4,ghost:4,deep:4};
+const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_pride:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,trader:3,pride_mom:3,golden:4,ghost:4,deep:4};
 const albR=k=>ALB_R[k]||0;
 function albumSee(L){if(!L)return;if(L.celeb&&!META.st['cel_'+L.celeb]){stInc('cel_'+L.celeb);achCheck()}const F=faceOf(L);const got=[];const m=ALBUM.filter(([k,,,t])=>!META.album[k]&&t(L,F)).sort((a,b)=>albR(b[0])-albR(a[0]))[0];
   if(m){META.album[m[0]]={L:lookClone(L),d:PP.day};got.push(gtxt(m[1],L))}
@@ -3937,10 +3972,11 @@ const ACH=[
  ['cel_kirk',I18L('Докажи, что я неправ'),I18L('Встреть в очереди любителя дебатов'),s=>s.cel_kirk>=1,null],
  ['cel_floyd',I18L('Мягкий великан'),I18L('Встреть в очереди очень большого и спокойного посетителя'),s=>s.cel_floyd>=1,null],
  ['cel_bibi',I18L('Встречный вопрос'),I18L('Обслужи Нетаньяху'),s=>s.cel_bibi>=1,null],
+ ['cel_trader',LG('В розыске','Wanted'),LG('Встреть крипто-трейдера','Meet the crypto trader'),s=>s.cel_trader>=1,null],
  ['cel_agent',I18L('Вы ничего не видели'),LG('Обслужи Агента Пирожка','Serve Agent Dumpling'),s=>s.cel_agent>=1,null]];
 function achStats(){const S=META.st;return{days:S.days||0,maxDay:Math.max(S.maxDay||0,PP.day),medals:Math.max(S.maxMedals||0,PP.medals.length),perfect:S.perfect||0,bestStreak:S.bestStreak||0,arrests:S.arrests||0,bosses:S.bosses||0,
   maxCash:Math.max(S.maxCash||0,PP.cash),shop:Object.keys(PP.owned||{}).filter(k=>!k.includes(':')).length,allArr:ARRESTS.filter(a=>!a.secret).every(a=>(PP.arrests||{})[a.n]),thief:S.thief||0,coins8:S.coins8||0,insp:S.insp||0,pet:S.pet||0,
-  petDays:Math.max(S.petDays||0,PP.pet?PP.day-PP.pet.since:0),album:Object.keys(META.album).length,eggs:Object.keys(META.eggs).length,events:Object.keys(S.ev||{}).length,broke:S.broke||0,deadweight:S.deadweight||0,cel_biden:S.cel_biden||0,cel_zelensky:S.cel_zelensky||0,cel_hitler:S.cel_hitler||0,cel_kirk:S.cel_kirk||0,cel_floyd:S.cel_floyd||0,cel_bibi:S.cel_bibi||0,cel_agent:S.cel_agent||0}}
+  petDays:Math.max(S.petDays||0,PP.pet?PP.day-PP.pet.since:0),album:Object.keys(META.album).length,eggs:Object.keys(META.eggs).length,events:Object.keys(S.ev||{}).length,broke:S.broke||0,deadweight:S.deadweight||0,cel_biden:S.cel_biden||0,cel_zelensky:S.cel_zelensky||0,cel_hitler:S.cel_hitler||0,cel_kirk:S.cel_kirk||0,cel_floyd:S.cel_floyd||0,cel_bibi:S.cel_bibi||0,cel_agent:S.cel_agent||0,cel_trader:S.cel_trader||0}}
 const REWARD_NAME={hat:{fedora:I18L('шляпа'),officer:I18L('фуражка'),top:I18L('цилиндр'),crown:I18L('корона'),halo:I18L('нимб'),horns:I18L('рожки'),ears:I18L('кошачьи ушки')},gl:{sun:I18L('тёмные очки'),mono:I18L('монокль')},tie:{gold:I18L('золотой галстук')},badge:{medal:I18L('орден на грудь'),star:I18L('звезда шерифа'),heart:I18L('значок-сердечко'),egg:I18L('значок пасхальщика')},coat:{'#15130f':I18L('чёрный пиджак'),'#6a2a4a':I18L('бордовый пиджак'),'#c9a24a':I18L('золотой пиджак'),'#2a4a6a':I18L('синий пиджак'),'#1e2a44':I18L('парадный мундир')}};
 const rewardText=r=>r?I18L('Награда: ')+(REWARD_NAME[r[0]][r[1]]||r[1]):'';
 function achCheck(){const s=achStats();let n=0;ACH.forEach(([k,name,d,t,r])=>{if(!META.ach[k]&&t(s)){META.ach[k]=PP.day||1;n++;setTimeout(()=>{toast(I18L('Достижение: ')+name,r?rewardText(r)+I18L(' для инспектора'):d,'#e0b64a');chime()},n*700)}});if(n)metaSave()}
