@@ -2932,20 +2932,19 @@ const TRD_OPEN=[['Йоу! Видел мой канал @miilionas? Там так
 const TRD_THX=[['Изи. Подписывайся на @miilionas!','Easy. Subscribe to @miilionas!'],['Вот это я понимаю сервис. Держи на чай, брат.','Now that\'s service. Here\'s a tip, bro.']];
 const TRD_BAD=[['Ты просто не понимаешь крипту. Читай @miilionas.','You just don\'t get crypto. Read @miilionas.'],['Это FUD! Всё в @miilionas!','That\'s FUD! It\'s all in @miilionas!']];
 async function traderBribe(p,fin){
-  await tick(()=>near(p));p.run=false;p.faceL=true;
-  const car={x:-QS.OX-70,y:118,dir:1,sp:Math.max(7,(p.x-90+QS.OX+70)/24)};QS.car=car;const siren=ppSiren(3);SFX.engine();ppTalk(I18L('Полиция'),LG('Финансовая полиция! Гражданин трейдер, вы в розыске!','Financial police! Mister trader, you are wanted!'));
-  await tick(()=>car.x>=p.x-90);siren.stop();car.sp=0;await sleep(400);
-  const cop={look:COP(),x:car.x+22,y:108,tx:p.x-16,ty:108,state:'x',sp:2.6};QS.people.push(cop);await tick(()=>near(cop));
-  ppTalk(PD.cur.role,LG('Стоп-стоп-стоп! Давай договоримся. И подпишись на @miilionas!','Whoa, whoa! Let\'s make a deal. And subscribe to @miilionas!'));await sleep(900);
-  p.look.cash=false;const bills=[];for(let i=0;i<10;i++){const b={t:'bill',x:p.x+4,y:p.y+12,vx:rint(-30,30)/10,vy:-rint(30,60)/10,gy:rint(126,134)};bills.push(b);QS.actors.push(b)}
+  p.panic=false;p.panicMode=null;p.run=false;p.moving=false;p.tx=p.x;p.ty=p.y;p.sp=0;p.faceL=true;
+  const car={x:-QS.OX-70,y:118,dir:1,sp:Math.max(10,(p.x-90+QS.OX+70)/14)};QS.car=car;const siren=ppSiren(2);SFX.engine();
+  await tick(()=>{p.panic=false;p.tx=p.x;return car.x>=p.x-90});siren.stop();car.sp=0;
+  const cop={look:COP(),x:car.x+22,y:108,tx:p.x-16,ty:108,state:'x',sp:4};QS.people.push(cop);
+  ppTalk(PD.cur.role,LG('Стоп-стоп-стоп! Давай договоримся. И подпишись на @miilionas!','Whoa, whoa! Let\'s make a deal. And subscribe to @miilionas!'));
+  await until(()=>near(cop),1500);
+  p.look.cash=false;const bills=[];for(let i=0;i<8;i++){const b={t:'bill',x:p.x+4,y:p.y+12,vx:rint(-30,30)/10,vy:-rint(30,55)/10,gy:rint(126,134)};bills.push(b);QS.actors.push(b)}
   SFX.coinSt();popText('$$$',Math.round(p.x+6),Math.round(p.y-4),'#6ab86a',16);
-  await tick(()=>{let all=true;bills.forEach(b=>{if(b.y<b.gy){b.x+=b.vx;b.y+=b.vy;b.vy+=.6;all=false}else b.y=b.gy});return all});
-  ppTalk(I18L('Полиция'),LG('Хм… Я ничего не видел.','Hmm… I didn\'t see anything.'));
-  p.run=true;p.faceL=false;p.tx=QS.W-QS.OX+40;p.sp=4.6;popText(LG('ПОКА!','BYE!'),Math.round(p.x+6),Math.round(p.y-6),'#ffe060',12);fin();
-  bills.sort((a,b)=>a.x-b.x);for(const b of bills){cop.tx=Math.round(b.x-6);cop.faceL=cop.tx<cop.x;cop.sp=2.4;await tick(()=>near(cop));QS.actors=QS.actors.filter(a=>a!==b);sTone(1200,.06,'triangle',.03);await sleep(120)}
-  ppTalk(I18L('Полиция'),LG('Нарушитель скрылся. Улики изъяты.','The suspect got away. The evidence has been seized.'));
-  await until(()=>p.x>=QS.W-QS.OX+20,6000);p.hide=true;cop.faceL=true;cop.tx=car.x+22;await tick(()=>near(cop));cop.hide=true;await sleep(250);
-  car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null}
+  p.panic=false;p.run=true;p.faceL=false;p.tx=QS.W-QS.OX+40;p.sp=7;popText(LG('ПОКА!','BYE!'),Math.round(p.x+6),Math.round(p.y-12),'#ffe060',12);fin();
+  await tick(()=>{let all=true;bills.forEach(b=>{if(b.y<b.gy){b.x+=b.vx;b.y+=b.vy;b.vy+=.7;all=false}else b.y=b.gy});p.panic=false;return all});
+  bills.sort((a,b)=>a.x-b.x);for(const b of bills){cop.tx=Math.round(b.x-6);cop.faceL=cop.tx<cop.x;cop.sp=5;await until(()=>near(cop),700);QS.actors=QS.actors.filter(a=>a!==b);sTone(1200,.05,'triangle',.03)}
+  await until(()=>p.x>=QS.W-QS.OX+20,1500);p.hide=true;cop.faceL=true;cop.tx=car.x+22;await until(()=>near(cop),1200);cop.hide=true;
+  car.dir=-1;car.sp=Math.max(10,(car.x+QS.OX+90)/12);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null}
 function ppTraitLines(L,kind){const F=faceOf(L),o=L.old||F.age==='o',y=F.age==='y',fm=L.g==='f',r=[];const A=(ru,en)=>r.push([ru,en]);
   if(L.celeb==='agent')return kind==='open'?PIE_OPEN:kind==='thx'?PIE_THX:PIE_BAD;
   if(L.celeb==='trader')return kind==='open'?TRD_OPEN:kind==='thx'?TRD_THX:TRD_BAD;
@@ -3814,7 +3813,7 @@ async function ppArrestAnim(cb){
   else{const ao=PP.arrOff||{};let pool=[...ownA];if(!ao.car)pool.push(null);if(!ao.mob)pool.push(MOB);if(!pool.length)pool=[null];const nm=a=>a?a.n:'car',names=pool.map(nm);let bag=(PP.arrBag||[]).filter(k=>names.includes(k));if(!bag.length){bag=shuffle(names.slice());if(bag.length>1&&bag[0]===PP.lastArrest)bag.push(bag.shift())}const nx=bag.shift();PP.arrBag=bag;v=pool.find(a=>nm(a)===nx)||null;trial=trial&&!!v&&v!==MOB}
   if((PP.arrCombo||0)>=3&&window.__forceArrest==null&&!(PD.cur&&PD.cur.bribed))v=pick(COMBOS);
   PP.lastArrest=v?v.n:'car';
-  p.state='x';p.ty=110;p.tx=arrestSpot(p);if(v===MOB&&QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying).length>=2)p.tx=Math.max(p.tx,-QS.OX+QS.W/2);p.sp=Math.max(4.4,Math.abs(p.tx-p.x)/40);p.run=true;let spl={granny:I18L('Сынок, да ты что?! Я ж тебе пирожков принесла!'),mom:p.look.nk===3?I18L('Только не при детях!! Все трое, бежим!'):p.look.nk===2?I18L('Дети, держитесь за руки, бежим!'):I18L('Не при ребёнке!! Мы убегаем!'),wheel:I18L('Серьёзно?! Ну догоняй!')}[p.look.sp];if(p.look.cat)spl=I18L('Барсик, бежим! Нас не поймают!');ppTalk(PD.cur.role,spl||I18L('Нет! Я не пойду! Бегу!'));{const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3;p.panicMode=Math.random()<.5?'dash':'zig';p.pdir=null;panicNext(p)}
+  p.state='x';p.ty=110;p.tx=arrestSpot(p);if(v===MOB&&QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying).length>=2)p.tx=Math.max(p.tx,-QS.OX+QS.W/2);p.sp=Math.max(4.4,Math.abs(p.tx-p.x)/40);p.run=true;let spl={granny:I18L('Сынок, да ты что?! Я ж тебе пирожков принесла!'),mom:p.look.nk===3?I18L('Только не при детях!! Все трое, бежим!'):p.look.nk===2?I18L('Дети, держитесь за руки, бежим!'):I18L('Не при ребёнке!! Мы убегаем!'),wheel:I18L('Серьёзно?! Ну догоняй!')}[p.look.sp];if(p.look.cat)spl=I18L('Барсик, бежим! Нас не поймают!');ppTalk(PD.cur.role,spl||I18L('Нет! Я не пойду! Бегу!'));if(!(PD.cur&&PD.cur.bribed)){const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3;p.panicMode=Math.random()<.5?'dash':'zig';p.pdir=null;panicNext(p)}
   let done=false;const fin=()=>{if(done)return;done=true;if(PD)PD.anim=false;SPD=1;ppBar();FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
 
   try{if(PD.cur&&PD.cur.bribed){await traderBribe(p,fin)}else{if(v){ppTalk(I18L('Бюро'),trial?I18T`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk(I18L('Бюро'),I18L('Патруль, перехватите его!'));if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}}catch(e){}
