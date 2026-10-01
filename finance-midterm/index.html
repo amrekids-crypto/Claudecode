@@ -3784,7 +3784,7 @@ const COMBOS=[
    p.vanishMsg=LG('Только запах озона.','Only the smell of ozone.');banner('')}},
  {n:'combo_rockets',combo:true,noPolice:true,title:LG('Ракетный ливень','Rocket rain'),line:LG('КОМБО! Бухгалтерия запросила огневую поддержку.','COMBO! Accounting requested fire support.'),async run(p){comboStart(p,LG('РАКЕТНЫЙ ЛИВЕНЬ','ROCKET RAIN'));await sleep(300);
    const L0=-QS.OX-14,R0=QS.W-QS.OX+14,px=p.x+6,py=p.y+16;let blown=false;
-   const heli={t:'heli',x:L0-60,y:-14,tilt:.08},tank={t:'tank',plain:1,x:Math.round(px-330),y:Math.round(p.y+27-40)};QS.actors.push(heli,tank);try{sNoise(2.5,.06,500,90);SFX.engine()}catch(_){}
+   const heli={t:'heli',x:L0-60,y:-14,tilt:.08},tank={t:'tank',plain:1,x:Math.round(px-330),y:Math.round(p.y+27-40)};QS.actors.push(heli,tank);let hsn=null,mgs=null;try{hsn=sPlay('heli',.7,{fadeIn:.6,loop:true});if(!hsn){sTone(70,4,'sawtooth',.04,70);sTone(140,4,'square',.012,140)}SFX.engine()}catch(_){}
    ppTalk(LG('Пилот','Pilot'),LG('Цель вижу! Огонь со всех стволов!','Target in sight! Fire everything!'));
    const salvo=[];for(let i=0;i<14;i++){const side=i%3,r=side===0?{t:'rocket',x:L0,y:rint(8,60)}:side===1?{t:'rocket',x:R0,y:rint(8,60)}:{t:'rocket',down:1,x:Math.round(px+rint(-50,50)),y:-14};r.tx=Math.round(px+(Math.random()<.5?-1:1)*rint(22,60));r.ty=Math.round(py+rint(-2,10));r.delay=i*3;salvo.push(r)}
    let k=0;const boom=(x,y,big)=>{const b={t:'boom',x,y,r:4};QS.actors.push(b);(async()=>{await tick(()=>{b.r+=big?5:4;return b.r>(big?28:20)});QS.actors=QS.actors.filter(a=>a!==b)})();try{ppGunshot();sNoise(.4,.4,700,120)}catch(_){}shakePP();QS.decals.push({x:Math.round(x-6),y:Math.round(y-16)})};
@@ -3792,7 +3792,8 @@ const COMBOS=[
    await tickL(()=>{k++;
      // helicopter: fly in, hover, strafe
      const hx=Math.round(px-110),hy=30;if(k<60){heli.x+=Math.sign(hx-heli.x)*Math.min(9,Math.abs(hx-heli.x));heli.y+=Math.sign(hy-heli.y)*Math.min(3,Math.abs(hy-heli.y));heli.tilt=heli.x<hx-2?.12:.04}else{heli.x+=9;heli.y-=3;heli.tilt=.15}
-     if(k>10&&k<56&&k%2===0){const tr={t:'tracer',x1:Math.round(heli.x+38),y1:Math.round(heli.y+16),x2:Math.round(px+rint(-6,6)),y2:Math.round(py+rint(-4,10))};QS.actors.push(tr);setTimeout(()=>{QS.actors=QS.actors.filter(a=>a!==tr)},90);QS.fx.push({t:'spark',x:tr.x2,y:tr.y2,ttl:3,c:'#ffe060'});if(k%4===0)try{sNoise(.05,.12,3000,800)}catch(_){}}
+     if(k===11){try{mgs=sPlay('mg',.7,{fadeIn:.05})}catch(_){}}if(k===56&&mgs){mgs.stop(.4);mgs=null}
+     if(k>10&&k<56&&k%2===0){const tr={t:'tracer',x1:Math.round(heli.x+38),y1:Math.round(heli.y+16),x2:Math.round(px+rint(-6,6)),y2:Math.round(py+rint(-4,10))};QS.actors.push(tr);setTimeout(()=>{QS.actors=QS.actors.filter(a=>a!==tr)},90);QS.fx.push({t:'spark',x:tr.x2,y:tr.y2,ttl:3,c:'#ffe060'});if(!mgs&&k%2===0)try{ppShot()}catch(_){}}
      // tank: drive in and over
      tank.x+=8;if(!blown&&tank.x+92>=px){blow();popText(LG('ХРУСЬ!','CRUNCH!'),Math.round(px),Math.round(py-14),'#ffe060',16)}if(k%2===0)QS.fx.push({t:'spark',x:Math.round(tank.x+4),y:Math.round(tank.y+38),ttl:4,c:'#8a8270'});
      // rockets from all sides
@@ -3801,7 +3802,7 @@ const COMBOS=[
        if(dd<12){r.done=1;QS.actors=QS.actors.filter(a=>a!==r);boom(r.tx,r.ty)}});
      QS.actors=QS.actors.filter(a=>!(a.t==='smoke'&&Math.random()<.12));
      return !left&&k>40&&tank.x>R0+40&&(heli.x>R0||heli.y<-40)});
-   blow();QS.actors=QS.actors.filter(a=>a!==heli&&a!==tank&&a.t!=='smoke');await sleep(400);
+   mgs&&mgs.stop(.3);hsn&&hsn.stop(1);blow();QS.actors=QS.actors.filter(a=>a!==heli&&a!==tank&&a.t!=='smoke');await sleep(400);
    p.vanishMsg=LG('Воронки, гильзы и следы гусениц. Задерживать некого.','Craters, shell casings and tank tracks. Nobody to arrest.');banner('')}},
  {n:'combo_slam',combo:true,noPolice:true,title:LG('Гравитационный слэм','Gravity slam'),line:LG('КОМБО! Гравитация на стороне налоговой.','COMBO! Gravity is on the tax office’s side.'),async run(p){comboStart(p,LG('ГРАВИТАЦИОННЫЙ СЛЭМ','GRAVITY SLAM'));const gy=p.y;await sleep(400);
    const rg={t:'ring',x:Math.round(p.x+6),y:Math.round(gy+26),r:2};QS.actors.push(rg);try{sTone(120,1.2,'sine',.08,900)}catch(_){}
