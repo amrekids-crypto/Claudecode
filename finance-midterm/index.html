@@ -4241,7 +4241,7 @@ function petNewDay(){const pe=PP.pet;if(!pe)return null;if(pe.fed)pe.hunger=0;el
   if(pe.hunger>=2&&pe.type==='tank'){const msg=LG(`${pe.name} уехал: его не заправляли два дня подряд.`,`${pe.name} drove off: it wasn't refueled two days in a row.`);PP.pet=null;return msg}
   if(pe.hunger>=2){const msg=I18T`${pe.name} сбежал${pe.type==='cat'||pe.type==='dog'?'':''}: его не кормили два дня подряд.`;PP.pet=null;return msg}
   stMax('petDays',PP.day-pe.since);return pe.hunger===1&&pe.type==='tank'?LG(`${pe.name}: бак пуст со вчера! Заправь сегодня, иначе уедет.`,`${pe.name}: tank empty since yesterday! Refuel today or it drives off.`):pe.hunger===1?I18T`${pe.name} голодает со вчера! Покорми сегодня, иначе сбежит.`:null}
-const PET_HOME={cat:[442,121],parrot:[452,64],dog:[456,121],hamster:[456,121],tank:[438,120]},PET_RANGE={cat:[384,462],parrot:[386,462],dog:[378,464],hamster:[392,464],tank:[372,452]},PET_AX={tank:9,cat:7,dog:7,parrot:4,hamster:5};
+const PET_HOME={cat:[442,121],parrot:[452,64],dog:[456,121],hamster:[456,121],tank:[438,131]},PET_RANGE={cat:[384,462],parrot:[386,462],dog:[378,464],hamster:[392,464],tank:[372,452]},PET_AX={tank:9,cat:7,dog:7,parrot:4,hamster:5};
 async function tankFire(tx,ty,n){n=n||6;const pe=PP.pet;if(!pe||pe.type!=='tank')return;const [sx,sy]=petStreetPos();PETST.sdir=tx<sx+9?-1:1;const mx=PETST.sdir>0?sx+19:sx-1,my=sy-11;
   popText(LG('ТРА-ТА-ТА!','RAT-A-TAT!'),Math.round(sx+9),Math.round(sy-22),'#ffe060',11);
   for(let i=0;i<n;i++){PETST.firing=QS.tick;const tr={t:'tracer',x1:mx,y1:my,x2:Math.round(tx+rint(-3,3)),y2:Math.round(ty+rint(-3,3))};QS.actors.push(tr);try{sNoise(.05,.14,3400,900);sTone(140,.05,'square',.03,60)}catch(_){}
