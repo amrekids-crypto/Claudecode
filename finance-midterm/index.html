@@ -3386,8 +3386,8 @@ function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;if(d
     R(x+2,y+14,44,6,'#2a2a26');R(x+1,y+15,46,4,'#1c1c1a');for(let i=0;i<6;i++){const wx=x+4+i*7;R(wx,y+15,5,4,'#3a3a36');R(wx+1+((t+i)%2),y+16,2,2,'#5a5a54')}for(let i=0;i<23;i++)R(x+2+i*2,y+14,1,1,(i+t)%2?'#4a4a44':'#2a2a26');
     R(x,y+9,48,6,O);R(x,y+9,48,1,Ol);R(x+46,y+10,3,4,Od);R(x-1,y+11,2,3,Od);
     R(x+14,y+4,20,6,O);R(x+14,y+4,20,1,Ol);R(x+16,y+3,16,1,Od);R(x+34,y+6,22,2,Od);R(x+54,y+5,3,4,'#2a2e20');if(a.fire)R(x+57,y+4,4,6,'#ffe080');
-    R(x+18,y-1,2,5,'#1c1c1a');R(x+17,y-4,1,4,'#6a6a64');R(x+18,y-5,4,1,'#f0f0ec');R(x+18,y-4,4,1,'#1c4ab0');R(x+18,y-3,4,1,'#d0202a');
-    R(x+24,y+1,8,3,'#2a2e20');R(x+25,y-4,6,5,'#ecc8b0');R(x+25,y-5,6,1,'#b8a88a');R(x+29,y-3,1,1,'#2a3a4a');R(x+27,y-1,3,1,'#9a6050');R(x+24,y,8,2,'#2a2c30');if(a.wave&&t%6<3)R(x+32,y-5,2,3,'#ecc8b0');else if(a.wave)R(x+32,y-3,2,3,'#ecc8b0')}
+    if(a.plain){R(x+20,y+1,10,3,'#2a2e20');R(x+22,y+6,8,2,'#e0b64a');R(x+25,y+5,2,1,'#e0b64a');R(x+17,y-3,1,7,'#6a6a64');R(x+16,y-4,3,1,'#e04a3a')}else{R(x+18,y-1,2,5,'#1c1c1a');R(x+17,y-4,1,4,'#6a6a64');R(x+18,y-5,4,1,'#f0f0ec');R(x+18,y-4,4,1,'#1c4ab0');R(x+18,y-3,4,1,'#d0202a');
+    R(x+24,y+1,8,3,'#2a2e20');R(x+25,y-4,6,5,'#ecc8b0');R(x+25,y-5,6,1,'#b8a88a');R(x+29,y-3,1,1,'#2a3a4a');R(x+27,y-1,3,1,'#9a6050');R(x+24,y,8,2,'#2a2c30');if(a.wave&&t%6<3)R(x+32,y-5,2,3,'#ecc8b0');else if(a.wave)R(x+32,y-3,2,3,'#ecc8b0')}}
   else if(a.t==='apple'){const r=a.r||14,an=a.ang||0;for(let yy=-r;yy<=r;yy++){const w=Math.round(Math.sqrt(r*r-yy*yy));R(x-w,y+yy,w*2,1,yy<-r*.3?'#7ad040':yy<r*.4?'#5ab030':'#3a8a20');R(x+w-3,y+yy,3,1,'#3a7a1a')}
     const hx=Math.round(x+Math.cos(an)*r*.45),hy=Math.round(y+Math.sin(an)*r*.45);R(hx-3,hy-2,4,3,'#b8f080');R(hx-2,hy-3,2,1,'#e0ffc0');
     const sx=Math.round(x+Math.cos(an-1.6)*r*.9),sy=Math.round(y+Math.sin(an-1.6)*r*.9);R(sx-1,sy-1,2,3,'#5a3a1e');R(sx+1,sy-2,4,2,'#3a9a2a');R(x-r+2,y+r-1,r*2-4,2,'rgba(0,0,0,.25)')}
@@ -3400,7 +3400,8 @@ function drawActor(R,a){const x=Math.round(a.x),y=Math.round(a.y),t=QS.tick;if(d
   else if(a.t==='shadow'){R(x,y,a.w,2,'rgba(0,0,0,.45)')}
   else if(a.t==='bolt'){let px=a.x,py=20;const c=t%2?'#fff8c8':'#e0f4ff';while(py<a.y){const nx=px+rint(-6,6),ny=Math.min(a.y,py+rint(6,12));qsLine(R,px,py,nx,ny,c);qsLine(R,px+1,py,nx+1,ny,c);px=nx;py=ny}}
   else if(a.t==='dog'){if(a.face!=='r'){const R0=R;R=(xx,yy,w,h,c)=>R0(2*x+15-xx-w,yy,w,h,c)}if(a.k9&&!a.col){a.col='#b8894a';a.col2='#2a2218'}if(!a.col){const dc=pick([['#6a4a2a','#4a3218'],['#2a2a2e','#15130f'],['#c8a060','#8a6a30'],['#e8e4d8','#a8a49a'],['#8a5a30','#e8e4d8'],['#5a5a60','#3a3a40'],['#b07040','#2a1a10']]);a.col=dc[0];a.col2=dc[1];a.spot=Math.random()<.4}const DC=a.col,DD=a.col2;const f=Math.floor(t/2)%2;R(x,y+2,12,5,DC);R(x+10,y,5,5,DC);R(x+14,y+2,2,2,shade(DC,.6));R(x+12,y+1,1,1,'#15130f');R(x+11,y-1,2,2,DD);R(x-3,y+2,3,1,DC);R(x+1+f,y+7,2,3,DD);R(x+8-f,y+7,2,3,DD);if(a.spot){R(x+3,y+2,3,2,DD);R(x+8,y+4,2,2,DD)}if(a.k9){R(x+1,y+2,9,2,'#2a2218');R(x+3,y+3,6,3,'#2a4a8a');R(x+5,y+4,2,1,'#e8e8e8');R(x+11,y-2,2,1,'#2a2218')}if(a.bark&&t%6<3){R(x+17,y-2,1,1,'#e0d8c0');R(x+19,y-4,1,1,'#e0d8c0')}}
-else if(a.t==='rocket'&&a.tx!=null&&a.tx<a.x+1){R(x,y,9,3,'#c8c8c0');R(x,y,2,3,'#a3302a');R(x+9,y-1,2,5,'#7a7a74');R(x+11,y,3,3,t%2?'#ffb040':'#ff6020');R(x+14,y+1,2,1,'#ffe080')}
+else if(a.t==='rocket'&&a.down){R(x,y,3,9,'#c8c8c0');R(x,y+8,3,2,'#a3302a');R(x-1,y-2,5,2,'#7a7a74');R(x,y-5,3,3,t%2?'#ffb040':'#ff6020');R(x+1,y-7,1,2,'#ffe080')}
+  else if(a.t==='rocket'&&a.tx!=null&&a.tx<a.x+1){R(x,y,9,3,'#c8c8c0');R(x,y,2,3,'#a3302a');R(x+9,y-1,2,5,'#7a7a74');R(x+11,y,3,3,t%2?'#ffb040':'#ff6020');R(x+14,y+1,2,1,'#ffe080')}
     else if(a.t==='rocket'){R(x,y,9,3,'#c8c8c0');R(x+8,y,2,3,'#a3302a');R(x-2,y-1,2,5,'#7a7a74');R(x-5,y,3,3,t%2?'#ffb040':'#ff6020');R(x-7,y+1,2,1,'#ffe080')}
   else if(a.t==='boom'){const r=a.r;for(let i=0;i<24;i++){const an=i/24*Math.PI*2;R(Math.round(x+Math.cos(an)*r),Math.round(y+Math.sin(an)*r*.7),3,3,i%3?'#ff8a20':'#ffe060')}R(x-r/3,y-r/4,r*.66,r*.5,'rgba(255,200,80,.5)')}
   else if(a.t==='smoke'){R(x,y,4,4,'rgba(80,80,80,.6)');R(x+2,y-2,3,3,'rgba(110,110,110,.5)')}
@@ -3770,13 +3771,27 @@ const COMBOS=[
    for(let i=0;i<5;i++){await hit(p.x+6,p.y+18,i===4);if(i<4){p.lying=i%2===0;await hit(p.x+6+rint(-70,70),p.y+26+rint(-4,4),false)}}
    popText(LG('ПРОВОДНИК ДОЛГОВ!','DEBT CONDUCTOR!'),Math.round(p.x+6),Math.round(p.y-10),'#8fd3ff',14);await gibs(p,1.1,'#8fd3ff');
    p.vanishMsg=LG('Только запах озона.','Only the smell of ozone.');banner('')}},
- {n:'combo_rockets',combo:true,noPolice:true,title:LG('Ракетный ливень','Rocket rain'),line:LG('КОМБО! Бухгалтерия запросила огневую поддержку.','COMBO! Accounting requested fire support.'),async run(p){comboStart(p,LG('РАКЕТНЫЙ ЛИВЕНЬ','ROCKET RAIN'));await sleep(400);
-   let blown=false;const salvo=[];for(let i=0;i<10;i++){const r={t:'rocket',x:QS.W-QS.OX+i*14,y:6+(i%3)*8,tx:p.x+6+rint(-36,36)*(i<3?0.2:1),ty:p.y+18+rint(-4,8)};salvo.push(r)}
-   for(const r of salvo){QS.actors.push(r);try{sNoise(.3,.06,1400,400)}catch(_){}await sleep(110)}
-   await tickL(()=>{let left=false;salvo.forEach(r=>{if(r.done)return;left=true;const dx=r.tx-r.x,dy=r.ty-r.y,dd=Math.hypot(dx,dy)||1;r.x+=dx/dd*13;r.y+=dy/dd*13;if(QS.tick%2===0)QS.actors.push({t:'smoke',x:r.x+6,y:r.y,life:1});
-     if(dd<13){r.done=1;QS.actors=QS.actors.filter(a=>a!==r);const b={t:'boom',x:r.tx,y:r.ty,r:4};QS.actors.push(b);(async()=>{await tick(()=>{b.r+=4;return b.r>20});QS.actors=QS.actors.filter(a=>a!==b)})();try{ppGunshot();sNoise(.4,.4,700,120)}catch(_){}shakePP();QS.decals.push({x:Math.round(r.tx-6),y:Math.round(r.ty-16)});
-       if(!blown&&Math.abs(r.tx-p.x-6)<20){blown=true;gibs(p,1.3,'#ff8a20')}}});QS.actors=QS.actors.filter(a=>!(a.t==='smoke'&&Math.random()<.15));return !left});
-   if(!blown)await gibs(p,1.3,'#ff8a20');await sleep(500);QS.actors=QS.actors.filter(a=>a.t!=='smoke');p.vanishMsg=LG('Воронки и сажа. Задерживать некого.','Craters and soot. Nobody to arrest.');banner('')}},
+ {n:'combo_rockets',combo:true,noPolice:true,title:LG('Ракетный ливень','Rocket rain'),line:LG('КОМБО! Бухгалтерия запросила огневую поддержку.','COMBO! Accounting requested fire support.'),async run(p){comboStart(p,LG('РАКЕТНЫЙ ЛИВЕНЬ','ROCKET RAIN'));await sleep(300);
+   const L0=-QS.OX-14,R0=QS.W-QS.OX+14,px=p.x+6,py=p.y+16;let blown=false;
+   const heli={t:'heli',x:L0-60,y:-14,tilt:.08},tank={t:'tank',plain:1,x:Math.round(px-330),y:Math.round(p.y+27-40)};QS.actors.push(heli,tank);try{sNoise(2.5,.06,500,90);SFX.engine()}catch(_){}
+   ppTalk(LG('Пилот','Pilot'),LG('Цель вижу! Огонь со всех стволов!','Target in sight! Fire everything!'));
+   const salvo=[];for(let i=0;i<14;i++){const side=i%3,r=side===0?{t:'rocket',x:L0,y:rint(8,60)}:side===1?{t:'rocket',x:R0,y:rint(8,60)}:{t:'rocket',down:1,x:Math.round(px+rint(-50,50)),y:-14};r.tx=Math.round(px+(Math.random()<.5?-1:1)*rint(22,60));r.ty=Math.round(py+rint(-2,10));r.delay=i*3;salvo.push(r)}
+   let k=0;const boom=(x,y,big)=>{const b={t:'boom',x,y,r:4};QS.actors.push(b);(async()=>{await tick(()=>{b.r+=big?5:4;return b.r>(big?28:20)});QS.actors=QS.actors.filter(a=>a!==b)})();try{ppGunshot();sNoise(.4,.4,700,120)}catch(_){}shakePP();QS.decals.push({x:Math.round(x-6),y:Math.round(y-16)})};
+   const blow=()=>{if(blown)return;blown=true;boom(px,py,true);gibs(p,1.4,'#ff8a20')};
+   await tickL(()=>{k++;
+     // helicopter: fly in, hover, strafe
+     const hx=Math.round(px-110),hy=30;if(k<60){heli.x+=Math.sign(hx-heli.x)*Math.min(9,Math.abs(hx-heli.x));heli.y+=Math.sign(hy-heli.y)*Math.min(3,Math.abs(hy-heli.y));heli.tilt=heli.x<hx-2?.12:.04}else{heli.x+=9;heli.y-=3;heli.tilt=.15}
+     if(k>10&&k<56&&k%2===0){const tr={t:'tracer',x1:Math.round(heli.x+38),y1:Math.round(heli.y+16),x2:Math.round(px+rint(-6,6)),y2:Math.round(py+rint(-4,10))};QS.actors.push(tr);setTimeout(()=>{QS.actors=QS.actors.filter(a=>a!==tr)},90);QS.fx.push({t:'spark',x:tr.x2,y:tr.y2,ttl:3,c:'#ffe060'});if(k%4===0)try{sNoise(.05,.12,3000,800)}catch(_){}}
+     // tank: drive in and over
+     tank.x+=8;if(!blown&&tank.x+92>=px){blow();popText(LG('ХРУСЬ!','CRUNCH!'),Math.round(px),Math.round(py-14),'#ffe060',16)}if(k%2===0)QS.fx.push({t:'spark',x:Math.round(tank.x+4),y:Math.round(tank.y+38),ttl:4,c:'#8a8270'});
+     // rockets from all sides
+     let left=false;salvo.forEach(r=>{if(r.done)return;left=true;if(k<r.delay)return;if(!r.on){r.on=1;QS.actors.push(r);try{sNoise(.25,.06,1400,400)}catch(_){}}
+       const dx=r.tx-r.x,dy=r.ty-r.y,dd=Math.hypot(dx,dy)||1;r.x+=dx/dd*12;r.y+=dy/dd*12;if(QS.tick%2===0)QS.actors.push({t:'smoke',x:r.x+(r.down?1:4),y:r.y-(r.down?4:0),life:1});
+       if(dd<12){r.done=1;QS.actors=QS.actors.filter(a=>a!==r);boom(r.tx,r.ty)}});
+     QS.actors=QS.actors.filter(a=>!(a.t==='smoke'&&Math.random()<.12));
+     return !left&&k>40&&tank.x>R0+40&&(heli.x>R0||heli.y<-40)});
+   blow();QS.actors=QS.actors.filter(a=>a!==heli&&a!==tank&&a.t!=='smoke');await sleep(400);
+   p.vanishMsg=LG('Воронки, гильзы и следы гусениц. Задерживать некого.','Craters, shell casings and tank tracks. Nobody to arrest.');banner('')}},
  {n:'combo_slam',combo:true,noPolice:true,title:LG('Гравитационный слэм','Gravity slam'),line:LG('КОМБО! Гравитация на стороне налоговой.','COMBO! Gravity is on the tax office’s side.'),async run(p){comboStart(p,LG('ГРАВИТАЦИОННЫЙ СЛЭМ','GRAVITY SLAM'));const gy=p.y;await sleep(400);
    const rg={t:'ring',x:Math.round(p.x+6),y:Math.round(gy+26),r:2};QS.actors.push(rg);try{sTone(120,1.2,'sine',.08,900)}catch(_){}
    await tick(()=>{p.y-=6;p.ty=p.y;rg.r=Math.min(12,rg.r+1);p.lying=QS.tick%4<2;return p.y<=12});popText(LG('ВЗЛЁТ!','LIFTOFF!'),Math.round(p.x+6),Math.round(p.y-4),'#c0a0ff',12);await sleep(250);
