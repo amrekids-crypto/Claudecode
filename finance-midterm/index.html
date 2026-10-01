@@ -4080,7 +4080,7 @@ document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!ta
 $('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
   QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.shadows=[];QS.holes=[];QS.boothDmg=0;QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
-  PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();qsDraw()};
+  PD=null;PRE=null;PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();store.set('ppShift',null);qsDraw()};
 /* long press on "Начать игру заново" reveals full wipe */
 {const rb=$('#ppReset'),wb=$('#ppWipe'),orig=rb.onclick;let t=null,lp=false,hideT=null;
   const hideWipe=()=>{clearTimeout(hideT);wb.hidden=true;delete wb.dataset.sure;wb.textContent=I18L('Сбросить весь прогресс')};window.ppHideWipe=hideWipe;
