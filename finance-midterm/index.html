@@ -3060,7 +3060,7 @@ function ppBar(){
   {const armed=!!(PD&&PD.walking&&!PD.aim&&(PP.gun||0)>0);$('#ppGun').classList.toggle('pp-blink',armed);const dg=$('#ppDeskGun');if(dg){dg.disabled=!armed;dg.querySelector('span').textContent=I18L('Пистолет · ')+(PP.gun||0)}}
   {const pb=$('#ppPetBtn');if(pb){const pe=PP.pet;pb.hidden=!pe;if(pe){const I=petInfo();pb.textContent=pe.fed?I18T`Погладить: ${pe.name}`:pe.type==='tank'?LG(`Заправить · $${I.food}`,`Refuel · $${I.food}`):I18T`Покормить · $${I.food}`;pb.classList.toggle('hungry',!pe.fed&&(pe.hunger||0)>=1)}}if(typeof avMini==='function')avMini()}
 }
-function ppTalk(who,text){if(FACE.L&&PD&&PD.cur&&(who===PD.cur.role||(FACE.L===INSPECTOR&&/Инспектор|[Ii]nspector/.test(who))))FACE.talkUntil=Date.now()+Math.min(3000,500+String(text).length*40);$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
+function ppTalk(who,text){if(who==='Полиция'||who==='Police')return;if(FACE.L&&PD&&PD.cur&&(who===PD.cur.role||(FACE.L===INSPECTOR&&/Инспектор|[Ii]nspector/.test(who))))FACE.talkUntil=Date.now()+Math.min(3000,500+String(text).length*40);$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
 function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=Math.floor(PD.min%60);$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
 function ppOverlay(html,cls){const o=$('#ppOv');o.className='pp-ov'+(cls?' ov-'+cls:'');o.innerHTML=`<div class="pp-card${cls?' '+cls:''}">${html}</div>`;o.hidden=false;o.scrollTop=0}
 function ppCloseOv(){$('#ppOv').hidden=true}
