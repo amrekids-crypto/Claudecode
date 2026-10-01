@@ -2498,7 +2498,8 @@ function ppAnimate(){
   if($('#tab-mix').hidden)return;
   QS.tick++;let moving=false;const slow=PD&&PD.slow?1/3:1;
   QS.people.forEach(p=>{if(p.hide&&(p.run||p.panic)){p.run=false;p.panic=false;p.moving=false;p.tx=p.x;p.ty=p.y}});
-  if(!(PD&&PD.frozen))QS.people.forEach(p=>{if(!p.panic||p.lying||p.hide||p.zap||p.bag||p.flat||p.ash||!(p.sp>0))return;if(p.sp<3)p.sp=3;p.run=true;if(Math.abs(p.x-p.tx)<1.5)panicNext(p)});
+  if(!(PD&&PD.frozen))QS.people.forEach(p=>{if(!p.panic||p.lying||p.hide||p.zap||p.bag||p.flat||p.ash||!(p.sp>0))return;if(p.sp<3)p.sp=3;p.run=true;if(Math.abs(p.x-p.tx)<1.5)panicNext(p);else if(QS.tick%2===0){const th=panicThreat(p);if(th!=null&&Math.abs(th-p.x)<200&&Math.sign(p.tx-p.x)===Math.sign(th-p.x))panicNext(p)}});
+  if(PD&&PD.anim&&!(PD&&PD.frozen)){const o=QS.people[PD.idx];if(o&&o.state==='x'&&!o.panic&&!o.fleeCar&&!o.lying&&!o.hide&&!o.bag&&o.sp>0&&Math.abs(o.tx-o.x)>4){const th=panicThreat(o);if(th!=null&&Math.abs(th-o.x)<170&&Math.sign(o.tx-o.x)===Math.sign(th-o.x)){o.panic=true;o.panicMode='zig';o.panicX=null;o.sp=Math.max(o.sp,3);panicNext(o)}}}
   if(!(PD&&PD.frozen))[...new Set(QS.people)].forEach(p=>{if(p.lying){p.moving=false;return}if(p.y==null)p.y=92;if(p.ty==null)p.ty=92;const d=p.tx-p.x,dy=p.ty-p.y;let mv=false;if(Math.abs(dy)>.5){p.y+=Math.sign(dy)*Math.min(Math.abs(dy),1.4*slow);mv=true}if(Math.abs(d)>.5&&Math.abs(dy)<6){p.x+=Math.sign(d)*Math.min(Math.abs(d),(p.sp||2.2)*slow);p.dir=Math.sign(d);mv=true}else if(Math.abs(d)<=.5)p.x=p.tx;p.moving=mv;if(mv)moving=true;if(!mv&&p.state!=='gone'&&!p.faceL)p.dir=1;
     if(PP.downed&&mv){const dd=Math.abs((p.x+6)-(PP.downed.x+14));p.jy=(dd<18&&Math.abs(p.y-PP.downed.y)<10)?-Math.round(8*Math.cos(dd/18*Math.PI/2)):0}else p.jy=0;
     if(p.moving&&!p.lying&&QS.debris&&QS.debris.length){const fx=p.x+6,fy=p.y+28;for(const d of QS.debris){if(d.fly)continue;const [a,b,g]=debrisBox(d);if(fx>=a-4&&fx<=b+4&&Math.abs(fy-g)<14){p.jy=Math.min(p.jy||0,-12);break}}}});
@@ -3749,7 +3750,15 @@ async function policeCleanup(p,onArrive){
   p.hide=true;cops.forEach(c=>{c.faceL=false;c.tx=car.x+22});await tick(()=>cops.every(near));cops.forEach(c=>c.hide=true);
   if(p.handler){const c=p.handler;c.faceL=false;c.tx=QS.W-QS.OX+30;c.sp=3.2}if(p.dog){const d=p.dog;d.face='r';d.sit=false;await tick(()=>{if(p.handler)p.handler.tx=Math.max(p.handler.tx,d.x+20);d.x+=14;return d.x>QS.W-QS.OX+10});QS.actors=QS.actors.filter(a=>a!==d)}
   car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null;QS.actors=QS.actors.filter(a=>a.t!=='smoke')}
-function panicNext(p){const lo=-QS.OX+14,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-40,360));if(p.panicMode==='dash'){p.pdir=p.pdir==null?(p.x-lo>hi-p.x?-1:1):-p.pdir;p.tx=p.pdir<0?lo:hi;p.sp=Math.max(p.sp||0,3.4)}else{p.pdir=-(p.pdir||1);const c=p.panicX==null?p.x:p.panicX;p.tx=Math.max(lo,Math.min(hi,c+p.pdir*rint(22,46)))}p.faceL=p.tx<p.x}
+const PANIC_T=new Set(['dog','van','tank','pig','petrun','apple','heli','dragon','tornado','rocket','devil','bigrock']);
+function panicThreat(p){let best=null,bd=1e9;const add=x=>{const d=Math.abs(x-p.x);if(d<bd&&d<240){bd=d;best=x}};
+  (QS.actors||[]).forEach(a=>{if(PANIC_T.has(a.t)&&!a.gone&&!a.fly)add(a.x+(a.t==='tank'?48:a.t==='van'?30:a.t==='heli'?24:a.t==='pig'?26:6))});
+  if(QS.car)add(QS.car.x+23);QS.people.forEach(q=>{if(q!==p&&q.state==='x'&&!q.hide&&!q.lying)add(q.x)});return best}
+function panicNext(p){const lo=-QS.OX+14,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-40,360));
+  const th=panicThreat(p);if(th!=null){const away=p.x>=th?1:-1;p.pdir=away;
+    if(p.panicMode==='dash'){p.tx=away<0?lo:hi;p.sp=Math.max(p.sp||0,3.4)}else p.tx=Math.max(lo,Math.min(hi,p.x+away*rint(18,40)));
+    if(Math.abs(p.tx-p.x)<3)p.tx=Math.max(lo-6,Math.min(hi+6,p.x+away*rint(2,5)));p.faceL=p.tx<p.x;return}
+  if(p.panicMode==='dash'){p.pdir=p.pdir==null?(p.x-lo>hi-p.x?-1:1):-p.pdir;p.tx=p.pdir<0?lo:hi;p.sp=Math.max(p.sp||0,3.4)}else{p.pdir=-(p.pdir||1);const c=p.panicX==null?p.x:p.panicX;p.tx=Math.max(lo,Math.min(hi,c+p.pdir*rint(22,46)))}p.faceL=p.tx<p.x}
 function arrestSpot(p){const lo=-QS.OX+30,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-60,340)),pts=[];const add=(arr,dx)=>(arr||[]).forEach(d=>{if(d&&d.x!=null)pts.push(d.x+dx)});
   add(QS.decals,8);add(QS.scorch,-8);add(QS.holes,-6);add(QS.ice,-6);add(QS.scraps,-6);add(QS.shadows,0);add(QS.slime,0);add(QS.prints,0);add(QS.stamps,0);if(QS.crater)pts.push(QS.crater.x-6);(QS.debris||[]).forEach(d=>{try{const b=debrisBox(d);pts.push((b[0]+b[1])/2-6)}catch(e){}});
   if(PP.lastSpot!=null)pts.push(PP.lastSpot);const c=[];for(let x=lo;x<=hi;x+=10){c.push([x,pts.length?Math.min(...pts.map(q=>Math.abs(q-x))):999])}
