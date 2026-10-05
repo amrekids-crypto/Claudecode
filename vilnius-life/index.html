@@ -921,11 +921,11 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
  $('#mok').onclick=()=>{closeModal();renderGame()}}
 function sleep(){if(!G||!G.alive)return;const H=HOUSES[G.house],T=TRANSP[G.tr];
  const eff={money:-(H.rent+T.daily),food:-22,mood:-H.mood+(G.tr===2?3:0),hp:-H.hp,permit:-1};
- if(G.food<=15)eff.hp-=15;if(G.mood<15)eff.hp-=4;if(G.money<0)eff.mood-=6;
+ const fAfter=G.food-22;if(fAfter<=0){eff.hp-=25;eff.mood-=10}else if(fAfter<=15)eff.hp-=12;if(G.mood<15)eff.hp-=4;if(G.money<0)eff.mood-=6;
  const ch=change(eff);G.day++;G.used=0;logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
  if(deathCheck())return;
  const e=rollEvent();
- modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье падает быстрее. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
+ modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье и настроение падают. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
  $('#mok').onclick=()=>{closeModal();if(e)showEvent(e);else renderGame()}}
 
 /* ============ events ============ */
