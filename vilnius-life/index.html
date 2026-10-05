@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f6b47">
+<title>Gyvenimas Vilniuje</title>
+<style>
+:root{--bg:#f4f1e8;--paper:#fffdf7;--ink:#1e1f1c;--muted:#6b6a62;--line:#e2dccd;--line2:#efeadf;--accent:#0f6b47;--accent-soft:#e3f0e8;--yel:#f2b705;--red:#b8322b;--ok:#1d8a4e;--ok-soft:#e2f4e8;--bad:#c0392b;--bad-soft:#fbe7e4;--warn:#b7791f;--warn-soft:#fdf2dc;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+--on-accent:#fff;--cN:#6b7280;--cG:#7c3aed;--cD:#d97706;--cA:#dc2626;--cI:#2563eb;--cL:#059669;--cV:#db2777;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#121412;--paper:#1b1e1b;--ink:#ecebe6;--muted:#a4a39b;--line:#2f332f;--line2:#252925;--accent:#3fb37f;--accent-soft:#1a2e24;--on-accent:#06140c;--ok:#4cc07f;--ok-soft:#173022;--bad:#ef6b5e;--bad-soft:#3a1e1b;--warn:#e0a84a;--warn-soft:#352a16;--shadow:0 1px 2px rgba(0,0,0,.4);--cN:#9ca3af;--cG:#a78bfa;--cD:#fbbf24;--cA:#f87171;--cI:#60a5fa;--cL:#34d399;--cV:#f472b6}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit}
+h1,h2,h3{margin:0 0 8px;line-height:1.2}
+h2{font-size:20px}h3{font-size:16px}
+p{margin:0 0 8px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+header.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.flag{height:4px;background:linear-gradient(to bottom,var(--yel) 0 33%,#0f6b47 33% 66%,var(--red) 66%)}
+.toprow{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px}
+.brand{font-weight:800;font-size:17px;letter-spacing:.01em;white-space:nowrap}
+.brand small{display:block;font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.02em}
+.topinfo{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:14px}
+.pill{background:var(--line2);border-radius:99px;padding:3px 10px;font-weight:700;white-space:nowrap}
+.pill.money{color:var(--ok)}.pill.money.neg{color:var(--bad)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;border:0;background:none;padding:8px 2px 9px;font-size:11.5px;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button .ic{font-size:19px;line-height:1}
+nav.tabs button[aria-selected=true]{color:var(--accent);font-weight:700}
+main{padding:12px 0 20px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;min-height:44px;touch-action:manipulation}
+.btn:hover:not([disabled]){border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.small{padding:6px 10px;min-height:34px;font-size:13.5px;font-weight:600}
+.btn.ghost{background:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.meter{font-size:12.5px}
+.meter .lab{display:flex;justify-content:space-between;font-weight:600}
+.bar{height:8px;border-radius:99px;background:var(--line2);overflow:hidden;margin-top:2px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--ok);transition:width .4s}
+.bar i.mid{background:var(--yel)}.bar i.low{background:var(--bad)}
+.slots{display:flex;gap:4px;align-items:center;font-size:12.5px;font-weight:600}
+.slots b{width:12px;height:12px;border-radius:3px;background:var(--accent);display:inline-block}
+.slots b.used{background:var(--line)}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12.5px;margin-top:10px}
+.status div{background:var(--line2);border-radius:8px;padding:5px 8px}
+.status span{display:block;color:var(--muted);font-size:11px}
+/* map */
+.map{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:86px;box-shadow:var(--shadow)}
+.loc:hover:not([disabled]){border-color:var(--accent)}
+.loc .ic{font-size:22px;line-height:1}
+.loc b{font-size:14.5px}
+.loc .ru{font-size:12px;color:var(--muted)}
+.loc[disabled]{opacity:.5;cursor:not-allowed}
+.acts{display:flex;flex-direction:column;gap:8px}
+.act{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);cursor:pointer;text-align:left;width:100%}
+.act:hover:not([disabled]){border-color:var(--accent)}
+.act[disabled]{opacity:.5;cursor:not-allowed}
+.act .t{font-weight:700}.act .d{font-size:12.5px;color:var(--muted)}
+.act .price{font-weight:800;white-space:nowrap}
+.log{font-size:13px;max-height:180px;overflow:auto}
+.log div{padding:3px 0;border-bottom:1px dashed var(--line)}
+/* task */
+.task .npc{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.task .npc .av{font-size:26px;line-height:1}
+.task .npc .bub{background:var(--line2);border-radius:12px;padding:8px 12px;font-size:15px}
+.task .npc .who{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.task .sit{font-size:14px;color:var(--muted);margin-bottom:8px}
+.sent{font-size:21px;line-height:1.5;font-weight:600;margin:6px 0 4px}
+.blank{display:inline-block;min-width:70px;border-bottom:2px solid var(--accent);color:var(--accent);text-align:center;padding:0 4px}
+.blank.ok{color:var(--ok);border-color:var(--ok)}.blank.bad{color:var(--bad);border-color:var(--bad)}
+.hint{font-size:15px;margin:6px 0}
+.hint b{font-family:var(--mono);background:var(--line2);padding:1px 7px;border-radius:6px}
+.ru{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.opts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:11px 12px;text-align:left;cursor:pointer;font-size:16.5px;display:flex;gap:10px;align-items:center;min-height:48px;touch-action:manipulation}
+.opt .k{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.inp{width:100%;font-size:19px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.inp:focus{outline:none;border-color:var(--accent)}
+.kb{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.kb button{min-width:38px;min-height:38px;border:1px solid var(--line);border-radius:8px;background:var(--line2);font-size:17px;cursor:pointer;touch-action:manipulation}
+.fb{margin-top:12px;border-radius:12px;padding:12px;border:1px solid var(--line)}
+.fb.ok{background:var(--ok-soft);border-color:var(--ok)}
+.fb.bad{background:var(--bad-soft);border-color:var(--bad)}
+#next{scroll-margin-bottom:calc(84px + env(safe-area-inset-bottom))}
+.fb .head{font-weight:800;font-size:16px;margin-bottom:4px}
+.fb .full{font-size:16px;margin:4px 0 8px}
+.fb .full mark{background:none;color:var(--ok);font-weight:800;border-bottom:2px solid var(--ok)}
+.rule{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;font-size:14.5px}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;color:#fff;vertical-align:1px}
+.cN{background:var(--cN)}.cG{background:var(--cG)}.cD{background:var(--cD)}.cA{background:var(--cA)}.cI{background:var(--cI)}.cL{background:var(--cL)}.cV{background:var(--cV)}
+table.par{border-collapse:collapse;font-size:13.5px;margin-top:6px;width:100%}
+table.par th,table.par td{border:1px solid var(--line);padding:4px 6px;text-align:left}
+table.par th{background:var(--line2);font-weight:600}
+table.par td.hl{background:var(--ok-soft);font-weight:800}
+table.par td.me{background:var(--bad-soft)}
+details{margin-top:8px}
+details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent)}
+.aibox{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.ai-lab{font-size:13px;color:var(--muted);font-weight:600}
+.ai-txt{font:12.5px/1.45 var(--mono);width:100%;resize:vertical;padding:8px 10px;border:1px dashed var(--accent);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.prog{display:flex;gap:4px;margin:2px 0 10px}
+.prog i{flex:1;height:6px;border-radius:99px;background:var(--line)}
+.prog i.ok{background:var(--ok)}.prog i.bad{background:var(--bad)}.prog i.cur{background:var(--yel)}
+/* modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.modal[hidden]{display:none}
+.modal .box{background:var(--paper);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.modal .box h2{font-size:20px}
+.chg{display:grid;grid-template-columns:1fr auto;gap:3px 12px;font-size:14px;margin:8px 0}
+.chg .p{color:var(--ok);font-weight:700;text-align:right}.chg .n{color:var(--bad);font-weight:700;text-align:right}
+/* matrix */
+.mtx{border-collapse:separate;border-spacing:3px;font-size:11.5px;width:100%;table-layout:fixed}
+.mtx th{font-weight:700;color:var(--muted);text-align:center;padding:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mtx th.rl{text-align:left;width:76px}
+.mtx td{height:34px;border-radius:7px;text-align:center;cursor:pointer;font-weight:700;font-size:11px;background:var(--line2);color:var(--muted)}
+.mtx td.na{background:none;cursor:default;color:var(--line)}
+.mtx td.s-new{background:var(--line2)}
+.mtx td.s-bad{background:var(--bad-soft);color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.mtx td.s-mid{background:var(--warn-soft);color:var(--warn);box-shadow:inset 0 0 0 1.5px var(--warn)}
+.mtx td.s-ok{background:var(--ok-soft);color:var(--ok);box-shadow:inset 0 0 0 1.5px var(--ok)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:none;padding:6px 12px;cursor:pointer;font-size:13.5px}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent);font-weight:700}
+.seg.pills{border:0;flex-wrap:wrap;gap:6px;overflow:visible}
+.seg.pills button{border:1px solid var(--line);border-radius:99px;padding:6px 12px}
+.runwrap{max-width:820px;margin:0 auto}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.tbls h3{margin-top:14px}
+.scroll{overflow-x:auto}
+.mist{border-bottom:1px solid var(--line);padding:8px 0;font-size:14px}
+.mist .a{color:var(--ok);font-weight:700}.mist .g{color:var(--bad);text-decoration:line-through}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));z-index:60;background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:var(--shadow);max-width:92vw}
+.big{font-size:40px;line-height:1;margin-bottom:6px}
+.side .panel{margin-bottom:12px}
+@media (min-width:640px){.map{grid-template-columns:repeat(3,1fr)}.opts{grid-template-columns:1fr 1fr}.modal{align-items:center}.modal .box{border-radius:16px}}
+@media (min-width:960px){
+ body{padding-bottom:0}
+ nav.tabs{position:static;border:0;background:none;padding:0;margin-left:16px;gap:2px}
+ nav.tabs button{flex:none;flex-direction:row;gap:6px;font-size:14px;padding:8px 12px;border-radius:8px}
+ nav.tabs button .ic{font-size:16px}
+ nav.tabs button[aria-selected=true]{background:var(--accent-soft)}
+ .toprow{gap:6px}
+ .gamegrid{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+ .side{position:sticky;top:76px}
+ .map{grid-template-columns:repeat(4,1fr)}
+ .toast{bottom:24px}
+ #next{scroll-margin-bottom:20px}
+ .mtx{font-size:12.5px}.mtx th.rl{width:110px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="flag"></div>
+ <div class="wrap toprow">
+  <div class="brand">Gyvenimas Vilniuje<small>литовский до B1 в игре</small></div>
+  <nav class="tabs" id="tabs">
+   <button data-tab="game" aria-selected="true"><span class="ic">🏙️</span>Miestas</button>
+   <button data-tab="train"><span class="ic">🎯</span>Тренировка</button>
+   <button data-tab="mist"><span class="ic">📕</span>Ошибки</button>
+   <button data-tab="tables"><span class="ic">📋</span>Таблицы</button>
+  </nav>
+  <div class="topinfo" id="topinfo"></div>
+ </div>
+</header>
+<main class="wrap">
+ <section id="tab-game"></section>
+ <section id="tab-train" hidden></section>
+ <section id="tab-mist" hidden></section>
+ <section id="tab-tables" hidden></section>
+</main>
+<div class="modal" id="modal" hidden><div class="box" id="mbox"></div></div>
+<script>
+'use strict';
+/* ============ utils ============ */
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem('ltv_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('ltv_'+k,JSON.stringify(v))}catch(e){}}};
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const uniq=a=>[...new Set(a)];
+function wpick(items,wf){const w=items.map(wf);const t=w.reduce((a,b)=>a+b,0);if(!(t>0))return pick(items);let r=Math.random()*t;for(let i=0;i<items.length;i++){r-=w[i];if(r<=0)return items[i]}return items[items.length-1]}
+const norm=s=>String(s||'').toLowerCase().replace(/[.,!?;:«»"„“]/g,' ').replace(/\s+/g,' ').trim();
+const deacc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+
+/* ============ sound ============ */
+let AC=null;
+function beep(f,d,type,vol){if(!SET.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||.06;o.connect(g);g.connect(AC.destination);const t=AC.currentTime;g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d)}catch(e){}}
+const SFX={ok(){beep(660,.12);setTimeout(()=>beep(880,.16),90)},bad(){beep(200,.25,'square',.04)},coin(){beep(988,.08);setTimeout(()=>beep(1319,.18),70)},click(){beep(440,.04,'triangle',.03)}};
+
+/* ============ grammar: cases ============ */
+const CS=['N','G','D','A','I','L','V'];
+const CASE={N:{lt:'Vardininkas',q:'Kas?',ru:'именительный'},G:{lt:'Kilmininkas',q:'Ko?',ru:'родительный'},D:{lt:'Naudininkas',q:'Kam?',ru:'дательный'},A:{lt:'Galininkas',q:'Ką?',ru:'винительный'},I:{lt:'Įnagininkas',q:'Kuo?',ru:'творительный'},L:{lt:'Vietininkas',q:'Kur? Kame?',ru:'местный'},V:{lt:'Šauksmininkas',q:'обращение',ru:'звательный'}};
+const chip=c=>`<span class="chip c${c}">${CASE[c].lt} · ${CASE[c].q}</span>`;
+const NUMRU={sg:'ед.ч.',pl:'мн.ч.'};
+const NUMLT={sg:'vns.',pl:'dgs.'};
+
+/* noun paradigms: '*' = soft stem (t→č, d→dž), '#' = genitive plural stored per word */
+const PARA={
+ as:{g:'m',row:'as',lab:'-as',cut:'as',plcut:'ai',s:['as','o','ui','ą','u','e','e'],p:['ai','ų','ams','us','ais','uose','ai']},
+ is:{g:'m',row:'is',lab:'-is',cut:'is',plcut:'iai',s:['is','*io','*iui','į','*iu','yje','i'],p:['*iai','*ių','*iams','*ius','*iais','*iuose','*iai']},
+ ys:{g:'m',row:'ys',lab:'-ys',cut:'ys',plcut:'iai',s:['ys','*io','*iui','į','*iu','yje','y'],p:['*iai','*ių','*iams','*ius','*iais','*iuose','*iai']},
+ us:{g:'m',row:'us',lab:'-us',cut:'us',plcut:'ūs',s:['us','aus','ui','ų','umi','uje','au'],p:['ūs','ų','ums','us','umis','uose','ūs']},
+ ius:{g:'m',row:'ius',lab:'-ius / -jus',cut:'ius',plcut:'iai',s:['ius','iaus','iui','ių','iumi','iuje','iau'],p:['iai','ių','iams','ius','iais','iuose','iai']},
+ jus:{g:'m',row:'ius',lab:'-jus',cut:'jus',plcut:'jai',s:['jus','jaus','jui','jų','jumi','juje','jau'],p:['jai','jų','jams','jus','jais','juose','jai']},
+ is3m:{g:'m',row:'is3m',lab:'-is (dantis)',cut:'is',plcut:'ys',s:['is','ies','*iui','į','imi','yje','ie'],p:['ys','#','ims','is','imis','yse','ys']},
+ uo:{g:'m',row:'uo',lab:'-uo (vanduo, šuo)',irr:1},
+ a:{g:'f',row:'a',lab:'-a',cut:'a',plcut:'os',s:['a','os','ai','ą','a','oje','a'],p:['os','ų','oms','as','omis','ose','os']},
+ ia:{g:'f',row:'ia',lab:'-ia',cut:'ia',plcut:'ios',s:['ia','ios','iai','ią','ia','ioje','ia'],p:['ios','ių','ioms','ias','iomis','iose','ios']},
+ e:{g:'f',row:'e',lab:'-ė',cut:'ė',plcut:'ės',s:['ė','ės','ei','ę','e','ėje','e'],p:['ės','*ių','ėms','es','ėmis','ėse','ės']},
+ is3:{g:'f',row:'is3',lab:'-is (ж.р.)',cut:'is',plcut:'ys',s:['is','ies','*iai','į','imi','yje','ie'],p:['ys','#','ims','is','imis','yse','ys']},
+ uof:{g:'f',row:'uof',lab:'sesuo, duktė',irr:1},
+};
+const ROWS=[['as','м.р. -as'],['is','м.р. -is'],['ys','м.р. -ys'],['us','м.р. -us'],['ius','м.р. -ius/-jus'],['is3m','м.р. -is (dantis)'],['uo','м.р. -uo'],['a','ж.р. -a'],['ia','ж.р. -ia'],['e','ж.р. -ė'],['is3','ж.р. -is'],['uof','ж.р. sesuo/duktė']];
+const IRR={
+ vanduo:[['vanduo','vandens','vandeniui','vandenį','vandeniu','vandenyje','vandenie'],['vandenys','vandenų','vandenims','vandenis','vandenimis','vandenyse','vandenys']],
+ 'šuo':[['šuo','šuns','šuniui','šunį','šuniu','šunyje','šunie'],['šunys','šunų','šunims','šunis','šunimis','šunyse','šunys']],
+ 'mėnuo':[['mėnuo','mėnesio','mėnesiui','mėnesį','mėnesiu','mėnesyje','mėnesie'],['mėnesiai','mėnesių','mėnesiams','mėnesius','mėnesiais','mėnesiuose','mėnesiai']],
+ ruduo:[['ruduo','rudens','rudeniui','rudenį','rudeniu','rudenyje','rudenie'],['rudenys','rudenų','rudenims','rudenis','rudenimis','rudenyse','rudenys']],
+ sesuo:[['sesuo','sesers','seseriai','seserį','seserimi','seseryje','seserie'],['seserys','seserų','seserims','seseris','seserimis','seseryse','seserys']],
+ 'duktė':[['duktė','dukters','dukteriai','dukterį','dukterimi','dukteryje','dukterie'],['dukterys','dukterų','dukterims','dukteris','dukterimis','dukteryse','dukterys']],
+};
+/* lexicon: [lemma, paradigm, ru, tags, flags]  flags: sg / pl / name / gpl:x / pre:x */
+const LEX=[
+// places
+['universitetas','as','университет','place work'],['bankas','as','банк','place work'],['teatras','as','театр','place work busy hobby'],['muziejus','jus','музей','place work busy'],
+['parduotuvė','e','магазин','place work busy'],['kavinė','e','кафе','place work busy pricey'],['vaistinė','e','аптека','place work'],['ligoninė','e','больница','place work'],
+['poliklinika','a','поликлиника','place work'],['mokykla','a','школа','place work'],['biblioteka','a','библиотека','place work'],['stotis','is3','вокзал','place','gpl:stočių'],
+['turgus','us','рынок','place work busy'],['centras','as','торговый центр','place work busy','pre:prekybos '],['kirpykla','a','парикмахерская','place work pricey'],['paštas','as','почта','place work'],
+['biuras','as','офис','place work'],['restoranas','as','ресторан','place work busy pricey'],['klubas','as','спортзал','place busy','pre:sporto '],['viešbutis','is','гостиница','place work pricey'],
+['bažnyčia','ia','церковь','place'],['ambasada','a','посольство','place work'],['parkas','as','парк','place outdoor busy'],['kiemas','as','двор','outdoor'],['sodas','as','сад','outdoor hfeat'],
+['aikštė','e','площадь','outdoor'],['baras','as','бар','place busy work pricey'],
+// cities
+['Vilnius','ius','Вильнюс','city','sg'],['Kaunas','as','Каунас','city','sg'],['Klaipėda','a','Клайпеда','city','sg'],['Šiauliai','is','Шяуляй','city','pl'],['Panevėžys','ys','Паневежис','city','sg'],
+['Trakai','as','Тракай','city','pl'],['Palanga','a','Паланга','city','sg'],['Druskininkai','as','Друскининкай','city','pl'],['Alytus','us','Алитус','city','sg'],['Utena','a','Утена','city','sg'],['Lietuva','a','Литва','topic','sg'],
+// food
+['duona','a','хлеб','mass grocery tasty love','sg'],['kava','a','кофе','mass grocery tasty love thanks','sg'],['arbata','a','чай','mass grocery tasty love','sg'],['sriuba','a','суп','mass tasty','sg'],
+['mėsa','a','мясо','mass grocery kg tasty','sg'],['druska','a','соль','mass grocery','sg'],['vištiena','a','курица (мясо)','mass grocery kg tasty','sg'],['kiauliena','a','свинина','mass grocery kg','sg'],
+['žuvis','is3','рыба','mass grocery kg tasty','sg gpl:žuvų'],['pienas','as','молоко','mass grocery drink coffeeadd tasty','sg'],['sūris','is','сыр','mass grocery kg tasty','sg'],['sviestas','as','сливочное масло','mass grocery','sg'],
+['vanduo','uo','вода','mass grocery drink','sg'],['cukrus','us','сахар','mass grocery kg coffeeadd','sg'],['alus','us','пиво','mass grocery drink tasty','sg'],['vynas','as','вино','mass grocery drink tasty','sg'],
+['ryžiai','is','рис','mass grocery kg tasty','pl'],['makaronai','as','макароны','mass grocery kg tasty','pl'],['miltai','as','мука','mass grocery kg','pl'],['jogurtas','as','йогурт','mass grocery tasty','sg'],
+['varškė','e','творог','mass grocery kg tasty','sg'],['grietinė','e','сметана','mass grocery','sg'],['medus','us','мёд','mass grocery coffeeadd tasty','sg'],['aliejus','jus','растительное масло','mass grocery drink','sg'],
+['kefyras','as','кефир','mass grocery drink tasty','sg'],['šokoladas','as','шоколад','mass grocery tasty love','sg'],
+['obuolys','ys','яблоко','produce kg'],['bulvė','e','картофелина','produce kg'],['morka','a','морковь','produce kg'],['pomidoras','as','помидор','produce kg'],['agurkas','as','огурец','produce kg'],
+['bananas','as','банан','produce kg'],['svogūnas','as','луковица','produce kg'],['citrina','a','лимон','produce kg coffeeadd'],['kiaušinis','is','яйцо','produce'],['bandelė','e','булочка','produce'],
+['dešrelė','e','сосиска','produce'],['sumuštinis','is','бутерброд','produce'],['saldainis','is','конфета','produce kg'],['pyragas','as','пирог','produce'],
+// clothes
+['striukė','e','куртка','clothing colorable'],['suknelė','e','платье','clothing colorable'],['kelnės','e','брюки','clothing colorable','pl'],['marškiniai','is','рубашка','clothing colorable','pl'],
+['batai','as','ботинки','clothing colorable','pl'],['paltas','as','пальто','clothing colorable'],['megztinis','is','свитер','clothing colorable'],['sijonas','as','юбка','clothing colorable'],
+['kepurė','e','шапка','clothing colorable'],['šalikas','as','шарф','clothing colorable'],['kostiumas','as','костюм','clothing colorable'],['kojinės','e','носки','clothing colorable','pl'],
+['pirštinės','e','перчатки','clothing colorable','pl'],['džinsai','as','джинсы','clothing colorable','pl'],['sportbačiai','is','кроссовки','clothing colorable','pl'],['kaklaraištis','is','галстук','clothing colorable'],
+// things
+['akiniai','is','очки','buy small','pl'],['telefonas','as','телефон','buy small colorable love'],['kompiuteris','is','компьютер','buy small love goal'],['knyga','a','книга','buy small topic'],
+['žodynas','as','словарь','buy small'],['bilietas','as','билет','buy small bill'],['krepšys','ys','сумка','buy small colorable container'],['lagaminas','as','чемодан','buy colorable container'],
+['piniginė','e','кошелёк','buy small colorable container'],['rašiklis','is','ручка','buy small colorable'],['sąsiuvinis','is','тетрадь','buy small colorable'],['laikraštis','is','газета','buy small'],
+['laikrodis','is','часы','buy small'],['pieštukas','as','карандаш','buy small'],['raktas','as','ключ','small'],['dokumentas','as','документ','small doc'],['pasas','as','паспорт','small doc'],
+['laiškas','as','письмо','small thanks'],['kortelė','e','карточка','small doc'],['pinigai','as','деньги','small','pl'],['sąskaita','a','счёт','small doc'],['pažyma','a','справка','small doc'],
+['sutartis','is3','договор','small doc','gpl:sutarčių'],['prašymas','as','заявление','doc'],['leidimas','as','разрешение','doc'],['nuotrauka','a','фотография','doc small'],['anketa','a','анкета','doc'],
+// furniture & home
+['stalas','as','стол','furniture under'],['kėdė','e','стул','furniture under'],['lova','a','кровать','furniture under'],['spinta','a','шкаф','furniture container'],['šaldytuvas','as','холодильник','furniture'],
+['veidrodis','is','зеркало','furniture'],['langas','as','окно','furniture'],['durys','is3','дверь','furniture','pl gpl:durų'],['sofa','a','диван','furniture under'],['stalčius','ius','ящик стола','container'],
+['kišenė','e','карман','container'],['kambarys','ys','комната','container housing'],['butas','as','квартира','housing goal topic'],['namas','as','дом','housing goal'],
+['internetas','as','интернет','bill','sg'],['elektra','a','электричество','bill','sg'],['šildymas','as','отопление','bill','sg'],
+['balkonas','as','балкон','hfeat'],['virtuvė','e','кухня','hfeat'],['vonia','ia','ванна','hfeat'],['garažas','as','гараж','hfeat'],['liftas','as','лифт','hfeat'],['baldai','as','мебель','hfeat','pl'],['terasa','a','терраса','hfeat'],
+// people
+['draugas','as','друг','person mate informal group'],['draugė','e','подруга','person mate informal group'],['kaimynas','as','сосед','person informal group'],['kaimynė','e','соседка','person informal'],
+['bendradarbis','is','коллега','person mate group'],['bendradarbė','e','коллега (ж.)','person mate'],['direktorius','ius','директор','person formal'],['direktorė','e','директор (ж.)','person formal'],
+['vadovas','as','руководитель','person'],['vadovė','e','руководительница','person'],['gydytojas','as','врач','person formal prof fear'],['gydytoja','a','врач (ж.)','person formal prof'],
+['mokytojas','as','учитель','person formal prof'],['mokytoja','a','учительница','person formal prof'],['pardavėjas','as','продавец','person prof'],['pardavėja','a','продавщица','person prof'],
+['klientas','as','клиент','person'],['klientė','e','клиентка','person'],['studentas','as','студент','person mate group'],['studentė','e','студентка','person mate group'],
+['policininkas','as','полицейский','person fear'],['šeimininkas','as','хозяин квартиры','person'],['šeimininkė','e','хозяйка квартиры','person'],['dantistas','as','стоматолог','person fear'],
+['ponas','as','господин','formal group'],['ponia','ia','госпожа','formal group'],['mokinys','ys','ученик','person mate group'],['mokinė','e','ученица','person mate group'],
+['vairuotojas','as','водитель','prof'],['programuotojas','as','программист','prof'],['programuotoja','a','программистка','prof'],['kurjeris','is','курьер','prof'],['vadybininkas','as','менеджер','prof'],
+['vadybininkė','e','менеджер (ж.)','prof'],['padavėjas','as','официант','prof'],['padavėja','a','официантка','prof'],['virėjas','as','повар','prof'],['virėja','a','повар (ж.)','prof'],
+['buhalteris','is','бухгалтер','prof'],['buhalterė','e','бухгалтер (ж.)','prof'],
+['brolis','is','брат','family sib informal'],['sesuo','uof','сестра','family sib'],['mama','a','мама','family informal','sg'],['tėtis','is','папа','family informal','sg'],['tėvai','as','родители','family','pl'],
+['vyras','as','муж','family','sg'],['žmona','a','жена','family','sg'],['sūnus','us','сын','family sib'],['duktė','uof','дочь','family sib'],['vaikas','as','ребёнок','family sib group'],
+['močiutė','e','бабушка','family informal','sg'],['senelis','is','дедушка','family informal','sg'],
+['Tomas','as','Томас','name','name'],['Jonas','as','Йонас','name','name'],['Lukas','as','Лукас','name','name'],['Mantas','as','Мантас','name','name'],['Andrius','ius','Андрюс','name','name'],
+['Paulius','ius','Паулюс','name','name'],['Marius','ius','Марюс','name','name'],['Karolis','is','Каролис','name','name'],['Jurgis','is','Юргис','name','name'],['Rūta','a','Рута','name','name'],
+['Ieva','a','Иева','name','name'],['Lina','a','Лина','name','name'],['Eglė','e','Эгле','name','name'],['Agnė','e','Агне','name','name'],['Gintarė','e','Гинтаре','name','name'],
+// body
+['galva','a','голова','body','sg'],['gerklė','e','горло','body','sg'],['pilvas','as','живот','body','sg'],['dantis','is3m','зуб','body','gpl:dantų'],['ausis','is3','ухо','body','gpl:ausų'],
+['nugara','a','спина','body','sg'],['koja','a','нога','body'],['ranka','a','рука','body'],['akis','is3','глаз','body','gpl:akių'],['širdis','is3','сердце','body','sg gpl:širdžių'],['skrandis','is','желудок','body','sg'],
+// transport
+['autobusas','as','автобус','transport commute pub vin'],['troleibusas','as','троллейбус','transport commute pub vin'],['traukinys','ys','поезд','transport commute pub vin'],
+['dviratis','is','велосипед','transport commute colorable goal own'],['automobilis','is','машина','transport commute vin colorable goal own'],['lėktuvas','as','самолёт','transport vin'],
+['paspirtukas','as','самокат','transport commute colorable own'],['laivas','as','корабль','transport vin'],
+// events, goals, hobbies
+['egzaminas','as','экзамен','event fear topic'],['susitikimas','as','встреча','event bye'],['pokalbis','is','собеседование','event'],['kelionė','e','поездка','event goal topic'],
+['pamoka','a','урок','event'],['atostogos','a','отпуск','event goal topic','pl'],['šventė','e','праздник','event'],['vestuvės','e','свадьба','event','pl'],['pasimatymas','as','свидание','bye'],
+['menas','as','искусство','hobby','sg'],['sportas','as','спорт','hobby topic love','sg'],['muzika','a','музыка','hobby love','sg'],['istorija','a','история','hobby','sg'],['politika','a','политика','hobby topic','sg'],
+['kinas','as','кино','hobby','sg'],['fotografija','a','фотография (хобби)','hobby','sg'],['futbolas','as','футбол','hobby topic','sg'],['krepšinis','is','баскетбол','hobby topic','sg'],['literatūra','a','литература','hobby','sg'],
+// time
+['rytas','as','утро','timeunit dayp bye'],['vakaras','as','вечер','timeunit dayp bye'],['diena','a','день','timeunit'],['savaitė','e','неделя','timeunit ago'],['mėnuo','uo','месяц','timeunit ago'],['metai','as','год','ago','pl'],
+['pirmadienis','is','понедельник','weekday timeunit bye'],['antradienis','is','вторник','weekday timeunit bye'],['trečiadienis','is','среда','weekday timeunit bye'],['ketvirtadienis','is','четверг','weekday timeunit bye'],
+['penktadienis','is','пятница','weekday timeunit bye'],['šeštadienis','is','суббота','weekday timeunit bye'],['sekmadienis','is','воскресенье','weekday timeunit bye'],
+['žiema','a','зима','season','sg'],['pavasaris','is','весна','season','sg'],['vasara','a','лето','season','sg'],['ruduo','uo','осень','season','sg'],
+// misc
+['pagalba','a','помощь','thanks','sg'],['dovana','a','подарок','thanks'],['informacija','a','информация','thanks','sg'],['patarimas','as','совет','thanks'],['kvietimas','as','приглашение','thanks'],
+['atsakymas','as','ответ','thanks'],['pietūs','us','обед','thanks','pl'],['darbas','as','работа','topic'],['orai','as','погода','topic','pl'],['filmas','as','фильм','topic'],['problema','a','проблема','topic'],
+['katė','e','кошка','animal'],['šuo','uo','собака','animal fear'],['euras','as','евро',''],['minutė','e','минута',''],
+];
+const W=LEX.map((r,i)=>{const w={i,lem:r[0],p:r[1],ru:r[2],tags:new Set(r[3].split(' ').filter(Boolean))};(r[4]||'').split(' ').filter(Boolean).forEach(f=>{const m=f.indexOf(':');if(m>0)w[f.slice(0,m)]=f.slice(m+1).replace(/_/g,' ');else w[f]=1});if(w.name)w.sg=1;return w});
+// "pre" values contain a trailing space in source; restore it
+LEX.forEach((r,i)=>{const m=/pre:([^ ]+ ?)/.exec(r[4]||'');if(m)W[i].pre=m[1].trim()+' '});
+const WBY={};W.forEach(w=>WBY[w.lem]=w);
+const gender=w=>PARA[w.p].g;
+const soft=st=>/t$/.test(st)?st.slice(0,-1)+'č':/d$/.test(st)?st.slice(0,-1)+'dž':st;
+function nounForms(w){
+ if(w._f)return w._f;const P=PARA[w.p];let s,p,stem='';
+ if(P.irr){[s,p]=IRR[w.lem]}
+ else{stem=w.pl?w.lem.slice(0,-P.plcut.length):w.lem.slice(0,-P.cut.length);
+  const S=w.pl&&(w.p==='is'||w.p==='ys')?stem:soft(stem);
+  const mk=e=>e==='#'?w.gpl:(e[0]==='*'?S+e.slice(1):stem+e);
+  s=P.s.map(mk);p=P.p.map(mk);
+  if(w.name&&w.p==='as')s[6]=stem+'ai';else if(w.p==='as'&&/j$/.test(stem)){s[6]=stem+'au';s[5]=null}}
+ const pre=w.pre||'';
+ w._f={sg:s.map(x=>x==null?null:pre+x),pl:p.map(x=>pre+x)};return w._f}
+const nform=(w,c,num)=>nounForms(w)[num][CS.indexOf(c)];
+function endingOf(w,c,num){const P=PARA[w.p];if(P.irr)return null;let e=(num==='sg'?P.s:P.p)[CS.indexOf(c)];if(e==='#')return null;e=e.replace('*','');if(c==='V'&&num==='sg'){if(w.name&&w.p==='as')e='ai';else if(w.p==='as'&&/jas$/.test(w.lem))e='au'}return e}
+
+/* adjectives */
+const AP={
+ as:{cut:'as',m:{s:['as','o','am','ą','u','ame'],p:['i','ų','iems','us','ais','uose']},f:{s:['a','os','ai','ą','a','oje'],p:['os','ų','oms','as','omis','ose']}},
+ ias:{cut:'ias',m:{s:['ias','io','iam','ią','iu','iame'],p:['i','ių','iems','ius','iais','iuose']},f:{s:['ia','ios','iai','ią','ia','ioje'],p:['ios','ių','ioms','ias','iomis','iose']}},
+ us:{cut:'us',m:{s:['us','aus','iam','ų','iu','iame'],p:['ūs','ių','iems','ius','iais','iuose']},f:{s:['i','ios','iai','ią','ia','ioje'],p:['ios','ių','ioms','ias','iomis','iose']}},
+ is:{cut:'is',m:{s:['is','io','iam','į','iu','iame'],p:['i','ių','iems','ius','iais','iuose']},f:{s:['ė','ės','ei','ę','e','ėje'],p:['ės','ių','ėms','es','ėmis','ėse']}},
+ inis:{cut:'is',m:{s:['is','io','iam','į','iu','iame'],p:['iai','ių','iams','ius','iais','iuose']},f:{s:['ė','ės','ei','ę','e','ėje'],p:['ės','ių','ėms','es','ėmis','ėse']}},
+};
+const ADJ=[
+['naujas','as','новый','clothing buy own place housing small mate person'],['senas','as','старый','clothing buy own place housing'],
+['raudonas','as','красный','colorable'],['juodas','as','чёрный','colorable'],['baltas','as','белый','colorable'],['mėlynas','as','синий','colorable'],['žalias','ias','зелёный','colorable'],['pilkas','as','серый','colorable'],['rudas','as','коричневый','colorable'],
+['brangus','us','дорогой','clothing buy own housing pricey'],['pigus','us','дешёвый','clothing buy own housing pricey'],['gražus','us','красивый','clothing place housing'],
+['didelis','is','большой','place housing hfeat own'],['mažas','as','маленький','place housing hfeat own sib'],['šiltas','as','тёплый','clothing'],['patogus','us','удобный','clothing own'],
+['šviežias','ias','свежий','tasty produce'],['skanus','us','вкусный','tasty produce'],['lietuviškas','as','литовский','tasty'],
+['jaunas','as','молодой','mate person'],['vyresnis','is','старший','sib'],['jaunesnis','is','младший','sib'],['mylimas','as','любимый','family mate'],
+['erdvus','us','просторный','housing hfeat'],['šviesus','us','светлый','housing hfeat'],['modernus','us','современный','housing hfeat place'],
+['elektrinis','inis','электрический','commute'],['greitas','as','быстрый','pub own'],['madingas','as','модный','clothing'],
+].map((r,i)=>({i,lem:r[0],t:r[1],ru:r[2],tags:new Set(r[3].split(' '))}));
+function adjForm(a,g,c,num){const P=AP[a.t],st=a.lem.slice(0,-P.cut.length);return st+P[g][num==='sg'?'s':'p'][CS.indexOf(c)]}
+
+/* numerals */
+const UN={N:{m:['','vienas','du','trys','keturi','penki','šeši','septyni','aštuoni','devyni'],f:['','viena','dvi','trys','keturios','penkios','šešios','septynios','aštuonios','devynios']},A:{m:['','vieną','du','tris','keturis','penkis','šešis','septynis','aštuonis','devynis'],f:['','vieną','dvi','tris','keturias','penkias','šešias','septynias','aštuonias','devynias']}};
+const TEEN=['dešimt','vienuolika','dvylika','trylika','keturiolika','penkiolika','šešiolika','septyniolika','aštuoniolika','devyniolika'];
+const TENS=['','','dvidešimt','trisdešimt','keturiasdešimt','penkiasdešimt','šešiasdešimt','septyniasdešimt','aštuoniasdešimt','devyniasdešimt'];
+function numWords(n,c,g){if(n<10)return UN[c][g][n];if(n<20)return TEEN[n-10];const t=Math.floor(n/10),u=n%10;return TENS[t]+(u?' '+UN[c][g][u]:'')}
+function numKind(n){const u=n%10,t=n%100;if((t>=10&&t<=20)||u===0)return'10+';if(u===1)return'1';return'2-9'}
+function numNoun(w,n,c){const f=nounForms(w),k=numKind(n),ci=CS.indexOf(c);return k==='10+'?f.pl[1]:k==='1'?f.sg[ci]:f.pl[ci]}
+const NUMS={'1':[1,21,31,41,51,61,71,81,91],'2-9':[],'10+':[]};
+for(let n=2;n<100;n++){const k=numKind(n);if(k!=='1')NUMS[k].push(n)}
+
+/* pronouns */
+const PRON={'aš':{N:'aš',G:'manęs',D:'man',A:'mane',I:'manimi'},tu:{N:'tu',G:'tavęs',D:'tau',A:'tave',I:'tavimi'},jis:{N:'jis',G:'jo',D:'jam',A:'jį',I:'juo'},ji:{N:'ji',G:'jos',D:'jai',A:'ją',I:'ja'},
+mes:{N:'mes',G:'mūsų',D:'mums',A:'mus',I:'mumis'},'jūs':{N:'jūs',G:'jūsų',D:'jums',A:'jus',I:'jumis'},jie:{N:'jie',G:'jų',D:'jiems',A:'juos',I:'jais'},jos:{N:'jos',G:'jų',D:'joms',A:'jas',I:'jomis'}};
+const PRONS=Object.keys(PRON);
+const PTPL=[
+ {id:'pG1',c:'G',lt:'Draugas laukia {X} prie kavinės.',ru:'Друг ждёт … у кафе.',why:'Глагол laukti (ждать) требует kilmininkas (Ko?).',ex:[]},
+ {id:'pG2',c:'G',lt:'Be {X} nieko nepadarysime.',ru:'Без … мы ничего не сделаем.',why:'Предлог be (без) требует kilmininkas.',ex:['mes']},
+ {id:'pD1',c:'D',lt:'{X} labai patinka Vilnius.',ru:'… очень нравится Вильнюс.',why:'Кому нравится? Тот, кто чувствует, стоит в naudininkas.',ex:[]},
+ {id:'pD2',c:'D',lt:'Paskambink {X} vakare.',ru:'Позвони … вечером.',why:'skambinti kam? Кому звоним, стоит в naudininkas.',ex:['tu','jūs']},
+ {id:'pA1',c:'A',lt:'Mama {X} labai myli.',ru:'Мама очень любит …',why:'mylėti ką? Прямое дополнение стоит в galininkas.',ex:[]},
+ {id:'pA2',c:'A',lt:'Ar tu {X} pažįsti?',ru:'Ты знаешь …? (знаком с …?)',why:'pažinti ką? Прямое дополнение стоит в galininkas.',ex:['tu','jūs']},
+ {id:'pI1',c:'I',lt:'Ar eisi kartu su {X}?',ru:'Пойдёшь вместе с …?',why:'Предлог su (с) требует įnagininkas.',ex:['tu','jūs']},
+ {id:'pI2',c:'I',lt:'Vakar kalbėjau su {X} telefonu.',ru:'Вчера я говорил(а) с … по телефону.',why:'Предлог su (с) требует įnagininkas.',ex:['aš']},
+];
+
+/* verbs: [inf, ru, pres1-3, past1-3, fut stem, complements, opts] */
+const VERBS=[
+['dirbti','работать',['dirbu','dirbi','dirba'],['dirbau','dirbai','dirbo'],'dirbs',['banke','iki vakaro','biure']],
+['gyventi','жить',['gyvenu','gyveni','gyvena'],['gyvenau','gyvenai','gyveno'],'gyvens',['Vilniuje','bendrabutyje','Kaune'],{tm:{pres:['Dabar','Šiuo metu'],past:['Anksčiau','Pernai'],fut:['Kitais metais','Netrukus']}}],
+['eiti','идти',['einu','eini','eina'],['ėjau','ėjai','ėjo'],'eis',['į parduotuvę','į darbą','pas gydytoją']],
+['važiuoti','ехать',['važiuoju','važiuoji','važiuoja'],['važiavau','važiavai','važiavo'],'važiuos',['į Kauną','į darbą autobusu','namo']],
+['pirkti','покупать',['perku','perki','perka'],['pirkau','pirkai','pirko'],'pirks',['duoną','naują telefoną','bilietą']],
+['kalbėti','говорить',['kalbu','kalbi','kalba'],['kalbėjau','kalbėjai','kalbėjo'],'kalbės',['lietuviškai','su vadovu','telefonu']],
+['norėti','хотеть',['noriu','nori','nori'],['norėjau','norėjai','norėjo'],'norės',['kavos','pailsėti']],
+['turėti','иметь',['turiu','turi','turi'],['turėjau','turėjai','turėjo'],'turės',['daug darbo','laisvą dieną']],
+['mokytis','учиться',['mokausi','mokaisi','mokosi'],['mokiausi','mokeisi','mokėsi'],'mokys',['lietuvių kalbos','universitete'],{refl:1}],
+['skaityti','читать',['skaitau','skaitai','skaito'],['skaičiau','skaitei','skaitė'],'skaitys',['knygą','laikraštį']],
+['rašyti','писать',['rašau','rašai','rašo'],['rašiau','rašei','rašė'],'rašys',['laišką','ataskaitą']],
+['valgyti','есть (кушать)',['valgau','valgai','valgo'],['valgiau','valgei','valgė'],'valgys',['sriubą','kavinėje']],
+['gerti','пить',['geriu','geri','geria'],['gėriau','gėrei','gėrė'],'gers',['kavą','arbatą']],
+['matyti','видеть',['matau','matai','mato'],['mačiau','matei','matė'],'matys',['kaimyną','draugą']],
+['skambinti','звонить',['skambinu','skambini','skambina'],['skambinau','skambinai','skambino'],'skambins',['mamai','gydytojui']],
+['laukti','ждать',['laukiu','lauki','laukia'],['laukiau','laukei','laukė'],'lauks',['autobuso','draugo']],
+['ieškoti','искать',['ieškau','ieškai','ieško'],['ieškojau','ieškojai','ieškojo'],'ieškos',['darbo','buto']],
+['padėti','помогать',['padedu','padedi','padeda'],['padėjau','padėjai','padėjo'],'padės',['draugui','kaimynei']],
+['duoti','давать',['duodu','duodi','duoda'],['daviau','davei','davė'],'duos',['dovaną seseriai','atsakymą']],
+['daryti','делать',['darau','darai','daro'],['dariau','darei','darė'],'darys',['namų darbus','pertrauką']],
+['suprasti','понимать',['suprantu','supranti','supranta'],['supratau','supratai','suprato'],'supras',['užduotį','mokytoją'],{tm:{pres:['Dabar','Jau']}}],
+['galėti','мочь',['galiu','gali','gali'],['galėjau','galėjai','galėjo'],'galės',['padėti','ateiti anksčiau']],
+['mokėti','платить',['moku','moki','moka'],['mokėjau','mokėjai','mokėjo'],'mokės',['už butą','už bilietą']],
+['žinoti','знать',['žinau','žinai','žino'],['žinojau','žinojai','žinojo'],'žinos',['atsakymą','jo adresą'],{tm:{pres:['Dabar','Jau']}}],
+['būti','быть',['esu','esi','yra'],['buvau','buvai','buvo'],'būs',['namuose','darbe'],{pl:['esame','esate'],fut3:'bus'}],
+['keltis','вставать',['keliuosi','keliesi','keliasi'],['kėliausi','kėleisi','kėlėsi'],'kels',['anksti','septintą valandą'],{refl:1}],
+['sakyti','говорить, сказать',['sakau','sakai','sako'],['sakiau','sakei','sakė'],'sakys',['tiesą']],
+['mėgti','любить (нравиться)',['mėgstu','mėgsti','mėgsta'],null,null,['kavą','sportą'],{tenses:['pres'],tm:{pres:['']}}],
+].map((r,i)=>({i,inf:r[0],ru:r[1],pres:r[2],past:r[3],fut:r[4],cps:r[5],o:r[6]||{}}));
+const TENSES=['pres','past','fut'];
+const TENSERU={pres:'настоящее время',past:'прошедшее время',fut:'будущее время'};
+const TENSELT={pres:'Esamasis',past:'Būtasis kartinis',fut:'Būsimasis'};
+const TM={pres:['Paprastai','Kasdien','Šiandien'],past:['Vakar','Praeitą savaitę','Užvakar'],fut:['Rytoj','Kitą savaitę','Poryt']};
+const PERS=[['aš',0],['tu',1],['jis',2],['ji',2],['mes',3],['jūs',4],['jie',5],['jos',5]];
+const PLAB=['aš','tu','jis/ji','mes','jūs','jie/jos'];
+function verbForms(v,t){
+ const k='_'+t;if(v[k])return v[k];let f;
+ if(t==='fut'){if(!v.fut)return null;const s=v.fut;f=v.o.refl?[s+'iuosi',s+'iesi',s+'is',s+'imės',s+'itės',s+'is']:[s+'iu',s+'i',s,s+'ime',s+'ite',s];if(v.o.fut3){f[2]=f[5]=v.o.fut3}}
+ else{const b=v[t];if(!b)return null;const th=b[2];let pl;
+  if(t==='pres'&&v.o.pl)pl=v.o.pl;else if(v.o.refl){const r=th.slice(0,-2);pl=[r+'mės',r+'tės']}else pl=[th+'me',th+'te'];
+  f=[b[0],b[1],th,pl[0],pl[1],th]}
+ return v[k]=f}
+const vtenses=v=>v.o.tenses||TENSES;
+
+/* ============ noun templates ============ */
+const PREP={'iki':['G','до'],'iš':['G','из'],'be':['G','без'],'prie':['G','у, возле'],'nuo':['G','от'],'į':['A','в (куда?)'],'pas':['A','к (человеку)'],'už':['A','за (что?)'],'apie':['A','о (чём?)'],'prieš':['A','назад (prieš savaitę = неделю назад)'],'su':['I','с (кем? чем?)'],'po':['I','под (где?)']};
+const TPL=[
+ {id:'N1',c:'N',n:'sg',cats:'place',lt:'Atsiprašau, kur yra {X}?',ru:'Извините, где находится …?',why:'nom',loc:'transport park'},
+ {id:'N2a',c:'N',n:'sg',cats:'tasty',lt:'Man labai patinka {X}.',ru:'Мне очень нравится …',why:'patinka',loc:'cafe shop market friends',adj:1},
+ {id:'N2b',c:'N',n:'pl',cats:'produce clothing',lt:'Man patinka {X}.',ru:'Мне нравятся …',why:'patinka',loc:'shop market clothes',adj:1},
+ {id:'N3',c:'N',n:'any',cats:'family animal',lt:'Čia mano {X}.',ru:'Это мой (моя, мои) …',why:'nom',loc:'park friends',adj:1},
+ {id:'N4',c:'N',n:'any',cats:'clothing buy',lt:'Kiek kainuoja {X}?',ru:'Сколько стоит …?',why:'nom',loc:'clothes shop',adj:1},
+ {id:'N5',c:'N',n:'any',cats:'family',lt:'Mano {X} dirba banke.',ru:'Мой (моя, мои) … работает в банке.',why:'nom',loc:'friends park work',adj:1},
+ {id:'N6',c:'N',n:'any',cats:'small',lt:'Ant stalo guli {X}.',ru:'На столе лежит …',why:'nom',loc:'work migration housing'},
+ {id:'N7',c:'N',n:'sg',cats:'pub',lt:'Jau atvažiuoja {X}.',ru:'Уже подъезжает …',why:'nom',loc:'transport'},
+ {id:'N8',c:'N',n:'sg',cats:'name',lt:'Šiandien man paskambino {X}.',ru:'Сегодня мне позвонил(а) …',why:'nom',loc:'friends park'},
+ {id:'G1',c:'G',n:'any',cats:'small clothing buy own',lt:'Neturiu {X}.',ru:'У меня нет …',why:'neg',loc:'shop clothes migration work',adj:1},
+ {id:'G2a',c:'G',n:'sg',cats:'grocery',lt:'Parduotuvėje nebėra {X}.',ru:'В магазине больше нет …',why:'neg',loc:'shop'},
+ {id:'G2b',c:'G',n:'pl',cats:'produce',lt:'Parduotuvėje nebėra {X}.',ru:'В магазине больше нет …',why:'neg',loc:'shop market'},
+ {id:'G3',c:'G',n:'sg',cats:'drink',lt:'Nupirkau butelį {X}.',ru:'Я купил(а) бутылку …',why:'qty',loc:'shop'},
+ {id:'G4',c:'G',n:'mc',cats:'kg',lt:'Man reikia kilogramo {X}.',ru:'Мне нужен килограмм …',why:'qty',loc:'shop market'},
+ {id:'G5',c:'G',n:'sg',cats:'tasty',lt:'Norėčiau šiek tiek {X}.',ru:'Я бы хотел(а) немного …',why:'qty',loc:'cafe market'},
+ {id:'G6a',c:'G',n:'sg',cats:'place',lt:'Ieškau {X}.',ru:'Я ищу …',why:'verbG',vb:'ieškoti (искать)',loc:'transport'},
+ {id:'G6b',c:'G',n:'any',cats:'small own',lt:'Visur ieškau savo {X}.',ru:'Везде ищу свой (свою, свои) …',why:'verbG',vb:'ieškoti (искать)',loc:'housing work'},
+ {id:'G7a',c:'G',n:'sg',cats:'pub',lt:'Stotelėje laukiu {X}.',ru:'На остановке жду …',why:'verbG',vb:'laukti (ждать)',loc:'transport'},
+ {id:'G7b',c:'G',n:'any',cats:'person family name',lt:'Kavinėje laukiu {X}.',ru:'В кафе жду …',why:'verbG',vb:'laukti (ждать)',loc:'cafe friends'},
+ {id:'G8',c:'G',n:'sg',cats:'place',lt:'Pėsčiomis einu iki {X}.',ru:'Пешком иду до …',why:'prep',p:'iki',loc:'transport'},
+ {id:'G9',c:'G',n:'sg',cats:'place city',lt:'Ką tik grįžau iš {X}.',ru:'Я только что вернулся (вернулась) из …',why:'prep',p:'iš',loc:'transport friends'},
+ {id:'G10',c:'G',n:'sg',cats:'love',lt:'Negaliu gyventi be {X}.',ru:'Не могу жить без …',why:'prep',p:'be',loc:'friends cafe'},
+ {id:'G11a',c:'G',n:'sg',cats:'place',lt:'Susitikime prie {X}.',ru:'Давай встретимся у …',why:'prep',p:'prie',loc:'friends park'},
+ {id:'G11b',c:'G',n:'sg',cats:'furniture',lt:'Katė sėdi prie {X}.',ru:'Кошка сидит у …',why:'prep',p:'prie',loc:'housing'},
+ {id:'G12',c:'G',n:'any',cats:'family name person',lt:'Tai {X} automobilis.',ru:'Это машина …',why:'poss',loc:'park friends work',adj:1},
+ {id:'G13',c:'G',n:'any',cats:'animal fear',lt:'Šiek tiek bijau {X}.',ru:'Я немного боюсь …',why:'verbG',vb:'bijoti (бояться)',loc:'clinic park'},
+ {id:'G14',c:'G',n:'pl',cats:'place',lt:'Vilniuje daug {X}.',ru:'В Вильнюсе много …',why:'qty',loc:'park transport'},
+ {id:'G15',c:'G',n:'pl',cats:'sib animal',lt:'Kiek turi {X}?',ru:'Сколько у тебя …?',why:'qty',loc:'friends park'},
+ {id:'G16',c:'G',n:'sg',cats:'bye',lt:'Iki {X}!',ru:'До …! (прощание)',why:'prep',p:'iki',loc:'friends work'},
+ {id:'G17',c:'G',n:'sg',cats:'small buy clothing own',lt:'Man labai reikia {X}.',ru:'Мне очень нужен (нужна, нужны) …',why:'verbG',vb:'reikėti (нужно)',loc:'clothes shop work'},
+ {id:'G18',c:'G',n:'sg',cats:'place',lt:'Nuo {X} iki namų penkios minutės pėsčiomis.',ru:'От … до дома пять минут пешком.',why:'prep',p:'nuo',loc:'housing transport'},
+ {id:'D1',c:'D',n:'any',cats:'person family name',lt:'Vakare paskambinsiu {X}.',ru:'Вечером позвоню …',why:'dat',loc:'work friends'},
+ {id:'D2',c:'D',n:'any',cats:'person family name',lt:'Kiekvieną savaitgalį padedu {X}.',ru:'Каждые выходные помогаю …',why:'dat',loc:'park friends'},
+ {id:'D3',c:'D',n:'any',cats:'person name',lt:'Rašau laišką {X}.',ru:'Пишу письмо …',why:'dat',loc:'work migration'},
+ {id:'D4',c:'D',n:'sg',cats:'person family name',lt:'Labai dėkoju {X} už pagalbą.',ru:'Очень благодарю … за помощь.',why:'dat',loc:'work clinic'},
+ {id:'D5',c:'D',n:'any',cats:'family name animal',lt:'Nupirkau dovaną {X}.',ru:'Я купил(а) подарок …',why:'dat',loc:'friends shop clothes',adj:1},
+ {id:'D6',c:'D',n:'any',cats:'name family',lt:'{X} labai patinka Vilnius.',ru:'… очень нравится Вильнюс.',why:'datExp',loc:'friends park'},
+ {id:'D7',c:'D',n:'sg',cats:'name family',lt:'{X} skauda galvą.',ru:'У … болит голова.',why:'datExp',loc:'clinic',nopl:1},
+ {id:'D8',c:'D',n:'any',cats:'event',lt:'Šiandien ruošiuosi {X}.',ru:'Сегодня готовлюсь к …',why:'verbD',vb:'ruoštis (готовиться)',loc:'school work'},
+ {id:'D9',c:'D',n:'sg',cats:'goal',lt:'Taupau pinigus {X}.',ru:'Коплю деньги на …',why:'verbD',vb:'taupyti (копить на что-то)',loc:'work housing'},
+ {id:'A1',c:'A',n:'sg',cats:'place',lt:'Dabar einu į {X}.',ru:'Сейчас иду в …',why:'prep',p:'į',loc:'transport',adj:1},
+ {id:'A2',c:'A',n:'sg',cats:'city',lt:'Savaitgalį važiuosiu į {X}.',ru:'На выходных поеду в …',why:'prep',p:'į',loc:'transport'},
+ {id:'A3',c:'A',n:'any',cats:'produce clothing buy',lt:'Šiandien nusipirkau {X}.',ru:'Сегодня я купил(а) …',why:'obj',loc:'shop clothes market',adj:1},
+ {id:'A3b',c:'A',n:'sg',cats:'grocery',lt:'Parduotuvėje perku {X}.',ru:'В магазине покупаю …',why:'obj',loc:'shop market'},
+ {id:'A4',c:'A',n:'any',cats:'sib animal own',lt:'Aš turiu {X}.',ru:'У меня есть …',why:'obj',loc:'friends park'},
+ {id:'A5',c:'A',n:'any',cats:'pub person name',lt:'Pro langą matau {X}.',ru:'В окно вижу …',why:'obj',loc:'transport park'},
+ {id:'A6',c:'A',n:'any',cats:'body',lt:'Man skauda {X}.',ru:'У меня болит …',why:'skauda',loc:'clinic'},
+ {id:'A7',c:'A',n:'any',cats:'person family name',lt:'Rytoj einu pas {X}.',ru:'Завтра иду к …',why:'prep',p:'pas',loc:'clinic friends work'},
+ {id:'A8',c:'A',n:'sg',cats:'timeunit',lt:'Kiekvieną {X} skambinu mamai.',ru:'Каждый (каждую) … звоню маме.',why:'timeA',loc:'friends park'},
+ {id:'A9',c:'A',n:'sg',cats:'weekday season',lt:'{X} būsiu Kaune.',ru:'В (во) … буду в Каунасе.',why:'timeA',loc:'work transport'},
+ {id:'A10',c:'A',n:'any',cats:'thanks',lt:'Ačiū už {X}!',ru:'Спасибо за …!',why:'prep',p:'už',loc:'cafe friends work'},
+ {id:'A11',c:'A',n:'any',cats:'topic',lt:'Per pertrauką kalbame apie {X}.',ru:'На перерыве говорим о …',why:'prep',p:'apie',loc:'work friends school'},
+ {id:'A12',c:'A',n:'sg',cats:'housing bill',lt:'Kas mėnesį moku už {X}.',ru:'Каждый месяц плачу за …',why:'prep',p:'už',loc:'housing',adj:1},
+ {id:'A13',c:'A',n:'any',cats:'small',lt:'Pamiršau {X} namuose.',ru:'Я забыл(а) … дома.',why:'obj',loc:'work housing migration',adj:1},
+ {id:'A14',c:'A',n:'sg',cats:'ago',lt:'Prieš {X} persikėliau į Vilnių.',ru:'… назад я переехал(а) в Вильнюс.',why:'prep',p:'prieš',loc:'migration friends'},
+ {id:'A15',c:'A',n:'sg',cats:'pub',lt:'Greitai lipu į {X}.',ru:'Быстро сажусь в …',why:'prep',p:'į',loc:'transport'},
+ {id:'I1',c:'I',n:'sg',cats:'commute',lt:'Į darbą važiuoju {X}.',ru:'На работу езжу на …',why:'insTool',loc:'transport work',adj:1},
+ {id:'I2',c:'I',n:'sg',cats:'coffeeadd',lt:'Geriu arbatą su {X}.',ru:'Пью чай с …',why:'prep',p:'su',loc:'cafe'},
+ {id:'I3',c:'I',n:'any',cats:'family name animal mate',lt:'Šiuo metu gyvenu su {X}.',ru:'Сейчас я живу с …',why:'prep',p:'su',loc:'housing friends',adj:1},
+ {id:'I4',c:'I',n:'sg',cats:'prof',lt:{m:'Mano brolis dirba {X}.',f:'Mano sesuo dirba {X}.'},ru:{m:'Мой брат работает …',f:'Моя сестра работает …'},why:'insProf',loc:'work school'},
+ {id:'I5',c:'I',n:'sg',cats:'hobby',lt:'Labai domiuosi {X}.',ru:'Я очень интересуюсь …',why:'verbI',vb:'domėtis (интересоваться)',loc:'friends school'},
+ {id:'I6',c:'I',n:'pl',cats:'weekday dayp',lt:'{X} lankau sporto klubą.',ru:'По … хожу в спортзал.',why:'insTime',loc:'park friends'},
+ {id:'I7',c:'I',n:'sg',cats:'hfeat',lt:'Ieškau buto su {X}.',ru:'Ищу квартиру с …',why:'prep',p:'su',loc:'housing',adj:1},
+ {id:'I8',c:'I',n:'sg',cats:'under',lt:'Katė miega po {X}.',ru:'Кошка спит под …',why:'prep',p:'po',loc:'housing'},
+ {id:'I9',c:'I',n:'any',cats:'family',lt:'Savaitgaliais rūpinuosi {X}.',ru:'По выходным забочусь о …',why:'verbI',vb:'rūpintis (заботиться)',loc:'clinic friends'},
+ {id:'I10',c:'I',n:'sg',cats:'name person',lt:'Vakar kalbėjau su {X}.',ru:'Вчера я говорил(а) с …',why:'prep',p:'su',loc:'work friends'},
+ {id:'L1',c:'L',n:'sg',cats:'place',lt:'Šiuo metu esu {X}.',ru:'Сейчас я нахожусь в …',why:'loc',loc:'transport park',adj:1},
+ {id:'L2',c:'L',n:'sg',cats:'city',lt:'Mano draugai gyvena {X}.',ru:'Мои друзья живут в …',why:'loc',loc:'migration friends'},
+ {id:'L3',c:'L',n:'sg',cats:'work',lt:'Mano kaimynas dirba {X}.',ru:'Мой сосед работает в …',why:'loc',loc:'work migration',adj:1},
+ {id:'L4',c:'L',n:'sg',cats:'container',lt:'Raktai yra {X}.',ru:'Ключи лежат в …',why:'loc',loc:'housing'},
+ {id:'L5',c:'L',n:'sg',cats:'outdoor',lt:'Vaikai žaidžia {X}.',ru:'Дети играют в (на) …',why:'loc',loc:'park'},
+ {id:'L6',c:'L',n:'sg',cats:'city',lt:'{X} vasarą daug turistų.',ru:'В … летом много туристов.',why:'loc',loc:'transport'},
+ {id:'L7',c:'L',n:'sg',cats:'vin',lt:'Telefoną pamiršau {X}.',ru:'Телефон я забыл(а) в …',why:'loc',loc:'transport'},
+ {id:'L8',c:'L',n:'pl',cats:'busy',lt:'Savaitgalį {X} visada daug žmonių.',ru:'На выходных в … всегда много людей.',why:'loc',loc:'park shop',adj:1},
+ {id:'V1',c:'V',n:'sg',cats:'name informal',lt:'Labas, {X}! Kaip sekasi?',ru:'Привет, …! Как дела?',why:'voc',loc:'friends park'},
+ {id:'V2',c:'V',n:'sg',cats:'formal',lt:'Laba diena, {X}! Ar galiu užeiti?',ru:'Добрый день, …! Можно войти?',why:'voc',loc:'clinic school work'},
+ {id:'V3',c:'V',n:'pl',cats:'group',lt:'Labas rytas, {X}!',ru:'Доброе утро, …!',why:'voc',loc:'school friends work'},
+];
+const TBY={};TPL.forEach(t=>{TBY[t.id]=t;t.catSet=new Set(t.cats.split(' '));t.locSet=new Set(t.loc.split(' '))});
+const tplLt=(T,w)=>typeof T.lt==='string'?T.lt:T.lt[gender(w)];
+const tplRu=(T,w)=>typeof T.ru==='string'?T.ru:T.ru[gender(w)];
+const hasAny=(w,set)=>{for(const t of set)if(w.tags.has(t))return true;return false};
+function numsFor(T,w){
+ if(T.c==='V'&&PARA[w.p].irr&&w.p==='uof')return[];
+ if(w.pl)return T.nopl?[]:['pl'];
+ if(T.n==='mc')return[w.tags.has('mass')?'sg':'pl'];
+ if(T.n==='sg')return['sg'];
+ if(T.n==='pl')return w.sg?[]:['pl'];
+ return w.sg?['sg']:['sg','pl']}
+
+/* ============ dialogues ============ */
+const DLG=[
+ {id:'d1',loc:'shop',who:'Kasininkė',av:'👩‍💼',npc:'Ar turite parduotuvės kortelę?',ru:'У вас есть карта магазина?',o:['Ne, neturiu kortelės.','Ne, neturiu kortelę.','Ne, neturiu kortelė.','Ne, neturiu kortelei.'],ex:'После отрицания (neturiu) дополнение стоит в kilmininkas: kortelė → kortelės.'},
+ {id:'d2',loc:'shop',who:'Kasininkė',av:'👩‍💼',npc:'Ar reikia maišelio?',ru:'Нужен пакет?',o:['Ne, ačiū, maišelio nereikia.','Ne, ačiū, maišelis nereikia.','Ne, ačiū, maišelį nereikia.','Ne, ačiū, maišeliui nereikia.'],ex:'Глагол reikėti (нужно) требует kilmininkas, и отрицание тоже: maišelio nereikia.'},
+ {id:'d3',loc:'shop cafe',who:'Kasininkas',av:'👨‍💼',npc:'Kaip mokėsite?',ru:'Как будете платить?',o:['Kortele, prašau.','Kortelę, prašau.','Kortelės, prašau.','Kortelėje, prašau.'],ex:'Чем платите? Средство стоит в įnagininkas: kortele (картой), grynaisiais (наличными).'},
+ {id:'d4',loc:'shop',who:'Pardavėja',av:'👩',npc:'Kuo galiu padėti?',ru:'Чем могу помочь?',o:['Ieškau pieno. Kur jis yra?','Ieškau pieną. Kur jis yra?','Ieškau pienas. Kur jis yra?','Ieškau pienu. Kur jis yra?'],ex:'Глагол ieškoti (искать) требует kilmininkas: ieškau pieno.'},
+ {id:'d5',loc:'shop market',sit:'Вы хотите узнать, сколько стоит сыр.',o:['Kiek kainuoja sūris?','Kiek kainuoja sūrį?','Kiek kainuoja sūrio?','Kiek kainuoja sūriui?'],ex:'То, что стоит, это подлежащее. Подлежащее стоит в vardininkas: sūris.'},
+ {id:'d6',loc:'shop market',who:'Pardavėja',av:'👩',npc:'Šiandien neturime šviežios duonos.',ru:'Сегодня у нас нет свежего хлеба.',o:['Gaila. Tada paimsiu bandelių.','Gaila. Tada paimsiu bandelėms.','Gaila. Tada paimsiu bandelėse.','Gaila. Tada paimsiu bandelėmis.'],ex:'Взять немного, часть чего-то: kilmininkas мн.ч. bandelių (булочек).'},
+ {id:'d7',loc:'clothes',who:'Pardavėja',av:'👩',npc:'Kokio dydžio jums reikia?',ru:'Какой размер вам нужен?',o:['Man reikia M dydžio.','Man reikia M dydis.','Aš reikia M dydžio.','Mane reikia M dydžio.'],ex:'Конструкция «kam reikia ko»: кому нужно, стоит в naudininkas (man), что нужно, в kilmininkas (dydžio).'},
+ {id:'d8',loc:'clothes',sit:'Вы хотите примерить эту куртку.',o:['Ar galiu pasimatuoti šią striukę?','Ar galiu pasimatuoti ši striukė?','Ar galiu pasimatuoti šios striukės?','Ar galiu pasimatuoti šiai striukei?'],ex:'Примерить что? Galininkas, и местоимение согласуется с существительным: šią striukę.'},
+ {id:'d9',loc:'clothes',who:'Pardavėja',av:'👩',npc:'Kaip jums tinka?',ru:'Как вам сидит?',o:['Kelnės per ilgos. Ar turite trumpesnių?','Kelnės per ilgas. Ar turite trumpesnių?','Kelnės per ilgi. Ar turite trumpesnių?','Kelnės per ilgos. Ar turite trumpesnės?'],ex:'Kelnės (брюки) это ж.р. мн.ч., поэтому прилагательное ilgos. «Ar turite trumpesnių?» значит «есть ли покороче»: часть из множества, kilmininkas мн.ч.'},
+ {id:'d10',loc:'clothes',sit:'Вы ищете примерочную.',o:['Atsiprašau, kur yra matavimosi kabina?','Atsiprašau, kur yra matavimosi kabinoje?','Atsiprašau, kur yra matavimosi kabiną?','Atsiprašau, kur yra matavimosi kabinos?'],ex:'«Kur yra …?»: то, что ищем, это подлежащее, vardininkas.'},
+ {id:'d11',loc:'cafe',who:'Padavėja',av:'👩‍🍳',npc:'Ką užsakysite?',ru:'Что будете заказывать?',o:['Vieną kavą su pienu, prašau.','Vieną kavą su pieno, prašau.','Vieną kavą su pienas, prašau.','Vieną kavą su pienui, prašau.'],ex:'Предлог su (с) требует įnagininkas: su pienu.'},
+ {id:'d12',loc:'cafe',who:'Padavėjas',av:'🧑‍🍳',npc:'Ar viskas buvo skanu?',ru:'Всё было вкусно?',o:['Taip, labai skanu, ačiū!','Taip, labai skanus, ačiū!','Taip, labai skaniai, ačiū!','Taip, labai skani, ačiū!'],ex:'В безличных фразах (buvo skanu, man šalta) прилагательное в среднем роде: skanu, gera, šalta.'},
+ {id:'d13',loc:'cafe',sit:'Вы хотите попросить счёт.',o:['Ar galėčiau gauti sąskaitą?','Ar galėčiau gauti sąskaita?','Ar galėčiau gauti sąskaitai?','Ar galėčiau gauti sąskaitoje?'],ex:'Получить что? Прямое дополнение, galininkas: sąskaitą.'},
+ {id:'d14',loc:'cafe friends',who:'Tomas',av:'🧑',npc:'Ką gersi?',ru:'Что будешь пить?',o:['Gersiu arbatą, o tu?','Gersi arbatą, o tu?','Gers arbatą, o tu?','Gersiu arbata, o tu?'],ex:'Будущее время, aš: gersiu. Пить что? Galininkas: arbatą.'},
+ {id:'d15',loc:'clinic',who:'Gydytojas',av:'👨‍⚕️',npc:'Kas jums skauda?',ru:'Что у вас болит?',o:['Man skauda gerklę ir galvą.','Man skauda gerklė ir galva.','Mane skauda gerklę ir galvą.','Aš skauda gerklę ir galvą.'],ex:'«Man skauda ką»: у кого болит, naudininkas (man), что болит, galininkas (gerklę, galvą).'},
+ {id:'d16',loc:'clinic',who:'Registratorė',av:'👩‍💼',npc:'Kada norėtumėte atvykti?',ru:'Когда вы хотели бы прийти?',o:['Ar galėčiau atvykti pirmadienį?','Ar galėčiau atvykti pirmadienis?','Ar galėčiau atvykti pirmadienyje?','Ar galėčiau atvykti pirmadieniui?'],ex:'Когда? Дни недели стоят в galininkas: pirmadienį.'},
+ {id:'d17',loc:'clinic',who:'Gydytoja',av:'👩‍⚕️',npc:'Ar vartojate kokių nors vaistų?',ru:'Принимаете какие-нибудь лекарства?',o:['Ne, jokių vaistų nevartoju.','Ne, jokius vaistus nevartoju.','Ne, jokie vaistai nevartoju.','Ne, jokių vaistai nevartoju.'],ex:'После отрицания (nevartoju) kilmininkas мн.ч.: jokių vaistų.'},
+ {id:'d18',loc:'clinic',who:'Vaistininkė',av:'👩‍🔬',npc:'Kuo galiu padėti?',ru:'Чем могу помочь?',o:['Norėčiau vaistų nuo galvos skausmo.','Norėčiau vaistų nuo galvos skausmas.','Norėčiau vaistų nuo galva skausmo.','Norėčiau vaistų nuo galvos skausmui.'],ex:'nuo + kilmininkas: nuo skausmo (от боли). Galvos skausmas значит «боль головы», galvos тоже kilmininkas.'},
+ {id:'d19',loc:'transport',who:'Taksi vairuotojas',av:'🚕',npc:'Kur važiuojate?',ru:'Куда едете?',o:['Į stotį, prašau.','Į stoties, prašau.','Į stotyje, prašau.','Į stotis, prašau.'],ex:'Куда? į + galininkas ед.ч.: stotį. Stotis во мн.ч. galininkas (stotis) значит «станции».'},
+ {id:'d20',loc:'transport',sit:'Спросите, какой автобус едет в центр.',o:['Atsiprašau, kuris autobusas važiuoja į centrą?','Atsiprašau, kuris autobusą važiuoja į centrą?','Atsiprašau, kuris autobusas važiuoja į centre?','Atsiprašau, kuris autobusas važiuoja į centro?'],ex:'Autobusas это подлежащее (vardininkas). Куда? į + galininkas: į centrą.'},
+ {id:'d21',loc:'transport',who:'Kontrolierius',av:'👮',npc:'Jūsų bilietą, prašau.',ru:'Ваш билет, пожалуйста.',o:['Štai, prašom. Turiu mėnesinį bilietą.','Štai, prašom. Turiu mėnesinis bilietas.','Štai, prašom. Turiu mėnesinio bilieto.','Štai, prašom. Turiu mėnesiniu bilietu.'],ex:'Turiu ką? Galininkas, прилагательное согласуется: mėnesinį bilietą.'},
+ {id:'d22',loc:'transport',sit:'Вы выходите на следующей остановке, а пассажир стоит у двери.',o:['Atsiprašau, ar išlipate kitoje stotelėje?','Atsiprašau, ar išlipate kitą stotelę?','Atsiprašau, ar išlipate kita stotelė?','Atsiprašau, ar išlipate kitos stotelės?'],ex:'Где выходите? Vietininkas: kitoje stotelėje.'},
+ {id:'d23',loc:'housing',who:'Agentė',av:'👩‍💼',npc:'Kokio buto ieškote?',ru:'Какую квартиру вы ищете?',o:['Ieškau dviejų kambarių buto su balkonu.','Ieškau dviejų kambarių butą su balkonu.','Ieškau du kambariai butas su balkonu.','Ieškau dviejų kambarių buto su balkono.'],ex:'ieškoti + kilmininkas (buto), su + įnagininkas (balkonu). «Dviejų kambarių» отвечает на «какой?» и тоже стоит в kilmininkas.'},
+ {id:'d24',loc:'housing',who:'Šeimininkė',av:'👵',npc:'Nuomos kaina 500 eurų per mėnesį.',ru:'Аренда 500 евро в месяц.',o:['Ar į kainą įeina komunaliniai mokesčiai?','Ar į kainą įeina komunalinius mokesčius?','Ar į kaina įeina komunaliniai mokesčiai?','Ar į kainos įeina komunaliniai mokesčiai?'],ex:'Куда входит? į + galininkas: į kainą. Mokesčiai это подлежащее, vardininkas мн.ч.'},
+ {id:'d25',loc:'housing',sit:'Незнакомый сосед сверху очень шумит вечером.',o:['Atsiprašau, ar galėtumėte šiek tiek patylėti?','Ei, tylėk!','Atsiprašau, ar galėtum šiek tiek patylėti, pone?','Atsiprašau, ar galėtumėte šiek tiek patylėjo?'],ex:'С незнакомым взрослым говорим на «Jūs» и вежливо: galėtumėte + инфинитив. «Pone» и «galėtum» (на «ты») вместе не сочетаются.'},
+ {id:'d26',loc:'housing',who:'Šeimininkas',av:'👴',npc:'Kada norite įsikelti?',ru:'Когда хотите въехать?',o:['Nuo kito mėnesio, jei galima.','Nuo kitą mėnesį, jei galima.','Nuo kitas mėnuo, jei galima.','Nuo kitam mėnesiui, jei galima.'],ex:'Предлог nuo (с, от) требует kilmininkas: nuo kito mėnesio.'},
+ {id:'d27',loc:'work',who:'Vadovas',av:'👔',npc:'Ar galite šiandien pasilikti ilgiau?',ru:'Можете сегодня задержаться?',o:['Atsiprašau, šiandien negaliu. Gal galėčiau rytoj?','Atsiprašau, šiandien negali. Gal galėčiau rytoj?','Ne, nenoriu.','Atsiprašau, šiandien negalėsi. Gal galėčiau rytoj?'],ex:'Aš → (ne)galiu. С руководителем отказываем вежливо и предлагаем другой вариант.'},
+ {id:'d28',loc:'work',sit:'Вы пишете письмо руководителю и отправляете отчёт.',o:['Laba diena, siunčiu jums ataskaitą.','Labas, siunčiu tau ataskaitą.','Laba diena, siunčiu jus ataskaitą.','Laba diena, siunčiu jums ataskaita.'],ex:'Кому? Jums (naudininkas). Что? Ataskaitą (galininkas). С руководителем на «Jūs».'},
+ {id:'d29',loc:'work',who:'Kolegė',av:'👩‍💻',npc:'Kada vyks susitikimas?',ru:'Когда будет встреча?',o:['Susitikimas vyks antradienį, dešimtą valandą.','Susitikimas vyks antradienis, dešimta valanda.','Susitikimas vyks antradienyje, dešimtą valandą.','Susitikimas vyks antradienio, dešimtos valandos.'],ex:'Когда? День недели и час стоят в galininkas: antradienį, dešimtą valandą.'},
+ {id:'d30',loc:'work',who:'Klientas',av:'🧔',npc:'Ar galiu kalbėti su direktoriumi?',ru:'Могу поговорить с директором?',o:['Deja, direktoriaus šiandien nėra.','Deja, direktorius šiandien nėra.','Deja, direktorių šiandien nėra.','Deja, direktoriui šiandien nėra.'],ex:'Nėra (нет) требует kilmininkas: direktoriaus nėra.'},
+ {id:'d31',loc:'work',who:'Vadovė',av:'👩‍💼',npc:'Kodėl vėluojate?',ru:'Почему опаздываете?',o:['Atsiprašau, autobusas vėlavo.','Atsiprašau, autobusą vėlavo.','Atsiprašau, autobuso vėlavo.','Atsiprašau, autobusas vėluos.'],ex:'Autobusas это подлежащее (vardininkas). Опоздал раньше, значит прошедшее время: vėlavo.'},
+ {id:'d32',loc:'work friends',sit:'Попросите коллегу (на «ты») помочь.',o:['Gal galėtum man padėti?','Gal galėtum mane padėti?','Gal galėtum aš padėti?','Gal galėtum manęs padėti?'],ex:'Padėti kam? Naudininkas: man.'},
+ {id:'d33',loc:'work migration',who:'Darbdavė',av:'👩‍💼',npc:'Kiek laiko gyvenate Lietuvoje?',ru:'Сколько вы живёте в Литве?',o:['Lietuvoje gyvenu dvejus metus.','Lietuvoje gyvenu du metus.','Lietuvoje gyvenu dvejų metų.','Lietuvą gyvenu dvejus metus.'],ex:'Metai есть только во мн.ч., с ними нужны собирательные числительные: vieneri, dveji, treji. Сколько времени? Galininkas: dvejus metus.'},
+ {id:'d34',loc:'work',who:'Darbdavys',av:'👨‍💼',npc:'Kokia jūsų darbo patirtis?',ru:'Какой у вас опыт работы?',o:['Trejus metus dirbau parduotuvėje.','Trejus metus dirbau parduotuvė.','Trejus metus dirbau parduotuvę.','Trejus metus dirbau parduotuvės.'],ex:'Где работал? Vietininkas: parduotuvėje.'},
+ {id:'d35',loc:'work',who:'Darbdavys',av:'👨‍💼',npc:'Kodėl norite dirbti mūsų įmonėje?',ru:'Почему хотите работать в нашей компании?',o:['Nes domiuosi jūsų sritimi ir noriu tobulėti.','Nes domiuosi jūsų sritį ir noriu tobulėti.','Nes domiuosi jūsų sričiai ir noriu tobulėti.','Nes domiuosi jūsų srities ir noriu tobulėti.'],ex:'Domėtis (интересоваться) требует įnagininkas: sritimi (сферой).'},
+ {id:'d36',loc:'work',sit:'Вы пропустили звонок руководителя. Напишите SMS.',o:['Atsiprašau, negalėjau atsiliepti. Paskambinsiu jums po valandos.','Atsiprašau, negalėjau atsiliepti. Paskambinsiu jus po valandos.','Atsiprašau, negalėjau atsiliepti. Paskambinsiu jūsų po valandos.','Atsiprašau, negalėjau atsiliepti. Paskambinsiu jums po valanda.'],ex:'Skambinti kam? Jums (naudininkas). «Po valandos» (через час): po + kilmininkas.'},
+ {id:'d37',loc:'migration',who:'Darbuotoja',av:'👩‍💼',npc:'Kokiu tikslu kreipiatės?',ru:'С какой целью обращаетесь?',o:['Norėčiau pratęsti leidimą gyventi.','Norėčiau pratęsti leidimas gyventi.','Norėčiau pratęsti leidimo gyventi.','Norėčiau pratęsti leidimui gyventi.'],ex:'Продлить что? Galininkas: leidimą.'},
+ {id:'d38',loc:'migration',who:'Darbuotojas',av:'👨‍💼',npc:'Ar turite darbo sutartį?',ru:'У вас есть трудовой договор?',o:['Taip, štai mano darbo sutartis.','Taip, štai mano darbo sutartį.','Taip, štai mano darbo sutarties.','Taip, štai mano darbą sutartis.'],ex:'После štai (вот) ставим vardininkas. «Darbo sutartis» значит «договор работы», darbo это kilmininkas.'},
+ {id:'d39',loc:'migration bank',who:'Darbuotoja',av:'👩‍💼',npc:'Užpildykite šią anketą.',ru:'Заполните эту анкету.',o:['Gerai. Ar galėtumėte paskolinti rašiklį?','Gerai. Ar galėtumėte paskolinti rašiklis?','Gerai. Ar galėtumėte paskolinti rašiklio?','Gerai. Ar galėtumėte paskolinti rašikliu?'],ex:'Одолжить что? Galininkas: rašiklį.'},
+ {id:'d40',loc:'migration',who:'Darbuotojas',av:'👨‍💼',npc:'Kur gyvenate?',ru:'Где вы живёте?',o:['Gyvenu Vilniuje, Gedimino prospekte.','Gyvenu Vilnius, Gedimino prospektas.','Gyvenu Vilniuje, Gedimino prospektą.','Gyvenu į Vilnių, Gedimino prospekte.'],ex:'Где? Vietininkas: Vilniuje, prospekte.'},
+ {id:'d41',loc:'migration',who:'Darbuotoja',av:'👩‍💼',npc:'Atneškite pažymą iš darbo.',ru:'Принесите справку с работы.',o:['Gerai, atnešiu ją rytoj.','Gerai, atnešiu jį rytoj.','Gerai, atnešiu jos rytoj.','Gerai, atnešiu ji rytoj.'],ex:'Pažyma ж.р., поэтому местоимение ji. Принесу что? Galininkas: ją.'},
+ {id:'d42',loc:'migration school',who:'Darbuotojas',av:'👨‍💼',npc:'Ar kalbate lietuviškai?',ru:'Вы говорите по-литовски?',o:['Taip, šiek tiek kalbu.','Taip, šiek tiek kalbate.','Taip, šiek tiek kalba.','Taip, šiek tiek kalbėjo.'],ex:'Aš → kalbu (настоящее время, 1 лицо).'},
+ {id:'d43',loc:'friends park',who:'Rūta',av:'👱‍♀️',npc:'Labas! Kaip sekasi?',ru:'Привет! Как дела?',o:['Labas, Rūta! Neblogai, o tau?','Labas, Rūtai! Neblogai, o tau?','Labas, Rūtą! Neblogai, o tau?','Labas, Rūta! Neblogai, o jums?'],ex:'Обращение: Rūta → Rūta (šauksmininkas). С подругой на «ты»: o tau?'},
+ {id:'d44',loc:'friends',who:'Tomas',av:'🧑',npc:'Ar eisi šįvakar į kiną?',ru:'Пойдёшь сегодня в кино?',o:['Taip, eisiu! Susitikime prie kino teatro.','Taip, eisiu! Susitikime prie kino teatrą.','Taip, eisiu! Susitikime prie kino teatras.','Taip, eisiu! Susitikime prie kino teatre.'],ex:'Предлог prie (у, возле) требует kilmininkas: prie teatro.'},
+ {id:'d45',loc:'friends',sit:'Поздравьте друга с днём рождения.',o:['Su gimtadieniu!','Su gimtadienis!','Su gimtadienį!','Su gimtadienio!'],ex:'Su + įnagininkas: su gimtadieniu.'},
+ {id:'d46',loc:'friends park',sit:'Друг чихнул.',o:['Į sveikatą!','Į sveikata!','Į sveikatos!','Į sveikatoje!'],ex:'Į + galininkas: į sveikatą. Так же говорят, когда поднимают бокал.'},
+ {id:'d47',loc:'park housing',who:'Kaimynas',av:'👨‍🦳',npc:'Gal norite kavos?',ru:'Не хотите кофе?',o:['Labai ačiū, mielai išgersiu puodelį.','Labai ačiū, mielai išgersiu puodelis.','Labai ačiū, mielai išgersiu puodeliui.','Labai ačiū, mielai išgersiu puodelyje.'],ex:'Выпью что? Galininkas: puodelį (чашку).'},
+ {id:'d48',loc:'friends',sit:'Вас позвали на праздник, но вы не можете прийти.',o:['Ačiū už kvietimą, bet, deja, negalėsiu ateiti.','Ačiū už kvietimo, bet, deja, negalėsiu ateiti.','Ačiū už kvietimas, bet, deja, negalėsiu ateiti.','Ačiū už kvietimui, bet, deja, negalėsiu ateiti.'],ex:'Už (за что?) + galininkas: už kvietimą.'},
+ {id:'d49',loc:'friends',who:'Draugas',av:'🧑',npc:'Kur buvai vakar?',ru:'Где ты был(а) вчера?',o:['Buvau pas močiutę Kaune.','Buvau pas močiutės Kaune.','Buvau pas močiutę Kauną.','Buvau pas močiutei Kaune.'],ex:'Pas (к, у человека) + galininkas: pas močiutę. Где? Vietininkas: Kaune.'},
+ {id:'d50',loc:'park friends work',who:'Kaimynė',av:'👩‍🦰',npc:'Ačiū už pagalbą!',ru:'Спасибо за помощь!',o:['Nėra už ką!','Į sveikatą!','Atsiprašau!','Iki pasimatymo!'],ex:'На «ačiū» отвечают «Nėra už ką» (не за что) или «Prašom».'},
+ {id:'d51',loc:'school',who:'Mokytoja',av:'👩‍🏫',npc:'Ar padarėte namų darbus?',ru:'Вы сделали домашнее задание?',o:['Taip, padariau visus namų darbus.','Taip, padariau visų namų darbų.','Taip, padariau visi namų darbai.','Taip, padariau visus namų darbai.'],ex:'Сделал что? Galininkas мн.ч.: visus namų darbus.'},
+ {id:'d52',loc:'school',who:'Mokytojas',av:'👨‍🏫',npc:'Ko nesupratote?',ru:'Что вы не поняли?',o:['Nesupratau paskutinio pratimo.','Nesupratau paskutinį pratimą.','Nesupratau paskutinis pratimas.','Nesupratau paskutinio pratimą.'],ex:'После отрицания (nesupratau) kilmininkas: paskutinio pratimo. Прилагательное тоже в kilmininkas.'},
+ {id:'d53',loc:'school migration',sit:'Попросите повторить медленнее.',o:['Atsiprašau, ar galėtumėte pakartoti lėčiau?','Atsiprašau, ar galėtumėte pakartoti lėtas?','Ką? Kartok!','Atsiprašau, ar galėtumėte pakartojo lėčiau?'],ex:'Вежливо: galėtumėte + инфинитив. Lėčiau это наречие (медленнее).'},
+ {id:'d54',loc:'school',who:'Mokytoja',av:'👩‍🏫',npc:'Kiek laiko mokotės lietuvių kalbos?',ru:'Сколько вы учите литовский язык?',o:['Lietuvių kalbos mokausi pusę metų.','Lietuvių kalbą mokausi pusę metų.','Lietuvių kalba mokausi pusę metų.','Lietuvių kalbos mokausi pusė metų.'],ex:'Mokytis (учиться) требует kilmininkas: kalbos. Сколько времени? Galininkas: pusę metų.'},
+ {id:'d55',loc:'migration bank',who:'Banko darbuotoja',av:'👩‍💼',npc:'Kuo galiu padėti?',ru:'Чем могу помочь?',o:['Norėčiau atidaryti sąskaitą.','Norėčiau atidaryti sąskaita.','Norėčiau atidaryti sąskaitos.','Norėčiau atidaryti sąskaitoje.'],ex:'Открыть что? Galininkas: sąskaitą (счёт).'},
+ {id:'d56',loc:'migration bank',who:'Banko darbuotojas',av:'👨‍💼',npc:'Ar turite asmens dokumentą?',ru:'У вас есть документ личности?',o:['Taip, štai mano pasas.','Taip, štai mano pasą.','Taip, štai mano paso.','Taip, štai mano pasu.'],ex:'После štai (вот) ставим vardininkas: pasas.'},
+ {id:'d57',loc:'park friends',sit:'Окликните соседа Йонаса (Jonas).',o:['Jonai, ar turi minutę?','Jonas, ar turi minutę?','Jone, ar turi minutę?','Jonai, ar turi minutės?'],ex:'В обращении имена на -as получают -ai: Jonas → Jonai. Нарицательные на -as получают -e: drauge.'},
+ {id:'d58',loc:'park clinic',who:'Senelis',av:'👴',npc:'Kiek tau metų?',ru:'Сколько тебе лет?',o:['Man trisdešimt metų.','Aš trisdešimt metų.','Man trisdešimt metai.','Mane trisdešimt metų.'],ex:'Возраст: кому (naudininkas: man) + число. После 10–20 и круглых десятков kilmininkas мн.ч.: metų.'},
+];
+const DBY={};DLG.forEach(d=>{DBY[d.id]=d;d.locSet=new Set(d.loc.split(' '))});
+
+/* ============ explanations ============ */
+const WHY={
+ nom:()=>'Подлежащее отвечает на вопрос Kas? (кто? что?) и стоит в vardininkas.',
+ patinka:()=>'В конструкции «man patinka …» то, что нравится, это подлежащее. Поэтому vardininkas, а тот, кому нравится, стоит в naudininkas (man, tau).',
+ neg:()=>'После отрицания (neturiu, nėra, nebėra) прямое дополнение переходит в kilmininkas (Ko?).',
+ qty:()=>'После слов меры и количества (butelis, kilogramas, šiek tiek, daug, kiek) ставим kilmininkas. Исчисляемое обычно во мн.ч.: kilogramas obuolių.',
+ verbG:T=>`Глагол ${T.vb} требует kilmininkas (Ko?).`,
+ prep:T=>`Предлог «${T.p}» (${PREP[T.p][1]}) требует ${CASE[PREP[T.p][0]].lt.toLowerCase()}.`,
+ poss:()=>'Чей? Владелец стоит в kilmininkas перед предметом: brolio automobilis = машина брата.',
+ dat:()=>'Кому? Адресат стоит в naudininkas. Так управляют глаголы skambinti, padėti, rašyti, dėkoti, duoti, pirkti kam.',
+ datExp:()=>'Тот, кто чувствует (кому нравится, у кого болит), стоит в naudininkas: man, Tomui, mamai.',
+ verbD:T=>`Глагол ${T.vb} отвечает на вопрос Kam? и требует naudininkas.`,
+ obj:()=>'Прямое дополнение (Ką?) после переходного глагола стоит в galininkas.',
+ skauda:()=>'«Man skauda + galininkas»: что болит, стоит в galininkas (galvą, dantį, kojas).',
+ timeA:()=>'Когда? Дни недели, времена года и «kiekvieną …» стоят в galininkas: pirmadienį, vasarą, kiekvieną rytą.',
+ insTool:()=>'На чём едем? Транспорт стоит в įnagininkas: autobusu, dviračiu, traukiniu.',
+ insProf:()=>'Работать кем? «Dirbti + įnagininkas»: dirba gydytoju, dirba mokytoja.',
+ verbI:T=>`Глагол ${T.vb} требует įnagininkas (Kuo?).`,
+ insTime:()=>'Регулярное время: įnagininkas мн.ч. rytais (по утрам), vakarais, pirmadieniais.',
+ loc:()=>'Где? (Kur? Kame?) Место стоит в vietininkas: banke, parduotuvėje, Vilniuje.',
+ voc:()=>'Обращение стоит в šauksmininkas. Имена: -as → -ai (Tomai), -is → -i (Karoli), -ius → -iau (Andriau), -ė → -e (Egle). Нарицательные: -as → -e (drauge), -tojas/-ėjas → -jau (gydytojau).',
+};
+function parTable(w,hl,me){
+ const f=nounForms(w);let h='<table class="par"><tr><th>Падеж</th><th>vns. (ед.)</th><th>dgs. (мн.)</th></tr>';
+ CS.forEach((c,i)=>{h+=`<tr><th>${CASE[c].lt} <span class="tiny muted">${CASE[c].q}</span></th>`;['sg','pl'].forEach(n=>{const cell=(w.pl&&n==='sg')||(w.sg&&n==='pl')||f[n][i]==null?'—':f[n][i];const cls=hl&&hl[0]===c&&hl[1]===n?'hl':(me&&me.some(m=>m[0]===c&&m[1]===n)?'me':'');h+=`<td class="${cls}">${esc(cell)}</td>`});h+='</tr>'});
+ return h+'</table>'}
+function whichForms(w,form){const f=nounForms(w),out=[];CS.forEach((c,i)=>['sg','pl'].forEach(n=>{if(!((w.pl&&n==='sg')||(w.sg&&n==='pl'))&&f[n][i]!=null&&norm(f[n][i])===norm(form))out.push([c,n])}));return out}
+const descW=w=>`${PARA[w.p].g==='m'?'м.р.':'ж.р.'}, тип ${PARA[w.p].lab}${w.pl?', только мн.ч.':''}`;
+
+/* ============ SRS (adaptive repetition) ============ */
+let SRS=store.get('srs',{});let ITEM=store.get('item',{});let MIST=store.get('mist',[]);
+function kw(k){const s=SRS[k];if(!s)return .55;const e=(s.w+.3)/(s.n+1);let w=e;if(s.st>=3)w*=.5;if(s.st>=6)w*=.5;const days=(Date.now()-(s.t||0))/864e5;if(s.st>=3)w+=Math.min(.25,days*.03);return Math.max(.03,w)}
+function iw(sig){return 1+2.5*(ITEM[sig]||0)}
+function record(task,ok,given){
+ const k=task.key;const s=SRS[k]||(SRS[k]={n:0,w:0,st:0,t:0});s.n++;if(!ok){s.w++;s.st=0}else s.st++;s.t=Date.now();if(s.n>10){s.w*=10/s.n;s.n=10}
+ const sig=task.sig;if(!ok)ITEM[sig]=Math.min(4,(ITEM[sig]||0)+1);else if(ITEM[sig])ITEM[sig]=Math.max(0,ITEM[sig]-1);
+ if(!ok){MIST=MIST.filter(m=>m.sig!==sig);MIST.unshift({sig,spec:task.spec,given:given||'',ans:task.answer,txt:task.plain,at:Date.now()});MIST=MIST.slice(0,300)}
+ store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST)}
+function cellState(k){const s=SRS[k];if(!s)return'new';const e=s.w/s.n;if(s.n>=3&&s.st>=2&&e<.34)return'ok';if(e>=.5)return'bad';return'mid'}
+
+/* ============ pools ============ */
+const LEVEL_CASES=[['N','G','A','L'],['N','G','A','L','D','I'],CS,CS];
+function allowedCase(c,lv){return lv>=9||LEVEL_CASES[Math.min(lv,3)].includes(c)}
+function allowedTense(t,lv){return lv>=9||(t==='pres')||(t==='past'&&lv>=1)||(t==='fut'&&lv>=2)}
+let NCOMBO=null,ACOMBO=null;
+function buildCombos(){NCOMBO=[];ACOMBO=[];
+ TPL.forEach(T=>{W.forEach(w=>{if(!hasAny(w,T.catSet))return;numsFor(T,w).forEach(num=>{
+  NCOMBO.push({spec:{t:'n',T:T.id,w:w.i,num},key:`n:${PARA[w.p].row}:${T.c}:${num}`,T,sig:`n|${w.lem}|${T.c}|${num}`});
+  if(T.adj&&T.c!=='V')ADJ.forEach(a=>{if(hasAny(w,a.tags))ACOMBO.push({spec:{t:'a',T:T.id,w:w.i,a:a.i,num},key:`a:${gender(w)}:${T.c}:${num}`,T,sig:`a|${a.lem}|${w.lem}|${T.c}|${num}`})})})})})}
+function poolFor(ctx){
+ // ctx: {loc, lv, only:type|null, key:key|null}
+ if(!NCOMBO)buildCombos();const lv=ctx.lv,any=!ctx.loc||ctx.loc==='school';const P={n:{},a:{},v:{},num:{},p:{},d:{}};
+ const add=(t,k,item)=>{if(ctx.key&&ctx.key!==k)return;(P[t][k]=P[t][k]||[]).push(item)};
+ NCOMBO.forEach(x=>{if(!allowedCase(x.T.c,lv))return;if(!any&&!x.T.locSet.has(ctx.loc))return;add('n',x.key,x)});
+ if(lv>=1)ACOMBO.forEach(x=>{if(!allowedCase(x.T.c,lv))return;if(!any&&!x.T.locSet.has(ctx.loc))return;add('a',x.key,x)});
+ VERBS.forEach(v=>vtenses(v).forEach(t=>{if(!allowedTense(t,lv))return;PERS.forEach(([pr,pi])=>add('v',`v:${t}:${pi}`,{spec:{t:'v',v:v.i,ten:t,pr},sig:`v|${v.inf}|${t}|${pi}`}))}));
+ ['N','A'].forEach(c=>{if(c==='A'&&lv<1)return;['m','f'].forEach(g=>['1','2-9','10+'].forEach(k=>add('num',`num:${c}:${g}:${k}`,{spec:{t:'num',c,g,k},sig:`num|${c}|${g}|${k}`})))});
+ if(lv>=1)PTPL.forEach(T=>PRONS.forEach(pr=>{if(T.ex.includes(pr))return;add('p',`p:${pr}:${T.c}`,{spec:{t:'p',T:T.id,pr},sig:`p|${pr}|${T.c}`})}));
+ DLG.forEach(d=>{if(!any&&!d.locSet.has(ctx.loc)&&!(ctx.loc==='migration'&&d.locSet.has('bank')))return;add('d',`d:${d.id}`,{spec:{t:'d',id:d.id},sig:`d|${d.id}`})});
+ return P}
+const LOCMIX={
+ work:{n:.3,v:.3,d:.25,p:.15},shop:{n:.45,num:.25,d:.2,a:.1},market:{num:.45,n:.35,d:.2},cafe:{n:.4,d:.3,v:.2,num:.1},clothes:{a:.45,n:.3,d:.25},
+ clinic:{n:.45,d:.3,p:.25},school:{n:.38,a:.15,v:.2,num:.08,p:.09,d:.1},housing:{n:.4,a:.3,d:.3},transport:{n:.5,d:.3,num:.2},
+ migration:{d:.5,n:.3,v:.2},park:{n:.45,d:.25,v:.3},friends:{n:.4,d:.3,v:.2,p:.1},any:{n:.38,a:.15,v:.2,num:.08,p:.09,d:.1}};
+function pickSpecs(ctx,count){
+ const P=poolFor(ctx);const mix=ctx.mix||LOCMIX[ctx.loc]||LOCMIX.any;const out=[];const used=new Set();let lastLem='';
+ for(let i=0;i<count;i++){
+  const types=Object.keys(P).filter(t=>Object.keys(P[t]).length&&(mix[t]||ctx.key));if(!types.length)break;
+  const t=ctx.key?types[0]:wpick(types,x=>mix[x]||0);
+  const keys=Object.keys(P[t]);let tries=0,item=null;
+  while(tries++<12&&!item){const k=wpick(keys,kw);const cand=P[t][k].filter(x=>!used.has(x.sig)&&(x.spec.w==null||x.spec.w!==lastLem));const c2=cand.length?cand:P[t][k];const it=wpick(c2,x=>iw(x.sig));if(!used.has(it.sig)||tries>10)item=it}
+  if(!item)continue;used.add(item.sig);lastLem=item.spec.w;out.push(concretize({...item.spec}))}
+ return out}
+function concretize(s){
+ if(s.t==='v'){const v=VERBS[s.v];const tms=(v.o.tm&&v.o.tm[s.ten])||TM[s.ten];if(s.tm==null)s.tm=pick(tms);if(s.cp==null)s.cp=pick(v.cps)}
+ if(s.t==='num'){if(s.n==null){const pool=NUMS[s.k].filter(n=>s.c==='A'?n<=30:true);s.n=pick(pool)}if(s.item==null)s.item=numItem(s)}
+ if(s.typing==null)s.typing=decideTyping(s);
+ return s}
+
+/* ============ number items ============ */
+const PRICE_SUBJ=[['Kava','Кофе'],['Bilietas į Kauną','Билет в Каунас'],['Ši striukė','Эта куртка'],['Žodynas','Словарь'],['Kambarys per naktį','Комната на ночь'],['Kirpimas','Стрижка'],['Taksi iki stoties','Такси до вокзала']];
+function numItem(s){
+ if(s.c==='N'&&s.g==='m')return pick([{lt:pick(PRICE_SUBJ)[0]+' kainuoja {X}.',ru:'… стоит {n} €.',w:'euras',d:'{n} €'},{lt:'Mano grupėje yra {X}.',ru:'В моей группе {n} студентов.',w:'studentas',d:'{n} студентов'}]);
+ if(s.c==='N'&&s.g==='f')return pick([{lt:'Iki autobuso liko {X}.',ru:'До автобуса осталось {n} мин.',w:'minutė',d:'{n} мин.'},{lt:'Mano grupėje yra {X}.',ru:'В моей группе {n} студенток.',w:'studentė',d:'{n} студенток'}]);
+ const m=s.g==='m'?pick(['obuolys','pomidoras','kiaušinis','bilietas']):pick(['bandelė','citrina','morka','knyga']);
+ return{lt:'Šiandien nupirkau {X}.',ru:'Сегодня я купил(а) {n} ('+WBY[m].ru+').',w:m,d:'{n} × '+m}}
+
+/* ============ task builders ============ */
+let SET=store.get('set',{mode:'auto',sound:true});
+function decideTyping(s){if(s.t==='d')return false;if(SET.mode==='choice')return false;if(SET.mode==='type')return true;const k=specKey(s);const st=SRS[k];return!!(st&&st.n>=3&&st.st>=2)}
+function specKey(s){
+ if(s.t==='n'){const T=TBY[s.T],w=W[s.w];return`n:${PARA[w.p].row}:${T.c}:${s.num}`}
+ if(s.t==='a'){const T=TBY[s.T],w=W[s.w];return`a:${gender(w)}:${T.c}:${s.num}`}
+ if(s.t==='v'){const pi=PERS.find(p=>p[0]===s.pr)[1];return`v:${s.ten}:${pi}`}
+ if(s.t==='num')return`num:${s.c}:${s.g}:${s.k}`;
+ if(s.t==='p')return`p:${s.pr}:${TBY_P[s.T].c}`;
+ return`d:${s.id}`}
+const TBY_P={};PTPL.forEach(t=>TBY_P[t.id]=t);
+function sentenceParts(lt){const i=lt.indexOf('{X}');return[lt.slice(0,i),lt.slice(i+3)]}
+function fillCap(lt,ans){const[a,b]=sentenceParts(lt);return a+(a===''?cap(ans):ans)+b}
+function pickDistractors(correct,cands,n){const c=norm(correct);const pool=uniq(cands.filter(x=>x&&norm(x)!==c));return shuffle(pool).slice(0,n)}
+function buildTask(spec){
+ const s=spec;let t;
+ if(s.t==='n'){const T=TBY[s.T],w=W[s.w],c=T.c,num=s.num,f=nounForms(w),ans=nform(w,c,num),lt=tplLt(T,w);
+  const part=T.why==='obj',gs=[f.sg[1],f.pl[1]],okG=x=>!part||!gs.includes(x);
+  const same=f[num].filter((x,i)=>i!==CS.indexOf(c)&&!(c==='A'&&CS[i]==='V')).filter(okG),other=w.pl||w.sg?[]:[f[num==='sg'?'pl':'sg'][CS.indexOf(c)]];
+  const near={G:['A','N','L'],A:['G','N','L','I'],L:['A','I','G'],D:['A','G','I'],I:['A','D','N'],N:['A','G','V'],V:['N','A','D']}[c].map(x=>f[num][CS.indexOf(x)]).filter(okG);
+  let d=pickDistractors(ans,near,2);d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
+  const palt=part?[f[num][1]]:[];
+  t={type:'n',lt,ru:tplRu(T,w),answer:ans,alts:(w.pre?[ans.slice(w.pre.length)]:[]).concat(palt),partNote:part?f[num][1]:null,options:shuffle([ans,...d]),
+   hint:`<b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">(${esc(w.ru)}) · ${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,
+   explain:given=>{const me=given&&norm(given)!==norm(ans)?whichForms(w,given):null;const e=endingOf(w,c,num);
+    return`<div>${chip(c)} <span class="small">${NUMRU[num]}</span></div><p style="margin-top:6px">${WHY[T.why](T)}${part&&f[num][1]?` Форма kilmininkas «${esc(f[num][1])}» тоже возможна, если имеется в виду «немного, часть» (partityvas), но здесь тренируем galininkas.`:''}</p><p><b>${esc((w.pre||'')+w.lem)}</b> (${esc(w.ru)}): ${descW(w)}. ${CASE[c].lt} ${NUMLT[num]}${e?`: окончание <b>-${esc(e)}</b>`:''} → <b>${esc(ans)}</b>.</p>${me?`<p>Ваш ответ «${esc(given)}» ${me.length?'это '+me.map(m=>CASE[m[0]].lt.toLowerCase()+' '+NUMRU[m[1]]).join(' / '):'не является формой этого слова'}.</p>`:''}<details><summary>Все формы слова</summary>${parTable(w,[c,num],me)}</details>`},
+   ai:given=>`Объясни простыми словами по-русски, почему в литовском предложении нужна именно эта форма слова. Я учу литовский до уровня B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлово: ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни правило (падеж, род, окончание) и дай 3 похожих примера с переводом.`}}
+ else if(s.t==='a'){const T=TBY[s.T],w=W[s.w],a=ADJ[s.a],c=T.c,num=s.num,g=gender(w),ci=CS.indexOf(c),lt=tplLt(T,w);
+  const af=(gg,cc)=>adjForm(a,gg,cc,num),nf=cc=>nform(w,cc,num);const ans=af(g,c)+' '+nf(c);
+  const og=g==='m'?'f':'m';const part=T.why==='obj';const near={G:'A',A:part?'N':'G',L:'A',D:'A',I:'A',N:'A'}[c],near2={G:'N',A:part?'I':'N',L:'I',D:'G',I:'D',N:'G'}[c];
+  const cands=[af(g,c)+' '+nf(near),af(g,near)+' '+nf(c),af(og,c)+' '+nf(c),af(g,near)+' '+nf(near),af(g,c)+' '+nf(near2),af(g,near2)+' '+nf(c),af(og,near)+' '+nf(near)];
+  const d=pickDistractors(ans,cands,3);
+  t={type:'a',lt,ru:tplRu(T,w),answer:ans,alts:(w.pre?[af(g,c)+' '+nf(c).slice(w.pre.length)]:[]).concat(part?[af(g,'G')+' '+nf('G')]:[]),options:shuffle([ans,...d]),
+   hint:`<b>${esc(a.lem)}</b> + <b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">(${esc(a.ru)} ${esc(w.ru)}) · ${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,
+   explain:given=>`<div>${chip(c)} <span class="small">${NUMRU[num]}, ${g==='m'?'мужской':'женский'} род</span></div><p style="margin-top:6px">${WHY[T.why](T)}</p><p>Прилагательное согласуется с существительным в роде, числе и падеже. ${esc(w.lem)} (${descW(w)}) → прилагательное ${esc(a.lem)} в ${g==='m'?'м.р.':'ж.р.'} ${NUMLT[num]} ${CASE[c].lt.toLowerCase()}: <b>${esc(af(g,c))}</b>.</p><details><summary>Формы прилагательного ${esc(a.lem)}</summary><div class="scroll">${adjTable(a,[g,num,c])}</div></details><details><summary>Формы слова ${esc(w.lem)}</summary>${parTable(w,[c,num])}</details>`,
+   ai:given=>`Объясни простыми словами по-русски согласование прилагательного и существительного в литовском. Я учу литовский до B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлова: ${a.lem} (${a.ru}) + ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильно: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Почему такие окончания? Дай 3 похожих примера с переводом.`}}
+ else if(s.t==='v'){const v=VERBS[s.v],pe=PERS.find(p=>p[0]===s.pr),pi=pe[1],f=verbForms(v,s.ten),ans=f[pi];
+  const lt=((s.tm?s.tm+' ':'')+(s.tm?s.pr:cap(s.pr))+' {X} '+s.cp+'.').replace(/^\s+/,'');
+  const same=f.filter((x,i)=>i!==pi),other=TENSES.filter(t=>t!==s.ten).map(t=>verbForms(v,t)).filter(Boolean).map(ff=>ff[pi]);
+  let d=pickDistractors(ans,same,2);d=d.concat(pickDistractors(ans,other.filter(x=>!d.includes(x)),1));if(d.length<3)d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
+  t={type:'v',lt,ru:`${v.ru} · ${TENSERU[s.ten]}`,answer:ans,alts:[],options:shuffle([ans,...d]),
+   hint:`<b>${esc(v.inf)}</b> <span class="muted small">(${esc(v.ru)})</span>`,
+   explain:given=>{let me='';if(given&&norm(given)!==norm(ans)){const hits=[];TENSES.forEach(t=>{const ff=verbForms(v,t);if(ff)ff.forEach((x,i)=>{if(norm(x)===norm(given))hits.push(TENSERU[t]+', '+PLAB[i])})});me=`<p>Ваш ответ «${esc(given)}» это ${hits.length?uniq(hits).join(' / '):'не форма этого глагола'}.</p>`}
+    return`<p><b>${TENSELT[s.ten]}</b> (${TENSERU[s.ten]})${s.tm?`: на время указывает «${esc(s.tm)}»`:''}. Лицо: <b>${esc(s.pr)}</b>.</p>${me}${verbTable(v,s.ten,pi)}<p class="small muted" style="margin-top:6px">${verbRule(s.ten)}</p>`},
+   ai:given=>`Объясни простыми словами по-русски, какая форма литовского глагола тут нужна и почему. Я учу литовский до B1.\n\nПредложение: ${lt.replace('{X}','___')}\nГлагол: ${v.inf} (${v.ru})\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни время и окончание, дай все формы этого времени и 3 примера.`}}
+ else if(s.t==='num'){const it=s.item,w=WBY[it.w],g=s.g,c=s.c,n=s.n,ans=numWords(n,c,g)+' '+numNoun(w,n,c),f=nounForms(w),ci=CS.indexOf(c);
+  const og=g==='m'?'f':'m',oc=c==='N'?'A':'N';const nums=[numWords(n,c,g),numWords(n,c,og),numWords(n,oc,g)],nouns=[f.sg[ci],f.pl[ci],f.pl[1],f.sg[0],f.pl[0],f.pl[3]];
+  const all=[];nums.forEach((x,i)=>nouns.forEach((y,j)=>all.push({s:x+' '+y,p:(i?1:0)+(j?1:0)})));
+  const c1=shuffle(all.filter(x=>x.p===1).map(x=>x.s)),c2=shuffle(all.filter(x=>x.p===2).map(x=>x.s));let d=pickDistractors(ans,c1,3);if(d.length<3)d=d.concat(pickDistractors(ans,c2.filter(x=>!d.includes(x)),3-d.length));
+  const disp=it.d.replace('{n}',n);
+  t={type:'num',lt:it.lt,ru:it.ru.replace('{n}',n),answer:ans,alts:[],options:shuffle([ans,...d]),
+   hint:`<b>${esc(disp)}</b> <span class="muted small">словами · ${esc(w.lem)} (${esc(w.ru)}), ${g==='m'?'м.р.':'ж.р.'}</span>`,
+   explain:()=>`<div>${chip(c)}</div><p style="margin-top:6px">${c==='A'?'Купил что? Galininkas: числительные 1–9 тоже склоняются (vieną, du/dvi, tris, keturis/keturias…).':'Подлежащее или «сколько стоит»: vardininkas.'}</p><p>Правило числа: <b>1, 21, 31…</b> → ед.ч. (vienas euras); <b>2–9, 22–29…</b> → мн.ч. (du eurai, dvi minutės); <b>10–20 и круглые десятки</b> → kilmininkas мн.ч. (dešimt eurų, penkiolika minučių). Род: du/dvi, keturi/keturios, vienas/viena.</p><p>${n} → <b>${esc(ans)}</b>.</p>`,
+   ai:given=>`Объясни простыми словами по-русски, как в литовском согласовать число и существительное. Я учу литовский до B1.\n\nПредложение: ${it.lt.replace('{X}','___')} (${disp})\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни правило 1 / 2–9 / 10–20 и род числительных, дай 3 примера.`}}
+ else if(s.t==='p'){const T=TBY_P[s.T],c=T.c,ans=PRON[s.pr][c];
+  const d=pickDistractors(ans,[PRON[s.pr].N,...['G','D','A','I'].filter(x=>x!==c).map(x=>PRON[s.pr][x]),...PRONS.filter(p=>p!==s.pr).map(p=>PRON[p][c])].slice(0,7),3);
+  t={type:'p',lt:T.lt,ru:T.ru,answer:ans,alts:[],options:shuffle([ans,...d]),
+   hint:`<b>${esc(s.pr)}</b> <span class="muted small">(местоимение)</span>`,
+   explain:()=>`<div>${chip(c)}</div><p style="margin-top:6px">${T.why}</p><p>${esc(s.pr)} → <b>${esc(ans)}</b></p>${pronTable(s.pr,c)}`,
+   ai:given=>`Объясни простыми словами по-русски склонение литовского местоимения. Я учу литовский до B1.\n\nПредложение: ${T.lt.replace('{X}','___')} (${s.pr})\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Почему этот падеж? Дай таблицу форм и 3 примера.`}}
+ else{const D=DBY[s.id];const ans=D.o[0];
+  t={type:'d',dlg:D,lt:null,ru:D.ru||'',answer:ans,alts:[],options:shuffle(D.o.slice()),
+   explain:()=>`<p>${esc(D.ex)}</p>`,
+   ai:given=>`Объясни простыми словами по-русски, почему этот ответ на литовском правильный, а другие нет. Я учу литовский до B1.\n\n${D.sit?'Ситуация: '+D.sit:'Собеседник ('+D.who+'): '+D.npc+' ('+D.ru+')'}\nВарианты:\n${D.o.map(x=>'- '+x).join('\n')}\nПравильный: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Разбери грамматику и вежливость.`}}
+ t.spec=s;t.key=specKey(s);t.sig=sigOf(s);t.typing=!!s.typing;
+ t.plain=t.lt?fillCap(t.lt,t.answer):(t.dlg.sit||t.dlg.npc)+' → '+t.answer;
+ return t}
+function sigOf(s){if(s.t==='n')return`n|${W[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='a')return`a|${ADJ[s.a].lem}|${W[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='v'){const pi=PERS.find(p=>p[0]===s.pr)[1];return`v|${VERBS[s.v].inf}|${s.ten}|${pi}`}if(s.t==='num')return`num|${s.c}|${s.g}|${s.k}`;if(s.t==='p')return`p|${s.pr}|${TBY_P[s.T].c}`;return`d|${s.id}`}
+function adjTable(a,hl){let h='<table class="par"><tr><th></th><th>м.р. ед.</th><th>ж.р. ед.</th><th>м.р. мн.</th><th>ж.р. мн.</th></tr>';CS.slice(0,6).forEach(c=>{h+=`<tr><th>${CASE[c].lt}</th>`;[['m','sg'],['f','sg'],['m','pl'],['f','pl']].forEach(([g,n])=>{const on=hl&&hl[0]===g&&hl[1]===n&&hl[2]===c;h+=`<td class="${on?'hl':''}">${esc(adjForm(a,g,c,n))}</td>`});h+='</tr>'});return h+'</table>'}
+function verbTable(v,t,pi){const f=verbForms(v,t);const hl=i=>i===pi||(pi===5&&i===2)||(pi===2&&i===5)?'hl':'';const row=(a,b)=>`<tr><td class="${hl(a)}"><span class="muted">${PLAB[a]}</span> ${esc(f[a])}</td><td class="${hl(b)}"><span class="muted">${PLAB[b]}</span> ${esc(f[b])}</td></tr>`;return`<table class="par"><tr><th>vns. (ед.ч.)</th><th>dgs. (мн.ч.)</th></tr>${row(0,3)}${row(1,4)}${row(2,5)}</table>`}
+function verbRule(t){return t==='pres'?'Настоящее: aš -u/-iu/-au, tu -i/-ai, jis -a/-i/-o, mes -ame/-ime/-ome, jūs -ate/-ite/-ote, jie как jis.':t==='past'?'Прошедшее: aš -au/-iau, tu -ai/-ei, jis -o/-ė, mes -ome/-ėme, jūs -ote/-ėte, jie как jis.':'Будущее: основа + s: aš -siu, tu -si, jis -s, mes -sime, jūs -site, jie -s. Būti: bus.'}
+function pronTable(pr,c){return`<table class="par"><tr><th>N</th><th>G</th><th>D</th><th>A</th><th>I</th></tr><tr>${['N','G','D','A','I'].map(x=>`<td class="${x===c?'hl':''}">${esc(PRON[pr][x])}</td>`).join('')}</tr></table>`}
+
+/* ============ task UI ============ */
+const LTKEYS=['ą','č','ę','ė','į','š','ų','ū','ž'];
+let RUN=null; // {title, sub, specs, i, res:[], task, answered, onEnd, kind, persist}
+function aiBox(text){return`<div class="aibox"><label class="ai-lab">Не понял? Спроси у Gemini:</label><textarea class="ai-txt" rows="3" readonly>${esc(text)}</textarea><div class="row"><a class="btn small" href="https://gemini.google.com/app" target="_blank" rel="noopener" data-copy="${esc(text)}">Открыть Gemini (текст скопируется)</a></div></div>`}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if(!a)return;const t=a.getAttribute('data-copy');try{navigator.clipboard.writeText(t).catch(()=>{})}catch(err){}const ta=a.closest('.aibox')&&a.closest('.aibox').querySelector('textarea');if(ta){ta.focus();ta.select()}});
+document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ai-txt'))e.target.select()});
+function runTasks(opts){RUN={i:0,res:[],answered:false,...opts};RUN.task=buildTask(RUN.specs[0]);renderRun()}
+function runHost(){return RUN&&RUN.host?$(RUN.host):$('#tab-game')}
+function progHtml(){return`<div class="prog">${RUN.specs.map((x,i)=>`<i class="${i<RUN.res.length?(RUN.res[i]?'ok':'bad'):(i===RUN.i?'cur':'')}"></i>`).join('')}</div>`}
+function renderRun(){
+ const h=runHost();const t=RUN.task;const D=t.dlg;
+ let body='';
+ if(D){body+=D.sit?`<div class="sit">Ситуация: ${esc(D.sit)}</div>`:`<div class="npc"><div class="av">${D.av||'🙂'}</div><div><div class="who">${esc(D.who)}</div><div class="bub">${esc(D.npc)}</div><div class="tiny muted" style="margin-top:3px">${esc(D.ru)}</div></div></div>`;body+='<div class="small muted">Выберите правильный ответ:</div>'}
+ else{const[a,b]=sentenceParts(t.lt);body+=`<div class="sent">${esc(a)}<span class="blank" id="blank">${a===''?'___':'___'}</span>${esc(b)}</div><div class="hint">${t.hint}</div><div class="ru">${esc(t.ru)}</div>`}
+ if(t.typing){body+=`<input class="inp" id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Впишите форму"><div class="kb">${LTKEYS.map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('')}</div><div class="row"><button class="btn primary" id="chk">Проверить</button><button class="btn ghost small" id="idk">Не знаю</button><button class="btn ghost small" id="tochoice">Показать варианты</button></div>`}
+ else body+=`<div class="opts">${t.options.map((o,i)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+ h.innerHTML=`<div class="runwrap"><div class="panel task">${RUN.header||''}<div class="row" style="justify-content:space-between"><div><b>${esc(RUN.title)}</b>${RUN.sub?`<div class="tiny muted">${esc(RUN.sub)}</div>`:''}</div><div class="tiny muted">${RUN.i+1} / ${RUN.specs.length}${t.typing?' · ввод':''}</div></div>${progHtml()}${body}<div id="fb"></div></div>${RUN.quit?'<div class="row"><button class="btn ghost small" id="quit">Закончить тренировку</button></div>':''}</div>`;
+ RUN.answered=false;
+ h.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o));
+ const inp=h.querySelector('#inp');
+ if(inp){setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},50);inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();if(!RUN.answered&&inp.value.trim())answer(inp.value)}};
+  h.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const s=inp.selectionStart??inp.value.length,en=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.k+inp.value.slice(en);inp.focus();inp.setSelectionRange(s+1,s+1)});
+  h.querySelector('#chk').onclick=()=>{if(inp.value.trim())answer(inp.value)};h.querySelector('#idk').onclick=()=>answer('');
+  h.querySelector('#tochoice').onclick=()=>{RUN.task.typing=false;renderRun()}}
+ const q=h.querySelector('#quit');if(q)q.onclick=()=>endRun(true);
+ window.scrollTo({top:0})}
+function answer(given){
+ if(RUN.answered)return;RUN.answered=true;const t=RUN.task;const h=runHost();
+ const ok=[t.answer,...t.alts].some(a=>norm(a)===norm(given));
+ const almost=!ok&&given&&[t.answer,...t.alts].some(a=>deacc(norm(a))===deacc(norm(given)));
+ RUN.res.push(ok);record(t,ok,given);ok?SFX.ok():SFX.bad();
+ h.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(norm(b.dataset.o)===norm(t.answer))b.classList.add('right');else if(norm(b.dataset.o)===norm(given))b.classList.add('wrong')});
+ const inp=h.querySelector('#inp');if(inp)inp.disabled=true;
+ const bl=h.querySelector('#blank');if(bl){bl.textContent=t.lt.startsWith('{X}')?cap(t.answer):t.answer;bl.classList.add(ok?'ok':'bad')}
+ const full=t.lt?`<div class="full">${esc(sentenceParts(t.lt)[0])}<mark>${esc(t.lt.startsWith('{X}')?cap(t.answer):t.answer)}</mark>${esc(sentenceParts(t.lt)[1])}</div>`:`<div class="full"><mark>${esc(t.answer)}</mark></div>`;
+ const head=ok?pick(['Teisingai!','Puiku!','Labai gerai!','Šaunu!']):(given?(almost?'Почти! Проверьте буквы с диакритикой.':'Neteisingai'):'Правильный ответ');
+ const last=RUN.i>=RUN.specs.length-1;
+ $('#fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><div class="head">${head}</div>${!ok&&given&&t.typing?`<div class="small">Ваш ответ: <s>${esc(given)}</s></div>`:''}${full}${ok?`<details><summary>Почему так?</summary><div class="rule">${t.explain(given)}</div>${aiBox(t.ai(''))}</details>`:`<div class="rule">${t.explain(given)}</div>${aiBox(t.ai(given))}`}<div class="row" style="margin-top:10px"><button class="btn primary" id="next">${last?'Готово':'Дальше'} →</button><span class="tiny muted">Enter</span></div></div>`;
+ $('#next').onclick=next;
+ if(RUN.onAnswer)RUN.onAnswer(ok);
+ setTimeout(()=>{const n=$('#next');if(n&&!ok)n.scrollIntoView({block:'nearest'})},30)}
+function next(){if(!RUN||!RUN.answered)return;SFX.click();RUN.i++;if(RUN.onStep)RUN.onStep();if(RUN.i>=RUN.specs.length)return endRun(false);RUN.task=buildTask(RUN.specs[RUN.i]);renderRun()}
+function endRun(aborted){const r=RUN;RUN=null;const ok=r.res.filter(Boolean).length;r.onEnd&&r.onEnd(ok,r.res.length,aborted,r)}
+document.addEventListener('keydown',e=>{
+ if(!$('#modal').hidden){if(e.key==='Enter'){const b=$('#mbox .btn.primary');if(b){e.preventDefault();b.click()}}return}
+ if(!RUN)return;if(e.target.tagName==='TEXTAREA')return;if(runHost().hidden)return;
+ if(RUN.answered&&e.key==='Enter'){e.preventDefault();next();return}
+ if(!RUN.answered&&!RUN.task.typing&&/^[1-4]$/.test(e.key)){const b=runHost().querySelectorAll('.opt')[+e.key-1];if(b)b.click()}});
+
+/* ============ game data ============ */
+const HOUSES=[{lt:'Nakvynės namai',ru:'ночлежка',rent:3,dep:0,mood:14,hp:6},{lt:'Bendrabutis',ru:'общежитие',rent:7,dep:40,mood:9,hp:3},{lt:'Kambarys',ru:'комната в квартире',rent:13,dep:120,mood:5,hp:1},{lt:'Nuomojamas butas',ru:'съёмная квартира',rent:24,dep:350,mood:2,hp:0},{lt:'Savas butas',ru:'своя квартира',rent:4,dep:6000,mood:-2,hp:-2}];
+const JOBS=[{m:'Bedarbis',f:'Bedarbė',ru:'безработный',pay:0},{m:'Indų plovėjas',f:'Indų plovėja',ru:'посудомойщик',pay:30,edu:0,cl:0,tr:0},{m:'Kurjeris',f:'Kurjerė',ru:'курьер',pay:45,edu:1,cl:0,tr:1},{m:'Pardavėjas',f:'Pardavėja',ru:'продавец',pay:60,edu:1,cl:1,tr:0},{m:'Administratorius',f:'Administratorė',ru:'администратор',pay:85,edu:2,cl:2,tr:0},{m:'Vadybininkas',f:'Vadybininkė',ru:'менеджер',pay:120,edu:3,cl:2,tr:0},{m:'Projektų vadovas',f:'Projektų vadovė',ru:'руководитель проектов',pay:170,edu:3,cl:3,tr:1}];
+const EDU=[{lt:'A1',need:4},{lt:'A2',need:8},{lt:'B1 (kursai)'},{lt:'B1 ✓'}];
+const CLOTHES=[{lt:'Seni drabužiai',price:0},{lt:'Tvarkingi drabužiai',price:45},{lt:'Dalykinis kostiumas',price:150},{lt:'Dizainerio drabužiai',price:400}];
+const TRANSP=[{lt:'Pėsčiomis',price:0,slots:0,daily:0},{lt:'Dviratis',price:70,slots:1,daily:0},{lt:'Automobilis',price:1200,slots:2,daily:4}];
+const LOCS=[
+ {id:'work',lt:'Darbas',ru:'работа',ic:'💼',acts:['shift','interview']},
+ {id:'shop',lt:'Prekybos centras',ru:'супермаркет',ic:'🛒',acts:['shopCheap','shopGood']},
+ {id:'market',lt:'Turgus',ru:'рынок',ic:'🥕',acts:['market']},
+ {id:'cafe',lt:'Kavinė',ru:'кафе',ic:'☕',acts:['coffee','lunch']},
+ {id:'clinic',lt:'Poliklinika',ru:'поликлиника и аптека',ic:'🏥',acts:['doctor','pharmacy']},
+ {id:'school',lt:'Universitetas',ru:'курсы литовского',ic:'🎓',acts:['lesson','exam']},
+ {id:'clothes',lt:'Drabužių parduotuvė',ru:'магазин одежды',ic:'👕',acts:['clothes']},
+ {id:'housing',lt:'Būsto agentūra',ru:'агентство жилья',ic:'🏠',acts:['house']},
+ {id:'transport',lt:'Transportas',ru:'транспорт',ic:'🚲',acts:['vehicle']},
+ {id:'migration',lt:'Migracijos departamentas',ru:'миграционный департамент',ic:'🛂',acts:['permit']},
+ {id:'park',lt:'Parkas',ru:'парк',ic:'🌳',acts:['walk']},
+ {id:'friends',lt:'Draugai',ru:'встреча с друзьями',ic:'🍻',acts:['friends']},
+];
+const LBY={};LOCS.forEach(l=>LBY[l.id]=l);
+const jobName=j=>JOBS[j][G&&G.sex==='f'?'f':'m'];
+const ACTS={
+ shift:{loc:'work',t:()=>'Dirbti pamainą',d:()=>`${jobName(G.job)}: до ${JOBS[G.job].pay} € за смену, зависит от ошибок`,n:5,cost:()=>0,need:null,av:()=>G.job>0?null:'нет работы',lv:()=>Math.min(G.edu,3),sub:()=>`зарплата = ${JOBS[G.job].pay} € × доля правильных; меньше половины, и руководитель недоволен`},
+ interview:{loc:'work',t:()=>`Pokalbis: ${jobName(Math.min(G.job+1,JOBS.length-1))}`,d:()=>reqText(G.job+1),n:5,cost:()=>0,need:()=>G.job===0?3:4,av:()=>G.job>=JOBS.length-1?'максимальная должность':reqFail(G.job+1),lv:()=>Math.min(G.edu,3),mix:{d:.5,n:.3,v:.2}},
+ shopCheap:{loc:'shop',t:()=>'Pigus krepšelis',d:()=>'сытость +32',n:3,cost:()=>5},
+ shopGood:{loc:'shop',t:()=>'Geras krepšelis',d:()=>'сытость +48, настроение +8, здоровье +3',n:4,cost:()=>12},
+ market:{loc:'market',t:()=>'Daržovės ir vaisiai',d:()=>'сытость +30, здоровье +5',n:4,cost:()=>4},
+ coffee:{loc:'cafe',t:()=>'Kava ir pyragas',d:()=>'настроение +18, сытость +12',n:3,cost:()=>6},
+ lunch:{loc:'cafe',t:()=>'Dienos pietūs',d:()=>'сытость +35, настроение +6',n:3,cost:()=>9},
+ doctor:{loc:'clinic',t:()=>'Pas gydytoją',d:()=>'здоровье +35',n:4,cost:()=>5},
+ pharmacy:{loc:'clinic',t:()=>'Vaistinė',d:()=>'здоровье +14',n:3,cost:()=>3},
+ lesson:{loc:'school',t:()=>'Pamoka',d:()=>G.edu>=2?'повторение (уровень B1 уже открыт)':`${G.lessons}/${EDU[G.edu].need} уроков до ${EDU[G.edu+1].lt}; засчитывается от 4/6`,n:6,cost:()=>6,lv:()=>Math.min(G.edu,2),sub:()=>'урок засчитывается от 4 правильных из 6'},
+ exam:{loc:'school',t:()=>'B1 egzaminas',d:()=>'20 заданий, нужно 16 правильных',n:20,cost:()=>30,need:()=>16,av:()=>G.edu<2?'сначала закончите курсы A2 → B1':G.edu>=3?'уже сдан':null,lv:()=>9},
+ clothes:{loc:'clothes',t:()=>G.cl<3?`Pirkti: ${CLOTHES[G.cl+1].lt}`:'Viskas nupirkta',d:()=>'нужна для работы получше; 3 из 4 правильных',n:4,cost:()=>G.cl<3?CLOTHES[G.cl+1].price:0,need:()=>3,av:()=>G.cl>=3?'всё куплено':null,payOnPass:1},
+ house:{loc:'housing',t:()=>G.house<4?`Persikraustyti: ${HOUSES[G.house+1].lt}`:'Turite savo butą',d:()=>G.house<4?`${HOUSES[G.house+1].ru}: аренда ${HOUSES[G.house+1].rent} €/день, меньше стресса; 3 из 4`:'',n:4,cost:()=>G.house<4?HOUSES[G.house+1].dep:0,need:()=>3,av:()=>G.house>=4?'лучше уже некуда':null,payOnPass:1},
+ vehicle:{loc:'transport',t:()=>G.tr<2?`Pirkti: ${TRANSP[G.tr+1].lt}`:'Turite automobilį',d:()=>G.tr<2?`+${TRANSP[G.tr+1].slots} действие в день${TRANSP[G.tr+1].daily?', бензин '+TRANSP[G.tr+1].daily+' €/день':''}; 3 из 4`:'',n:4,cost:()=>G.tr<2?TRANSP[G.tr+1].price:0,need:()=>3,av:()=>G.tr>=2?'всё куплено':null,payOnPass:1},
+ permit:{loc:'migration',t:()=>'Pratęsti leidimą gyventi',d:()=>'вид на жительство +45 дней; нужна работа; 4 из 5',n:5,cost:()=>25,need:()=>4,av:()=>G.job<1?'нужна работа':G.permit>60?'ещё рано продлевать':null},
+ walk:{loc:'park',t:()=>'Pasivaikščioti',d:()=>'бесплатно: настроение +12',n:3,cost:()=>0},
+ friends:{loc:'friends',t:()=>'Susitikti su draugais',d:()=>'настроение +32, сытость +8',n:4,cost:()=>9},
+};
+function reqFail(j){const J=JOBS[j];if(!J)return'—';if(G.edu<J.edu)return`нужен уровень ${EDU[J.edu].lt}`;if(G.cl<J.cl)return`нужна одежда: ${CLOTHES[J.cl].lt}`;if(G.tr<J.tr)return`нужен транспорт: ${TRANSP[J.tr].lt}`;return null}
+function reqText(j){const J=JOBS[j];if(!J)return'';return`${J.ru}, ${J.pay} €/смена. Нужно: ${EDU[J.edu].lt}${J.cl?', '+CLOTHES[J.cl].lt.toLowerCase():''}${J.tr?', '+TRANSP[J.tr].lt.toLowerCase():''}; ${j===1?'3':'4'} из 5`}
+
+/* ============ game state ============ */
+let G=store.get('game',null);
+const save=()=>store.set('game',G);
+const slotsMax=()=>4+TRANSP[G.tr].slots;
+const clamp=x=>Math.max(0,Math.min(100,Math.round(x)));
+function newGame(sex){const rec=G&&G.rec||store.get('rec',{best:0,lives:0});G={v:1,sex,day:1,money:35,hp:80,food:60,mood:70,permit:20,used:0,house:0,job:1,edu:0,lessons:0,cl:0,tr:0,bad:0,alive:true,won:false,home:false,log:[],ses:null,ev:null};rec.lives=(rec.lives||0)+1;store.set('rec',rec);logG('День 1. Вы приехали в Вильнюс с 35 € и койкой в ночлежке. Работа: посудомойка.');save()}
+function logG(t){G.log.unshift(`Д${G.day}: ${t}`);G.log=G.log.slice(0,40)}
+function change(eff){const out=[];['money','hp','food','mood','permit'].forEach(k=>{if(!eff[k])return;const v=Math.round(eff[k]);if(!v)return;G[k]=k==='money'?G[k]+v:k==='permit'?Math.min(120,G[k]+v):clamp(G[k]+v);out.push([k,v])});return out}
+const STATLAB={money:'Деньги',hp:'Sveikata (здоровье)',food:'Sotumas (сытость)',mood:'Nuotaika (настроение)',permit:'Leidimas (дней)'};
+const chgHtml=ch=>ch.length?`<div class="chg">${ch.map(([k,v])=>`<span>${STATLAB[k]}</span><span class="${v>0?'p':'n'}">${v>0?'+':''}${v}${k==='money'?' €':''}</span>`).join('')}</div>`:'';
+function deathCheck(){if(!G.alive)return true;let r=null;
+ if(G.hp<=0)r=['🚑','Sveikata baigėsi','Здоровье упало до нуля. Вы попали в больницу, деньги кончились, и пришлось вернуться домой.'];
+ else if(G.mood<=0)r=['🌧️','Depresija','Настроение упало до нуля. Вы купили билет домой и уехали из Литвы.'];
+ else if(G.permit<=0)r=['🛂','Leidimas baigėsi','Вид на жительство закончился. Миграционная служба выдала решение о выезде.'];
+ else if(G.money<-100)r=['💸','Skolos','Долг больше 100 €. Денег на жильё больше нет, пришлось уехать.'];
+ if(!r)return false;G.alive=false;G.ses=null;const rec=store.get('rec',{best:0,lives:1});rec.best=Math.max(rec.best||0,G.day);store.set('rec',rec);save();
+ modal(`<div class="big">${r[0]}</div><h2>Žaidimas baigtas: ${r[1]}</h2><p>${r[2]}</p><p class="small muted">Вы продержались ${G.day} дн. Рекорд: ${rec.best} дн. Работа: ${jobName(G.job)}, уровень ${EDU[G.edu].lt}. Прогресс в грамматике сохранён: игра и дальше будет давать больше заданий там, где были ошибки.</p><div class="row"><button class="btn primary" id="again">Новая жизнь</button></div>`);
+ $('#again').onclick=()=>{closeModal();G=null;save();renderGame()};return true}
+function evictCheck(){if(G.money<-60&&G.house>0){G.house=0;logG('Долг больше 60 €. Вас выселили в ночлежку.');return'Долг больше 60 €: вас выселили в ночлежку.'}return null}
+
+/* ============ game UI ============ */
+function meter(lab,v,max){const p=Math.max(0,Math.min(100,v/max*100));return`<div class="meter"><div class="lab"><span>${lab}</span><span>${v}</span></div><div class="bar"><i class="${p<25?'low':p<50?'mid':''}" style="width:${p}%"></i></div></div>`}
+function statsHtml(){const left=slotsMax()-G.used;return`<div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:8px"><b>Diena ${G.day}</b><div class="slots">Действия: ${Array.from({length:slotsMax()},(_,i)=>`<b class="${i<G.used?'used':''}"></b>`).join('')}</div></div><div class="stats">${meter('❤️ Sveikata',G.hp,100)}${meter('🍞 Sotumas',G.food,100)}${meter('🙂 Nuotaika',G.mood,100)}${meter('🛂 Leidimas',G.permit,60)}</div>
+ <div class="status"><div><span>Darbas</span>${esc(jobName(G.job))}</div><div><span>Būstas</span>${esc(HOUSES[G.house].lt)}</div><div><span>Kalba</span>${EDU[G.edu].lt}${G.edu<2?` · ${G.lessons}/${EDU[G.edu].need}`:''}</div><div><span>Drabužiai</span>${esc(CLOTHES[G.cl].lt)}</div><div><span>Transportas</span>${esc(TRANSP[G.tr].lt)}</div><div><span>Kasdien</span>−${HOUSES[G.house].rent+TRANSP[G.tr].daily} € (būstas)</div></div>
+ ${left<=0?'<button class="btn primary block" style="margin-top:10px" id="sleep">😴 Miegoti (закончить день)</button>':`<button class="btn small ghost" style="margin-top:8px" id="sleep">😴 Закончить день раньше</button>`}</div>`}
+function topinfo(){const ti=$('#topinfo');if(!G||!G.alive||!G.sex){ti.innerHTML='';return}ti.innerHTML=`<span class="pill">D${G.day}</span><span class="pill money ${G.money<0?'neg':''}">${G.money} €</span>`}
+function renderGame(){
+ topinfo();const h=$('#tab-game');
+ if(!G||!G.alive||!G.sex){const rec=store.get('rec',{best:0,lives:0});h.innerHTML=`<div class="panel" style="max-width:620px;margin:0 auto"><div class="big">🇱🇹</div><h2>Gyvenimas Vilniuje</h2><p>Вы приехали в Вильнюс почти без денег. Нужно выжить, найти работу получше, снять жильё и сдать литовский на B1. Каждое действие в городе это разговор на литовском. Ошибки стоят денег, здоровья и настроения, и если не стараться, игра закончится.</p><ul class="small"><li>Следите за здоровьем, сытостью, настроением и видом на жительство. Любой ноль означает конец.</li><li>За день есть 4 действия, транспорт добавляет ещё.</li><li>Чем меньше ошибок, тем больше эффект: зарплата, еда, лечение.</li><li>Игра запоминает ваши ошибки и чаще даёт задания на слабые падежи, роды и времена.</li></ul>${rec.best?`<p class="small muted">Рекорд: ${rec.best} дн. Попыток: ${rec.lives}.</p>`:''}<p><b>Кто вы?</b> <span class="small muted">(от этого зависят названия профессий)</span></p><div class="row"><button class="btn primary" data-sex="m">Vyras (мужчина)</button><button class="btn primary" data-sex="f">Moteris (женщина)</button></div></div>`;
+  h.querySelectorAll('[data-sex]').forEach(b=>b.onclick=()=>{newGame(b.dataset.sex);renderGame()});return}
+ if(G.ses&&!RUN){resumeSession();return}
+ if(RUN&&RUN.kind==='game')return;
+ const left=slotsMax()-G.used;
+ const map=LOCS.map(l=>`<button class="loc" data-loc="${l.id}" ${left<=0?'disabled':''}><span class="ic">${l.ic}</span><b>${l.lt}</b><span class="ru">${l.ru}</span></button>`).join('');
+ h.innerHTML=`<div class="gamegrid"><div class="side">${statsHtml()}</div><div><div class="panel" style="padding:10px 12px"><div class="small">${left>0?`Куда пойти? Осталось действий: <b>${left}</b>.`:'Действия на сегодня кончились. Пора спать.'} ${G.permit<=7?`<b style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн.!</b>`:''} ${G.food<=20?'<b style="color:var(--bad)">Вы голодны.</b>':''}</div></div><div class="map">${map}</div><div class="panel" style="margin-top:12px"><h3>Žurnalas</h3><div class="log">${G.log.map(x=>`<div>${esc(x)}</div>`).join('')}</div></div></div></div>`;
+ h.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{SFX.click();openLoc(b.dataset.loc)});
+ $('#sleep').onclick=sleep}
+function openLoc(id){const L=LBY[id];const h=$('#tab-game');
+ const acts=L.acts.map(a=>{const A=ACTS[a];const cost=A.cost();const why=(A.av&&A.av())||(cost>G.money?'не хватает денег':null);return`<button class="act" data-a="${a}" ${why?'disabled':''}><div><div class="t">${esc(A.t())}</div><div class="d">${esc(why||A.d())}</div></div><div class="price">${cost?cost+' €':'—'}</div></button>`}).join('');
+ h.innerHTML=`<div class="gamegrid"><div class="side">${statsHtml()}</div><div><div class="panel"><div class="row" style="justify-content:space-between"><h2>${L.ic} ${L.lt}</h2><button class="btn small ghost" id="back">← Miestas</button></div><p class="small muted">${L.ru}. Каждое действие занимает одно из ${slotsMax()} действий дня. Задания по теме места, чаще те, где у вас ошибки.</p><div class="acts">${acts}</div></div></div></div>`;
+ $('#back').onclick=renderGame;$('#sleep').onclick=sleep;
+ h.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>startAction(b.dataset.a))}
+function startAction(a){const A=ACTS[a];const cost=A.cost();if(cost>G.money)return;
+ if(!A.payOnPass&&cost){G.money-=cost}
+ G.used++;const lv=A.lv?A.lv():Math.min(G.edu,3);
+ const specs=pickSpecs({loc:A.loc,lv,mix:A.mix},A.n);
+ G.ses={a,specs,res:[],i:0,cost};save();topinfo();resumeSession()}
+function resumeSession(){const S=G.ses;const A=S.a?ACTS[S.a]:null;const L=A?LBY[A.loc]:null;
+ const title=S.ev?EVENTS[S.ev].title:`${L.ic} ${L.lt}: ${A.t()}`;
+ runTasks({kind:'game',title,sub:S.ev?EVENTS[S.ev].sub:(A.sub?A.sub():A.need?`нужно ${A.need()} из ${A.n}`:'эффект зависит от количества правильных ответов'),specs:S.specs,i:0,res:[],
+  onAnswer:()=>{G.ses.res=RUN.res.slice();G.ses.i=RUN.i+1;save()},onEnd:(ok,n)=>{const S2=G.ses;G.ses=null;S2.ev?finishEvent(S2,ok,n):finishAction(S2,ok,n)}});
+ if(S.i>0&&S.i<S.specs.length){RUN.i=S.i;RUN.res=S.res.slice();RUN.task=buildTask(RUN.specs[RUN.i]);renderRun()}
+ else if(S.i>=S.specs.length){const ok=S.res.filter(Boolean).length;const r=RUN;RUN=null;r.onEnd(ok,S.specs.length)}}
+function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={},msg='',head='';const need=A.need?A.need():null;const pass=need==null||ok>=need;
+ switch(a){
+  case'shift':{const pay=Math.round(JOBS[G.job].pay*acc);eff={money:pay,food:-10,mood:-6};if(acc<.5){G.bad++;msg=G.bad>=2?'Руководитель недоволен второй раз подряд. Вас уволили.':'Руководитель недоволен: слишком много ошибок. Ещё одна такая смена, и вас уволят.';if(G.bad>=2){G.job=0;G.bad=0;logG('Уволен(а) за ошибки.')}}else{G.bad=0;msg=acc===1?'Идеальная смена! Руководитель доволен.':'Смена закончена.'}logG(`Смена: ${ok}/${n}, +${pay} €.`);break}
+  case'interview':{const j=Math.min(G.job+1,JOBS.length-1);if(pass){G.job=j;G.bad=0;msg=`Вас взяли! Новая должность: ${jobName(j)} (${JOBS[j].pay} €/смена).`;eff={mood:15};logG(`Новая работа: ${jobName(j)}.`)}else{msg='Не взяли. Работодатель заметил ошибки. Попробуйте ещё раз в другой день.';eff={mood:-8};logG('Собеседование провалено.')}break}
+  case'shopCheap':eff={food:32*acc};break;
+  case'shopGood':eff={food:48*acc,mood:8*acc,hp:3*acc};break;
+  case'market':eff={food:30*acc,hp:5*acc};break;
+  case'coffee':eff={mood:18*acc,food:12*acc};break;
+  case'lunch':eff={food:35*acc,mood:6*acc};break;
+  case'doctor':eff={hp:35*acc};break;
+  case'pharmacy':eff={hp:14*acc};break;
+  case'walk':eff={mood:12*acc,hp:2*acc,food:-4};break;
+  case'friends':eff={mood:32*acc,food:8*acc};break;
+  case'lesson':{eff={food:-5,mood:-3};if(ok>=4){if(G.edu<2){G.lessons++;if(G.lessons>=EDU[G.edu].need){G.edu++;G.lessons=0;msg=`Новый уровень: ${EDU[G.edu].lt}! ${G.edu===1?'Открыты naudininkas, įnagininkas, прошедшее время, числа в galininkas, местоимения и прилагательные.':'Открыты šauksmininkas и будущее время. Можно сдавать экзамен B1.'}`;logG(`Уровень ${EDU[G.edu].lt}!`);eff.mood=20}else msg=`Урок засчитан (${G.lessons}/${EDU[G.edu].need}).`}else msg='Хорошее повторение.'}else msg='Урок не засчитан: нужно минимум 4 правильных из 6.';break}
+  case'exam':{if(pass){G.edu=3;eff={mood:30};msg='Egzaminas išlaikytas! У вас уровень B1.';logG('B1 egzaminas išlaikytas!')}else{eff={mood:-12};msg=`Экзамен не сдан (${ok}/${n}, нужно 16). Повторите слабые места во вкладке «Тренировка».`;logG(`Экзамен: ${ok}/20, не сдан.`)}break}
+  case'clothes':{if(pass){G.money-=S.cost;G.cl++;eff={mood:8};msg=`Куплено: ${CLOTHES[G.cl].lt}.`;logG(`Одежда: ${CLOTHES[G.cl].lt}.`)}else{eff={mood:-5};msg='Не договорились с продавцом. Деньги остались при вас.'}break}
+  case'house':{if(pass){G.money-=S.cost;G.house++;eff={mood:15};msg=`Вы переехали: ${HOUSES[G.house].lt}.`;logG(`Переезд: ${HOUSES[G.house].lt}.`)}else{eff={mood:-6};msg='Хозяин выбрал другого жильца. Деньги остались при вас.'}break}
+  case'vehicle':{if(pass){G.money-=S.cost;G.tr++;eff={mood:10};msg=`Куплено: ${TRANSP[G.tr].lt}. Теперь у вас больше действий в день.`;logG(`Транспорт: ${TRANSP[G.tr].lt}.`)}else{eff={mood:-5};msg='Продавец не понял вас. Покупка сорвалась.'}break}
+  case'permit':{if(pass){eff={permit:45};msg='Вид на жительство продлён на 45 дней.';logG('Leidimas pratęstas.')}else{eff={mood:-6};msg='В заявлении ошибки. Пошлину не вернули, приходите ещё раз.';logG('Продление не удалось.')}break}
+ }
+ const ch=change(eff);if(A.cost()&&!A.payOnPass)ch.unshift(['money',-S.cost]);else if(A.payOnPass&&pass&&S.cost)ch.unshift(['money',-S.cost]);
+ const ev=evictCheck();save();topinfo();
+ if(deathCheck())return;
+ if(a==='exam'&&pass&&!G.won){G.won=true;save();modal(`<div class="big">🎉</div><h2>Sveikiname! B1 išlaikytas!</h2><p>Вы прошли главную цель игры. Можно играть дальше: следующая цель это своя квартира в Вильнюсе.</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()};return}
+ if(a==='house'&&pass&&G.house===4){modal(`<div class="big">🏡</div><h2>Tikras vilnietis!</h2><p>У вас своя квартира в Вильнюсе. Игра пройдена полностью.</p><div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()};return}
+ modal(`<h2>${ok}/${n} teisingai</h2>${msg?`<p>${esc(msg)}</p>`:''}${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);
+ $('#mok').onclick=()=>{closeModal();renderGame()}}
+function sleep(){if(!G||!G.alive)return;const H=HOUSES[G.house],T=TRANSP[G.tr];
+ const eff={money:-(H.rent+T.daily),food:-22,mood:-H.mood+(G.tr===2?3:0),hp:-H.hp,permit:-1};
+ if(G.food<=15)eff.hp-=15;if(G.mood<15)eff.hp-=4;if(G.money<0)eff.mood-=6;
+ const ch=change(eff);G.day++;G.used=0;logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
+ if(deathCheck())return;
+ const e=rollEvent();
+ modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье падает быстрее. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
+ $('#mok').onclick=()=>{closeModal();if(e)showEvent(e);else renderGame()}}
+
+/* ============ events ============ */
+const EVENTS={
+ kontrolierius:{title:'👮 Kontrolierius troleibuse',sub:'2 из 2, иначе штраф 15 €',cond:()=>G.tr===0,intro:'Утром в троллейбусе контролёр. Вы не уверены, что правильно пробили билет. Объяснитесь по-литовски!',loc:'transport',n:2,end:(ok,n)=>ok>=n?[{},'Контролёр кивнул и ушёл.']:[{money:-15},'Контролёр выписал штраф 15 €.']},
+ kaimynas:{title:'👨‍🦳 Kaimynas prašo pagalbos',sub:'помогите соседу',cond:()=>true,intro:'Сосед просит помочь донести сумки и заодно поговорить.',loc:'park',n:2,end:ok=>ok>=1?[{mood:10},'Сосед благодарит. Приятно!']:[{mood:-5},'Вы друг друга не поняли. Неловко.']},
+ vmi:{title:'📨 Laiškas iš VMI',sub:'налоговая: 2 из 2, иначе штраф 10 €',cond:()=>G.job>0,intro:'Пришло письмо из налоговой. Нужно ответить без ошибок.',loc:'migration',n:2,end:(ok,n)=>ok>=n?[{},'Всё в порядке.']:[{money:-10},'Ошибка в ответе, штраф 10 €.']},
+ peršalimas:{title:'🤧 Peršalote',cond:()=>true,text:'Вы простудились.',eff:{hp:-12,mood:-4}},
+ premija:{title:'💶 Premija',cond:()=>G.job>=2&&G.bad===0,text:'Руководитель доволен работой: премия!',eff:{money:20}},
+ pametėte:{title:'👛 Pametėte piniginę',cond:()=>G.money>8,text:'Вы потеряли часть денег.',eff:()=>({money:-Math.min(G.money,5+rnd(11))})},
+ saulė:{title:'☀️ Saulėta diena',cond:()=>true,text:'Солнечный день, на улице тепло.',eff:{mood:8}},
+};
+function rollEvent(){if(G.day<2||Math.random()>.4)return null;const ks=Object.keys(EVENTS).filter(k=>EVENTS[k].cond());return ks.length?pick(ks):null}
+function showEvent(k){const E=EVENTS[k];
+ if(E.n){modal(`<h2>${E.title}</h2><p>${esc(E.intro)}</p><div class="row"><button class="btn primary" id="mok">Начать</button></div>`);$('#mok').onclick=()=>{closeModal();G.ses={ev:k,specs:pickSpecs({loc:E.loc,lv:Math.min(G.edu,3)},E.n),res:[],i:0};save();resumeSession()};return}
+ const eff=typeof E.eff==='function'?E.eff():E.eff;const ch=change(eff);logG(E.title.replace(/^\S+\s/,''));save();topinfo();if(deathCheck())return;
+ modal(`<h2>${E.title}</h2><p>${esc(E.text)}</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Gerai</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()}}
+function finishEvent(S,ok,n){const E=EVENTS[S.ev];const[eff,msg]=E.end(ok,n);const ch=change(eff);logG(msg);save();topinfo();if(deathCheck())return;
+ modal(`<h2>${E.title}</h2><p>${ok}/${n}. ${esc(msg)}</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()}}
+
+/* ============ modal ============ */
+function modal(html){$('#mbox').innerHTML=html;$('#modal').hidden=false;SFX.coin()}
+function closeModal(){$('#modal').hidden=true}
+
+/* ============ training tab ============ */
+let TRV=store.get('trv',{view:'n',num:'sg'});
+function practice(ctx,count,title){showTab('train');runTasks({kind:'train',host:'#tab-train',title,sub:'Тренировка: без последствий для игры',specs:pickSpecs(ctx,count).map(s=>{s.typing=decideTyping(s);return s}),quit:true,onEnd:(ok,n,ab)=>{if(ab&&!n){renderTrain();return}$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n} teisingai</h2><p class="small muted">Ошибки записаны: игра чаще будет давать похожие задания.</p><div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn" id="tomx">К таблице прогресса</button></div></div>`;$('#again').onclick=()=>practice(ctx,count,title);$('#tomx').onclick=renderTrain}})}
+function keysList(view){const P=poolFor({lv:9});return Object.keys(P[view]||{})}
+function cellTd(k,exists,label){if(!exists)return'<td class="na">·</td>';const s=SRS[k];const st=cellState(k);const pct=s?Math.round((1-s.w/s.n)*100)+'%':'';return`<td class="s-${st}" data-key="${k}" title="${esc(label||k)}">${pct}</td>`}
+function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
+ const all=[...Object.keys(P.n),...Object.keys(P.a),...Object.keys(P.v),...Object.keys(P.num),...Object.keys(P.p)];const done=all.filter(k=>cellState(k)==='ok').length;
+ const v=TRV.view;let mx='';
+ if(v==='n'){const num=TRV.num;mx=`<div class="row" style="margin-bottom:6px"><div class="seg"><button data-num="sg" aria-pressed="${num==='sg'}">Ед.ч. (vns.)</button><button data-num="pl" aria-pressed="${num==='pl'}">Мн.ч. (dgs.)</button></div></div><div class="scroll"><table class="mtx"><tr><th class="rl"></th>${CS.map(c=>`<th title="${CASE[c].lt}">${c==='N'?'Vard':c==='G'?'Kilm':c==='D'?'Naud':c==='A'?'Gal':c==='I'?'Įnag':c==='L'?'Viet':'Šauks'}</th>`).join('')}</tr>${ROWS.map(([r,lab])=>`<tr><th class="rl">${lab}</th>${CS.map(c=>{const k=`n:${r}:${c}:${num}`;return cellTd(k,!!P.n[k],`${lab}, ${CASE[c].lt}, ${NUMLT[num]}`)}).join('')}</tr>`).join('')}</table></div>`}
+ else if(v==='a'){mx=`<div class="scroll"><table class="mtx"><tr><th class="rl"></th>${CS.slice(0,6).map(c=>`<th>${CASE[c].lt.slice(0,5)}</th>`).join('')}</tr>${[['m','sg','м.р. ед.'],['f','sg','ж.р. ед.'],['m','pl','м.р. мн.'],['f','pl','ж.р. мн.']].map(([g,n,lab])=>`<tr><th class="rl">${lab}</th>${CS.slice(0,6).map(c=>{const k=`a:${g}:${c}:${n}`;return cellTd(k,!!P.a[k],lab+', '+CASE[c].lt)}).join('')}</tr>`).join('')}</table></div>`}
+ else if(v==='v'){mx=`<div class="scroll"><table class="mtx"><tr><th class="rl"></th>${PLAB.map(p=>`<th>${p}</th>`).join('')}</tr>${TENSES.map(t=>`<tr><th class="rl">${TENSELT[t]}</th>${PLAB.map((p,i)=>{const k=`v:${t}:${i}`;return cellTd(k,!!P.v[k],TENSERU[t]+', '+p)}).join('')}</tr>`).join('')}</table></div>`}
+ else if(v==='num'){mx=`<div class="scroll"><table class="mtx"><tr><th class="rl"></th><th>1, 21…</th><th>2–9</th><th>10–20, 30…</th></tr>${[['N','m','Vard. м.р.'],['N','f','Vard. ж.р.'],['A','m','Gal. м.р.'],['A','f','Gal. ж.р.']].map(([c,g,lab])=>`<tr><th class="rl">${lab}</th>${['1','2-9','10+'].map(k=>{const kk=`num:${c}:${g}:${k}`;return cellTd(kk,!!P.num[kk],lab+' '+k)}).join('')}</tr>`).join('')}</table></div>`}
+ else if(v==='p'){mx=`<div class="scroll"><table class="mtx"><tr><th class="rl"></th>${['G','D','A','I'].map(c=>`<th>${CASE[c].lt.slice(0,5)}</th>`).join('')}</tr>${PRONS.map(pr=>`<tr><th class="rl">${pr}</th>${['G','D','A','I'].map(c=>{const k=`p:${pr}:${c}`;return cellTd(k,!!P.p[k],pr+', '+CASE[c].lt)}).join('')}</tr>`).join('')}</table></div>`}
+ else{const ks=Object.keys(P.d);const ok=ks.filter(k=>cellState(k)==='ok').length;mx=`<p>Освоено диалогов: <b>${ok}</b> из ${ks.length}.</p><button class="btn primary" id="dlgGo">Тренировать диалоги</button>`}
+ h.innerHTML=`<div class="panel"><h2>Тренировка</h2><p class="small">Освоено комбинаций: <b>${done}</b> из ${all.length}. Комбинация считается освоенной после 2+ правильных подряд и малой доли ошибок. Нажмите на клетку, чтобы потренировать именно её.</p><div class="row"><button class="btn primary" id="mixGo">Смешанная (по слабым местам)</button><button class="btn" id="mistGo" ${MIST.length?'':'disabled'}>Повторить ошибки (${MIST.length})</button></div></div>
+ <div class="panel"><div class="row" style="margin-bottom:8px"><div class="seg pills" id="views">${[['n','Существительные'],['a','Прилагательные'],['v','Глаголы'],['num','Числа'],['p','Местоимения'],['d','Диалоги']].map(([k,l])=>`<button data-v="${k}" aria-pressed="${v===k}">${l}</button>`).join('')}</div></div>
+ <div class="legend"><span><i style="background:var(--line2)"></i>не было</span><span><i style="background:var(--bad)"></i>много ошибок</span><span><i style="background:var(--warn)"></i>учится</span><span><i style="background:var(--ok)"></i>освоено</span><span>· такой формы в заданиях нет</span></div>${mx}
+ ${v!=='d'?`<div class="row" style="margin-top:10px"><button class="btn small" id="typeGo">Тренировать этот раздел</button></div>`:''}</div>
+ <div class="panel"><h3>Настройки</h3><p class="small">Режим ответа:</p><div class="seg" id="modeSeg">${[['auto','Авто'],['choice','Выбор'],['type','Ввод']].map(([k,l])=>`<button data-m="${k}" aria-pressed="${SET.mode===k}">${l}</button>`).join('')}</div><p class="tiny muted" style="margin-top:6px">Авто: сначала варианты, а когда комбинация начинает получаться, надо вписывать форму самому. Так варианты нельзя угадать.</p><div class="row" style="margin-top:8px"><label class="small"><input type="checkbox" id="snd" ${SET.sound?'checked':''}> Звук</label></div><details><summary>Сброс</summary><div class="row" style="margin-top:8px"><button class="btn small" id="rstG">Сбросить игру</button><button class="btn small" id="rstS">Сбросить прогресс грамматики</button></div></details></div>`;
+ h.querySelectorAll('[data-num]').forEach(b=>b.onclick=()=>{TRV.num=b.dataset.num;store.set('trv',TRV);renderTrain()});
+ h.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{TRV.view=b.dataset.v;store.set('trv',TRV);renderTrain()});
+ h.querySelectorAll('td[data-key]').forEach(td=>td.onclick=()=>practice({lv:9,key:td.dataset.key},8,td.title));
+ $('#mixGo').onclick=()=>practice({lv:9},12,'Смешанная тренировка');
+ $('#mistGo').onclick=redoMistakes;
+ const dg=$('#dlgGo');if(dg)dg.onclick=()=>practice({lv:9,mix:{d:1}},10,'Диалоги');
+ const tg=$('#typeGo');if(tg)tg.onclick=()=>practice({lv:9,mix:{[v]:1}},12,'Тренировка раздела');
+ h.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SET.mode=b.dataset.m;store.set('set',SET);renderTrain()});
+ $('#snd').onchange=e=>{SET.sound=e.target.checked;store.set('set',SET)};
+ $('#rstG').onclick=()=>{if(confirm('Сбросить текущую игру?')){G=null;save();renderGame();toast('Игра сброшена')}};
+ $('#rstS').onclick=()=>{if(confirm('Стереть статистику ошибок и прогресс по комбинациям?')){SRS={};ITEM={};MIST=[];store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST);renderTrain();toast('Прогресс сброшен')}}}
+function redoMistakes(){if(!MIST.length)return;const specs=MIST.slice(0,15).map(m=>({...m.spec,typing:undefined})).map(s=>{s.typing=decideTyping(s);return s});showTab('train');
+ runTasks({kind:'train',host:'#tab-train',title:'Повтор ошибок',sub:'правильный ответ убирает задание из списка',specs,quit:true,onAnswer:ok=>{if(ok&&RUN){MIST=MIST.filter(m=>m.sig!==RUN.task.sig);store.set('mist',MIST)}},onEnd:(ok,n)=>{$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n}</h2><p>Осталось ошибок в списке: ${MIST.length}.</p><div class="row"><button class="btn primary" id="tomx">Назад</button></div></div>`;$('#tomx').onclick=renderTrain}})}
+
+/* ============ mistakes tab ============ */
+function renderMist(){const h=$('#tab-mist');
+ h.innerHTML=`<div class="panel"><h2>Ошибки</h2><p class="small muted">Последние ошибки. Игра и тренировка чаще подбрасывают задания на эти слова и комбинации.</p><div class="row"><button class="btn primary" id="mg" ${MIST.length?'':'disabled'}>Повторить ошибки (${Math.min(15,MIST.length)})</button></div></div><div class="panel">${MIST.length?MIST.slice(0,60).map(m=>`<div class="mist">${esc(m.txt)}<div class="small">${m.given?`<span class="g">${esc(m.given)}</span> → `:''}<span class="a">${esc(m.ans)}</span></div></div>`).join(''):'<p class="muted">Ошибок пока нет.</p>'}</div>`;
+ $('#mg').onclick=redoMistakes}
+
+/* ============ tables tab ============ */
+function renderTables(){const h=$('#tab-tables');
+ const ex=[['bankas','м.р. -as'],['brolis','м.р. -is'],['dviratis','м.р. -is (t → č)'],['kambarys','м.р. -ys'],['sūnus','м.р. -us'],['direktorius','м.р. -ius'],['vanduo','м.р. -uo'],['knyga','ж.р. -a'],['bažnyčia','ж.р. -ia'],['parduotuvė','ж.р. -ė'],['stotis','ж.р. -is'],['dantis','м.р. -is (3 скл.)'],['sesuo','ж.р. sesuo']];
+ h.innerHTML=`<div class="panel tbls"><h2>Таблицы</h2>
+ <h3>Падежи и вопросы</h3><div class="scroll"><table class="par"><tr><th>Падеж</th><th>Вопрос</th><th>Когда</th></tr>
+ <tr><td>${chip('N')}</td><td>Kas?</td><td>подлежащее, «man patinka kava», «štai pasas»</td></tr>
+ <tr><td>${chip('G')}</td><td>Ko?</td><td>отрицание (neturiu laiko), количество (daug, kilogramas), «чей» (brolio), ieškoti, laukti, bijoti, reikėti, mokytis; be, iki, iš, nuo, prie</td></tr>
+ <tr><td>${chip('D')}</td><td>Kam?</td><td>кому: duoti, skambinti, padėti, rašyti, dėkoti; man patinka, man skauda, man reikia; ruoštis</td></tr>
+ <tr><td>${chip('A')}</td><td>Ką?</td><td>прямое дополнение, время (pirmadienį, vasarą, kiekvieną dieną), skauda ką; į, pas, už, apie, per, prieš</td></tr>
+ <tr><td>${chip('I')}</td><td>Kuo?</td><td>su (с кем), транспорт (autobusu), профессия (dirbti mokytoju), domėtis, rūpintis; po (под); rytais, vakarais</td></tr>
+ <tr><td>${chip('L')}</td><td>Kur? Kame?</td><td>где: banke, parduotuvėje, Vilniuje</td></tr>
+ <tr><td>${chip('V')}</td><td>—</td><td>обращение: Tomai, Egle, drauge, gydytojau</td></tr></table></div>
+ <h3>Существительные</h3>${ex.map(([l,lab])=>`<details><summary>${lab}: ${l}</summary>${parTable(WBY[l])}</details>`).join('')}
+ <h3>Прилагательные</h3>${['naujas','žalias','gražus','didelis'].map(l=>`<details><summary>${l} (${ADJ.find(a=>a.lem===l).ru})</summary><div class="scroll">${adjTable(ADJ.find(a=>a.lem===l))}</div></details>`).join('')}
+ <h3>Глаголы</h3>${['dirbti','kalbėti','skaityti','mokytis','būti','eiti'].map(inf=>{const v=VERBS.find(x=>x.inf===inf);return`<details><summary>${inf} (${v.ru})</summary>${vtenses(v).map(t=>`<p class="small" style="margin:8px 0 0"><b>${TENSELT[t]}</b></p>${verbTable(v,t,-1)}`).join('')}</details>`}).join('')}
+ <h3>Местоимения</h3><div class="scroll"><table class="par"><tr><th></th><th>N</th><th>G</th><th>D</th><th>A</th><th>I</th></tr>${PRONS.map(p=>`<tr><th>${p}</th>${['N','G','D','A','I'].map(c=>`<td>${PRON[p][c]}</td>`).join('')}</tr>`).join('')}</table></div>
+ <h3>Числа</h3><p class="small">1, 21, 31… → ед.ч.: vienas euras, viena minutė. 2–9, 22–29… → мн.ч.: du eurai, dvi minutės, penkios minutės. 10–20 и 30, 40… → kilmininkas мн.ч.: dešimt eurų, penkiolika minučių. В galininkas: vieną, du/dvi, tris, keturis/keturias, penkis/penkias.</p>
+ <div class="scroll"><table class="par"><tr><th></th>${[1,2,3,4,5].map(n=>`<th>${n}</th>`).join('')}</tr>${[['N','m'],['N','f'],['A','m'],['A','f']].map(([c,g])=>`<tr><th>${c==='N'?'Vard.':'Gal.'} ${g==='m'?'м.р.':'ж.р.'}</th>${[1,2,3,4,5].map(n=>`<td>${UN[c][g][n]}</td>`).join('')}</tr>`).join('')}</table></div></div>`}
+
+/* ============ tabs ============ */
+const TABS=['game','train','mist','tables'];
+function showTab(t){if(!TABS.includes(t))t='game';TABS.forEach(x=>$('#tab-'+x).hidden=x!==t);document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);
+ if(RUN&&RUN.kind==='train'&&t!=='train'){RUN=null}
+ if(t==='game'&&!(RUN&&RUN.kind==='game'))renderGame();if(t==='train'&&!(RUN&&RUN.kind==='train'))renderTrain();if(t==='mist')renderMist();if(t==='tables')renderTables();window.scrollTo(0,0)}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SFX.click();showTab(b.dataset.tab)}});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal'&&$('#mbox .btn.primary')==null)closeModal()});
+window.__LT={W,ADJ,VERBS,TPL,DLG,nounForms,adjForm,verbForms,numWords,numNoun,buildCombos,poolFor,pickSpecs,buildTask,concretize,get NCOMBO(){return NCOMBO},get ACOMBO(){return ACOMBO}};
+renderGame();showTab(store.get('tab','game'));
+</script>
+</body>
+</html>
