@@ -114,6 +114,7 @@ details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent
 .aibox{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .ai-lab{font-size:13px;color:var(--muted);font-weight:600}
 .ai-txt{font:12.5px/1.45 var(--mono);width:100%;resize:vertical;padding:8px 10px;border:1px dashed var(--accent);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.streak{color:var(--warn);font-weight:800;font-size:12.5px}
 .prog{display:flex;gap:4px;margin:2px 0 10px}
 .prog i{flex:1;height:6px;border-radius:99px;background:var(--line)}
 .prog i.ok{background:var(--ok)}.prog i.bad{background:var(--bad)}.prog i.cur{background:var(--yel)}
@@ -361,6 +362,7 @@ const ADJ=[
 ['erdvus','us','просторный','housing hfeat'],['šviesus','us','светлый','housing hfeat'],['modernus','us','современный','housing hfeat place'],
 ['elektrinis','inis','электрический','commute'],['greitas','as','быстрый','pub own'],['madingas','as','модный','clothing'],
 ].map((r,i)=>({i,lem:r[0],t:r[1],ru:r[2],tags:new Set(r[3].split(' '))}));
+const ABY={};ADJ.forEach(a=>ABY[a.lem]=a);
 function adjForm(a,g,c,num){const P=AP[a.t],st=a.lem.slice(0,-P.cut.length);return st+P[g][num==='sg'?'s':'p'][CS.indexOf(c)]}
 
 /* numerals */
@@ -419,6 +421,7 @@ const VERBS=[
 ['sakyti','говорить, сказать',['sakau','sakai','sako'],['sakiau','sakei','sakė'],'sakys',['tiesą']],
 ['mėgti','любить (нравиться)',['mėgstu','mėgsti','mėgsta'],null,null,['kavą','sportą'],{tenses:['pres'],tm:{pres:['']}}],
 ].map((r,i)=>({i,inf:r[0],ru:r[1],pres:r[2],past:r[3],fut:r[4],cps:r[5],o:r[6]||{}}));
+const VBY={};VERBS.forEach(v=>VBY[v.inf]=v);
 const TENSES=['pres','past','fut'];
 const TENSERU={pres:'настоящее время',past:'прошедшее время',fut:'будущее время'};
 const TENSELT={pres:'Esamasis',past:'Būtasis kartinis',fut:'Būsimasis'};
@@ -638,15 +641,15 @@ function allowedTense(t,lv){return lv>=9||(t==='pres')||(t==='past'&&lv>=1)||(t=
 let NCOMBO=null,ACOMBO=null;
 function buildCombos(){NCOMBO=[];ACOMBO=[];
  TPL.forEach(T=>{W.forEach(w=>{if(!hasAny(w,T.catSet))return;numsFor(T,w).forEach(num=>{
-  NCOMBO.push({spec:{t:'n',T:T.id,w:w.i,num},key:`n:${PARA[w.p].row}:${T.c}:${num}`,T,sig:`n|${w.lem}|${T.c}|${num}`});
-  if(T.adj&&T.c!=='V')ADJ.forEach(a=>{if(hasAny(w,a.tags))ACOMBO.push({spec:{t:'a',T:T.id,w:w.i,a:a.i,num},key:`a:${gender(w)}:${T.c}:${num}`,T,sig:`a|${a.lem}|${w.lem}|${T.c}|${num}`})})})})})}
+  NCOMBO.push({spec:{t:'n',T:T.id,w:w.lem,num},key:`n:${PARA[w.p].row}:${T.c}:${num}`,T,sig:`n|${w.lem}|${T.c}|${num}`});
+  if(T.adj&&T.c!=='V')ADJ.forEach(a=>{if(hasAny(w,a.tags))ACOMBO.push({spec:{t:'a',T:T.id,w:w.lem,a:a.lem,num},key:`a:${gender(w)}:${T.c}:${num}`,T,sig:`a|${a.lem}|${w.lem}|${T.c}|${num}`})})})})})}
 function poolFor(ctx){
  // ctx: {loc, lv, only:type|null, key:key|null}
  if(!NCOMBO)buildCombos();const lv=ctx.lv,any=!ctx.loc||ctx.loc==='school';const P={n:{},a:{},v:{},num:{},p:{},d:{}};
  const add=(t,k,item)=>{if(ctx.key&&ctx.key!==k)return;(P[t][k]=P[t][k]||[]).push(item)};
  NCOMBO.forEach(x=>{if(!allowedCase(x.T.c,lv))return;if(!any&&!x.T.locSet.has(ctx.loc))return;add('n',x.key,x)});
  if(lv>=1)ACOMBO.forEach(x=>{if(!allowedCase(x.T.c,lv))return;if(!any&&!x.T.locSet.has(ctx.loc))return;add('a',x.key,x)});
- VERBS.forEach(v=>vtenses(v).forEach(t=>{if(!allowedTense(t,lv))return;PERS.forEach(([pr,pi])=>add('v',`v:${t}:${pi}`,{spec:{t:'v',v:v.i,ten:t,pr},sig:`v|${v.inf}|${t}|${pi}`}))}));
+ VERBS.forEach(v=>vtenses(v).forEach(t=>{if(!allowedTense(t,lv))return;PERS.forEach(([pr,pi])=>add('v',`v:${t}:${pi}`,{spec:{t:'v',v:v.inf,ten:t,pr},sig:`v|${v.inf}|${t}|${pi}`}))}));
  ['N','A'].forEach(c=>{if(c==='A'&&lv<1)return;['m','f'].forEach(g=>['1','2-9','10+'].forEach(k=>add('num',`num:${c}:${g}:${k}`,{spec:{t:'num',c,g,k},sig:`num|${c}|${g}|${k}`})))});
  if(lv>=1)PTPL.forEach(T=>PRONS.forEach(pr=>{if(T.ex.includes(pr))return;add('p',`p:${pr}:${T.c}`,{spec:{t:'p',T:T.id,pr},sig:`p|${pr}|${T.c}`})}));
  DLG.forEach(d=>{if(!any&&!d.locSet.has(ctx.loc)&&!(ctx.loc==='migration'&&d.locSet.has('bank')))return;add('d',`d:${d.id}`,{spec:{t:'d',id:d.id},sig:`d|${d.id}`})});
@@ -665,7 +668,7 @@ function pickSpecs(ctx,count){
   if(!item)continue;used.add(item.sig);lastLem=item.spec.w;out.push(concretize({...item.spec}))}
  return out}
 function concretize(s){
- if(s.t==='v'){const v=VERBS[s.v];const tms=(v.o.tm&&v.o.tm[s.ten])||TM[s.ten];if(s.tm==null)s.tm=pick(tms);if(s.cp==null)s.cp=pick(v.cps)}
+ if(s.t==='v'){const v=VBY[s.v];const tms=(v.o.tm&&v.o.tm[s.ten])||TM[s.ten];if(s.tm==null)s.tm=pick(tms);if(s.cp==null)s.cp=pick(v.cps)}
  if(s.t==='num'){if(s.n==null){const pool=NUMS[s.k].filter(n=>s.c==='A'?n<=30:true);s.n=pick(pool)}if(s.item==null)s.item=numItem(s)}
  if(s.typing==null)s.typing=decideTyping(s);
  return s}
@@ -682,8 +685,8 @@ function numItem(s){
 let SET=store.get('set',{mode:'auto',sound:true});
 function decideTyping(s){if(s.t==='d')return false;if(SET.mode==='choice')return false;if(SET.mode==='type')return true;const k=specKey(s);const st=SRS[k];return!!(st&&st.n>=3&&st.st>=2)}
 function specKey(s){
- if(s.t==='n'){const T=TBY[s.T],w=W[s.w];return`n:${PARA[w.p].row}:${T.c}:${s.num}`}
- if(s.t==='a'){const T=TBY[s.T],w=W[s.w];return`a:${gender(w)}:${T.c}:${s.num}`}
+ if(s.t==='n'){const T=TBY[s.T],w=WBY[s.w];return`n:${PARA[w.p].row}:${T.c}:${s.num}`}
+ if(s.t==='a'){const T=TBY[s.T],w=WBY[s.w];return`a:${gender(w)}:${T.c}:${s.num}`}
  if(s.t==='v'){const pi=PERS.find(p=>p[0]===s.pr)[1];return`v:${s.ten}:${pi}`}
  if(s.t==='num')return`num:${s.c}:${s.g}:${s.k}`;
  if(s.t==='p')return`p:${s.pr}:${TBY_P[s.T].c}`;
@@ -694,9 +697,9 @@ function fillCap(lt,ans){const[a,b]=sentenceParts(lt);return a+(a===''?cap(ans):
 function pickDistractors(correct,cands,n){const c=norm(correct);const pool=uniq(cands.filter(x=>x&&norm(x)!==c));return shuffle(pool).slice(0,n)}
 function buildTask(spec){
  const s=spec;let t;
- if(s.t==='n'){const T=TBY[s.T],w=W[s.w],c=T.c,num=s.num,f=nounForms(w),ans=nform(w,c,num),lt=tplLt(T,w);
+ if(s.t==='n'){const T=TBY[s.T],w=WBY[s.w],c=T.c,num=s.num,f=nounForms(w),ans=nform(w,c,num),lt=tplLt(T,w);
   const part=T.why==='obj',gs=[f.sg[1],f.pl[1]],okG=x=>!part||!gs.includes(x);
-  const same=f[num].filter((x,i)=>i!==CS.indexOf(c)&&!(c==='A'&&CS[i]==='V')).filter(okG),other=w.pl||w.sg?[]:[f[num==='sg'?'pl':'sg'][CS.indexOf(c)]];
+  const same=f[num].filter((x,i)=>i!==CS.indexOf(c)&&!(c==='A'&&CS[i]==='V')&&!(T.why==='poss'&&CS[i]==='D')).filter(okG),other=w.pl||w.sg?[]:[f[num==='sg'?'pl':'sg'][CS.indexOf(c)]];
   const near={G:['A','N','L'],A:['G','N','L','I'],L:['A','I','G'],D:['A','G','I'],I:['A','D','N'],N:['A','G','V'],V:['N','A','D']}[c].map(x=>f[num][CS.indexOf(x)]).filter(okG);
   let d=pickDistractors(ans,near,2);d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
   const palt=part?[f[num][1]]:[];
@@ -705,7 +708,7 @@ function buildTask(spec){
    explain:given=>{const me=given&&norm(given)!==norm(ans)?whichForms(w,given):null;const e=endingOf(w,c,num);
     return`<div>${chip(c)} <span class="small">${NUMRU[num]}</span></div><p style="margin-top:6px">${WHY[T.why](T)}${part&&f[num][1]?` Форма kilmininkas «${esc(f[num][1])}» тоже возможна, если имеется в виду «немного, часть» (partityvas), но здесь тренируем galininkas.`:''}</p><p><b>${esc((w.pre||'')+w.lem)}</b> (${esc(w.ru)}): ${descW(w)}. ${CASE[c].lt} ${NUMLT[num]}${e?`: окончание <b>-${esc(e)}</b>`:''} → <b>${esc(ans)}</b>.</p>${me?`<p>Ваш ответ «${esc(given)}» ${me.length?'это '+me.map(m=>CASE[m[0]].lt.toLowerCase()+' '+NUMRU[m[1]]).join(' / '):'не является формой этого слова'}.</p>`:''}<details><summary>Все формы слова</summary>${parTable(w,[c,num],me)}</details>`},
    ai:given=>`Объясни простыми словами по-русски, почему в литовском предложении нужна именно эта форма слова. Я учу литовский до уровня B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлово: ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни правило (падеж, род, окончание) и дай 3 похожих примера с переводом.`}}
- else if(s.t==='a'){const T=TBY[s.T],w=W[s.w],a=ADJ[s.a],c=T.c,num=s.num,g=gender(w),ci=CS.indexOf(c),lt=tplLt(T,w);
+ else if(s.t==='a'){const T=TBY[s.T],w=WBY[s.w],a=ABY[s.a],c=T.c,num=s.num,g=gender(w),ci=CS.indexOf(c),lt=tplLt(T,w);
   const af=(gg,cc)=>adjForm(a,gg,cc,num),nf=cc=>nform(w,cc,num);const ans=af(g,c)+' '+nf(c);
   const og=g==='m'?'f':'m';const part=T.why==='obj';const near={G:'A',A:part?'N':'G',L:'A',D:'A',I:'A',N:'A'}[c],near2={G:'N',A:part?'I':'N',L:'I',D:'G',I:'D',N:'G'}[c];
   const cands=[af(g,c)+' '+nf(near),af(g,near)+' '+nf(c),af(og,c)+' '+nf(c),af(g,near)+' '+nf(near),af(g,c)+' '+nf(near2),af(g,near2)+' '+nf(c),af(og,near)+' '+nf(near)];
@@ -714,7 +717,7 @@ function buildTask(spec){
    hint:`<b>${esc(a.lem)}</b> + <b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">(${esc(a.ru)} ${esc(w.ru)}) · ${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,
    explain:given=>`<div>${chip(c)} <span class="small">${NUMRU[num]}, ${g==='m'?'мужской':'женский'} род</span></div><p style="margin-top:6px">${WHY[T.why](T)}</p><p>Прилагательное согласуется с существительным в роде, числе и падеже. ${esc(w.lem)} (${descW(w)}) → прилагательное ${esc(a.lem)} в ${g==='m'?'м.р.':'ж.р.'} ${NUMLT[num]} ${CASE[c].lt.toLowerCase()}: <b>${esc(af(g,c))}</b>.</p><details><summary>Формы прилагательного ${esc(a.lem)}</summary><div class="scroll">${adjTable(a,[g,num,c])}</div></details><details><summary>Формы слова ${esc(w.lem)}</summary>${parTable(w,[c,num])}</details>`,
    ai:given=>`Объясни простыми словами по-русски согласование прилагательного и существительного в литовском. Я учу литовский до B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлова: ${a.lem} (${a.ru}) + ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильно: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Почему такие окончания? Дай 3 похожих примера с переводом.`}}
- else if(s.t==='v'){const v=VERBS[s.v],pe=PERS.find(p=>p[0]===s.pr),pi=pe[1],f=verbForms(v,s.ten),ans=f[pi];
+ else if(s.t==='v'){const v=VBY[s.v],pe=PERS.find(p=>p[0]===s.pr),pi=pe[1],f=verbForms(v,s.ten),ans=f[pi];
   const lt=((s.tm?s.tm+' ':'')+(s.tm?s.pr:cap(s.pr))+' {X} '+s.cp+'.').replace(/^\s+/,'');
   const same=f.filter((x,i)=>i!==pi),other=TENSES.filter(t=>t!==s.ten).map(t=>verbForms(v,t)).filter(Boolean).map(ff=>ff[pi]);
   let d=pickDistractors(ans,same,2);d=d.concat(pickDistractors(ans,other.filter(x=>!d.includes(x)),1));if(d.length<3)d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
@@ -745,12 +748,16 @@ function buildTask(spec){
  t.spec=s;t.key=specKey(s);t.sig=sigOf(s);t.typing=!!s.typing;
  t.plain=t.lt?fillCap(t.lt,t.answer):(t.dlg.sit||t.dlg.npc)+' → '+t.answer;
  return t}
-function sigOf(s){if(s.t==='n')return`n|${W[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='a')return`a|${ADJ[s.a].lem}|${W[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='v'){const pi=PERS.find(p=>p[0]===s.pr)[1];return`v|${VERBS[s.v].inf}|${s.ten}|${pi}`}if(s.t==='num')return`num|${s.c}|${s.g}|${s.k}`;if(s.t==='p')return`p|${s.pr}|${TBY_P[s.T].c}`;return`d|${s.id}`}
+function sigOf(s){if(s.t==='n')return`n|${WBY[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='a')return`a|${ABY[s.a].lem}|${WBY[s.w].lem}|${TBY[s.T].c}|${s.num}`;if(s.t==='v'){const pi=PERS.find(p=>p[0]===s.pr)[1];return`v|${VBY[s.v].inf}|${s.ten}|${pi}`}if(s.t==='num')return`num|${s.c}|${s.g}|${s.k}`;if(s.t==='p')return`p|${s.pr}|${TBY_P[s.T].c}`;return`d|${s.id}`}
 function adjTable(a,hl){let h='<table class="par"><tr><th></th><th>м.р. ед.</th><th>ж.р. ед.</th><th>м.р. мн.</th><th>ж.р. мн.</th></tr>';CS.slice(0,6).forEach(c=>{h+=`<tr><th>${CASE[c].lt}</th>`;[['m','sg'],['f','sg'],['m','pl'],['f','pl']].forEach(([g,n])=>{const on=hl&&hl[0]===g&&hl[1]===n&&hl[2]===c;h+=`<td class="${on?'hl':''}">${esc(adjForm(a,g,c,n))}</td>`});h+='</tr>'});return h+'</table>'}
 function verbTable(v,t,pi){const f=verbForms(v,t);const hl=i=>i===pi||(pi===5&&i===2)||(pi===2&&i===5)?'hl':'';const row=(a,b)=>`<tr><td class="${hl(a)}"><span class="muted">${PLAB[a]}</span> ${esc(f[a])}</td><td class="${hl(b)}"><span class="muted">${PLAB[b]}</span> ${esc(f[b])}</td></tr>`;return`<table class="par"><tr><th>vns. (ед.ч.)</th><th>dgs. (мн.ч.)</th></tr>${row(0,3)}${row(1,4)}${row(2,5)}</table>`}
 function verbRule(t){return t==='pres'?'Настоящее: aš -u/-iu/-au, tu -i/-ai, jis -a/-i/-o, mes -ame/-ime/-ome, jūs -ate/-ite/-ote, jie как jis.':t==='past'?'Прошедшее: aš -au/-iau, tu -ai/-ei, jis -o/-ė, mes -ome/-ėme, jūs -ote/-ėte, jie как jis.':'Будущее: основа + s: aš -siu, tu -si, jis -s, mes -sime, jūs -site, jie -s. Būti: bus.'}
 function pronTable(pr,c){return`<table class="par"><tr><th>N</th><th>G</th><th>D</th><th>A</th><th>I</th></tr><tr>${['N','G','D','A','I'].map(x=>`<td class="${x===c?'hl':''}">${esc(PRON[pr][x])}</td>`).join('')}</tr></table>`}
 
+/* ============ speech (Lithuanian voice, if the browser has one) ============ */
+let LTV=null;function findLtVoice(){try{LTV=speechSynthesis.getVoices().find(v=>/^lt/i.test(v.lang))||null}catch(e){LTV=null}}
+try{if('speechSynthesis' in window){findLtVoice();speechSynthesis.addEventListener('voiceschanged',findLtVoice)}}catch(e){}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='lt-LT';if(LTV)u.voice=LTV;u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 /* ============ task UI ============ */
 const LTKEYS=['ą','č','ę','ė','į','š','ų','ū','ž'];
 let RUN=null; // {title, sub, specs, i, res:[], task, answered, onEnd, kind, persist}
@@ -759,22 +766,23 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if
 document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ai-txt'))e.target.select()});
 function runTasks(opts){RUN={i:0,res:[],answered:false,...opts};RUN.task=buildTask(RUN.specs[0]);renderRun()}
 function runHost(){return RUN&&RUN.host?$(RUN.host):$('#tab-game')}
+function streakOf(res){let n=0;for(let i=res.length-1;i>=0&&res[i];i--)n++;return n}
 function progHtml(){return`<div class="prog">${RUN.specs.map((x,i)=>`<i class="${i<RUN.res.length?(RUN.res[i]?'ok':'bad'):(i===RUN.i?'cur':'')}"></i>`).join('')}</div>`}
 function renderRun(){
  const h=runHost();const t=RUN.task;const D=t.dlg;
  let body='';
  if(D){body+=D.sit?`<div class="sit">Ситуация: ${esc(D.sit)}</div>`:`<div class="npc"><div class="av">${D.av||'🙂'}</div><div><div class="who">${esc(D.who)}</div><div class="bub">${esc(D.npc)}</div><div class="tiny muted" style="margin-top:3px">${esc(D.ru)}</div></div></div>`;body+='<div class="small muted">Выберите правильный ответ:</div>'}
  else{const[a,b]=sentenceParts(t.lt);body+=`<div class="sent">${esc(a)}<span class="blank" id="blank">${a===''?'___':'___'}</span>${esc(b)}</div><div class="hint">${t.hint}</div><div class="ru">${esc(t.ru)}</div>`}
- if(t.typing){body+=`<input class="inp" id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Впишите форму"><div class="kb">${LTKEYS.map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('')}</div><div class="row"><button class="btn primary" id="chk">Проверить</button><button class="btn ghost small" id="idk">Не знаю</button><button class="btn ghost small" id="tochoice">Показать варианты</button></div>`}
+ if(t.typing){body+=`<input class="inp" id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Впишите форму"><div class="kb">${LTKEYS.map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('')}</div><div class="row"><button class="btn primary" id="chk">Проверить</button><button class="btn ghost small" id="idk">Не знаю</button>${RUN.kind==='game'?'':'<button class="btn ghost small" id="tochoice">Показать варианты</button>'}</div>`}
  else body+=`<div class="opts">${t.options.map((o,i)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
- h.innerHTML=`<div class="runwrap"><div class="panel task">${RUN.header||''}<div class="row" style="justify-content:space-between"><div><b>${esc(RUN.title)}</b>${RUN.sub?`<div class="tiny muted">${esc(RUN.sub)}</div>`:''}</div><div class="tiny muted">${RUN.i+1} / ${RUN.specs.length}${t.typing?' · ввод':''}</div></div>${progHtml()}${body}<div id="fb"></div></div>${RUN.quit?'<div class="row"><button class="btn ghost small" id="quit">Закончить тренировку</button></div>':''}</div>`;
+ h.innerHTML=`<div class="runwrap"><div class="panel task">${RUN.header||''}<div class="row" style="justify-content:space-between"><div><b>${esc(RUN.title)}</b>${RUN.sub?`<div class="tiny muted">${esc(RUN.sub)}</div>`:''}</div><div class="tiny muted" style="text-align:right">${RUN.i+1} / ${RUN.specs.length}${t.typing?' · ввод':''}${streakOf(RUN.res)>=2?`<div class="streak">серия ${streakOf(RUN.res)}</div>`:''}</div></div>${progHtml()}${body}<div id="fb"></div></div>${RUN.quit?'<div class="row"><button class="btn ghost small" id="quit">Закончить тренировку</button></div>':''}</div>`;
  RUN.answered=false;
  h.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o));
  const inp=h.querySelector('#inp');
  if(inp){setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},50);inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();if(!RUN.answered&&inp.value.trim())answer(inp.value)}};
-  h.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const s=inp.selectionStart??inp.value.length,en=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.k+inp.value.slice(en);inp.focus();inp.setSelectionRange(s+1,s+1)});
+  h.querySelectorAll('[data-k]').forEach(b=>{b.onpointerdown=e=>e.preventDefault()});h.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const s=inp.selectionStart??inp.value.length,en=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.k+inp.value.slice(en);inp.focus();inp.setSelectionRange(s+1,s+1)});
   h.querySelector('#chk').onclick=()=>{if(inp.value.trim())answer(inp.value)};h.querySelector('#idk').onclick=()=>answer('');
-  h.querySelector('#tochoice').onclick=()=>{RUN.task.typing=false;renderRun()}}
+  const tc=h.querySelector('#tochoice');if(tc)tc.onclick=()=>{RUN.task.typing=false;renderRun()}}
  const q=h.querySelector('#quit');if(q)q.onclick=()=>endRun(true);
  window.scrollTo({top:0})}
 function answer(given){
@@ -788,10 +796,10 @@ function answer(given){
  const full=t.lt?`<div class="full">${esc(sentenceParts(t.lt)[0])}<mark>${esc(t.lt.startsWith('{X}')?cap(t.answer):t.answer)}</mark>${esc(sentenceParts(t.lt)[1])}</div>`:`<div class="full"><mark>${esc(t.answer)}</mark></div>`;
  const head=ok?pick(['Teisingai!','Puiku!','Labai gerai!','Šaunu!']):(given?(almost?'Почти! Проверьте буквы с диакритикой.':'Neteisingai'):'Правильный ответ');
  const last=RUN.i>=RUN.specs.length-1;
- $('#fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><div class="head">${head}</div>${!ok&&given&&t.typing?`<div class="small">Ваш ответ: <s>${esc(given)}</s></div>`:''}${full}${ok?`<details><summary>Почему так?</summary><div class="rule">${t.explain(given)}</div>${aiBox(t.ai(''))}</details>`:`<div class="rule">${t.explain(given)}</div>${aiBox(t.ai(given))}`}<div class="row" style="margin-top:10px"><button class="btn primary" id="next">${last?'Готово':'Дальше'} →</button><span class="tiny muted">Enter</span></div></div>`;
- $('#next').onclick=next;
+ h.querySelector('#fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><div class="head">${head}</div>${!ok&&given&&t.typing?`<div class="small">Ваш ответ: <s>${esc(given)}</s></div>`:''}${full}${ok?`<details><summary>Почему так?</summary><div class="rule">${t.explain(given)}</div>${aiBox(t.ai(''))}</details>`:`<div class="rule">${t.explain(given)}</div>${aiBox(t.ai(given))}`}<div class="row" style="margin-top:10px"><button class="btn primary" id="next">${last?'Готово':'Дальше'} →</button>${LTV?'<button class="btn small" id="say">🔊 Послушать</button>':''}<span class="tiny muted">Enter</span></div></div>`;
+ h.querySelector('#next').onclick=next;const sy=h.querySelector('#say');if(sy)sy.onclick=()=>speak(t.lt?fillCap(t.lt,t.answer):t.answer);
  if(RUN.onAnswer)RUN.onAnswer(ok);
- setTimeout(()=>{const n=$('#next');if(n&&!ok)n.scrollIntoView({block:'nearest'})},30)}
+ setTimeout(()=>{const n=h.querySelector('#next');if(n&&!ok)n.scrollIntoView({block:'nearest'})},30)}
 function next(){if(!RUN||!RUN.answered)return;SFX.click();RUN.i++;if(RUN.onStep)RUN.onStep();if(RUN.i>=RUN.specs.length)return endRun(false);RUN.task=buildTask(RUN.specs[RUN.i]);renderRun()}
 function endRun(aborted){const r=RUN;RUN=null;const ok=r.res.filter(Boolean).length;r.onEnd&&r.onEnd(ok,r.res.length,aborted,r)}
 document.addEventListener('keydown',e=>{
@@ -846,6 +854,13 @@ function reqText(j){const J=JOBS[j];if(!J)return'';return`${J.ru}, ${J.pay} €/
 
 /* ============ game state ============ */
 let G=store.get('game',null);
+function fixSpec(s){if(!s||typeof s!=='object')return null;s={...s};
+ if(typeof s.w==='number')s.w=W[s.w]&&W[s.w].lem;if(typeof s.a==='number')s.a=ADJ[s.a]&&ADJ[s.a].lem;if(typeof s.v==='number')s.v=VERBS[s.v]&&VERBS[s.v].inf;
+ if(s.t==='n')return TBY[s.T]&&WBY[s.w]?s:null;if(s.t==='a')return TBY[s.T]&&WBY[s.w]&&ABY[s.a]?s:null;
+ if(s.t==='v')return VBY[s.v]&&PERS.some(p=>p[0]===s.pr)&&verbForms(VBY[s.v],s.ten)?s:null;if(s.t==='num')return s.n&&s.item&&WBY[s.item.w]?s:null;
+ if(s.t==='p')return TBY_P[s.T]&&PRON[s.pr]?s:null;if(s.t==='d')return DBY[s.id]?s:null;return null}
+MIST=MIST.map(m=>{const sp=fixSpec(m.spec);return sp?{...m,spec:sp}:null}).filter(Boolean);store.set('mist',MIST);
+if(G&&G.ses){const sp=(G.ses.specs||[]).map(fixSpec);if(sp.length&&sp.every(Boolean))G.ses.specs=sp;else{if(G.ses.a&&!ACTS[G.ses.a].payOnPass&&G.ses.cost)G.money+=G.ses.cost;if(G.ses.a)G.used=Math.max(0,G.used-1);G.ses=null}store.set('game',G)}
 const save=()=>store.set('game',G);
 const slotsMax=()=>4+TRANSP[G.tr].slots;
 const clamp=x=>Math.max(0,Math.min(100,Math.round(x)));
@@ -897,6 +912,7 @@ function resumeSession(){const S=G.ses;const A=S.a?ACTS[S.a]:null;const L=A?LBY[
   onAnswer:()=>{G.ses.res=RUN.res.slice();G.ses.i=RUN.i+1;save()},onEnd:(ok,n)=>{const S2=G.ses;G.ses=null;S2.ev?finishEvent(S2,ok,n):finishAction(S2,ok,n)}});
  if(S.i>0&&S.i<S.specs.length){RUN.i=S.i;RUN.res=S.res.slice();RUN.task=buildTask(RUN.specs[RUN.i]);renderRun()}
  else if(S.i>=S.specs.length){const ok=S.res.filter(Boolean).length;const r=RUN;RUN=null;r.onEnd(ok,S.specs.length)}}
+function comboBonus(res){let st=0,b=0;(res||[]).forEach(x=>{st=x?st+1:0;if(st>=3)b++});return b}
 function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={},msg='',head='';const need=A.need?A.need():null;const pass=need==null||ok>=need;
  switch(a){
   case'shift':{const pay=Math.round(JOBS[G.job].pay*acc);eff={money:pay,food:-10,mood:-6};if(acc<.5){G.bad++;msg=G.bad>=2?'Руководитель недоволен второй раз подряд. Вас уволили.':'Руководитель недоволен: слишком много ошибок. Ещё одна такая смена, и вас уволят.';if(G.bad>=2){G.job=0;G.bad=0;logG('Уволен(а) за ошибки.')}}else{G.bad=0;msg=acc===1?'Идеальная смена! Руководитель доволен.':'Смена закончена.'}logG(`Смена: ${ok}/${n}, +${pay} €.`);break}
@@ -917,6 +933,7 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
   case'vehicle':{if(pass){G.money-=S.cost;G.tr++;eff={mood:10};msg=`Куплено: ${TRANSP[G.tr].lt}. Теперь у вас больше действий в день.`;logG(`Транспорт: ${TRANSP[G.tr].lt}.`)}else{eff={mood:-5};msg='Продавец не понял вас. Покупка сорвалась.'}break}
   case'permit':{if(pass){eff={permit:45};msg='Вид на жительство продлён на 45 дней.';logG('Leidimas pratęstas.')}else{eff={mood:-6};msg='В заявлении ошибки. Пошлину не вернули, приходите ещё раз.';logG('Продление не удалось.')}break}
  }
+ const cb=comboBonus(S.res);if(cb){eff.money=(eff.money||0)+cb;msg=(msg?msg+' ':'')+`Премия за серию правильных ответов: +${cb} €.`}
  const ch=change(eff);if(A.cost()&&!A.payOnPass)ch.unshift(['money',-S.cost]);else if(A.payOnPass&&pass&&S.cost)ch.unshift(['money',-S.cost]);
  const ev=evictCheck();save();topinfo();
  if(deathCheck())return;
@@ -957,7 +974,7 @@ function closeModal(){$('#modal').hidden=true}
 
 /* ============ training tab ============ */
 let TRV=store.get('trv',{view:'n',num:'sg'});
-function practice(ctx,count,title){showTab('train');runTasks({kind:'train',host:'#tab-train',title,sub:'Тренировка: без последствий для игры',specs:pickSpecs(ctx,count).map(s=>{s.typing=decideTyping(s);return s}),quit:true,onEnd:(ok,n,ab)=>{if(ab&&!n){renderTrain();return}$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n} teisingai</h2><p class="small muted">Ошибки записаны: игра чаще будет давать похожие задания.</p><div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn" id="tomx">К таблице прогресса</button></div></div>`;$('#again').onclick=()=>practice(ctx,count,title);$('#tomx').onclick=renderTrain}})}
+function practice(ctx,count,title){showTab('train');runTasks({kind:'train',host:'#tab-train',title,sub:'Тренировка: без последствий для игры',specs:pickSpecs(ctx,count).map(s=>{s.typing=decideTyping(s);return s}),quit:true,onEnd:(ok,n,ab)=>{if(ab&&!n){renderTrain();return}$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n} teisingai</h2><p class="small muted">Ошибки записаны: игра чаще будет давать похожие задания.</p><div class="row"><button class="btn primary" id="trAgain">Ещё раз</button><button class="btn" id="trBack">К таблице прогресса</button></div></div>`;$('#trAgain').onclick=()=>practice(ctx,count,title);$('#trBack').onclick=renderTrain}})}
 function keysList(view){const P=poolFor({lv:9});return Object.keys(P[view]||{})}
 function cellTd(k,exists,label){if(!exists)return'<td class="na">·</td>';const s=SRS[k];const st=cellState(k);const pct=s?Math.round((1-s.w/s.n)*100)+'%':'';return`<td class="s-${st}" data-key="${k}" title="${esc(label||k)}">${pct}</td>`}
 function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
@@ -986,7 +1003,7 @@ function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
  $('#rstG').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно сбросить игру?';return}G=null;save();renderGame();toast('Игра сброшена');renderTrain()};
  $('#rstS').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно стереть статистику?';return}{SRS={};ITEM={};MIST=[];store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST);renderTrain();toast('Прогресс сброшен')}}}
 function redoMistakes(){if(!MIST.length)return;const specs=MIST.slice(0,15).map(m=>({...m.spec,typing:undefined})).map(s=>{s.typing=decideTyping(s);return s});showTab('train');
- runTasks({kind:'train',host:'#tab-train',title:'Повтор ошибок',sub:'правильный ответ убирает задание из списка',specs,quit:true,onAnswer:ok=>{if(ok&&RUN){MIST=MIST.filter(m=>m.sig!==RUN.task.sig);store.set('mist',MIST)}},onEnd:(ok,n)=>{$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n}</h2><p>Осталось ошибок в списке: ${MIST.length}.</p><div class="row"><button class="btn primary" id="tomx">Назад</button></div></div>`;$('#tomx').onclick=renderTrain}})}
+ runTasks({kind:'train',host:'#tab-train',title:'Повтор ошибок',sub:'правильный ответ убирает задание из списка',specs,quit:true,onAnswer:ok=>{if(ok&&RUN){MIST=MIST.filter(m=>m.sig!==RUN.task.sig);store.set('mist',MIST)}},onEnd:(ok,n)=>{$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n}</h2><p>Осталось ошибок в списке: ${MIST.length}.</p><div class="row"><button class="btn primary" id="trBack">Назад</button></div></div>`;$('#trBack').onclick=renderTrain}})}
 
 /* ============ mistakes tab ============ */
 function renderMist(){const h=$('#tab-mist');
