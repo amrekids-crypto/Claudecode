@@ -8,7 +8,8 @@
 <style>
 :root{--bg:#f4f1e8;--paper:#fffdf7;--ink:#1e1f1c;--muted:#6b6a62;--line:#e2dccd;--line2:#efeadf;--accent:#0f6b47;--accent-soft:#e3f0e8;--yel:#f2b705;--red:#b8322b;--ok:#1d8a4e;--ok-soft:#e2f4e8;--bad:#c0392b;--bad-soft:#fbe7e4;--warn:#b7791f;--warn-soft:#fdf2dc;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
 --on-accent:#fff;--cN:#6b7280;--cG:#7c3aed;--cD:#d97706;--cA:#dc2626;--cI:#2563eb;--cL:#059669;--cV:#db2777;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#121412;--paper:#1b1e1b;--ink:#ecebe6;--muted:#a4a39b;--line:#2f332f;--line2:#252925;--accent:#3fb37f;--accent-soft:#1a2e24;--on-accent:#06140c;--ok:#4cc07f;--ok-soft:#173022;--bad:#ef6b5e;--bad-soft:#3a1e1b;--warn:#e0a84a;--warn-soft:#352a16;--shadow:0 1px 2px rgba(0,0,0,.4);--cN:#9ca3af;--cG:#a78bfa;--cD:#fbbf24;--cA:#f87171;--cI:#60a5fa;--cL:#34d399;--cV:#f472b6}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121412;--paper:#1b1e1b;--ink:#ecebe6;--muted:#a4a39b;--line:#2f332f;--line2:#252925;--accent:#3fb37f;--accent-soft:#1a2e24;--on-accent:#06140c;--ok:#4cc07f;--ok-soft:#173022;--bad:#ef6b5e;--bad-soft:#3a1e1b;--warn:#e0a84a;--warn-soft:#352a16;--shadow:0 1px 2px rgba(0,0,0,.4);--cN:#9ca3af;--cG:#a78bfa;--cD:#fbbf24;--cA:#f87171;--cI:#60a5fa;--cL:#34d399;--cV:#f472b6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121412;--paper:#1b1e1b;--ink:#ecebe6;--muted:#a4a39b;--line:#2f332f;--line2:#252925;--accent:#3fb37f;--accent-soft:#1a2e24;--on-accent:#06140c;--ok:#4cc07f;--ok-soft:#173022;--bad:#ef6b5e;--bad-soft:#3a1e1b;--warn:#e0a84a;--warn-soft:#352a16;--shadow:0 1px 2px rgba(0,0,0,.4);--cN:#9ca3af;--cG:#a78bfa;--cD:#fbbf24;--cA:#f87171;--cI:#60a5fa;--cL:#34d399;--cV:#f472b6;color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:clip;margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
@@ -16,8 +17,8 @@ button{font:inherit;color:inherit}
 h1,h2,h3{margin:0 0 8px;line-height:1.2}
 h2{font-size:20px}h3{font-size:16px}
 p{margin:0 0 8px}
-.wrap{max-width:1100px;margin:0 auto;padding:0 12px}
-header.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.wrap{max-width:1100px;margin:0 auto;padding-left:16px;padding-right:16px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
 .flag{height:4px;background:linear-gradient(to bottom,var(--yel) 0 33%,#0f6b47 33% 66%,var(--red) 66%)}
 .toprow{display:flex;align-items:center;gap:10px;padding-top:8px;padding-bottom:8px}
 .brand{font-weight:800;font-size:17px;letter-spacing:.01em;white-space:nowrap}
@@ -982,8 +983,8 @@ function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
  const tg=$('#typeGo');if(tg)tg.onclick=()=>practice({lv:9,mix:{[v]:1}},12,'Тренировка раздела');
  h.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SET.mode=b.dataset.m;store.set('set',SET);renderTrain()});
  $('#snd').onchange=e=>{SET.sound=e.target.checked;store.set('set',SET)};
- $('#rstG').onclick=()=>{if(confirm('Сбросить текущую игру?')){G=null;save();renderGame();toast('Игра сброшена')}};
- $('#rstS').onclick=()=>{if(confirm('Стереть статистику ошибок и прогресс по комбинациям?')){SRS={};ITEM={};MIST=[];store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST);renderTrain();toast('Прогресс сброшен')}}}
+ $('#rstG').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно сбросить игру?';return}G=null;save();renderGame();toast('Игра сброшена');renderTrain()};
+ $('#rstS').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно стереть статистику?';return}{SRS={};ITEM={};MIST=[];store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST);renderTrain();toast('Прогресс сброшен')}}}
 function redoMistakes(){if(!MIST.length)return;const specs=MIST.slice(0,15).map(m=>({...m.spec,typing:undefined})).map(s=>{s.typing=decideTyping(s);return s});showTab('train');
  runTasks({kind:'train',host:'#tab-train',title:'Повтор ошибок',sub:'правильный ответ убирает задание из списка',specs,quit:true,onAnswer:ok=>{if(ok&&RUN){MIST=MIST.filter(m=>m.sig!==RUN.task.sig);store.set('mist',MIST)}},onEnd:(ok,n)=>{$('#tab-train').innerHTML=`<div class="panel"><h2>${ok}/${n}</h2><p>Осталось ошибок в списке: ${MIST.length}.</p><div class="row"><button class="btn primary" id="tomx">Назад</button></div></div>`;$('#tomx').onclick=renderTrain}})}
 
