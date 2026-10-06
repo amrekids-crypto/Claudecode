@@ -175,6 +175,7 @@ details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent
    <button data-tab="train"><span class="ic">🎯</span>Тренировка</button>
    <button data-tab="mist"><span class="ic">📕</span>Ошибки</button>
    <button data-tab="tables"><span class="ic">📋</span>Таблицы</button>
+   <button data-tab="lb"><span class="ic">🏆</span>Рейтинг</button>
   </nav>
   <div class="topinfo" id="topinfo"></div>
  </div>
@@ -184,13 +185,15 @@ details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent
  <section id="tab-train" hidden></section>
  <section id="tab-mist" hidden></section>
  <section id="tab-tables" hidden></section>
+ <section id="tab-lb" hidden></section>
 </main>
 <div class="modal" id="modal" hidden><div class="box" id="mbox"></div></div>
 <script>
 'use strict';
 /* ============ utils ============ */
 const $=s=>document.querySelector(s);
-const store={get(k,d){try{const v=localStorage.getItem('ltv_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('ltv_'+k,JSON.stringify(v))}catch(e){}}};
+const CLOUD_SKIP=['cloud','tab','trv'];
+const store={get(k,d){try{const v=localStorage.getItem('ltv_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('ltv_'+k,JSON.stringify(v));if(!CLOUD_SKIP.includes(k))window.__cloudDirty=true}catch(e){}}};
 const rnd=n=>Math.floor(Math.random()*n);
 const pick=a=>a[rnd(a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -620,6 +623,7 @@ let SRS=store.get('srs',{});let ITEM=store.get('item',{});let MIST=store.get('mi
 function kw(k){const s=SRS[k];if(!s)return .55;const e=(s.w+.3)/(s.n+1);let w=e;if(s.st>=3)w*=.5;if(s.st>=6)w*=.5;const days=(Date.now()-(s.t||0))/864e5;if(s.st>=3)w+=Math.min(.25,days*.03);return Math.max(.03,w)}
 function iw(sig){return 1+2.5*(ITEM[sig]||0)}
 function record(task,ok,given){
+ lifeBump(L=>{L.answered++;if(ok)L.correct++});
  const k=task.key;const s=SRS[k]||(SRS[k]={n:0,w:0,st:0,t:0});s.n++;if(!ok){s.w++;s.st=0}else s.st++;s.t=Date.now();if(s.n>10){s.w*=10/s.n;s.n=10}
  const sig=task.sig;if(!ok)ITEM[sig]=Math.min(4,(ITEM[sig]||0)+1);else if(ITEM[sig])ITEM[sig]=Math.max(0,ITEM[sig]-1);
  if(!ok){MIST=MIST.filter(m=>m.sig!==sig);MIST.unshift({sig,spec:task.spec,given:given||'',ans:task.answer,txt:task.plain,at:Date.now()});MIST=MIST.slice(0,300)}
@@ -844,7 +848,7 @@ let G=store.get('game',null);
 const save=()=>store.set('game',G);
 const slotsMax=()=>4+TRANSP[G.tr].slots;
 const clamp=x=>Math.max(0,Math.min(100,Math.round(x)));
-function newGame(sex){const rec=G&&G.rec||store.get('rec',{best:0,lives:0});G={v:1,sex,day:1,money:35,hp:80,food:60,mood:70,permit:20,used:0,house:0,job:1,edu:0,lessons:0,cl:0,tr:0,bad:0,alive:true,won:false,home:false,log:[],ses:null,ev:null};rec.lives=(rec.lives||0)+1;store.set('rec',rec);logG('День 1. Вы приехали в Вильнюс с 35 € и койкой в ночлежке. Работа: посудомойка.');save()}
+function newGame(sex){const rec=G&&G.rec||store.get('rec',{best:0,lives:0});G={v:1,sex,day:1,money:35,hp:80,food:60,mood:70,permit:20,used:0,house:0,job:1,edu:0,lessons:0,cl:0,tr:0,bad:0,alive:true,won:false,home:false,log:[],ses:null,ev:null};rec.lives=(rec.lives||0)+1;store.set('rec',rec);lifeBump(L=>L.maxJob=Math.max(L.maxJob||0,1));logG('День 1. Вы приехали в Вильнюс с 35 € и койкой в ночлежке. Работа: посудомойка.');save()}
 function logG(t){G.log.unshift(`Д${G.day}: ${t}`);G.log=G.log.slice(0,40)}
 function change(eff){const out=[];['money','hp','food','mood','permit'].forEach(k=>{if(!eff[k])return;const v=Math.round(eff[k]);if(!v)return;G[k]=k==='money'?G[k]+v:k==='permit'?Math.min(120,G[k]+v):clamp(G[k]+v);out.push([k,v])});return out}
 const STATLAB={money:'Деньги',hp:'Sveikata (здоровье)',food:'Sotumas (сытость)',mood:'Nuotaika (настроение)',permit:'Leidimas (дней)'};
@@ -854,7 +858,7 @@ function deathCheck(){if(!G.alive)return true;let r=null;
  else if(G.mood<=0)r=['🌧️','Depresija','Настроение упало до нуля. Вы купили билет домой и уехали из Литвы.'];
  else if(G.permit<=0)r=['🛂','Leidimas baigėsi','Вид на жительство закончился. Миграционная служба выдала решение о выезде.'];
  else if(G.money<-100)r=['💸','Skolos','Долг больше 100 €. Денег на жильё больше нет, пришлось уехать.'];
- if(!r)return false;G.alive=false;G.ses=null;const rec=store.get('rec',{best:0,lives:1});rec.best=Math.max(rec.best||0,G.day);store.set('rec',rec);save();
+ if(!r)return false;G.alive=false;G.ses=null;const rec=store.get('rec',{best:0,lives:1});rec.best=Math.max(rec.best||0,G.day);store.set('rec',rec);save();lbPush();
  modal(`<div class="big">${r[0]}</div><h2>Žaidimas baigtas: ${r[1]}</h2><p>${r[2]}</p><p class="small muted">Вы продержались ${G.day} дн. Рекорд: ${rec.best} дн. Работа: ${jobName(G.job)}, уровень ${EDU[G.edu].lt}. Прогресс в грамматике сохранён: игра и дальше будет давать больше заданий там, где были ошибки.</p><div class="row"><button class="btn primary" id="again">Новая жизнь</button></div>`);
  $('#again').onclick=()=>{closeModal();G=null;save();renderGame()};return true}
 function evictCheck(){if(G.money<-60&&G.house>0){G.house=0;logG('Долг больше 60 €. Вас выселили в ночлежку.');return'Долг больше 60 €: вас выселили в ночлежку.'}return null}
@@ -895,7 +899,7 @@ function resumeSession(){const S=G.ses;const A=S.a?ACTS[S.a]:null;const L=A?LBY[
 function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={},msg='',head='';const need=A.need?A.need():null;const pass=need==null||ok>=need;
  switch(a){
   case'shift':{const pay=Math.round(JOBS[G.job].pay*acc);eff={money:pay,food:-10,mood:-6};if(acc<.5){G.bad++;msg=G.bad>=2?'Руководитель недоволен второй раз подряд. Вас уволили.':'Руководитель недоволен: слишком много ошибок. Ещё одна такая смена, и вас уволят.';if(G.bad>=2){G.job=0;G.bad=0;logG('Уволен(а) за ошибки.')}}else{G.bad=0;msg=acc===1?'Идеальная смена! Руководитель доволен.':'Смена закончена.'}logG(`Смена: ${ok}/${n}, +${pay} €.`);break}
-  case'interview':{const j=Math.min(G.job+1,JOBS.length-1);if(pass){G.job=j;G.bad=0;msg=`Вас взяли! Новая должность: ${jobName(j)} (${JOBS[j].pay} €/смена).`;eff={mood:15};logG(`Новая работа: ${jobName(j)}.`)}else{msg='Не взяли. Работодатель заметил ошибки. Попробуйте ещё раз в другой день.';eff={mood:-8};logG('Собеседование провалено.')}break}
+  case'interview':{const j=Math.min(G.job+1,JOBS.length-1);if(pass){G.job=j;G.bad=0;msg=`Вас взяли! Новая должность: ${jobName(j)} (${JOBS[j].pay} €/смена).`;eff={mood:15};logG(`Новая работа: ${jobName(j)}.`);lifeBump(L=>L.maxJob=Math.max(L.maxJob||0,j))}else{msg='Не взяли. Работодатель заметил ошибки. Попробуйте ещё раз в другой день.';eff={mood:-8};logG('Собеседование провалено.')}break}
   case'shopCheap':eff={food:32*acc};break;
   case'shopGood':eff={food:48*acc,mood:8*acc,hp:3*acc};break;
   case'market':eff={food:30*acc,hp:5*acc};break;
@@ -906,7 +910,7 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
   case'walk':eff={mood:12*acc,hp:2*acc,food:-4};break;
   case'friends':eff={mood:32*acc,food:8*acc};break;
   case'lesson':{eff={food:-5,mood:-3};if(ok>=4){if(G.edu<2){G.lessons++;if(G.lessons>=EDU[G.edu].need){G.edu++;G.lessons=0;msg=`Новый уровень: ${EDU[G.edu].lt}! ${G.edu===1?'Открыты naudininkas, įnagininkas, прошедшее время, числа в galininkas, местоимения и прилагательные.':'Открыты šauksmininkas и будущее время. Можно сдавать экзамен B1.'}`;logG(`Уровень ${EDU[G.edu].lt}!`);eff.mood=20}else msg=`Урок засчитан (${G.lessons}/${EDU[G.edu].need}).`}else msg='Хорошее повторение.'}else msg='Урок не засчитан: нужно минимум 4 правильных из 6.';break}
-  case'exam':{if(pass){G.edu=3;eff={mood:30};msg='Egzaminas išlaikytas! У вас уровень B1.';logG('B1 egzaminas išlaikytas!')}else{eff={mood:-12};msg=`Экзамен не сдан (${ok}/${n}, нужно 16). Повторите слабые места во вкладке «Тренировка».`;logG(`Экзамен: ${ok}/20, не сдан.`)}break}
+  case'exam':{if(pass){G.edu=3;eff={mood:30};msg='Egzaminas išlaikytas! У вас уровень B1.';logG('B1 egzaminas išlaikytas!');lifeBump(L=>L.wins=(L.wins||0)+1);lbPush()}else{eff={mood:-12};msg=`Экзамен не сдан (${ok}/${n}, нужно 16). Повторите слабые места во вкладке «Тренировка».`;logG(`Экзамен: ${ok}/20, не сдан.`)}break}
   case'clothes':{if(pass){G.money-=S.cost;G.cl++;eff={mood:8};msg=`Куплено: ${CLOTHES[G.cl].lt}.`;logG(`Одежда: ${CLOTHES[G.cl].lt}.`)}else{eff={mood:-5};msg='Не договорились с продавцом. Деньги остались при вас.'}break}
   case'house':{if(pass){G.money-=S.cost;G.house++;eff={mood:15};msg=`Вы переехали: ${HOUSES[G.house].lt}.`;logG(`Переезд: ${HOUSES[G.house].lt}.`)}else{eff={mood:-6};msg='Хозяин выбрал другого жильца. Деньги остались при вас.'}break}
   case'vehicle':{if(pass){G.money-=S.cost;G.tr++;eff={mood:10};msg=`Куплено: ${TRANSP[G.tr].lt}. Теперь у вас больше действий в день.`;logG(`Транспорт: ${TRANSP[G.tr].lt}.`)}else{eff={mood:-5};msg='Продавец не понял вас. Покупка сорвалась.'}break}
@@ -922,7 +926,7 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
 function sleep(){if(!G||!G.alive)return;const H=HOUSES[G.house],T=TRANSP[G.tr];
  const eff={money:-(H.rent+T.daily),food:-22,mood:-H.mood+(G.tr===2?3:0),hp:-H.hp,permit:-1};
  const fAfter=G.food-22;if(fAfter<=0){eff.hp-=25;eff.mood-=10}else if(fAfter<=15)eff.hp-=12;if(G.mood<15)eff.hp-=4;if(G.money<0)eff.mood-=6;
- const ch=change(eff);G.day++;G.used=0;logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
+ const ch=change(eff);G.day++;G.used=0;lifeBump(L=>L.bestDay=Math.max(L.bestDay||0,G.day));lbPush();logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
  if(deathCheck())return;
  const e=rollEvent();
  modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье и настроение падают. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
@@ -1007,15 +1011,91 @@ function renderTables(){const h=$('#tab-tables');
  <h3>Числа</h3><p class="small">1, 21, 31… → ед.ч.: vienas euras, viena minutė. 2–9, 22–29… → мн.ч.: du eurai, dvi minutės, penkios minutės. 10–20 и 30, 40… → kilmininkas мн.ч.: dešimt eurų, penkiolika minučių. В galininkas: vieną, du/dvi, tris, keturis/keturias, penkis/penkias.</p>
  <div class="scroll"><table class="par"><tr><th></th>${[1,2,3,4,5].map(n=>`<th>${n}</th>`).join('')}</tr>${[['N','m'],['N','f'],['A','m'],['A','f']].map(([c,g])=>`<tr><th>${c==='N'?'Vard.':'Gal.'} ${g==='m'?'м.р.':'ж.р.'}</th>${[1,2,3,4,5].map(n=>`<td>${UN[c][g][n]}</td>`).join('')}</tr>`).join('')}</table></div></div>`}
 
+
+/* ============ leaderboard + cloud save (Supabase RPC, as in finance please) ============
+   Fill window.LB_CONFIG={supabaseUrl:'…',supabaseKey:'…'} before the first <script>.
+   All tables and functions use the ltv_ prefix (see supabase.sql). */
+const LB_CONFIG=Object.assign({supabaseUrl:'',supabaseKey:'',prefix:'ltv_'},window.LB_CONFIG||{});
+const LB={online:!!(LB_CONFIG.supabaseUrl&&LB_CONFIG.supabaseKey)};
+const CLOUD={pending:null,busy:false,msg:null};
+const lifeGet=()=>store.get('life',{answered:0,correct:0,bestDay:0,maxJob:0,wins:0});
+function lifeBump(f){const L=lifeGet();f(L);store.set('life',L)}
+function lbPid(){let id=store.get('pid',null);if(!id){id=(window.crypto&&crypto.randomUUID?crypto.randomUUID():'p'+Date.now().toString(36)+Math.random().toString(36).slice(2));store.set('pid',id)}return id}
+function masteredCount(){const P=poolFor({lv:9});let n=0,t=0;['n','a','v','num','p'].forEach(k=>Object.keys(P[k]).forEach(x=>{t++;if(cellState(x)==='ok')n++}));return[n,t]}
+function lbStats(){const L=lifeGet();const[m,t]=masteredCount();return{best_day:L.bestDay||0,max_job:L.maxJob||0,mastered:m,total:t,correct:L.correct||0,answered:Math.max(L.answered||0,L.correct||0),wins:L.wins||0}}
+const lbScore=s=>Math.min(1e6,s.wins*500+s.best_day*20+s.max_job*100+s.mastered*10+Math.min(s.correct,200000)*2);
+const pct=(c,a)=>a?Math.round(c/a*100)+'%':'—';
+function rpc(fn,body,keep){const b=JSON.stringify(body);return fetch(`${LB_CONFIG.supabaseUrl.replace(/\/$/,'')}/rest/v1/rpc/${LB_CONFIG.prefix}${fn}`,{method:'POST',keepalive:!!keep&&b.length<60000,headers:{apikey:LB_CONFIG.supabaseKey,Authorization:'Bearer '+LB_CONFIG.supabaseKey,'Content-Type':'application/json'},body:b})
+ .then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&(j.message||j.hint))||('HTTP '+r.status));return j})}
+async function lbFetch(){const u=`${LB_CONFIG.supabaseUrl.replace(/\/$/,'')}/rest/v1/${LB_CONFIG.prefix}leaderboard?select=name,score,best_day,max_job,mastered,correct,answered,wins&order=score.desc&limit=50`;
+ const r=await fetch(u,{headers:{apikey:LB_CONFIG.supabaseKey,Authorization:'Bearer '+LB_CONFIG.supabaseKey}});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function lbSubmit(){const a=store.get('cloud',null);if(!LB.online||!a)return false;const s=lbStats();
+ await rpc('lb_submit',{p_token:a.token,p_best_day:s.best_day,p_max_job:s.max_job,p_mastered:s.mastered,p_correct:s.correct,p_answered:s.answered,p_wins:s.wins});return true}
+function lbPush(){if(LB.online&&store.get('cloud',null))lbSubmit().catch(()=>{})}
+function cloudKeys(){const ks=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('ltv_')&&!CLOUD_SKIP.includes(k.slice(4)))ks.push(k)}}catch(e){}return ks}
+function cloudCollect(){const d={};cloudKeys().forEach(k=>{try{d[k.slice(4)]=localStorage.getItem(k)}catch(e){}});return d}
+const cloudHasData=d=>!!d&&['game','srs','life','rec'].some(k=>k in d);
+function cloudSummary(d){try{const g=JSON.parse(d.game||'null'),L=JSON.parse(d.life||'null');return`${g&&g.alive?`день ${g.day}, ${EDU[g.edu].lt}, ${g.money} €`:'игра не начата'}; ответов ${L?L.answered:0}, рекорд ${L?L.bestDay:0} дн.`}catch(e){return'нет данных'}}
+function cloudSetAcct(a){store.set('cloud',a);store.set('pid',a.player_id)}
+function cloudApply(data,a,t){try{cloudKeys().forEach(k=>localStorage.removeItem(k));Object.entries(data||{}).forEach(([k,v])=>{if(typeof v==='string'&&!CLOUD_SKIP.includes(k))localStorage.setItem('ltv_'+k,v)})}catch(e){}
+ cloudSetAcct(Object.assign({},a,{syncedAt:t?Date.parse(t):Date.now(),savedAt:Date.now()}));window.__cloudDirty=false;location.reload()}
+async function cloudSave(keep){const a=store.get('cloud',null);if(!LB.online||!a||CLOUD.busy)return false;CLOUD.busy=true;window.__cloudDirty=false;
+ try{const r=await rpc('cloud_save',{p_token:a.token,p_data:cloudCollect()},keep);a.syncedAt=Date.parse(r.updated_at)||Date.now();a.savedAt=Date.now();localStorage.setItem('ltv_cloud',JSON.stringify(a));cloudUI();return true}
+ catch(e){window.__cloudDirty=true;if(/bad_token/.test(e.message)){try{localStorage.removeItem('ltv_cloud')}catch(_){}cloudUI('Сессия устарела, войдите заново.')}else cloudUI('Не удалось сохранить: '+e.message);return false}finally{CLOUD.busy=false}}
+function cloudUI(msg){if(msg!=null)CLOUD.msg=msg;const h=$('#tab-lb');if(!h||h.hidden||!$('#cloudBox'))return;const a=store.get('cloud',null);
+ const t=a&&a.savedAt?new Date(a.savedAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'';
+ $('#cloudForm').hidden=!LB.online||!!a||!!CLOUD.pending;$('#cloudIn').hidden=!a;$('#cloudPick').hidden=!CLOUD.pending;
+ $('#cloudState').textContent=!LB.online?'офлайн':a?`вы вошли как ${a.name}${t?' · сохранено в '+t:''}`:'вход не выполнен';
+ $('#cloudMsg').textContent=CLOUD.msg!=null?CLOUD.msg:(!LB.online?'Аккаунты заработают, когда игра будет размещена на Lovable с Supabase. Пока прогресс хранится только в этом браузере.':'')}
+async function renderLB(){const h=$('#tab-lb');const s=lbStats(),sc=lbScore(s),a=store.get('cloud',null);
+ h.innerHTML=`<div class="panel"><h2>Рейтинг</h2><p class="small">${LB.online?'<span class="chip cL">Глобальный рейтинг подключён</span>'+(a?'':' Чтобы попасть в рейтинг, войдите в аккаунт ниже.'):'<span class="chip cD">Офлайн</span> Глобальный рейтинг заработает на Lovable с Supabase. Пока видны только ваши результаты.'}</p>
+ <div class="status" style="grid-template-columns:repeat(3,1fr)"><div><span>Очки</span><b>${sc}</b></div><div><span>Рекорд дней</span><b>${s.best_day}</b></div><div><span>Лучшая работа</span><b>${esc(JOBS[s.max_job]?JOBS[s.max_job].m:'—')}</b></div><div><span>Освоено комбинаций</span><b>${s.mastered} / ${s.total}</b></div><div><span>Точность</span><b>${pct(s.correct,s.answered)}</b></div><div><span>B1 сдан</span><b>${s.wins?s.wins+' раз':'нет'}</b></div></div>
+ <p class="tiny muted" style="margin-top:8px">Очки = 500 за сданный B1 + 20 за каждый день рекорда + 100 за уровень лучшей работы + 10 за освоенную комбинацию + 2 за правильный ответ.</p></div>
+ <div class="panel" id="cloudBox"><h3>Аккаунт и облачное сохранение</h3><p class="small muted" id="cloudState"></p>
+ <div id="cloudForm"><p class="small">Ник и PIN из 4–12 цифр. Если ник свободен, аккаунт создастся. С тем же ником и PIN можно продолжить на другом устройстве.</p><div class="row"><input class="inp" id="cloudName" maxlength="24" placeholder="Ник" autocomplete="username" style="flex:1;min-width:140px"><input class="inp" id="cloudPin" inputmode="numeric" maxlength="12" placeholder="PIN" type="password" autocomplete="current-password" style="width:120px"><button class="btn primary" id="cloudLogin">Войти</button></div></div>
+ <div id="cloudIn" hidden><p class="small">Прогресс сохраняется сам каждые 20 секунд и при закрытии вкладки.</p><div class="row"><button class="btn small" id="cloudSaveNow">Сохранить сейчас</button><button class="btn small" id="cloudLoadNow">Загрузить из облака</button><button class="btn small ghost" id="cloudOut">Выйти</button></div></div>
+ <div id="cloudPick" hidden><p class="small" id="cloudPickTxt"></p><div class="row"><button class="btn primary small" id="cloudUseCloud">Взять из облака</button><button class="btn small" id="cloudUseLocal">Оставить с этого устройства</button></div></div>
+ <p class="small" id="cloudMsg" style="margin-top:8px"></p></div>
+ <div class="panel"><div class="row" style="justify-content:space-between"><h3>Топ-50</h3><button class="btn small" id="lbRefresh">Обновить</button></div><div class="scroll"><table class="par" id="lbTable" style="font-size:13px"></table></div></div>`;
+ if(CLOUD.pending)$('#cloudPickTxt').textContent=CLOUD.pending.txt;
+ $('#cloudLogin').onclick=cloudLogin;$('#cloudPin').onkeydown=e=>{if(e.key==='Enter')cloudLogin()};
+ $('#cloudUseCloud').onclick=()=>{const p=CLOUD.pending;if(p)cloudApply(p.data,p.a,p.t)};
+ $('#cloudUseLocal').onclick=async()=>{const p=CLOUD.pending;if(!p)return;CLOUD.pending=null;cloudSetAcct(p.a);await cloudSave();lbPush();renderLB();cloudUI('Прогресс этого устройства сохранён в облако.')};
+ $('#cloudSaveNow').onclick=async()=>{if(await cloudSave())cloudUI('Сохранено.')};
+ $('#cloudLoadNow').onclick=async e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно? Прогресс на этом устройстве заменится';return}const a2=store.get('cloud',null);if(!a2)return;try{const r=await rpc('cloud_load',{p_token:a2.token});cloudApply(r.data,a2,r.updated_at)}catch(err){cloudUI('Не удалось загрузить: '+err.message)}};
+ $('#cloudOut').onclick=async()=>{if(window.__cloudDirty)await cloudSave();try{localStorage.removeItem('ltv_cloud')}catch(e){}renderLB();cloudUI('Вы вышли. Прогресс на этом устройстве остался.')};
+ $('#lbRefresh').onclick=renderLB;cloudUI();
+ const tb=$('#lbTable');const head='<tr><th>#</th><th>Игрок</th><th>Очки</th><th>Дней</th><th>Освоено</th><th>%</th></tr>';
+ const row=(i,r,mine)=>`<tr${mine?' style="font-weight:700;background:var(--accent-soft)"':''}><td>${i}</td><td>${esc(r.name||'—')}${r.wins?' 🎓':''}</td><td>${r.score}</td><td>${r.best_day}</td><td>${r.mastered}</td><td>${pct(r.correct,r.answered)}</td></tr>`;
+ if(!LB.online){tb.innerHTML=head+row(1,{name:a?a.name:'Вы',score:sc,...s},true);return}
+ tb.innerHTML='<tr><td class="muted">Загрузка…</td></tr>';
+ try{const rows=await lbFetch();if(!$('#lbTable'))return;$('#lbTable').innerHTML=rows.length?head+rows.map((r,i)=>row(i+1,r,!!a&&r.name===a.name)).join(''):'<tr><td>Пока пусто. Будьте первым!</td></tr>'}
+ catch(e){if($('#lbTable'))$('#lbTable').innerHTML=`<tr><td>Не удалось загрузить рейтинг (${esc(e.message)}). Проверьте адрес и ключ Supabase.</td></tr>`}}
+async function cloudLogin(){if(!LB.online)return cloudUI();const name=$('#cloudName').value.trim(),pin=$('#cloudPin').value.trim();
+ if(!name)return cloudUI('Введите ник.');if(!/^\d{4,12}$/.test(pin))return cloudUI('PIN: от 4 до 12 цифр.');cloudUI('Вхожу…');
+ try{const r=await rpc('cloud_login',{p_name:name,p_pin:pin,p_player_id:lbPid()});
+  if(r.error==='bad_pin')return cloudUI('Неверный PIN для этого ника. Если ник не ваш, выберите другой.');
+  const a={token:r.token,name:r.name,player_id:r.player_id},local=cloudCollect();
+  if(r.created||!cloudHasData(r.data)){cloudSetAcct(a);await cloudSave();lbPush();await renderLB();return cloudUI(r.created?'Аккаунт создан. Прогресс с этого устройства сохранён в облако.':'Вход выполнен. Прогресс сохранён в облако.')}
+  if(!cloudHasData(local))return cloudApply(r.data,a,r.updated_at);
+  CLOUD.pending={a,data:r.data,t:r.updated_at,txt:`В облаке: ${cloudSummary(r.data)} На этом устройстве: ${cloudSummary(local)} Какой прогресс оставить?`};renderLB();cloudUI('')}
+ catch(e){cloudUI(/locked/.test(e.message)?'Слишком много неверных PIN. Попробуйте через 15 минут.':/bad_name/.test(e.message)?'Ник должен быть от 1 до 24 символов.':'Ошибка входа: '+e.message)}}
+setInterval(()=>{if(window.__cloudDirty)cloudSave()},20000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&window.__cloudDirty)cloudSave(true)});
+window.addEventListener('pagehide',()=>{if(window.__cloudDirty)cloudSave(true)});
+(async()=>{const a=store.get('cloud',null);if(!LB.online||!a)return;
+ try{const r=await rpc('cloud_load',{p_token:a.token});const t=Date.parse(r.updated_at)||0;if(t>(a.syncedAt||0)+1000&&cloudHasData(r.data))return cloudApply(r.data,a,r.updated_at)}
+ catch(e){if(/bad_token/.test(e.message)){try{localStorage.removeItem('ltv_cloud')}catch(_){}cloudUI('Сессия устарела, войдите заново.')}}})();
+
 /* ============ tabs ============ */
-const TABS=['game','train','mist','tables'];
+const TABS=['game','train','mist','tables','lb'];
 function showTab(t){if(!TABS.includes(t))t='game';TABS.forEach(x=>$('#tab-'+x).hidden=x!==t);document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);
  if(RUN&&RUN.kind==='train'&&t!=='train'){RUN=null}
- if(t==='game'&&!(RUN&&RUN.kind==='game'))renderGame();if(t==='train'&&!(RUN&&RUN.kind==='train'))renderTrain();if(t==='mist')renderMist();if(t==='tables')renderTables();window.scrollTo(0,0)}
+ if(t==='game'&&!(RUN&&RUN.kind==='game'))renderGame();if(t==='train'&&!(RUN&&RUN.kind==='train'))renderTrain();if(t==='mist')renderMist();if(t==='tables')renderTables();if(t==='lb')renderLB();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SFX.click();showTab(b.dataset.tab)}});
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal'&&$('#mbox .btn.primary')==null)closeModal()});
 window.__LT={W,ADJ,VERBS,TPL,DLG,nounForms,adjForm,verbForms,numWords,numNoun,buildCombos,poolFor,pickSpecs,buildTask,concretize,get NCOMBO(){return NCOMBO},get ACOMBO(){return ACOMBO}};
-renderGame();showTab(store.get('tab','game'));
+window.__cloudDirty=false;renderGame();showTab(store.get('tab','game'));
 </script>
 </body>
 </html>
