@@ -114,6 +114,14 @@ details summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent
 .aibox{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .ai-lab{font-size:13px;color:var(--muted);font-weight:600}
 .ai-txt{font:12.5px/1.45 var(--mono);width:100%;resize:vertical;padding:8px 10px;border:1px dashed var(--accent);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.quests{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quest{display:grid;grid-template-columns:20px 1fr auto;gap:8px;align-items:center;font-size:13.5px}
+.quest .qc{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);display:inline-grid;place-items:center;font-size:12px;font-weight:800;color:var(--on-accent)}
+.quest.done .qc{background:var(--ok);border-color:var(--ok)}.quest.done{color:var(--muted)}.quest.done span:nth-child(2){text-decoration:line-through}
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.ach{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.ach b{font-size:13.5px}.ach.on{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.evch{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .streak{color:var(--warn);font-weight:800;font-size:12.5px}
 .prog{display:flex;gap:4px;margin:2px 0 10px}
 .prog i{flex:1;height:6px;border-radius:99px;background:var(--line)}
@@ -627,7 +635,8 @@ let SRS=store.get('srs',{});let ITEM=store.get('item',{});let MIST=store.get('mi
 function kw(k){const s=SRS[k];if(!s)return .55;const e=(s.w+.3)/(s.n+1);let w=e;if(s.st>=3)w*=.5;if(s.st>=6)w*=.5;const days=(Date.now()-(s.t||0))/864e5;if(s.st>=3)w+=Math.min(.25,days*.03);return Math.max(.03,w)}
 function iw(sig){return 1+2.5*(ITEM[sig]||0)}
 function record(task,ok,given){
- lifeBump(L=>{L.answered++;if(ok)L.correct++});
+ const stk=RUN?streakOf(RUN.res):0;lifeBump(L=>{L.answered++;if(ok)L.correct++;L.bestStreak=Math.max(L.bestStreak||0,stk)});
+ if(RUN&&RUN.kind==='game')questHook('answer',{ok,streak:stk});setTimeout(checkAch,0);
  const k=task.key;const s=SRS[k]||(SRS[k]={n:0,w:0,st:0,t:0});s.n++;if(!ok){s.w++;s.st=0}else s.st++;s.t=Date.now();if(s.n>10){s.w*=10/s.n;s.n=10}
  const sig=task.sig;if(!ok)ITEM[sig]=Math.min(4,(ITEM[sig]||0)+1);else if(ITEM[sig])ITEM[sig]=Math.max(0,ITEM[sig]-1);
  if(!ok){MIST=MIST.filter(m=>m.sig!==sig);MIST.unshift({sig,spec:task.spec,given:given||'',ans:task.answer,txt:task.plain,at:Date.now()});MIST=MIST.slice(0,300)}
@@ -864,7 +873,7 @@ if(G&&G.ses){const sp=(G.ses.specs||[]).map(fixSpec);if(sp.length&&sp.every(Bool
 const save=()=>store.set('game',G);
 const slotsMax=()=>4+TRANSP[G.tr].slots;
 const clamp=x=>Math.max(0,Math.min(100,Math.round(x)));
-function newGame(sex){const rec=G&&G.rec||store.get('rec',{best:0,lives:0});G={v:1,sex,day:1,money:35,hp:80,food:60,mood:70,permit:20,used:0,house:0,job:1,edu:0,lessons:0,cl:0,tr:0,bad:0,alive:true,won:false,home:false,log:[],ses:null,ev:null};rec.lives=(rec.lives||0)+1;store.set('rec',rec);lifeBump(L=>L.maxJob=Math.max(L.maxJob||0,1));logG('День 1. Вы приехали в Вильнюс с 35 € и койкой в ночлежке. Работа: посудомойка.');save()}
+function newGame(sex){const rec=G&&G.rec||store.get('rec',{best:0,lives:0});G={v:1,sex,day:1,money:35,hp:80,food:60,mood:70,permit:20,used:0,house:0,job:1,edu:0,lessons:0,cl:0,tr:0,bad:0,alive:true,won:false,home:false,log:[],ses:null,ev:null};rec.lives=(rec.lives||0)+1;store.set('rec',rec);lifeBump(L=>L.maxJob=Math.max(L.maxJob||0,1));logG('День 1. Вы приехали в Вильнюс с 35 € и койкой в ночлежке. Работа: посудомойка.');genQuests();save()}
 function logG(t){G.log.unshift(`Д${G.day}: ${t}`);G.log=G.log.slice(0,40)}
 function change(eff){const out=[];['money','hp','food','mood','permit'].forEach(k=>{if(!eff[k])return;const v=Math.round(eff[k]);if(!v)return;G[k]=k==='money'?G[k]+v:k==='permit'?Math.min(120,G[k]+v):clamp(G[k]+v);out.push([k,v])});return out}
 const STATLAB={money:'Деньги',hp:'Sveikata (здоровье)',food:'Sotumas (сытость)',mood:'Nuotaika (настроение)',permit:'Leidimas (дней)'};
@@ -879,9 +888,70 @@ function deathCheck(){if(!G.alive)return true;let r=null;
  $('#again').onclick=()=>{closeModal();G=null;save();renderGame()};return true}
 function evictCheck(){if(G.money<-60&&G.house>0){G.house=0;logG('Долг больше 60 €. Вас выселили в ночлежку.');return'Долг больше 60 €: вас выселили в ночлежку.'}return null}
 
+
+/* ============ calendar ============ */
+const CAL_START=Date.UTC(2026,8,1);
+const WDAYS=['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis','Ketvirtadienis','Penktadienis','Šeštadienis'];
+const MON_G=['sausio','vasario','kovo','balandžio','gegužės','birželio','liepos','rugpjūčio','rugsėjo','spalio','lapkričio','gruodžio'];
+const dateOf=d=>new Date(CAL_START+(d-1)*864e5);
+const isWeekend=d=>{const w=dateOf(d).getUTCDay();return w===0||w===6};
+function dateLt(d){const x=dateOf(d);return`${WDAYS[x.getUTCDay()]}, ${MON_G[x.getUTCMonth()]} ${x.getUTCDate()} d.`}
+const isWinter=d=>[10,11,0,1,2].includes(dateOf(d).getUTCMonth());
+
+/* ============ daily quests ============ */
+const QLOCS=['shop','market','cafe','clinic','school','park','friends','migration','clothes','housing','transport'];
+function genQuests(){const pool=[
+  ()=>{const l=pick(QLOCS.filter(x=>x!=='migration'||G.permit<40));return{k:'visit',loc:l,n:1,txt:`Сходить в «${LBY[l].lt}»`}},
+  ()=>({k:'perfect',n:1,txt:'Выполнить любое действие без единой ошибки'}),
+  ()=>({k:'streak',n:5+rnd(2)*2,txt:''}),
+  ()=>({k:'correct',n:10+rnd(3)*3,txt:''}),
+  ()=>G.job>0?{k:'earn',n:Math.round(JOBS[G.job].pay*.8),txt:''}:{k:'correct',n:10,txt:''}];
+ const out=[];const used=new Set();while(out.length<2){const i=rnd(pool.length);if(used.has(i))continue;used.add(i);const q=pool[i]();q.prog=0;q.done=false;q.rw=6+rnd(7);
+  if(q.k==='streak')q.txt=`Серия из ${q.n} правильных ответов подряд`;if(q.k==='correct')q.txt=`Дать ${q.n} правильных ответов за день`;if(q.k==='earn')q.txt=`Заработать на сменах ${q.n} €`;out.push(q)}
+ G.q=out;G.qday=G.day}
+function questHook(kind,val){if(!G||!G.alive||!G.q)return;let changed=false;
+ G.q.forEach(q=>{if(q.done)return;let p=q.prog;
+  if(q.k==='visit'&&kind==='action'&&val.loc===q.loc)p=1;
+  if(q.k==='perfect'&&kind==='action'&&val.n>0&&val.ok===val.n)p=1;
+  if(q.k==='earn'&&kind==='pay')p+=val;
+  if(q.k==='correct'&&kind==='answer'&&val.ok)p++;
+  if(q.k==='streak'&&kind==='answer')p=Math.max(p,val.streak);
+  if(p!==q.prog){q.prog=Math.min(p,q.n);changed=true}
+  if(q.prog>=q.n){q.done=true;G.money+=q.rw;G.mood=clamp(G.mood+5);lifeBump(L=>L.quests=(L.quests||0)+1);logG(`Задание дня выполнено: ${q.txt}. +${q.rw} €`);toast(`✅ Задание дня: +${q.rw} €, настроение +5`);SFX.coin()}});
+ if(changed){save();topinfo()}}
+function questsHtml(){if(!G.q||!G.q.length)return'';return`<div class="quests"><div class="tiny muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em">Dienos užduotys</div>${G.q.map(q=>`<div class="quest ${q.done?'done':''}"><span class="qc">${q.done?'✓':''}</span><span>${esc(q.txt)}${q.n>1&&!q.done?` <span class="muted">${q.prog}/${q.n}</span>`:''}</span><b>+${q.rw} €</b></div>`).join('')}</div>`}
+
+/* ============ achievements ============ */
+const ACH=[
+ ['pirmas','Pirmas atlyginimas','Получить первую зарплату',L=>L.shifts>=1],
+ ['serija5','Penki iš eilės','Серия из 5 правильных ответов',L=>L.bestStreak>=5],
+ ['serija10','Dešimt iš eilės','Серия из 10 правильных ответов',L=>L.bestStreak>=10],
+ ['serija20','Nesustabdomas','Серия из 20 правильных ответов',L=>L.bestStreak>=20],
+ ['savaite','Pirma savaitė','Продержаться 7 дней',L=>L.bestDay>=8],
+ ['menuo','Mėnuo Vilniuje','Продержаться 30 дней',L=>L.bestDay>=31],
+ ['a2','A2 lygis','Закончить курсы A1',L=>L.maxEdu>=1],
+ ['b1','B1 išlaikytas','Сдать экзамен B1',L=>L.wins>=1],
+ ['karjera','Karjera','Стать продавцом или выше',L=>L.maxJob>=3],
+ ['vadovas','Projektų vadovas','Дорасти до руководителя проектов',L=>L.maxJob>=6],
+ ['kampas','Savas kampas','Снять комнату в квартире',L=>L.maxHouse>=2],
+ ['vilnietis','Tikras vilnietis','Купить свою квартиру',L=>L.maxHouse>=4],
+ ['ratai','Ant dviejų ratų','Купить велосипед',L=>L.maxTr>=1],
+ ['simtas','Šimtas','100 правильных ответов',L=>L.correct>=100],
+ ['tukstantis','Tūkstantis','1000 правильных ответов',L=>L.correct>=1000],
+ ['linksniai','Visi linksniai','Освоить хотя бы одну комбинацию в каждом из 7 падежей',()=>CS.every(c=>Object.keys(SRS).some(k=>k.startsWith('n:')&&k.split(':')[2]===c&&cellState(k)==='ok'))],
+ ['darbstus','Darbštuolis','Выполнить 10 заданий дня',L=>L.quests>=10],
+ ['tobula','Be klaidų','10 действий без единой ошибки',L=>L.perfect>=10],
+ ['fanas','Žalgirio fanas','Сходить на баскетбол',L=>L.fan>=1],
+];
+function checkAch(){const L=lifeGet();const got=store.get('ach',{});let any=false;
+ ACH.forEach(([id,lt,ru,f])=>{if(got[id])return;let ok=false;try{ok=!!f(L)}catch(e){}if(ok){got[id]=Date.now();any=true;setTimeout(()=>{toast(`🏅 Pasiekimas: ${lt}`);SFX.coin()},400)}});
+ if(any)store.set('ach',got)}
+function achHtml(){const got=store.get('ach',{});const n=ACH.filter(a=>got[a[0]]).length;
+ return`<div class="panel"><h3>Pasiekimai <span class="muted small">${n} / ${ACH.length}</span></h3><div class="achs">${ACH.map(([id,lt,ru])=>`<div class="ach ${got[id]?'on':''}"><b>${got[id]?'🏅':'🔒'} ${esc(lt)}</b><span>${esc(ru)}</span></div>`).join('')}</div></div>`}
+
 /* ============ game UI ============ */
 function meter(lab,v,max){const p=Math.max(0,Math.min(100,v/max*100));return`<div class="meter"><div class="lab"><span>${lab}</span><span>${v}</span></div><div class="bar"><i class="${p<25?'low':p<50?'mid':''}" style="width:${p}%"></i></div></div>`}
-function statsHtml(){const left=slotsMax()-G.used;return`<div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:8px"><b>Diena ${G.day}</b><div class="slots">Действия: ${Array.from({length:slotsMax()},(_,i)=>`<b class="${i<G.used?'used':''}"></b>`).join('')}</div></div><div class="stats">${meter('❤️ Sveikata',G.hp,100)}${meter('🍞 Sotumas',G.food,100)}${meter('🙂 Nuotaika',G.mood,100)}${meter('🛂 Leidimas',G.permit,60)}</div>
+function statsHtml(){const left=slotsMax()-G.used;return`<div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:8px"><div><b>Diena ${G.day}</b><div class="tiny muted">${dateLt(G.day)}${isWeekend(G.day)?' · savaitgalis':''}</div></div><div class="slots">Действия: ${Array.from({length:slotsMax()},(_,i)=>`<b class="${i<G.used?'used':''}"></b>`).join('')}</div></div><div class="stats">${meter('❤️ Sveikata',G.hp,100)}${meter('🍞 Sotumas',G.food,100)}${meter('🙂 Nuotaika',G.mood,100)}${meter('🛂 Leidimas',G.permit,60)}</div>
  <div class="status"><div><span>Darbas</span>${esc(jobName(G.job))}</div><div><span>Būstas</span>${esc(HOUSES[G.house].lt)}</div><div><span>Kalba</span>${EDU[G.edu].lt}${G.edu<2?` · ${G.lessons}/${EDU[G.edu].need}`:''}</div><div><span>Drabužiai</span>${esc(CLOTHES[G.cl].lt)}</div><div><span>Transportas</span>${esc(TRANSP[G.tr].lt)}</div><div><span>Kasdien</span>−${HOUSES[G.house].rent+TRANSP[G.tr].daily} € (būstas)</div></div>
  ${left<=0?'<button class="btn primary block" style="margin-top:10px" id="sleep">😴 Miegoti (закончить день)</button>':`<button class="btn small ghost" style="margin-top:8px" id="sleep">😴 Закончить день раньше</button>`}</div>`}
 function topinfo(){const ti=$('#topinfo');if(!G||!G.alive||!G.sex){ti.innerHTML='';return}ti.innerHTML=`<span class="pill">D${G.day}</span><span class="pill money ${G.money<0?'neg':''}">${G.money} €</span>`}
@@ -890,10 +960,11 @@ function renderGame(){
  if(!G||!G.alive||!G.sex){const rec=store.get('rec',{best:0,lives:0});h.innerHTML=`<div class="panel" style="max-width:620px;margin:0 auto"><div class="big">🇱🇹</div><h2>Gyvenimas Vilniuje</h2><p>Вы приехали в Вильнюс почти без денег. Нужно выжить, найти работу получше, снять жильё и сдать литовский на B1. Каждое действие в городе это разговор на литовском. Ошибки стоят денег, здоровья и настроения, и если не стараться, игра закончится.</p><ul class="small"><li>Следите за здоровьем, сытостью, настроением и видом на жительство. Любой ноль означает конец.</li><li>За день есть 4 действия, транспорт добавляет ещё.</li><li>Чем меньше ошибок, тем больше эффект: зарплата, еда, лечение.</li><li>Игра запоминает ваши ошибки и чаще даёт задания на слабые падежи, роды и времена.</li></ul>${rec.best?`<p class="small muted">Рекорд: ${rec.best} дн. Попыток: ${rec.lives}.</p>`:''}<p><b>Кто вы?</b> <span class="small muted">(от этого зависят названия профессий)</span></p><div class="row"><button class="btn primary" data-sex="m">Vyras (мужчина)</button><button class="btn primary" data-sex="f">Moteris (женщина)</button></div></div>`;
   h.querySelectorAll('[data-sex]').forEach(b=>b.onclick=()=>{newGame(b.dataset.sex);renderGame()});return}
  if(G.ses&&!RUN){resumeSession();return}
+ if(!G.q||G.qday!==G.day){genQuests();save()}
  if(RUN&&RUN.kind==='game')return;
  const left=slotsMax()-G.used;
  const map=LOCS.map(l=>`<button class="loc" data-loc="${l.id}" ${left<=0?'disabled':''}><span class="ic">${l.ic}</span><b>${l.lt}</b><span class="ru">${l.ru}</span></button>`).join('');
- h.innerHTML=`<div class="gamegrid"><div class="side">${statsHtml()}</div><div><div class="panel" style="padding:10px 12px"><div class="small">${left>0?`Куда пойти? Осталось действий: <b>${left}</b>.`:'Действия на сегодня кончились. Пора спать.'} ${G.permit<=7?`<b style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн.!</b>`:''} ${G.food<=20?'<b style="color:var(--bad)">Вы голодны.</b>':''}</div></div><div class="map">${map}</div><div class="panel" style="margin-top:12px"><h3>Žurnalas</h3><div class="log">${G.log.map(x=>`<div>${esc(x)}</div>`).join('')}</div></div></div></div>`;
+ h.innerHTML=`<div class="gamegrid"><div class="side">${statsHtml()}</div><div><div class="panel" style="padding:10px 12px"><div class="small">${left>0?`Куда пойти? Осталось действий: <b>${left}</b>.`:'Действия на сегодня кончились. Пора спать.'} ${G.permit<=7?`<b style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн.!</b>`:''} ${G.food<=20?'<b style="color:var(--bad)">Вы голодны.</b>':''}</div>${questsHtml()}</div><div class="map">${map}</div><div class="panel" style="margin-top:12px"><h3>Žurnalas</h3><div class="log">${G.log.map(x=>`<div>${esc(x)}</div>`).join('')}</div></div></div></div>`;
  h.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{SFX.click();openLoc(b.dataset.loc)});
  $('#sleep').onclick=sleep}
 function openLoc(id){const L=LBY[id];const h=$('#tab-game');
@@ -906,16 +977,16 @@ function startAction(a){const A=ACTS[a];const cost=A.cost();if(cost>G.money)retu
  G.used++;const lv=A.lv?A.lv():Math.min(G.edu,3);
  const specs=pickSpecs({loc:A.loc,lv,mix:A.mix},A.n);
  G.ses={a,specs,res:[],i:0,cost};save();topinfo();resumeSession()}
-function resumeSession(){const S=G.ses;const A=S.a?ACTS[S.a]:null;const L=A?LBY[A.loc]:null;
+function resumeSession(){const S=G.ses;if(S.ev&&!EVENTS[S.ev]){G.ses=null;save();return renderGame()}const A=S.a?ACTS[S.a]:null;const L=A?LBY[A.loc]:null;
  const title=S.ev?EVENTS[S.ev].title:`${L.ic} ${L.lt}: ${A.t()}`;
- runTasks({kind:'game',title,sub:S.ev?EVENTS[S.ev].sub:(A.sub?A.sub():A.need?`нужно ${A.need()} из ${A.n}`:'эффект зависит от количества правильных ответов'),specs:S.specs,i:0,res:[],
+ runTasks({kind:'game',title,sub:S.ev?(S.ch!=null?EVENTS[S.ev].choices[S.ch].ru:(EVENTS[S.ev].sub||'')):(A.sub?A.sub():A.need?`нужно ${A.need()} из ${A.n}`:'эффект зависит от количества правильных ответов'),specs:S.specs,i:0,res:[],
   onAnswer:()=>{G.ses.res=RUN.res.slice();G.ses.i=RUN.i+1;save()},onEnd:(ok,n)=>{const S2=G.ses;G.ses=null;S2.ev?finishEvent(S2,ok,n):finishAction(S2,ok,n)}});
  if(S.i>0&&S.i<S.specs.length){RUN.i=S.i;RUN.res=S.res.slice();RUN.task=buildTask(RUN.specs[RUN.i]);renderRun()}
  else if(S.i>=S.specs.length){const ok=S.res.filter(Boolean).length;const r=RUN;RUN=null;r.onEnd(ok,S.specs.length)}}
 function comboBonus(res){let st=0,b=0;(res||[]).forEach(x=>{st=x?st+1:0;if(st>=3)b++});return b}
 function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={},msg='',head='';const need=A.need?A.need():null;const pass=need==null||ok>=need;
  switch(a){
-  case'shift':{const pay=Math.round(JOBS[G.job].pay*acc);eff={money:pay,food:-10,mood:-6};if(acc<.5){G.bad++;msg=G.bad>=2?'Руководитель недоволен второй раз подряд. Вас уволили.':'Руководитель недоволен: слишком много ошибок. Ещё одна такая смена, и вас уволят.';if(G.bad>=2){G.job=0;G.bad=0;logG('Уволен(а) за ошибки.')}}else{G.bad=0;msg=acc===1?'Идеальная смена! Руководитель доволен.':'Смена закончена.'}logG(`Смена: ${ok}/${n}, +${pay} €.`);break}
+  case'shift':{const wk=isWeekend(G.day);const pay=Math.round(JOBS[G.job].pay*acc*(wk?1.5:1));if(wk)msg='Savaitgalio priedas: смена в выходной оплачивается ×1,5. ';eff={money:pay,food:-10,mood:-6};if(acc<.5){G.bad++;msg+=G.bad>=2?'Руководитель недоволен второй раз подряд. Вас уволили.':'Руководитель недоволен: слишком много ошибок. Ещё одна такая смена, и вас уволят.';if(G.bad>=2){G.job=0;G.bad=0;logG('Уволен(а) за ошибки.')}}else{G.bad=0;msg+=acc===1?'Идеальная смена! Руководитель доволен.':'Смена закончена.'}logG(`Смена: ${ok}/${n}, +${pay} €.`);if(pay>0){lifeBump(L=>L.shifts=(L.shifts||0)+1);S.pay=pay}break}
   case'interview':{const j=Math.min(G.job+1,JOBS.length-1);if(pass){G.job=j;G.bad=0;msg=`Вас взяли! Новая должность: ${jobName(j)} (${JOBS[j].pay} €/смена).`;eff={mood:15};logG(`Новая работа: ${jobName(j)}.`);lifeBump(L=>L.maxJob=Math.max(L.maxJob||0,j))}else{msg='Не взяли. Работодатель заметил ошибки. Попробуйте ещё раз в другой день.';eff={mood:-8};logG('Собеседование провалено.')}break}
   case'shopCheap':eff={food:32*acc};break;
   case'shopGood':eff={food:48*acc,mood:8*acc,hp:3*acc};break;
@@ -933,9 +1004,11 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
   case'vehicle':{if(pass){G.money-=S.cost;G.tr++;eff={mood:10};msg=`Куплено: ${TRANSP[G.tr].lt}. Теперь у вас больше действий в день.`;logG(`Транспорт: ${TRANSP[G.tr].lt}.`)}else{eff={mood:-5};msg='Продавец не понял вас. Покупка сорвалась.'}break}
   case'permit':{if(pass){eff={permit:45};msg='Вид на жительство продлён на 45 дней.';logG('Leidimas pratęstas.')}else{eff={mood:-6};msg='В заявлении ошибки. Пошлину не вернули, приходите ещё раз.';logG('Продление не удалось.')}break}
  }
+ lifeBump(L=>{if(n&&ok===n)L.perfect=(L.perfect||0)+1;L.maxEdu=Math.max(L.maxEdu||0,G.edu);L.maxHouse=Math.max(L.maxHouse||0,G.house);L.maxTr=Math.max(L.maxTr||0,G.tr)});
  const cb=comboBonus(S.res);if(cb){eff.money=(eff.money||0)+cb;msg=(msg?msg+' ':'')+`Премия за серию правильных ответов: +${cb} €.`}
  const ch=change(eff);if(A.cost()&&!A.payOnPass)ch.unshift(['money',-S.cost]);else if(A.payOnPass&&pass&&S.cost)ch.unshift(['money',-S.cost]);
  const ev=evictCheck();save();topinfo();
+ questHook('action',{loc:A.loc,ok,n});if(S.pay)questHook('pay',S.pay);checkAch();
  if(deathCheck())return;
  if(a==='exam'&&pass&&!G.won){G.won=true;save();modal(`<div class="big">🎉</div><h2>Sveikiname! B1 išlaikytas!</h2><p>Вы прошли главную цель игры. Можно играть дальше: следующая цель это своя квартира в Вильнюсе.</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()};return}
  if(a==='house'&&pass&&G.house===4){modal(`<div class="big">🏡</div><h2>Tikras vilnietis!</h2><p>У вас своя квартира в Вильнюсе. Игра пройдена полностью.</p><div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()};return}
@@ -944,28 +1017,52 @@ function finishAction(S,ok,n){const a=S.a,A=ACTS[a];const acc=n?ok/n:0;let eff={
 function sleep(){if(!G||!G.alive)return;const H=HOUSES[G.house],T=TRANSP[G.tr];
  const eff={money:-(H.rent+T.daily),food:-22,mood:-H.mood+(G.tr===2?3:0),hp:-H.hp,permit:-1};
  const fAfter=G.food-22;if(fAfter<=0){eff.hp-=25;eff.mood-=10}else if(fAfter<=15)eff.hp-=12;if(G.mood<15)eff.hp-=4;if(G.money<0)eff.mood-=6;
- const ch=change(eff);G.day++;G.used=0;lifeBump(L=>L.bestDay=Math.max(L.bestDay||0,G.day));lbPush();logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
+ const ch=change(eff);G.day++;G.used=0;genQuests();lifeBump(L=>L.bestDay=Math.max(L.bestDay||0,G.day));lbPush();logG(`Новый день. Аренда ${H.rent+T.daily} €.`);const ev=evictCheck();save();topinfo();
  if(deathCheck())return;
- const e=rollEvent();
- modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье и настроение падают. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
+ checkAch();const e=rollEvent();
+ modal(`<div class="big">🌙</div><h2>Diena ${G.day}</h2><p class="small" style="margin-top:-4px">${dateLt(G.day)}${isWeekend(G.day)?' · savaitgalis: смены оплачиваются ×1,5':''}</p><p class="small muted">Ночь прошла. Аренда списана, вы проголодались.</p>${ev?`<p style="color:var(--bad)">${esc(ev)}</p>`:''}${chgHtml(ch)}${G.food<=15?'<p style="color:var(--bad)">Вы голодаете: здоровье и настроение падают. Купите еду!</p>':''}${G.permit<=7?`<p style="color:var(--bad)">Вид на жительство кончится через ${G.permit} дн. Идите в Migracijos departamentas.</p>`:''}<div class="row"><button class="btn primary" id="mok">Labas rytas!</button></div>`);
  $('#mok').onclick=()=>{closeModal();if(e)showEvent(e);else renderGame()}}
 
 /* ============ events ============ */
 const EVENTS={
  kontrolierius:{title:'👮 Kontrolierius troleibuse',sub:'2 из 2, иначе штраф 15 €',cond:()=>G.tr===0,intro:'Утром в троллейбусе контролёр. Вы не уверены, что правильно пробили билет. Объяснитесь по-литовски!',loc:'transport',n:2,end:(ok,n)=>ok>=n?[{},'Контролёр кивнул и ушёл.']:[{money:-15},'Контролёр выписал штраф 15 €.']},
- kaimynas:{title:'👨‍🦳 Kaimynas prašo pagalbos',sub:'помогите соседу',cond:()=>true,intro:'Сосед просит помочь донести сумки и заодно поговорить.',loc:'park',n:2,end:ok=>ok>=1?[{mood:10},'Сосед благодарит. Приятно!']:[{mood:-5},'Вы друг друга не поняли. Неловко.']},
+ kaimynas:{title:'👨‍🦳 Kaimynas prašo pagalbos',cond:()=>true,intro:'Сосед просит помочь донести сумки и заодно поговорить.',choices:[
+  {lt:'Padėti',ru:'2 задания: настроение +10 или −5',loc:'park',n:2,end:ok=>ok>=1?[{mood:10},'Сосед благодарит. Приятно!']:[{mood:-5},'Вы друг друга не поняли. Неловко.']},
+  {lt:'Atsiprašyti, skubu',ru:'настроение −2',eff:{mood:-2},msg:'Вы извинились и ушли.'}]},
  vmi:{title:'📨 Laiškas iš VMI',sub:'налоговая: 2 из 2, иначе штраф 10 €',cond:()=>G.job>0,intro:'Пришло письмо из налоговой. Нужно ответить без ошибок.',loc:'migration',n:2,end:(ok,n)=>ok>=n?[{},'Всё в порядке.']:[{money:-10},'Ошибка в ответе, штраф 10 €.']},
+ zalgiris:{title:'🏀 Žalgirio rungtynės',cond:()=>G.money>=10,intro:'Друзья зовут вечером на баскетбол в «Žalgirio» арену в Каунасе. Билет 10 €.',choices:[
+  {lt:'Važiuoti (10 €)',ru:'3 задания: настроение до +28',cost:10,loc:'friends',n:3,end:(ok,n)=>{lifeBump(L=>L.fan=1);return[{mood:10+ok*6},ok===n?'Žalgiris laimėjo! Вы кричали «Pirmyn!» вместе со всей ареной.':'Хороший вечер, хотя вы не всё поняли в разговорах.']}},
+  {lt:'Likti namuose',ru:'ничего не меняется',eff:{},msg:'Вы посмотрели матч по телевизору.'}]},
+ muge:{title:'🧺 Kaziuko mugė',cond:()=>G.money>=5,intro:'На улицах Вильнюса ярмарка Казюкаса: мёд, вербы, деревянные ложки. Торговцы любят поговорить.',choices:[
+  {lt:'Pasivaikščioti po mugę (5 €)',ru:'3 задания: еда и настроение',cost:5,loc:'market',n:3,end:(ok,n)=>[{food:12*ok/n,mood:18*ok/n},'Вы купили мёд и вербу.']},
+  {lt:'Praeiti pro šalį',ru:'ничего не меняется',eff:{},msg:'Вы прошли мимо.'}]},
+ nuoma:{title:'🏠 Šeimininkė kelia nuomą',cond:()=>G.house>=1&&G.house<4,intro:'Хозяйка жилья хочет поднять плату. Можно поторговаться по-литовски или просто заплатить.',choices:[
+  {lt:'Derėtis',ru:'4 задания, нужно 3: иначе доплата 25 €',loc:'housing',n:4,end:ok=>ok>=3?[{mood:5},'Хозяйка согласилась оставить старую цену.']:[{money:-25},'Не убедили: доплата 25 €.']},
+  {lt:'Sumokėti 15 €',ru:'без разговоров',eff:{money:-15},msg:'Вы доплатили 15 €.'}]},
+ turistai:{title:'🗺️ Turistai klausia kelio',cond:()=>true,intro:'Туристы из Каунаса заблудились в Старом городе и спрашивают дорогу.',choices:[
+  {lt:'Padėti',ru:'3 задания: чаевые 2 € за каждый правильный ответ',loc:'transport',n:3,end:ok=>[{money:2*ok,mood:3*ok},ok?`Туристы благодарят: ${2*ok} € чаевых.`:'Туристы ушли искать дальше.']},
+  {lt:'Atsiprašyti',ru:'ничего не меняется',eff:{},msg:'Вы извинились и пошли дальше.'}]},
+ kolega:{title:'🔁 Kolega prašo pakeisti pamainą',cond:()=>G.job>0,intro:'Коллега заболел и просит выйти за него утром. Это дополнительная смена.',choices:[
+  {lt:'Sutikti',ru:'3 задания: до половины зарплаты',loc:'work',n:3,end:(ok,n)=>{const pay=Math.round(JOBS[G.job].pay*.5*ok/n);return[{money:pay,food:-6,mood:ok===n?4:-3},`Вы отработали утро: +${pay} €.`]}},
+  {lt:'Atsisakyti',ru:'настроение −2',eff:{mood:-2},msg:'Коллега расстроился.'}]},
  peršalimas:{title:'🤧 Peršalote',cond:()=>true,text:'Вы простудились.',eff:{hp:-12,mood:-4}},
  premija:{title:'💶 Premija',cond:()=>G.job>=2&&G.bad===0,text:'Руководитель доволен работой: премия!',eff:{money:20}},
  pametėte:{title:'👛 Pametėte piniginę',cond:()=>G.money>8,text:'Вы потеряли часть денег.',eff:()=>({money:-Math.min(G.money,5+rnd(11))})},
- saulė:{title:'☀️ Saulėta diena',cond:()=>true,text:'Солнечный день, на улице тепло.',eff:{mood:8}},
+ saulė:{title:'☀️ Saulėta diena',cond:()=>!isWinter(G.day),text:'Солнечный день, на улице тепло.',eff:{mood:8}},
+ lietus:{title:'🌧️ Lietinga diena',cond:()=>!isWinter(G.day),text:'Весь день дождь, зонта нет.',eff:{mood:-6}},
+ sniegas:{title:'❄️ Pirmas sniegas',cond:()=>isWinter(G.day),text:'Выпал снег. Красиво, но холодно: без тёплой одежды легко простыть.',eff:()=>G.cl>=1?{mood:8}:{mood:4,hp:-6}},
 };
-function rollEvent(){if(G.day<2||Math.random()>.4)return null;const ks=Object.keys(EVENTS).filter(k=>EVENTS[k].cond());return ks.length?pick(ks):null}
+function rollEvent(){if(G.day<2||Math.random()>.45)return null;const ks=Object.keys(EVENTS).filter(k=>EVENTS[k].cond());return ks.length?pick(ks):null}
+function evStart(k,ci){const E=EVENTS[k],C=ci==null?E:E.choices[ci];if(C.cost)G.money-=C.cost;G.ses={ev:k,ch:ci,specs:pickSpecs({loc:C.loc,lv:Math.min(G.edu,3)},C.n),res:[],i:0};save();topinfo();resumeSession()}
 function showEvent(k){const E=EVENTS[k];
- if(E.n){modal(`<h2>${E.title}</h2><p>${esc(E.intro)}</p><div class="row"><button class="btn primary" id="mok">Начать</button></div>`);$('#mok').onclick=()=>{closeModal();G.ses={ev:k,specs:pickSpecs({loc:E.loc,lv:Math.min(G.edu,3)},E.n),res:[],i:0};save();resumeSession()};return}
+ if(E.choices){modal(`<h2>${E.title}</h2><p>${esc(E.intro)}</p><div class="evch">${E.choices.map((c,i)=>{const no=c.cost&&c.cost>G.money;return`<button class="act ${i===0?'':''}" data-ch="${i}" ${no?'disabled':''}><div><div class="t">${esc(c.lt)}</div><div class="d">${esc(no?'не хватает денег':c.ru)}</div></div></button>`}).join('')}</div><div class="row" style="margin-top:8px"><button class="btn primary" hidden id="mok"></button></div>`);
+  $('#mbox').querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{const ci=+b.dataset.ch,C=E.choices[ci];closeModal();
+   if(C.n)return evStart(k,ci);const ch=change(C.eff||{});logG(C.msg);save();topinfo();if(deathCheck())return;
+   modal(`<h2>${E.title}</h2><p>${esc(C.msg)}</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()}});return}
+ if(E.n){modal(`<h2>${E.title}</h2><p>${esc(E.intro)}</p><div class="row"><button class="btn primary" id="mok">Начать</button></div>`);$('#mok').onclick=()=>{closeModal();evStart(k,null)};return}
  const eff=typeof E.eff==='function'?E.eff():E.eff;const ch=change(eff);logG(E.title.replace(/^\S+\s/,''));save();topinfo();if(deathCheck())return;
  modal(`<h2>${E.title}</h2><p>${esc(E.text)}</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Gerai</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()}}
-function finishEvent(S,ok,n){const E=EVENTS[S.ev];const[eff,msg]=E.end(ok,n);const ch=change(eff);logG(msg);save();topinfo();if(deathCheck())return;
+function finishEvent(S,ok,n){const E=EVENTS[S.ev],C=S.ch==null?(E.end?E:E.choices[0]):E.choices[S.ch];const[eff,msg]=C.end(ok,n);const ch=change(eff);if(C.cost)ch.unshift(['money',-C.cost]);logG(msg);save();topinfo();checkAch();if(deathCheck())return;
  modal(`<h2>${E.title}</h2><p>${ok}/${n}. ${esc(msg)}</p>${chgHtml(ch)}<div class="row"><button class="btn primary" id="mok">Toliau</button></div>`);$('#mok').onclick=()=>{closeModal();renderGame()}}
 
 /* ============ modal ============ */
@@ -1074,7 +1171,7 @@ async function renderLB(){const h=$('#tab-lb');const s=lbStats(),sc=lbScore(s),a
  <div id="cloudIn" hidden><p class="small">Прогресс сохраняется сам каждые 20 секунд и при закрытии вкладки.</p><div class="row"><button class="btn small" id="cloudSaveNow">Сохранить сейчас</button><button class="btn small" id="cloudLoadNow">Загрузить из облака</button><button class="btn small ghost" id="cloudOut">Выйти</button></div></div>
  <div id="cloudPick" hidden><p class="small" id="cloudPickTxt"></p><div class="row"><button class="btn primary small" id="cloudUseCloud">Взять из облака</button><button class="btn small" id="cloudUseLocal">Оставить с этого устройства</button></div></div>
  <p class="small" id="cloudMsg" style="margin-top:8px"></p></div>
- <div class="panel"><div class="row" style="justify-content:space-between"><h3>Топ-50</h3><button class="btn small" id="lbRefresh">Обновить</button></div><div class="scroll"><table class="par" id="lbTable" style="font-size:13px"></table></div></div>`;
+ ${achHtml()}<div class="panel"><div class="row" style="justify-content:space-between"><h3>Топ-50</h3><button class="btn small" id="lbRefresh">Обновить</button></div><div class="scroll"><table class="par" id="lbTable" style="font-size:13px"></table></div></div>`;
  if(CLOUD.pending)$('#cloudPickTxt').textContent=CLOUD.pending.txt;
  $('#cloudLogin').onclick=cloudLogin;$('#cloudPin').onkeydown=e=>{if(e.key==='Enter')cloudLogin()};
  $('#cloudUseCloud').onclick=()=>{const p=CLOUD.pending;if(p)cloudApply(p.data,p.a,p.t)};
