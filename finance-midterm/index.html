@@ -2174,9 +2174,8 @@ function drawFace(L,cv,ov){
   const hairOn=L.hat!=='scarf'&&LS!=='bald'&&!(L.celeb==='kirk'&&!L.hat),hairW=y=>{if(!hairOn||y<8||y>21+hl)return 0;const t=Math.min(1,Math.abs(y-22)/14);return Math.round((15-d)*Math.pow(Math.max(0,1-Math.pow(t,4)),.25))},topW=y=>Math.max(hairW(y),y>=11&&y<=44?hwAt(y):0);
   const ANY=hairOn?11:13,ADX=topW(ANY)-13,ADY=hairOn?0:3;
   if(L.hat!=='scarf'&&LS!=='bald'&&!(L.celeb==='kirk'&&!L.hat)){for(let y=(LS==='curly'?7:8);y<=21+hl;y++){const t=Math.min(1,Math.abs(y-22)/14);const hw=Math.round((15-d)*Math.pow(Math.max(0,1-Math.pow(t,4)),.25))+(LS==='curly'?1+((y+1)%3===0?1:0):0);if(hw>0){R(32-hw-1,y,hw*2+2,1,OL);R(32-hw,y,hw*2,1,H);R(32+hw-4,y,4,1,H1);if(LS!=='long')for(let xx=32-hw+2;xx<32+hw-5;xx+=4)R(xx,y,1,1,(xx+y)%8<4?H2:H1)}}
-    if(LS==='short'){R(17+d,19,3,5,H);R(16+d,19,1,5,OL);R(44-d,19,3,5,H1);R(47-d,19,1,5,OL);R(17+d,24,3,1,H2);R(44-d,24,3,1,H2);R(18+d,25,2,2,sd);R(44-d,25,2,2,s2)}
-    else if(LS==='curly'){[[18,0],[21,1],[24,0],[27,1]].forEach(([y,o],i)=>{for(const [cx,c1] of [[16+d-o,H],[44-d+o,H1]]){R(cx,y-1,3,1,OL);R(cx-1,y,5,2,OL);R(cx,y+2,3,1,OL);R(cx,y,3,2,c1);R(cx+(c1===H?0:1),y,2,1,H2)}})}
-    else if(LS==='bun'){R(17+d,19,3,7,H);R(16+d,19,1,7,OL);R(44-d,19,3,7,H1);R(47-d,19,1,7,OL);if(L.celeb!=='stalin')for(let y=25;y<=40;y++){const w=y<30?3:y<36?2:1;R(45-d,y,w+2,1,OL);R(45-d,y,w,1,y%3?H1:H)}}
+    if(LS==='curly'){[[18,0],[21,1],[24,0],[27,1]].forEach(([y,o],i)=>{for(const [cx,c1] of [[16+d-o,H],[44-d+o,H1]]){R(cx,y-1,3,1,OL);R(cx-1,y,5,2,OL);R(cx,y+2,3,1,OL);R(cx,y,3,2,c1);R(cx+(c1===H?0:1),y,2,1,H2)}})}
+    else if(LS==='bun'){R(17+d,19,3,7,H);R(16+d,19,1,7,OL);R(44-d,19,3,7,H1);R(47-d,19,1,7,OL);}
     else{R(17+d,19,3,9,H);R(16+d,19,1,9,OL);R(44-d,19,3,9,H1);R(47-d,19,1,9,OL)}
     if(LS==='curly')for(let y=10;y<=19;y+=2)for(let xx=21+d+(y%4?1:0);xx<43-d;xx+=3){R(xx,y,2,1,H2);R(xx,y+1,1,1,H1)}
     if(LS==='bun')for(let y=11;y<=19;y+=2)R(21+d,y,22-2*d,1,H1);
