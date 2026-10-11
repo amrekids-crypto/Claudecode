@@ -2183,7 +2183,7 @@ function drawFace(L,cv,ov){
     if(F.age==='o'&&hl<0){R(24,17,16,3,s);R(24,17,16,1,sl)}}
   else if(LS==='bald'&&L.hat!=='scarf'){if(!L.hat){R(26,13,9,2,sl);R(28,12,5,1,sl)}if(F.age!=='y')for(let y=L.hat?22:21;y<=26;y++){const hw=hwAt(y);if(hw>3){R(32-hw,y,2,1,H);R(32+hw-2,y,2,1,H1)}}}
   if(LS==='curly'&&L.hat!=='scarf'){for(let i=0;i<7;i++){R(18+i*4,8+(i%2),4,3,H);R(18+i*4,8+(i%2),4,1,H2);R(21+i*4,9+(i%2),1,2,H1)}}
-  if(LS==='bun'&&!L.hat&&L.celeb!=='stalin'){R(26,3,12,7,OL);R(27,4,10,6,H);R(28,4,8,1,H2);R(35,5,2,4,H1)}
+  if(LS==='bun'&&!L.hat&&L.celeb!=='stalin'){const BW=[3,5,6,6,6,6,5];BW.forEach((w,i)=>{R(32-w-1,2+i,w*2+2,1,OL)});R(29,1,6,1,OL);BW.forEach((w,i)=>{R(32-w,2+i,w*2,1,H);R(32+w-2,2+i,2,1,H1)});R(30,3,3,1,H2);R(28,4,3,1,H2);R(34,5,1,2,H1);R(27,7,10,1,H1)}
   if(F.pretty&&L.hat!=='scarf'&&LS!=='bald'&&LS!=='curly'){const HG=shade(H,1.55);R(23,10,6,1,HG);R(21,11,5,1,HG);R(20,12,3,1,H2);R(29,9,6,1,H2);if(LS==='long'&&!L.hat)for(let y=24;y<48;y+=1)if(y%6<3){R(18-Math.floor((y-24)/8),y,1,1,H2)}}
   if(L.catgirl||L.ears){const ER=shade(H,.8),IN=F.cat2||'#e8a0b0';for(const [ex,dir] of [[19-ADX,1],[45+ADX,-1]]){for(let k=0;k<9;k++){const w=Math.max(1,Math.round(k*.8)),x0=dir>0?ex+Math.floor(k*.35):ex-Math.floor(k*.35)-w;R(x0-1,2+k+ADY,w+2,1,OL);R(x0,2+k+ADY,w,1,dir>0?H:ER);if(k>2&&w>2)R(x0+1,2+k+ADY,w-2,1,IN)}}
     const ft=Math.floor(tk/40)%6===0;if(ft){R(19,2,2,1,H2)}}
