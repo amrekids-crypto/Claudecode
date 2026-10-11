@@ -3295,6 +3295,17 @@ function sTheremin(dur){try{const a=sfxCtx(),t=a.currentTime,o=a.createOscillato
 function kaijuRoar(v){sMuf(230,2.6,'sawtooth',.09*v,68,0,750);sMuf(172,2.6,'square',.05*v,52,.06,520);sMuf(310,1.6,'sawtooth',.04*v,120,.2,900);sNoise(2.3,.2*v,1300,180)}
 const SWATL=()=>({g:'m',skin:'#2a2a2e',hair:'#15130f',coat:'#15130f',shirt:'#2a2a30',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true,swat:true});
 function drawArrestActor2(R0,a,x,y,t){
+  if(a.t==='grinder'){const OL='#15130f',M='#8e949a',M1='#5e6268',M2='#c4c8cc',B=a.blood||0;
+    for(let k=0;k<20;k++){const w=Math.round(22-k*.5);R0(x+22-w-1,y+k,w*2+2,1,OL);R0(x+22-w,y+k,w*2,1,k<2?M2:M);R0(x+22+w-4,y+k,4,1,M1)}
+    R0(x+4,y,36,2,'#2a2a2e');if(B){R0(x+6,y+2,8,1+Math.min(4,B>>2),'#a3201a');R0(x+28,y+2,6,1+Math.min(6,B>>1),'#8a1010');R0(x+18,y+2,3,Math.min(14,B),'#a3201a')}
+    R0(x-1,y+19,46,20,OL);R0(x,y+20,44,18,M);R0(x,y+20,44,3,M2);R0(x,y+34,44,4,M1);for(let i=0;i<5;i++)R0(x+6+i*8,y+24,2,9,M1);
+    const sx=(a.spin||0);for(let i=0;i<5;i++){const yy=y+22+((i*4+sx)%16);R0(x+2,yy,40,1,'rgba(20,18,15,.25)')}
+    R0(x-6,y+21,6,16,OL);R0(x-5,y+22,4,14,'#a8acb0');for(let i=0;i<3;i++)for(let j=0;j<2;j++)R0(x-4+j*2,y+24+i*4,1,2,B?'#7a1010':OL);
+    if(a.spew&&t%2===0){R0(x-14,y+26,8,4,'#a3201a');R0(x-12,y+25,5,6,'#c0302a');R0(x-18,y+28,4,2,'#e05a4a')}
+    const cx=x+48,cy=y+29;R0(x+44,cy-2,6,4,OL);R0(x+44,cy-1,5,2,M1);const an=a.ang||0;for(let r=0;r<=12;r++){const px=Math.round(cx+Math.cos(an)*r),py=Math.round(cy+Math.sin(an)*r);R0(px-1,py-1,3,3,OL);R0(px,py,1,1,M)}
+    const hx=Math.round(cx+Math.cos(an)*12),hy=Math.round(cy+Math.sin(an)*12);R0(hx-2,hy-4,5,9,OL);R0(hx-1,hy-3,3,7,'#8a5a2a');R0(hx-1,hy-3,1,7,'#b07a3a');
+    R0(x+13,y+38,18,8,OL);R0(x+14,y+38,16,7,'#3a3c40');R0(x+8,y+45,28,3,OL);R0(x+9,y+45,26,2,'#5a5c60');
+    R0(x+10,y+8,24,7,'#e0b64a');R0(x+10,y+8,24,1,'#fff0a0');return true}
   if(a.t==='petrun'){if(!PP.pet)return true;const cx=x+(PET_AX[a.type]||6),left=a.vx<0,Rm=left?((xx,yy,w,h,c)=>R0(2*cx-xx-w,yy,w,h,c)):R0;drawPetSprite(Rm,x,y,a.type,petCol(),Math.floor(t/2),a.type==='parrot'?'fly':(a.mode||'happy'));return true}
   if(a.t==='brawl'){const k=a.k||0;for(let pass=0;pass<3;pass++)for(let i=0;i<9;i++){const an=i/9*Math.PI*2+k*.35,r=7+((k+i)%3),px=x+Math.cos(an)*10,py=y+Math.sin(an)*8;if(pass===0)pxEll(R0,px,py,r+1,r*.8+1,'#5a5448');else if(pass===1)pxEll(R0,px,py,r,r*.8,'#d8d4c8');else pxEll(R0,px-1,py-2,r*.5,r*.35,'#f4f0e4')}
     const L=a.L||{},pos=[[-18,-4],[14,-8],[-13,9],[16,7],[-2,-17],[4,13]];for(let i=0;i<3;i++){const [px,py]=pos[(Math.floor(k/2)+i*2)%6];if(i===0){R0(x+px,y+py,6,2,L.coat||'#444');R0(x+px+(px<0?-2:6),y+py,2,2,L.skin||'#e0b090')}else if(i===1){R0(x+px,y+py,2,6,'#2a2a2e');R0(x+px-1,y+py+6,4,2,'#15130f')}else if(a.type==='parrot'){R0(x+px,y+py,5,2,a.col);R0(x+px+5,y+py,2,1,'#e0b64a')}else{R0(x+px,y+py,2,5,a.col);R0(x+px+1,y+py-1,1,1,a.col)}}
@@ -3692,6 +3703,33 @@ const ARRESTS=[
    QS.flash=6;shakePP();sPlay('sci2',.55,{lp:3000})||sNoise(1.4,.5,6000,300);sMuf(40,1.6,'sine',.4,20,0,200);const ring={t:'ring',x:cx,y:cy,r:3};QS.actors.push(ring);
    for(let i=0;i<36;i++){const an=i/36*Math.PI*2;QS.fx.push({t:'spark',x:Math.round(cx+Math.cos(an)*rint(8,44)),y:Math.round(cy+Math.sin(an)*rint(6,24)),ttl:6+i%6,c:i%2?'#c8a0ff':'#ffffff'})}
    k=0;await tick(()=>{k++;ring.r+=6;return k>=14});QS.actors=QS.actors.filter(a=>a!==ring);ppTalk(I18L('Бюро'),I18L('Тишина. Будто никого и не было.'))}},
+ {n:'grinder',title:LG('Налоговая мясорубка','Tax meat grinder'),desc:LG('С неба падает гигантская мясорубка, нарушителя затягивает в воронку и перемалывает в фарш прямо на глазах у очереди.','A giant meat grinder drops from the sky, sucks the offender into the hopper and grinds him to mince in front of the whole queue.'),price:45,line:LG('Заказ на переработку должника принят. Крутим ручку!','Debtor processing order accepted. Turning the crank!'),async run(p){p.sp=1;
+   const gx=Math.round(p.x+26),gy0=Math.round(p.y-18),sh={t:'shadow',x:gx+20,y:p.y+27,w:4},g={t:'grinder',x:gx,y:-70,ang:0,spin:0,blood:0};QS.actors.push(sh,g);
+   sTone(1600,1.6,'sine',.05,200);ppTalk(I18L('Бюро'),LG('Сверху что-то со свистом падает. Похоже на кухонную утварь. Очень большую.','Something whistles down from above. Looks like a kitchen appliance. A very big one.'));let k=0,vy=1;
+   await tick(()=>{k++;vy+=.6;g.y=Math.min(gy0,g.y+vy);sh.w=Math.min(46,4+k*2);sh.x=gx+22-sh.w/2;if(k===5){p.sp=0;p.tx=p.x;popText('?!',Math.round(p.x+6),Math.round(p.y-6),'#ffe060',16)}return g.y>=gy0});
+   QS.actors=QS.actors.filter(a=>a!==sh);QS.flash=2;shakePP();ppGunshot();sTone(55,.7,'sine',.35,30);sNoise(.6,.4,700);for(let i=0;i<16;i++)QS.fx.push({t:'spark',x:gx+rint(0,44),y:Math.round(gy0+48+rint(-2,2)),ttl:5+i%5,c:'#8a8270'});
+   popText(LG('БАМ!','BAM!'),gx+22,gy0-6,'#ffe060',18);await sleep(500);
+   ppTalk(PD.cur.role,LG('Э-э, это что ещё такое?! Уберите это от меня!','Hey, what is that?! Get it away from me!'));
+   g.ang=0;let hum=0;await tick(()=>{g.ang+=.5;g.spin++;if(g.spin%3===0)sTone(90+rint(0,20),.1,'sawtooth',.05,70);hum++;return hum>=10});
+   p.run=false;p.lying=false;const hx=gx+22-6,top=gy0-26;popText(LG('НЕТ-НЕТ-НЕТ!','NO NO NO!'),Math.round(p.x+6),Math.round(p.y-4),'#ff8080',13);sNoise(1.4,.12,2500,600);
+   await tick(()=>{g.ang+=.45;g.spin++;p.x+=Math.sign(hx-p.x)*Math.min(4,Math.abs(hx-p.x));p.y+=Math.sign(top-p.y)*Math.min(4,Math.abs(top-p.y));p.ty=p.y;p.tx=p.x;if(QS.tick%2===0)QS.fx.push({t:'spark',x:Math.round(p.x+rint(0,12)),y:Math.round(p.y+rint(10,28)),ttl:3,c:'#d8d4c8'});return Math.abs(p.x-hx)<2&&Math.abs(p.y-top)<2});
+   popText(LG('А-А-А-А!','AAAAAH!'),Math.round(p.x+6),Math.round(p.y-6),'#ff8080',16);for(let s2=0;s2<3;s2++)sTone(900-s2*200,.25,'square',.04,300,s2*.2);
+   await tick(()=>{p.y+=3;p.ty=p.y;g.ang+=.6;return p.y>=gy0-6});p.hide=true;p.vanished=true;
+   QS.flash=2;shakePP();ppGunshot();sNoise(.5,.6,1200,200);popText(LG('ХРУСТЬ!','CRUNCH!'),gx+22,gy0-4,'#ffe060',18);for(let i=0;i<24;i++)QS.fx.push({t:'spark',x:gx+rint(4,40),y:gy0+rint(-6,4),ttl:4+i%6,c:i%3?'#a3201a':'#7a1010'});g.blood=3;
+   const L=p.look||{},cols=['#a3201a','#c0302a','#7a1010','#e05a4a','#b8404a',L.coat||'#444',L.shirt||'#ddd','#f0c8b8'],bits=[];g.spew=true;
+   ppTalk(I18L('Бюро'),LG('Крутим ручку. Налог взыскивается по кусочку.','Turning the crank. The tax is being collected one bite at a time.'));let n=0;
+   await tick(()=>{n++;g.ang+=.55;g.spin++;g.blood=Math.min(14,3+(n>>2));if(n%3===0){try{sNoise(.12,.22,900,150);sTone(70+rint(0,30),.12,'sawtooth',.06,50)}catch(_){}}
+     if(n<44){for(let q=0;q<2;q++){const b={t:'chunk',x:gx-14,y:gy0+27+rint(-1,2),vx:-rint(2,9),vy:-rint(1,7),c:cols[(n+q)%cols.length],w:rint(2,4),h:rint(1,3),gy:Math.round(gy0+46+rint(-4,4)),b:0};bits.push(b);QS.actors.push(b)}
+       if(n%5===0)QS.decals.push({x:gx-34-rint(0,40),y:Math.round(gy0+18+rint(-3,3))});if(n%11===0)popText(pick([LG('ХЛЮП','SQUELCH'),LG('ЧАВК','SPLUT'),LG('ХРЯСЬ','CRACK')]),gx-20-rint(0,20),gy0+16,'#e05a4a',12);
+       if(n%9===0){const c={t:'coin',x:gx-12,y:gy0+26,vx:-rint(3,7),vy:-rint(4,8),gy:gy0+46};QS.actors.push(c);bits.push(Object.assign(c,{coin:1,b:0}))}}
+     if(n===44)g.spew=false;
+     bits.forEach(b=>{if(b.done)return;b.x+=b.vx;b.y+=b.vy;b.vy+=1;b.vx*=.95;if(b.vy>0&&b.y>=b.gy){b.y=b.gy;if(!b.coin){b.done=1;QS.scraps=QS.scraps||[];QS.scraps.push({x:Math.round(b.x),y:Math.round(b.gy),w:b.w,h:b.h,c:b.c})}else{b.vx=0;b.vy=0;b.done=1}}});
+     QS.actors=QS.actors.filter(a=>!(a.t==='chunk'&&a.done));return n>=44&&bits.every(b=>b.done)});
+   const tint={t:'tint',rgb:'160,20,20',a:.22};QS.actors.unshift(tint);(async()=>{await tick(()=>{tint.a-=.02;return tint.a<=0});QS.actors=QS.actors.filter(a=>a!==tint)})();
+   const brick={t:'txt',text:LG('ФАРШ · 1 ШТ. · ОПЛАЧЕНО','MINCE · 1 PC · PAID'),x:gx-30,y:gy0+12,c:'#ffe060',size:11,ttl:40};QS.actors.push(brick);SFX.coinSt();
+   ppTalk(I18L('Бюро'),LG('Готово. Из должника вышло примерно 4 кг фарша и $7 мелочью. Мелочь в доход государства.','Done. The debtor yielded about 4 kg of mince and $7 in loose change. The change goes to the state.'));await sleep(1300);
+   sTone(300,1.2,'sine',.05,1400);await tick(()=>{g.y-=7;g.ang+=.3;return g.y<-80});QS.actors=QS.actors.filter(a=>a!==g&&a!==brick&&a.t!=='coin');
+   p.vanishMsg=LG('Тут только фарш, кровь до самого бордюра и пара монет. Задерживать нечего.','Just mince, blood all the way to the curb and a few coins. Nothing left to arrest.')}},
  {n:'orbital',title:I18L('Орбитальная пушка'),desc:I18L('МЕГА: из-за горизонта вылетает военный спутник с огромной пушкой, ловит нарушителя на бегу и выжигает его лучом. Сначала рентген, потом он рассыпается на светящуюся пыль, а на стене остаётся его тень.'),price:50,line:I18L('ЦУП: спутник «Бухучёт-1» выходит на позицию…'),async run(p){
    const L=p.look||{},bx0=p.x;let dir=-1;p.run=true;p.sp=3;const dodge=()=>{void dir;if(!p.panicMode)p.panicMode='zig';if(p.panicX==null)p.panicX=bx0;panicNext(p)};dodge();const keep=()=>{if(!p.hide&&!p.zap&&Math.abs(p.x-p.tx)<2)dodge()};
    const tn={t:'tint',rgb:'2,6,16',a:0};QS.actors.push(tn);sMuf(55,4,'sawtooth',.05,45,0,300);ppTalk(I18L('Бюро'),I18L('Небо темнеет. Над горизонтом что-то блестит…'));
