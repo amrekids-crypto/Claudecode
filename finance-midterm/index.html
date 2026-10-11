@@ -3301,6 +3301,7 @@ function sTheremin(dur){try{const a=sfxCtx(),t=a.currentTime,o=a.createOscillato
 function kaijuRoar(v){sMuf(230,2.6,'sawtooth',.09*v,68,0,750);sMuf(172,2.6,'square',.05*v,52,.06,520);sMuf(310,1.6,'sawtooth',.04*v,120,.2,900);sNoise(2.3,.2*v,1300,180)}
 const SWATL=()=>({g:'m',skin:'#2a2a2e',hair:'#15130f',coat:'#15130f',shirt:'#2a2a30',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true,swat:true});
 function drawArrestActor2(R0,a,x,y,t){
+  if(a.t==='gorb'){const cx=x+6,cy=y+14;pxEll(R0,cx,cy,8,8,'rgba(192,160,255,.3)');pxEll(R0,cx,cy,5,5,'#5a2a90');pxEll(R0,cx,cy,4,4,'#8a5ad0');pxEll(R0,cx-1,cy-1,2,2,'#c0a0ff');R0(cx-2,cy-3,2,1,'#f0e8ff');if(t%4<2)R0(cx+4,cy-6,1,1,'#e0d0ff');return true}
   if(a.t==='grinder'){const OL='#15130f',M='#8e949a',M1='#5e6268',M2='#c4c8cc',B=a.blood||0;
     for(let k=0;k<20;k++){const w=Math.round(22-k*.5);R0(x+22-w-1,y+k,w*2+2,1,OL);R0(x+22-w,y+k,w*2,1,k<2?M2:M);R0(x+22+w-4,y+k,4,1,M1)}
     R0(x+4,y,36,2,'#2a2a2e');if(B){R0(x+6,y+2,8,1+Math.min(4,B>>2),'#a3201a');R0(x+28,y+2,6,1+Math.min(6,B>>1),'#8a1010');R0(x+18,y+2,3,Math.min(14,B),'#a3201a')}
@@ -3870,8 +3871,8 @@ async function gibs(p,power,extra){power=power||1;const L=p.look||{},cols=[L.ski
 const COMBOS=[
  {n:'combo_chain',combo:true,noPolice:true,title:LG('Цепная молния','Chain lightning'),line:LG('КОМБО! Небо сводит с нарушителем счёты…','COMBO! The sky settles accounts with the offender…'),async run(p){comboStart(p,LG('ЦЕПНАЯ МОЛНИЯ','CHAIN LIGHTNING'));await sleep(500);
    const hit=async(x,y,big)=>{const b={t:'bolt',x,y};QS.actors.push(b);QS.flash=big?2:1;try{sNoise(.35,.35,5000,300);sTone(80,.3,'sawtooth',.06,40)}catch(_){}for(let i=0;i<10;i++)QS.fx.push({t:'spark',x:Math.round(x+rint(-8,8)),y:Math.round(y+rint(-4,6)),ttl:4+i%4,c:i%2?'#e0f4ff':'#8fd3ff'});if(big)shakePP();await sleep(120);QS.actors=QS.actors.filter(a=>a!==b)};
-   for(let i=0;i<5;i++){await hit(p.x+6,p.y+18,i===4);if(i<4){p.lying=i%2===0;await hit(p.x+6+rint(-70,70),p.y+26+rint(-4,4),false)}}
-   popText(LG('ПРОВОДНИК ДОЛГОВ!','DEBT CONDUCTOR!'),Math.round(p.x+6),Math.round(p.y-10),'#8fd3ff',14);if(p.comboSoft){p.lying=true;for(let i=0;i<8;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,12),y:p.y+rint(8,24),life:1});await sleep(500);banner('');return}await gibs(p,1.1,'#8fd3ff');
+   for(let i=0;i<5;i++){await hit(p.x+6,p.y+18,i===4);if(i<4){if(!p.comboPar)p.lying=i%2===0;await hit(p.x+6+rint(-70,70),p.y+26+rint(-4,4),false)}}
+   popText(LG('ПРОВОДНИК ДОЛГОВ!','DEBT CONDUCTOR!'),Math.round(p.x+6),Math.round(p.y-10),'#8fd3ff',14);if(p.comboSoft){if(!p.comboPar)p.lying=true;for(let i=0;i<8;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,12),y:p.y+rint(8,24),life:1});await sleep(500);banner('');return}await gibs(p,1.1,'#8fd3ff');
    p.vanishMsg=LG('Только запах озона.','Only the smell of ozone.');banner('')}},
  {n:'combo_rockets',combo:true,noPolice:true,title:LG('Ракетный ливень','Rocket rain'),line:LG('КОМБО! Бухгалтерия запросила огневую поддержку.','COMBO! Accounting requested fire support.'),async run(p){comboStart(p,LG('РАКЕТНЫЙ ЛИВЕНЬ','ROCKET RAIN'));await sleep(300);
    const L0=-QS.OX-14,R0=QS.W-QS.OX+14,px=p.x+6,py=p.y+16;let blown=false;
@@ -3879,7 +3880,7 @@ const COMBOS=[
    ppTalk(LG('Пилот','Pilot'),LG('Цель вижу! Огонь со всех стволов!','Target in sight! Fire everything!'));
    const salvo=[];for(let i=0;i<14;i++){const side=i%3,r=side===0?{t:'rocket',x:L0,y:rint(8,60)}:side===1?{t:'rocket',x:R0,y:rint(8,60)}:{t:'rocket',down:1,x:Math.round(px+rint(-50,50)),y:-14};r.tx=Math.round(px+(Math.random()<.5?-1:1)*rint(22,60));r.ty=Math.round(py+rint(-2,10));r.delay=i*3;salvo.push(r)}
    let k=0;const boom=(x,y,big)=>{const b={t:'boom',x,y,r:4};QS.actors.push(b);(async()=>{await tick(()=>{b.r+=big?5:4;return b.r>(big?28:20)});QS.actors=QS.actors.filter(a=>a!==b)})();try{ppGunshot();sNoise(.4,.4,700,120)}catch(_){}shakePP();QS.decals.push({x:Math.round(x-6),y:Math.round(y-16)})};
-   const blow=()=>{if(blown)return;blown=true;boom(px,py,true);if(p.comboSoft){p.lying=true;p.tx=p.x;p.sp=0;for(let i=0;i<6;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,12),y:p.y+rint(8,24),life:1})}else gibs(p,1.4,'#ff8a20')};
+   const blow=()=>{if(blown)return;blown=true;boom(px,py,true);if(p.comboSoft){if(!p.comboPar){p.lying=true;p.tx=p.x;p.sp=0}for(let i=0;i<6;i++)QS.actors.push({t:'smoke',x:p.x+rint(0,12),y:p.y+rint(8,24),life:1})}else gibs(p,1.4,'#ff8a20')};
    await tickL(()=>{k++;
      // helicopter: fly in, hover, strafe
      const hx=Math.round(px-110),hy=30;if(k<60){heli.x+=Math.sign(hx-heli.x)*Math.min(9,Math.abs(hx-heli.x));heli.y+=Math.sign(hy-heli.y)*Math.min(3,Math.abs(hy-heli.y));heli.tilt=heli.x<hx-2?.12:.04}else{heli.x+=9;heli.y-=3;heli.tilt=.15}
@@ -3895,13 +3896,13 @@ const COMBOS=[
      return !left&&k>40&&tank.x>R0+40&&(heli.x>R0||heli.y<-40)});
    mgs&&mgs.stop(.3);hsn&&hsn.stop(1);blow();QS.actors=QS.actors.filter(a=>a!==heli&&a!==tank&&a.t!=='smoke');await sleep(400);
    if(p.comboSoft){banner('');return}p.vanishMsg=LG('Воронки, гильзы и следы гусениц. Задерживать некого.','Craters, shell casings and tank tracks. Nobody to arrest.');banner('')}},
- {n:'combo_slam',combo:true,noPolice:true,title:LG('Гравитационный слэм','Gravity slam'),line:LG('КОМБО! Гравитация на стороне налоговой.','COMBO! Gravity is on the tax office’s side.'),async run(p){comboStart(p,LG('ГРАВИТАЦИОННЫЙ СЛЭМ','GRAVITY SLAM'));const gy=p.y;await sleep(400);
+ {n:'combo_slam',combo:true,noPolice:true,title:LG('Гравитационный слэм','Gravity slam'),line:LG('КОМБО! Гравитация на стороне налоговой.','COMBO! Gravity is on the tax office’s side.'),async run(p){comboStart(p,LG('ГРАВИТАЦИОННЫЙ СЛЭМ','GRAVITY SLAM'));const gy=p.y;await sleep(400);const T=p.comboPar?{t:'gorb',x:p.x,y:p.y,ty:p.y,lying:false}:p;if(T!==p)QS.actors.push(T);const fx=()=>{if(T!==p)T.x=p.x};
    const rg={t:'ring',x:Math.round(p.x+6),y:Math.round(gy+26),r:2};QS.actors.push(rg);try{sTone(120,1.2,'sine',.08,900)}catch(_){}
-   await tick(()=>{p.y-=6;p.ty=p.y;rg.r=Math.min(12,rg.r+1);p.lying=QS.tick%4<2;return p.y<=12});popText(LG('ВЗЛЁТ!','LIFTOFF!'),Math.round(p.x+6),Math.round(p.y-4),'#c0a0ff',12);await sleep(250);
-   for(let s=0;s<2;s++){let vy=2;await tick(()=>{vy+=2.6;p.y=Math.min(gy,p.y+vy);p.ty=p.y;return p.y>=gy});p.lying=true;QS.flash=2;shakePP();SFX.crash();popText(s?LG('ХРЯСЬ!!','CRUNCH!!'):LG('БАМ!','BAM!'),Math.round(p.x+6),Math.round(gy-4),'#ffe060',16);for(let i=0;i<14;i++)QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-14,14)),y:Math.round(gy+24+rint(-2,3)),ttl:4+i%5,c:i%2?'#a3201a':'#9a9a94'});QS.decals.push({x:Math.round(p.x),y:Math.round(gy)});
-     const w={t:'ring',x:Math.round(p.x+6),y:Math.round(gy+26),r:4};QS.actors.push(w);(async()=>{await tick(()=>{w.r+=5;return w.r>40});QS.actors=QS.actors.filter(a=>a!==w)})();
-     if(s===0){await sleep(200);p.lying=false;await tick(()=>{p.y-=8;p.ty=p.y;return p.y<=gy-40})}}
-   QS.actors=QS.actors.filter(a=>a!==rg);if(p.comboSoft){p.lying=true;p.y=gy;p.ty=gy;await sleep(400);banner('');return}await gibs(p,1.2,'#c0a0ff');
+   await tick(()=>{fx();T.y-=6;T.ty=T.y;rg.r=Math.min(12,rg.r+1);T.lying=QS.tick%4<2;return T.y<=12});popText(LG('ВЗЛЁТ!','LIFTOFF!'),Math.round(p.x+6),Math.round(T.y-4),'#c0a0ff',12);await sleep(250);
+   for(let s=0;s<2;s++){let vy=2;await tick(()=>{fx();vy+=2.6;T.y=Math.min(gy,T.y+vy);T.ty=T.y;return T.y>=gy});T.lying=true;QS.flash=2;shakePP();SFX.crash();popText(s?LG('ХРЯСЬ!!','CRUNCH!!'):LG('БАМ!','BAM!'),Math.round(p.x+6),Math.round(gy-4),'#ffe060',16);for(let i=0;i<14;i++)QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-14,14)),y:Math.round(gy+24+rint(-2,3)),ttl:4+i%5,c:i%2?'#a3201a':'#9a9a94'});QS.decals.push({x:Math.round(p.x),y:Math.round(gy)});
+     const w={t:'ring',x:Math.round(p.x+6),y:Math.round(gy+26),r:4};QS.actors.push(w);(async()=>{await tick(()=>{fx();w.r+=5;return w.r>40});QS.actors=QS.actors.filter(a=>a!==w)})();
+     if(s===0){await sleep(200);T.lying=false;await tick(()=>{fx();T.y-=8;T.ty=T.y;return T.y<=gy-40})}}
+   QS.actors=QS.actors.filter(a=>a!==rg);if(p.comboSoft){if(T!==p)QS.actors=QS.actors.filter(a=>a!==T);else{p.lying=true;p.y=gy;p.ty=gy}await sleep(400);banner('');return}await gibs(p,1.2,'#c0a0ff');
    const coins=[];for(let i=0;i<10;i++){const c={t:'coin',x:p.x+6,y:gy+10,vx:rint(-6,6),vy:-rint(5,10),gy:gy+24+rint(-3,3)};coins.push(c);QS.actors.push(c)}try{SFX.coinSt()}catch(_){}
    await tick(()=>{coins.forEach(c=>{if(c.y<c.gy||c.vy<0){c.x+=c.vx;c.y+=c.vy;c.vy+=1}else c.vx=0});return coins.every(c=>c.y>=c.gy&&c.vy>=0)});popText(LG('НАЛОГ ВЗЫСКАН!','TAX COLLECTED!'),Math.round(p.x+6),Math.round(gy-6),'#ffe060',13);await sleep(700);QS.actors=QS.actors.filter(a=>!coins.includes(a));
    p.vanishMsg=LG('Вмятина в асфальте и пара монет.','A dent in the asphalt and a couple of coins.');banner('')}}];
@@ -3920,7 +3921,7 @@ async function ppArrestAnim(cb){
   p.state='x';p.ty=110;p.tx=arrestSpot(p);if(v===MOB&&QS.people.filter(q=>q!==p&&q.state==='q'&&!q.hide&&!q.lying).length>=2)p.tx=Math.max(p.tx,-QS.OX+QS.W/2);p.sp=Math.max(4.4,Math.abs(p.tx-p.x)/40);p.run=true;let spl={granny:I18L('Сынок, да ты что?! Я ж тебе пирожков принесла!'),mom:p.look.nk===3?I18L('Только не при детях!! Все трое, бежим!'):p.look.nk===2?I18L('Дети, держитесь за руки, бежим!'):I18L('Не при ребёнке!! Мы убегаем!'),wheel:I18L('Серьёзно?! Ну догоняй!')}[p.look.sp];if(p.look.cat)spl=I18L('Барсик, бежим! Нас не поймают!');ppTalk(PD.cur.role,spl||I18L('Нет! Я не пойду! Бегу!'));if(!(PD.cur&&PD.cur.bribed)){const t0=Date.now();await until(()=>Math.abs(p.x-p.tx)<2||Date.now()-t0>4000,4500);p.tx=p.x;p.ty=p.y;p.panic=true;p.panicX=p.x;p.sp=3;p.panicMode=Math.random()<.5?'dash':'zig';p.pdir=null;panicNext(p)}
   let done=false;const fin=()=>{if(done)return;done=true;if(PD)PD.anim=false;SPD=1;ppBar();FACE.tv=null;drawFace(null);setTimeout(()=>bars.classList.remove('on'),300);cb()};
 
-  try{if(PD.cur&&PD.cur.bribed){await traderBribe(p,fin)}else{if(cmb){ppTalk(I18L('Бюро'),cmb.line);p.comboSoft=true;try{await cmb.run(p)}finally{p.comboSoft=false}await comboRevive(p,v)}if(v){ppTalk(I18L('Бюро'),trial?I18T`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=fin;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk(I18L('Бюро'),I18L('Патруль, перехватите его!'));if(v&&v.noPolice)fin();else await policeCleanup(p,fin)}}catch(e){}
+  try{if(PD.cur&&PD.cur.bribed){await traderBribe(p,fin)}else{let cmbP=null;if(cmb){p.comboSoft=true;p.comboPar=true;cmbP=Promise.resolve().then(()=>cmb.run(p)).catch(()=>{}).finally(()=>{p.comboSoft=false;p.comboPar=false})}const finAll=async()=>{if(cmbP)await cmbP;fin()};if(v){ppTalk(I18L('Бюро'),trial?I18T`${v.line} (пробная анимация «${v.title}», купи в магазине, чтобы была всегда)`:v.line);p.loaded=finAll;await v.run(p);await sleep(v===MOB?0:400)}else ppTalk(I18L('Бюро'),I18L('Патруль, перехватите его!'));if(v&&v.noPolice)await finAll();else await policeCleanup(p,finAll)}}catch(e){}
   if(!p.f0)p.hide=true;if(!done){QS.actors=[];QS.car=null;FACE.tv=null;drawFace(null)}fin();
 }
 /* ---------- random events between visitors ---------- */
