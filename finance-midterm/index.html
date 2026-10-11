@@ -2748,7 +2748,7 @@ function sortTask(){
   const note=v==='IS'?I18L('Non-operating = interest, gains, losses. Subtotal = строки-итоги (GP, EBIT, EBT, NI, EPS).'):v==='ST'?I18L('CF only = строка есть только в Statement of cash flows.'):'';return{kind:'sort',title,cats,items,note,fee:cats.length>=5?8:7,pick:{}}}
 /* ---------- build a document yourself ---------- */
 const DISTRACT={IS:['Dividends paid','Accounts receivable','Inventory','Retained earnings','Common stock','Accounts payable','Purchase of equipment','Repayment of loan principal'],RE:['Sales','Taxes','Accounts payable','Depreciation expense','Gross profit','Issuance of common stock'],CF:['Sales','Retained earnings','Gross profit','Common stock','Total assets','Interest expense (IS line)']};
-function buildTask(g){g=g||pick([docIS,docRE,docCF]);const d=g();const n=g===docRE?4:d.rows.length;const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:d.rows.slice(0,n).map((_,i)=>i+1));
+function buildTask(g){g=g||pick([docIS,docRE,docCF,docCF]);const d=g();const n=g===docRE?4:d.rows.length;const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:d.rows.slice(0,n).map((_,i)=>i+1));
   const rows=d.rows.slice(0,n).map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]);shuffle(DISTRACT[g===docIS?'IS':g===docRE?'RE':'CF']).slice(0,3).forEach(l=>rows.push([l,-1,null]));
   return{kind:'build',big:g!==docRE,doc:d,rows,fee:22,pool:shuffle(rows.map((_,i)=>i)),seq:[],vals:{}}}
 function ppRenderBuild(){const c=PD.cur;const box=$('#ppPaper .bld');if(!box)return;
@@ -2779,7 +2779,7 @@ function ppBuildSubmit(){const c=PD.cur,d=c.doc;const rows=c.rows;const real=row
   ppFinish(all,(orderGood&&vOk===real.length-1?I18L('⚠ Одна сумма неверная (показана красным). Ошибка в одном пункте засчитывается без штрафа, но запомни её.\n'):'')+lines.join('\n')+I18L('\n\nПравильный документ (строки одной категории можно менять местами):\n')+right,I18T`Объясни по шагам, как составить этот документ (${d.title}) и почему строки идут в таком порядке. Я студент 1 курса, Managerial Finance (Gitman).\nДанные: ${d.given}`,fee,all?'':`<p>${orderGood?I18T`Структура верная, сумм верно ${vOk} из ${real.length}: $1 за каждую.`:I18L('Структура документа неверная: лишние, пропущенные или переставленные строки.')}</p>`);
   document.querySelectorAll('#ppDesk .pp-good p,#ppDesk .pp-cite p').forEach(p=>p.style.whiteSpace='pre-line')}
 
-function ofillTask(g){g=g||pick([docIS,docCF,docRE]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
+function ofillTask(g){g=g||pick([docIS,docCF,docRE,docCF]);const d=g();let rows=d.rows.slice(0,g===docRE?4:d.rows.length);const grp=d.groups||(g===docCF?[1,2,3,3,3,4]:rows.map((_,i)=>i+1));
   return{kind:'ofill',big:g!==docRE,doc:d,rows:rows.map((r,i)=>[r[0].replace(/^(Less|Plus): /,''),grp[i],r[1]]),fee:16,stage:1,pool:shuffle(rows.map((_,i)=>i)),seq:[]}}
 function ppOrderHTML(c,btn){return I18T`<p class="pp-q" style="margin:4px 0">Нажимай строки в правильном порядке сверху вниз. Поставленные строки можно перетаскивать мышкой вверх-вниз, а клик по строке возвращает её обратно.</p>
   <ol class="pp-seq" id="ppSeq">${c.seq.map((i,k)=>`<li data-i="${i}"><span class="grip" aria-hidden="true">⋮⋮</span><button class="pp-chip on" data-os="${k}">${esc(c.rows[i][0])}</button></li>`).join('')||I18L('<li class="ph">пусто</li>')}</ol>
@@ -3008,7 +3008,7 @@ function makeTasks(n,ev){
   const docsT=DOCS.filter(d=>T.has(d[0])),docs=docsT.map(d=>d[1]);
   const canPlace=T.has('place'),canCard=T.has('card'),canAudit=T.has('audit');const OK=['order','sort','ofill','build'].filter(k=>T.has(k));
   const SPEC=['place','card','audit','order','sort','ofill','build'];const qTopics=[...T].filter(t=>!SPEC.includes(t)&&Q.some(q=>q.t===t));
-  const keys=[...T].filter(k=>SPEC.includes(k)||qTopics.includes(k));let bag=[];const slots=[],nS=Math.round(n*1.3)+1;for(let i=0;i<nS;i++){if(!bag.length)bag=shuffle(keys.slice());slots.push(bag.pop())}
+  const keys=[...T].filter(k=>SPEC.includes(k)||qTopics.includes(k));if(T.has('cf'))keys.push('cf');let bag=[];const slots=[],nS=Math.round(n*1.3)+1;for(let i=0;i<nS;i++){if(!bag.length)bag=shuffle(keys.slice());slots.push(bag.pop())}
   if(ev==='docs'&&docsT.length){let need=Math.min(3,Math.max(2,Math.round(n*.3)));for(let i=0;i<slots.length&&need>0;i++){if(!docsT.some(d=>d[0]===slots[i])){slots[i]='doc:'+pick(docsT)[0];need--}}}
   const seen=new Set(store.get('ppSeen',[]));const cardPool=CARDS.filter(c=>c[0]!=='place'&&T.has(c[0]));const t=[];const taken=[];
   const mkDoc=k=>{const ds=docsT.filter(d=>d[0]===k);const g=pick(ds)[1];const x=[docIS,docRE,docCF].includes(g)?ofillTask(g):{kind:'doc',doc:g(),big:g===docBS||g===docCF2};if(x.kind==='doc')x.tk=k;return x};
@@ -3016,12 +3016,12 @@ function makeTasks(n,ev){
   slots.forEach(k=>{if(k.startsWith('doc:')){t.push(mkDoc(k.slice(4)));return}
     if(k==='place')t.push({kind:'place',it:pick(ITEMS)});else if(k==='card')t.push({kind:'q',q:cardTask(cardPool.length>=4?cardPool:null)});else if(k==='audit')t.push({kind:'audit',au:makeAudit()});
     else if(k==='order')t.push(orderTask());else if(k==='sort')t.push(sortTask());else if(k==='build')t.push(buildTask());else if(k==='ofill')t.push(ofillTask());
-    else if(docsT.some(d=>d[0]===k)&&Math.random()<.3)t.push(mkDoc(k));
+    else if(docsT.some(d=>d[0]===k)&&Math.random()<(k==='cf'?.4:.3))t.push(mkDoc(k));
     else{const q=pickQ(k);if(!q)return;if(Math.random()<.4+((PP.diff||1)-3)*.08&&qTopics.length){const extra=[];const m=pick([1,1,2]);for(let j=0;j<m;j++){const q2=pickQ(pick(qTopics));if(q2)extra.push(q2)}if(extra.length){t.push({kind:'bundle',qs:[q,...extra]});return}}t.push({kind:'q',q})}});
   store.set('ppSeen',[...store.get('ppSeen',[]),...taken].slice(-150));
   {let nb=0;t.forEach((x,i)=>{if(x.big&&nb++)t[i]=x.kind==='build'?buildTask(docRE):ofillTask(docRE)})}
   t.forEach((x,i)=>{if(x.kind==='q'&&x.q.o!==TF&&x.q.o.length===4&&x.q.t!=='mini'&&Math.random()<.18+((PP.diff||1)-3)*.05)t[i]=claimQ(x.q)});
-  {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
+  {const gens=[];if(T.has('place')||T.has('cls'))gens.push(claimPlace);if(T.has('ratio')||T.has('fsa'))gens.push(claimRatio);if(T.has('tvm'))gens.push(claimTVM);if(T.has('cf'))gens.push(claimCF,claimCF);if(T.has('stmt')||T.has('calc'))gens.push(claimBS);
    const GK=new Map([[claimPlace,'place'],[claimRatio,'ratio'],[claimTVM,'tvm'],[claimCF,'cf'],[claimBS,'stmt']]);const nc=gens.length?(n>=7?2:1):0;for(let k=0;k<nc;k++){const qi=t.findIndex(x=>x.kind==='q'&&!x.claimed);const gg=wpick(gens,g=>tw(GK.get(g))),cl=gg();cl.tk=T.has(GK.get(gg))?GK.get(gg):(GK.get(gg)==='place'?'cls':GK.get(gg)==='ratio'?'fsa':'calc');if(qi>=0)t[qi]=cl;else t.push(cl)}}
   t.forEach(x=>{if(x.kind!=='q'||x.q.o===TF||x.q.o.length!==4||x.q.t==='mini'||Math.random()>.36+((PP.diff||1)-3)*.08)return;const q=x.q,wr=shuffle([0,1,2,3].filter(k=>k!==q.a));
     if(Math.random()<.5)x.q=Object.assign({},q,{o:wr.map(k=>q.o[k]),a:-1,orig:q});else{const ks=shuffle([q.a,wr[0],wr[1]]);x.q=Object.assign({},q,{o:ks.map(k=>q.o[k]),a:ks.indexOf(q.a),orig:q})}x.suspect=true});
