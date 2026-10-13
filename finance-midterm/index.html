@@ -86,6 +86,7 @@ code,.formula{font-family:var(--mono);font-size:13.5px;background:var(--line2);p
 /* ledger tables */
 .ledger-wrap{overflow-x:auto}
 table.ledger{border-collapse:collapse;width:100%;min-width:460px;font-size:14.5px}
+@media (max-width:560px){table.ledger{min-width:0}table.ledger td.val input{width:100%;min-width:0}}
 table.ledger td{padding:5px 8px;border-bottom:1px solid var(--line2);vertical-align:middle}
 table.ledger tr.head td{font-weight:700;padding-top:14px;border-bottom:1px solid var(--line)}
 table.ledger tr.total td{font-weight:600}
@@ -104,9 +105,9 @@ tr.hintrow td{font-size:13px;color:var(--muted);background:var(--line2);padding:
 .probtext{max-width:78ch;display:flex;flex-direction:column;gap:10px}
 .probtext p{line-height:1.65}
 .mini-bs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 28px;font-size:14px}
-.mini-bs div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
-.mini-bs div.h{font-weight:700;border:none;padding-top:8px}
-.mini-bs div.t{font-weight:600}
+.mini-bs .col>div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
+.mini-bs .col>div.h{font-weight:700;border:none;padding-top:8px}
+.mini-bs .col>div.t{font-weight:600}
 .stmt-tabs{display:flex;gap:6px;flex-wrap:wrap}
 .stmt-tabs button{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .stmt-tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
@@ -125,6 +126,7 @@ tr.hintrow td{font-size:13px;color:var(--muted);background:var(--line2);padding:
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
 .opt[disabled]{cursor:default}
 .explain{border-left:3px solid var(--accent);padding:8px 12px;background:var(--accent-soft);border-radius:0 6px 6px 0;font-size:14.5px}
+.explain.bad{border-left-color:var(--bad);background:var(--bad-soft)}
 .progress-line{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
 
 /* flashcards */
@@ -682,7 +684,7 @@ function I18T(st,...v){let p=st;if(LANG==='en'){const e=I18N_T[st.join('\u241F')
   const en=LANG==='en';document.querySelectorAll('.pp-window').forEach(e=>{e.dataset.arr=en?'ARRESTED':'АРЕСТОВАН';e.dataset.wipe=en?'click to wipe':'клик, чтобы протереть'});
   document.querySelectorAll('.pp-top').forEach(e=>{e.dataset.frz=(en?'\u275A\u275A TIME STOPPED':'\u275A\u275A ВРЕМЯ СТОИТ');e.dataset.aim=en?'AIM: CLICK THE INSPECTOR':'ПРИЦЕЛ: КЛИКНИ ПО ИНСПЕКТОРУ'});
   const nav=document.getElementById('tabs');
-  if(nav){const b=document.createElement('button');b.className='langbtn';b.type='button';b.textContent=LANG==='en'?'RU':'EN';b.title=LANG==='en'?'Переключить на русский':'Switch to English';b.setAttribute('aria-label',b.title);
+  if(nav){const b=document.createElement('button');b.className='langbtn';b.type='button';b.textContent=LANG==='en'?'RU':'EN';b.title=LANG==='en'?'Switch to Russian':'Переключить на английский';b.setAttribute('aria-label',b.title);
     b.addEventListener('click',e=>{e.stopPropagation();try{localStorage.setItem('fm_lang',LANG==='en'?'ru':'en')}catch(x){}location.reload()});nav.appendChild(b)}
 })();
 
@@ -712,7 +714,7 @@ const TABS=['home','build','mix','lb','place','quiz','cards','sheet'];
 function cheatCheck(){try{if(typeof B==='undefined'||!B.stmts||typeof PP==='undefined')return;let sk=null,ek=null;B.stmts.forEach((st,i)=>(st.rows||[]).forEach(r=>{if(r.head||!r.label)return;const lb=String(r.label).replace(/<[^>]*>/g,'');if(!sk&&/^\s*(net\s+)?sales\b/i.test(lb))sk=i+':'+r.id;if(!ek&&/\bEPS\b|earnings per share/i.test(lb))ek=i+':'+r.id}));
   const num=v=>parseFloat(String(v==null?'':v).replace(/[,\s$]/g,''));if(!sk||!ek||num(B.inputs[sk])!==100||num(B.inputs[ek])!==100)return;
   B.inputs[sk]='';B.inputs[ek]='';store.set(inpKey(),B.inputs);try{renderLedger()}catch(e){}PP.cash+=100;if(PP.beg)PP.beg.cash+=100;if(PD)PD.cheat=(PD.cheat||0)+100;ppSave();try{ppBar()}catch(e){}setTimeout(()=>{try{toast(I18L('Читкод активирован'),I18L('+$100 на баланс'),'#7fe08a');SFX.coin()}catch(e){}},500)}catch(e){}}
-function showTab(t){if(!TABS.includes(t))t='home';if(t==='mix')setTimeout(cheatCheck,0);TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
+function showTab(t){if(!TABS.includes(t))t='home';if(t==='mix')setTimeout(cheatCheck,0);TABS.forEach(x=>{$('#tab-'+x).hidden=x!==t});document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));store.set('tab',t);try{history.replaceState(null,'','#'+t)}catch(_){}document.body.classList.toggle('mixwide',t==='mix');if(t==='mix'&&typeof qsResize==='function')setTimeout(qsResize,0);if(t==='home')renderHome();if(t==='lb'&&typeof renderLB==='function')renderLB();window.scrollTo(0,0)}
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
 
 /* =====================================================
@@ -822,16 +824,16 @@ function fmaText(p,original){
   const b=p.b,e=p.e;
   const tca=b.cash+b.ms+b.ar+b.inv, nfa=b.gpe-b.ad, ta=tca+nfa, tcl=b.ap+b.np;
   const L=(l,v,c='')=>`<div class="${c}"><span>${l}</span><span class="num">${money(v)}</span></div>`;
-  const table=`<div class="mini-bs">
+  const table=`<div class="mini-bs"><div class="col">
    <div class="h"><span>Current assets</span><span></span></div>
    ${L('Cash',b.cash)}${L('Marketable securities',b.ms)}${L('Accounts receivable',b.ar)}${L('Inventory',b.inv)}${L('Total current assets',tca,'t')}
    <div class="h"><span>Fixed assets</span><span></span></div>
-   ${L('Gross plant & equipment',b.gpe)}${L('Less: accumulated depreciation',b.ad)}${L('Net plant & equipment',nfa,'t')}${L('Total assets',ta,'t')}
+   ${L('Gross plant & equipment',b.gpe)}${L('Less: accumulated depreciation',b.ad)}${L('Net plant & equipment',nfa,'t')}${L('Total assets',ta,'t')}</div><div class="col">
    <div class="h"><span>Current liabilities</span><span></span></div>
    ${L('Accounts payable',b.ap)}${L('Notes payable',b.np)}${L('Total current liabilities',tcl,'t')}${L('Long-term bonds',b.bonds)}
    <div class="h"><span>Stockholders’ equity</span><span></span></div>
-   ${L('Common stock',b.cs)}${L('Paid-in capital',b.pic)}${L('Retained earnings',b.re)}${L('Total liabilities & equity',ta,'t')}
-  </div>`;
+   ${L('Common stock',b.cs)}${L('Capital paid in excess of par',b.pic)}${L('Retained earnings',b.re)}${L('Total liabilities & equity',ta,'t')}
+  </div></div>`;
   const v=solveFMA(p);
   const chg=(x,w1,w2)=>x<0?`${w1} by ${pct(-x)}`:`${w2} by ${pct(x)}`;
   return `<p class="eyebrow">${original?I18L('Оригинальный текст задачи (версия 2020)'):I18L('Сгенерированная задача в формате FMA')}</p>
@@ -917,7 +919,7 @@ function loadProblem(key,fresh){
     $('#probTitle').textContent=key==='fma'?'FMA Corporation 2020':(p.name+' Corporation');
   }
   const saved=store.get('inp_'+key+(key==='gen'?'_'+JSON.stringify(B.params.e.sales)+B.params.b.cash:''),null);
-  if(saved&&!fresh)B.inputs=saved;
+  if(saved&&!fresh){B.inputs=saved;B.shown=store.get(inpKey()+'_shown',{})||{}}
   renderStmtTabs();renderLedger();$('#checkResult').innerHTML='';
 }
 function inpKey(){return 'inp_'+B.key+(B.key==='gen'?'_'+JSON.stringify(B.params.e.sales)+B.params.b.cash:'')}
@@ -937,30 +939,31 @@ function renderLedger(){
   });
   $('#ledger').innerHTML=h;
 }
-function hintRowNoAns(r){return `<tr class="hintrow"><td colspan="3">${r.hint||I18L('Перенеси из условия')}</td></tr>`}
+function hintRowNoAns(r){return `<tr class="hintrow"><td colspan="3">${r.hint||(r.t?LG('Сумма строк выше в этом разделе','Sum of the lines above in this section'):I18L('Перенеси из условия'))}</td></tr>`}
 $('#ledger').addEventListener('input',e=>{const t=e.target;if(t.tagName!=='INPUT')return;B.inputs[rk(t.dataset.id)]=t.value;t.classList.remove('ok','bad');store.set(inpKey(),B.inputs)});
 $('#ledger').addEventListener('click',e=>{
   const hb=e.target.closest('[data-hint]'),sb=e.target.closest('[data-show]');
   if(hb){const r=B.stmts[B.cur].rows.find(x=>x.id===hb.dataset.hint);const tr=hb.closest('tr');const k=rk(r.id);
     if(B.hints[k]){B.hints[k]=0;if(tr.nextElementSibling&&tr.nextElementSibling.classList.contains('hintrow'))tr.nextElementSibling.remove()}
     else{B.hints[k]=1;tr.insertAdjacentHTML('afterend',hintRowNoAns(r))}}
-  if(sb){const r=B.stmts[B.cur].rows.find(x=>x.id===sb.dataset.show);const k=rk(r.id);B.shown[k]=1;B.inputs[k]=fmt(B.vals[r.id],r.dec?Math.min(r.dec,3):0);store.set(inpKey(),B.inputs);renderLedger()}
+  if(sb){const r=B.stmts[B.cur].rows.find(x=>x.id===sb.dataset.show);const k=rk(r.id);B.shown[k]=1;B.inputs[k]=fmt(B.vals[r.id],r.dec?Math.min(r.dec,3):0);store.set(inpKey(),B.inputs);store.set(inpKey()+'_shown',B.shown);renderLedger()}
 });
 function checkCur(){
-  const s=B.stmts[B.cur];let ok=0,tot=0,empty=0;
+  const s=B.stmts[B.cur];let ok=0,tot=0,empty=0,shown=0;
   s.rows.forEach(r=>{if(r.head)return;tot++;const el=document.getElementById(`in_${B.cur}_${r.id}`);const n=parseNum(el.value);el.classList.remove('ok','bad');
-    if(n===null){empty++;return}
+    if(n===null){empty++;return}if(B.shown[rk(r.id)]){shown++;return}
     const ans=B.vals[r.id],tol=r.tol??1;
     const good=r.signed?Math.abs(n-ans)<=tol:Math.abs(Math.abs(n)-Math.abs(ans))<=tol;
     el.classList.add(good?'ok':'bad');if(good)ok++});
   const all=ok===tot;
   $('#checkResult').innerHTML=I18T`<div class="result ${all?'ok':'bad'}">${all?I18L('Всё верно. '):''}Правильно ${ok} из ${tot}${empty?I18T`, пустых: ${empty}`:''}.${all&&B.cur<B.stmts.length-1?I18L(' Переходи к следующему отчёту.'):''}</div>`;
+  if(shown)$('#checkResult .result').insertAdjacentText('beforeend',LG(` Подсмотрено ответов: ${shown}, они не засчитываются.`,` Revealed answers: ${shown}, they are not counted.`));if(empty===tot)$('#checkResult').innerHTML=`<div class="result">${LG('Сначала заполни хотя бы несколько строк.','Fill in some lines first.')}</div>`;
   const prog=store.get('buildProg',{});prog[B.key+':'+B.cur]=Math.max(prog[B.key+':'+B.cur]||0,Math.round(ok/tot*100));store.set('buildProg',prog);
 }
 $('#checkBtn').onclick=checkCur;
 $('#hintAll').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(!r.head)B.hints[rk(r.id)]=1});renderLedger()};
-$('#showAll').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(r.head)return;const k=rk(r.id);B.shown[k]=1;B.inputs[k]=fmt(B.vals[r.id],r.dec?Math.min(r.dec,3):0)});store.set(inpKey(),B.inputs);renderLedger()};
-$('#clearBtn').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(!r.head){delete B.inputs[rk(r.id)];delete B.shown[rk(r.id)];delete B.hints[rk(r.id)]}});store.set(inpKey(),B.inputs);renderLedger();$('#checkResult').innerHTML=''};
+$('#showAll').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(r.head)return;const k=rk(r.id);const n=parseNum(B.inputs[k]==null?'':String(B.inputs[k])),ans=B.vals[r.id],tol=r.tol??1;if(n!==null&&(r.signed?Math.abs(n-ans)<=tol:Math.abs(Math.abs(n)-Math.abs(ans))<=tol))return;B.shown[k]=1;B.inputs[k]=fmt(ans,r.dec?Math.min(r.dec,3):0)});store.set(inpKey(),B.inputs);store.set(inpKey()+'_shown',B.shown);renderLedger()};
+$('#clearBtn').onclick=()=>{B.stmts[B.cur].rows.forEach(r=>{if(!r.head){delete B.inputs[rk(r.id)];delete B.shown[rk(r.id)];delete B.hints[rk(r.id)]}});store.set(inpKey(),B.inputs);store.set(inpKey()+'_shown',B.shown);renderLedger();$('#checkResult').innerHTML=''};
 $('#probSelect').onchange=e=>{store.set('prob',e.target.value);loadProblem(e.target.value)};
 $('#regen').onclick=()=>{store.set('genP',null);loadProblem('gen',true)};
 let tStart=null,tInt=null;
@@ -1099,7 +1102,7 @@ const Q=[
 {t:'cf',q:'Under the indirect method, cash flow from operations starts with',o:['sales.','net income.','gross profit.','cash balance.'],a:1,x:I18L('Начинаем с Net income, прибавляем depreciation, корректируем на изменения оборотного капитала.')},
 {t:'cf',q:'Depreciation is added back in the operating section because it is',o:['a cash inflow.','a non-cash expense.','a financing activity.','an investment.'],a:1,x:I18L('Она уменьшила прибыль, но деньги не ушли.')},
 {t:'cf',q:'In the operating section, an INCREASE in accounts receivable is',o:['subtracted, as customers have not paid yet','added, as credit sales raise net income','shown in investing, as a loan to clients','ignored, as AR is a non-cash asset'],a:0,x:I18L('Рост актива = использование денег (−). Выручка в NI есть, а денег ещё нет.')},
-{t:'cf',q:'In the operating section, an INCREASE in accounts payable is',o:['added, as the firm has not yet paid cash','subtracted, as liabilities reduce assets','subtracted, as the firm bought inventory','added, as the firm received a bank loan'],a:0,x:I18L('Рост обязательства = источник (+): расход/покупка есть, а деньги поставщику ещё не ушли. Банковский кредит это не AP: краткосрочный (notes payable) по правилу лектора идёт отдельной строкой в operating, долгосрочный в financing.')},
+{t:'cf',q:'In the operating section, an INCREASE in accounts payable is',o:['added, as the firm has not yet paid cash','subtracted, as liabilities reduce assets','subtracted, as the firm bought inventory','added, as the firm received a bank loan'],a:0,x:LG('Рост обязательства = источник (+): расход/покупка есть, а деньги поставщику ещё не ушли. Банковский кредит это не AP: краткосрочный (notes payable) по правилу лектора идёт отдельной строкой в operating, долгосрочный в financing.','A rise in a liability = a source (+): the expense/purchase happened but cash has not gone to the supplier yet. A bank loan is not AP: short-term notes payable goes on its own line in operating per the lecturer, long-term in financing.')},
 {t:'cf',q:'In the operating section, a DECREASE in inventory is',o:['subtracted, as inventory is an asset','added, as cash was freed from stock','shown in investing, as an asset sale','ignored, as it is a non-cash item'],a:1,x:I18L('Уменьшение актива = источник денег (+).')},
 {t:'cf',q:'In the operating section, a DECREASE in accounts payable is',o:['added, as the firm owes less money','subtracted, as the firm paid suppliers','shown in financing, as debt repaid','ignored, as it is not an expense'],a:1,x:I18L('Уменьшение обязательства = использование денег (−): заплатили поставщикам.')},
 {t:'cf',q:'Purchase of new machinery is reported under',o:['operating activities.','investing activities.','financing activities.','none; it is not reported.'],a:1,x:I18L('Покупка fixed assets — investing, со знаком минус.')},
@@ -1232,7 +1235,7 @@ const ITEMS=[
 {n:'Goodwill',s:'BS',c:'Non-current assets',x:I18L('Нематериальный актив: переплата сверх справедливой стоимости при покупке другой компании.')},
 // BS current liabilities
 {n:'Accounts payable',s:'BS',c:'Current liabilities',x:I18L('Долг поставщикам за покупки в кредит. Рост AP = источник денег в Cash Flow.')},
-{n:'Notes payable (short-term bank loan)',s:'BS',c:'Current liabilities',x:I18L('Краткосрочный банковский кредит. Проценты по нему — interest expense в IS, а погашение основной суммы по правилу лектора идёт в operating в Cash Flow (это текущее обязательство).')},
+{n:'Notes payable (short-term bank loan)',s:'BS',c:'Current liabilities',x:LG('Краткосрочный банковский кредит. Проценты по нему — interest expense в IS, а погашение основной суммы по правилу лектора идёт в operating в Cash Flow (это текущее обязательство).','A short-term bank loan. Its interest is interest expense in the IS; repaying the principal goes in operating cash flow per the lecturer (it is a current liability).')},
 {n:'Accrued expenses (accruals)',s:'BS',c:'Current liabilities',x:I18L('Расход уже случился (признан в IS), но деньги ещё не заплачены. Сам счёт accrued expenses — это долг, т.е. current liability.')},
 {n:'Wages payable (accrued wages)',s:'BS',c:'Current liabilities',x:I18L('Зарплата, которую сотрудники заработали, но ещё не получили. Пара в IS: wages/salaries expense.')},
 {n:'Income taxes payable',s:'BS',c:'Current liabilities',x:I18L('Налог начислен (в IS как income tax expense), но ещё не уплачен государству. Это долг на срок до года. Когда платят: payable ↓ и cash ↓, IS не меняется.')},
@@ -1509,6 +1512,8 @@ Q.push(
 {t:'cf',q:'A firm issued €50,000 of 7-year bonds and repaid €12,000 of a short-term bank note. Which is correct?',o:['Bonds +€50,000 in financing; bank note −€12,000 in operating','Both in financing','Both in operating','Bonds in investing; bank note in financing'],a:0,x:LG('Облигации на 7 лет = долгосрочный долг → financing. Краткосрочный bank note (notes payable) → operating по правилу лектора.','7-year bonds = long-term debt → financing. A short-term bank note (notes payable) → operating per the lecturer.')},
 {t:'cf',q:'True or False: Under the lecturer’s rule, repaying principal on a 10-year bank loan is a financing outflow.',o:TF,a:0,x:LG('True. Долгосрочный долг → financing. Краткосрочный notes payable → operating.','True. Long-term debt → financing. Short-term notes payable → operating.')});
 Q.forEach((q,i)=>q.id=i);
+{const sv=topicSel.value;topicSel.innerHTML=I18T`<option value="exam">Экзамен-микс (30 случайных)</option><option value="wrong">Только мои ошибки</option>`+Object.entries(TOPICS).filter(([k])=>Q.some(q=>q.t===k)).map(([k,v])=>`<option value="${k}">${v} (${Q.filter(q=>q.t===k).length})</option>`).join('');if(sv)topicSel.value=sv}
+{const keys=new Set(Q.map(q=>q.t+'|'+q.q)),w=store.get('wrong',{});let ch=false;Object.keys(w).forEach(k=>{if(!keys.has(k)){delete w[k];ch=true}});if(ch)store.set('wrong',w)}
 let QZ=null;
 function startQuiz(){
   const t=topicSel.value;const wrong=store.get('wrong',{});
@@ -1533,7 +1538,7 @@ $('#quizBox').addEventListener('click',e=>{
     if(right)QZ.score++;
     const w=store.get('wrong',{});const key=q.t+'|'+q.q;if(right)delete w[key];else w[key]=1;store.set('wrong',w);
     const st=store.get('qstats',{});st[q.t]=st[q.t]||{c:0,n:0};st[q.t].n++;if(right)st[q.t].c++;store.set('qstats',st);
-    $('#qex').innerHTML=I18T`<div class="explain"><b>${right?I18L('Верно.'):I18L('Неверно.')}</b> ${esc(q.x)}</div>${aiBox(aiPromptQ(q,k))}<div class="row" style="margin-top:12px"><button class="btn primary" id="nextQ">Дальше →</button></div>`;
+    $('#qex').innerHTML=I18T`<div class="explain"><b>${right?I18L('Верно.'):I18L('Неверно.')}</b> ${esc(q.x)}</div>${aiBox(aiPromptQ(q,k))}<div class="row" style="margin-top:12px"><button class="btn primary" id="nextQ">Дальше →</button></div>`;$('#qex .explain').classList.toggle('bad',!right);
     $('#nextQ').onclick=()=>{QZ.i++;renderQ()};$('#nextQ').focus()}
 });
 $('#quizStart').onclick=startQuiz;
@@ -1759,7 +1764,7 @@ Beginning cash + Net change = Ending cash</div>
 <tr><td><b>Net income</b></td><td class="num"><b>${fmt(V.ni)}</b></td><td>Notes payable</td><td class="num">${fmt(V.npE)}</td></tr>
 <tr><td>EPS (÷ 62,000)</td><td class="num">${fmt(V.eps,3)}</td><td>Long-term bonds</td><td class="num">${fmt(V.bondsE)}</td></tr>
 <tr><th colspan="2">Retained Earnings</th><td>Common stock</td><td class="num">${fmt(V.csE)}</td></tr>
-<tr><td>Beginning RE</td><td class="num">${fmt(V.reB)}</td><td>Paid-in capital</td><td class="num">${fmt(V.picE)}</td></tr>
+<tr><td>Beginning RE</td><td class="num">${fmt(V.reB)}</td><td>Capital paid in excess of par</td><td class="num">${fmt(V.picE)}</td></tr>
 <tr><td>+ Net income − Dividends</td><td class="num">+${fmt(V.ni)} −${fmt(V.div)}</td><td>Retained earnings</td><td class="num">${fmt(V.reE)}</td></tr>
 <tr><td><b>Ending RE</b></td><td class="num"><b>${fmt(V.reE)}</b></td><td><b>Total L &amp; E</b></td><td class="num"><b>${fmt(V.tle)}</b></td></tr>
 </table></div>
@@ -1771,7 +1776,7 @@ Beginning cash + Net change = Ending cash</div>
 <tr><td><b>CFI</b></td><td class="num"><b>${fmt(V.cfi)}</b></td></tr>
 <tr><td>Stock issued / Dividends</td><td class="num">+${fmt(V.cfStock)} / ${fmt(V.cfDiv)}</td></tr>
 <tr><td><b>CFF</b></td><td class="num"><b>${fmt(V.cff)}</b></td></tr>
-<tr><td>Net increase in cash; 15,000 + ${fmt(V.net)}</td><td class="num"><b>${fmt(V.cashE)}</b> ✓ совпадает с условием</td></tr>
+<tr><td>Net increase in cash; 15,000 + ${fmt(V.net)}</td><td class="num"><b>${fmt(V.cashE)}</b> ${LG('✓ совпадает с условием','✓ matches the problem')}</td></tr>
 </table></div>`],
 [I18L('Формы бизнеса: плюсы и минусы'),I18T`<div class="tw"><table class="simple">
 <tr><th></th><th>Sole proprietorship (IĮ)</th><th>Partnership</th><th>Corporation (AB, UAB)</th></tr>
@@ -1912,7 +1917,7 @@ $('#placeBox').addEventListener('click',e=>{
   const b=e.target.closest('.opt');if(!b||b.disabled)return;const it=PG.deck[PG.i];
   const right=PG.step===1?b.dataset.v===it.s:b.dataset.v===it.c;
   if(!right){b.classList.add('wrong');b.disabled=true;PG.firstTry=false;
-    $('#pgex').innerHTML=I18T`<div class="explain"><b>Не туда.</b> Попробуй ещё раз. ${PG.step===1?I18L('Подумай: это остаток на дату (BS), результат за период (IS), изменение RE или только движение денег (CF)?'):''}</div>`;return}
+    $('#pgex').innerHTML=I18T`<div class="explain"><b>Не туда.</b> Попробуй ещё раз. ${PG.step===1?I18L('Подумай: это остаток на дату (BS), результат за период (IS), изменение RE или только движение денег (CF)?'):''}</div>`;$('#pgex .explain').classList.add('bad');return}
   if(PG.step===1){PG.step=2;pgRender()}
 });
 // second-step completion handled here to show explanation
@@ -4764,7 +4769,7 @@ async function lbSubmit(){const a=store.get('cloud',null);if(!LB.online||!a)retu
 function lbRecordDay(pd,day,medals){const L=lbStats();L.answered=(L.answered||0)+pd.tasks.length;L.correct=(L.correct||0)+pd.correct;L.earned=(L.earned||0)+Math.max(0,pd.fees);L.bestDay=Math.max(L.bestDay||0,day);L.bestMedals=Math.max(L.bestMedals||0,medals);store.set('life',L);if(LB.online&&store.get('cloud',null))lbSubmit().catch(()=>{})}
 async function renderLB(){
   const L=lbStats(),me=lbRow(),acct=store.get('cloud',null);
-  $('#lbStatus').innerHTML=LB.online?I18L('<span class="chip ok">Глобальный рейтинг подключён</span>')+(store.get('cloud',null)?'':I18L(' Чтобы попасть в рейтинг, войди в аккаунт ниже.')):I18L('<span class="chip warn">Офлайн</span> Глобальный рейтинг заработает, когда игра будет размещена на Lovable с Supabase (здесь, в артефакте, внешние запросы заблокированы). Пока видны только твои результаты.');
+  $('#lbStatus').innerHTML=LB.online?I18L('<span class="chip ok">Глобальный рейтинг подключён</span>')+(store.get('cloud',null)?'':I18L(' Чтобы попасть в рейтинг, войди в аккаунт ниже.')):LG('<span class="chip warn">Только на этом устройстве</span> Общий рейтинг сейчас недоступен, поэтому здесь видны только твои результаты.','<span class="chip warn">This device only</span> The shared leaderboard is not available right now, so only your own results are shown.');
   $('#lbMe').innerHTML=I18T`<div class="stat"><span class="eyebrow">Очки</span><b>${me.score}</b></div><div class="stat"><span class="eyebrow">Лучший день</span><b>${me.best_day}</b></div><div class="stat"><span class="eyebrow">Медалей (рекорд)</span><b>${me.medals}</b></div><div class="stat"><span class="eyebrow">Точность</span><b>${L.answered?Math.round(L.correct/L.answered*100)+'%':'—'}</b></div>`;
   const tb=$('#lbTable');
   if(!LB.online){tb.innerHTML=I18T`<tr><th>#</th><th>Игрок</th><th>Очки</th><th>День</th><th>Медали</th><th>Точность</th></tr><tr><td>1</td><td><img class="lb-av" src="${avDataURL()}" alt="">${esc(me.name||I18L('Ты'))}</td><td class="num">${me.score}</td><td class="num">${me.best_day}</td><td class="num">${me.medals}</td><td class="num">${L.answered?Math.round(L.correct/L.answered*100)+'%':'—'}</td></tr>`;return}
@@ -4824,6 +4829,6 @@ window.__cloudDirty=false;cloudUI();
 /* ---------- init ---------- */
 const initProb=store.get('prob','fma');$('#probSelect').value=initProb;loadProblem(initProb);
 buildDeck();
-const h=location.hash.replace('#','');showTab(TABS.includes(h)?h:'mix');
+const h=location.hash.replace('#','');showTab(TABS.includes(h)?h:(TABS.includes(store.get('tab'))?store.get('tab'):'mix'));
 $('#quizBox').innerHTML=I18L('<p class="muted">Выбери тему и нажми «Начать». Вопросы на английском, как на экзамене, разбор на русском. Начни с «Мини-тест из класса».</p>');
 </script>
