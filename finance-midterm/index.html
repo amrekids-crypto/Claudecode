@@ -283,7 +283,7 @@ table.pp-form td.okv{color:var(--pp-green)}
 .pp-clockrow{display:flex;gap:8px;align-items:stretch}
 .pp-clock{font-size:24px;background:#12110d;color:var(--pp-gold);border:3px solid var(--pp-line);padding:2px 8px;letter-spacing:.06em;line-height:1.2}
 .pp-rank{flex:1;background:#23211a;border:3px solid var(--pp-line);padding:3px 8px;font-size:16px;line-height:1.1;display:flex;align-items:center;color:var(--pp-text)}
-.pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:16px;line-height:1.3;min-height:84px}
+.pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:16px;line-height:1.3;min-height:84px;max-height:220px;overflow-y:auto}
 .pp-talk .who{color:var(--pp-gold);display:block}
 .pp-office{border:4px solid var(--pp-line)}
 .pp-btn{font:inherit;font-size:16px;cursor:pointer;background:#7b7155;color:#1b1914;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:7px 12px;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
@@ -419,7 +419,7 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-mini.hungry{background:#a3302a;color:#f4f0e4;box-shadow:inset -2px -2px 0 #6a1f1a,inset 2px 2px 0 #c86a5a;animation:ppBlink 1s steps(2) infinite}
 @keyframes ppBlink{50%{filter:brightness(1.35)}}
 .pp-profbtn canvas{width:26px;height:26px;image-rendering:pixelated;border:1px solid var(--pp-line);background:#5f6452}
-.pp-toasts{position:absolute;bottom:58px;right:10px;z-index:6;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:min(330px,82%)}
+.pp-toasts{position:absolute;top:8px;right:10px;z-index:6;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:min(330px,82%)}
 .pp-toast{background:#1b1914;color:#f0e8c8;border:3px solid var(--tc);box-shadow:4px 4px 0 #000;padding:6px 10px;animation:ppToastIn .35s steps(4);transition:opacity .5s,transform .5s}
 .pp-toast b{display:block;color:var(--tc);font-weight:400;font-size:15px}
 .pp-toast small{display:block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;line-height:1.3}
@@ -2030,7 +2030,7 @@ const PPX={
 function ppNorm(p){p=p||{};return Object.assign({candy:0,win:'green',street:'night',ts:0,gun:0,desk:'oak',booth:'olive',downed:null,guardNext:false,day:1,cash:40,medals:[],fines:0,best:0,owned:{},wall:'olive',capital:40,pending:{capex:0,repairs:0,supplies:0},beg:null},p)}
 let PP=ppNorm(store.get('pp',null));if(!PP.decorMig){PP.decorMig=1;[['street','night'],['booth','olive'],['win','green'],['desk','oak']].forEach(([c,d])=>{if(PP[c]&&PP[c]!==d&&PP.owned[c+':'+PP[c]]==null)PP.owned[c+':'+PP[c]]=(PP.day||1)-10})}
 let PD=null,ppLoop=null;
-const DIFF_N=['',I18L('Лёгкий (для всех)'),I18L('Легко'),I18L('Нормально'),I18L('Сложно'),I18L('Хардкор')],DIFF_M=[0,.6,.8,1,1.25,1.5];
+const DIFF_N=['',I18L('Лёгкий (для всех)'),I18L('Легко'),I18L('Нормально'),I18L('Сложно'),I18L('Хардкор')],DIFF_M=[0,.6,1,1,1.25,1.5];
 let BUYW=null;
 function lowCashOk(cost){const left=PP.cash-cost;if(left>=5)return true;if(BUYW&&BUYW.k===cost&&Date.now()-BUYW.t<10000){BUYW=null;return true}BUYW={k:cost,t:Date.now()};
   const CO=ppCosts(),msg=LG(`Осторожно! После покупки останется $${fmt(left)}. Не забывай: вечером надо платить аренду ($${CO.rent}), еду ($${CO.food}) и отопление ($${CO.heat}). Нажми ещё раз, чтобы всё равно купить.`,`Careful! After this purchase you'll have $${fmt(left)} left. Don't forget: in the evening you pay rent ($${CO.rent}), food ($${CO.food}) and heating ($${CO.heat}). Click again to buy anyway.`);
@@ -3062,7 +3062,8 @@ function easyTasks(n){const seen=new Set(store.get('ppSeenE',[]));let pool=shuff
 
 /* ---------- adaptive topics + difficulty ramp ---------- */
 function ppTopicKeys(c){if(!c)return[];if(c.tk)return[c.tk];if(c.kind==='q')return[c.q&&c.q.t||'q'];if(c.kind==='bundle')return[...new Set(c.qs.map(q=>q.t))];if(c.kind==='claim')return[c.q?c.q.t:'claim'];return[c.kind]}
-function ppTrack(c,ok){if(!c||c.boss||c.trader||c.golden)return;PP.tst=PP.tst||{};ppTopicKeys(c).forEach(k=>{const s=PP.tst[k]=PP.tst[k]||{n:0,w:0};s.n++;if(!ok)s.w++})}
+function ppMistDesc(c){try{if(c.kind==='q'&&c.q){const q=c.q.orig||c.q;return[q.q,q.o[q.a]]}if(c.kind==='bundle')return[c.qs.map(q=>q.q).join(' / '),c.qs.map(q=>q.o[q.a]).join(' / ')];if(c.kind==='claim')return[(c.title?c.title+': ':'')+(c.story||''),c.why||(c.right!=null?String(c.right):'')];if(c.kind==='audit')return[c.au.title||LG('Аудит документа','Document audit'),c.au.why||LG('Документ был верный','The document was correct')];return[c.title||(c.doc&&c.doc.title)||(c.tpl&&c.tpl.n)||(c.it&&c.it.n)||c.kind,'']}catch(e){return[c.kind,'']}}
+function ppTrack(c,ok){if(!ok&&PD&&c&&!c.boss){(PD.mist=PD.mist||[]).push(ppMistDesc(c))}if(!c||c.boss||c.trader||c.golden)return;PP.tst=PP.tst||{};ppTopicKeys(c).forEach(k=>{const s=PP.tst[k]=PP.tst[k]||{n:0,w:0};s.n++;if(!ok)s.w++})}
 function ppTstDecay(){if(PP.tstDay===PP.day)return;PP.tstDay=PP.day;Object.values(PP.tst||{}).forEach(s=>{s.n*=.75;s.w*=.75});PP.focusLvl=ppWeak().length?Math.min(6,(PP.focusLvl||0)+1):Math.max(0,(PP.focusLvl||0)-1)}
 function terr(k){const s=(PP.tst||{})[k];if(!s||s.n<1.5)return 0;return (s.w+.3)/(s.n+1)}
 function ppWeak(){const T=ppTopics();return Object.keys(PP.tst||{}).filter(k=>T.has(k)&&terr(k)>=.3)}
@@ -3119,11 +3120,11 @@ function ppFinishTasks(t){
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
-  $('#ppCash').textContent=(PP.cash<0?'-$':'$')+fmt(Math.abs(PP.cash),PP.cash%1?1:0);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?`${PD.correct}/${PD.tasks.length}`:'—';$('#ppDate').textContent=I18T`ДЕНЬ ${PP.day}`;$('#ppRank').textContent=ppRank();
+  $('#ppCash').textContent=(PP.cash<0?'-$':'$')+fmt(Math.abs(PP.cash),PP.cash%1?1:0);$('#ppFines').textContent=PP.fines;$('#ppToday').textContent=PD?LG(`верно ${PD.correct} · принято ${Math.max(0,PD.idx+(PD.state==='done'?1:0))}/${PD.tasks.length}`,`correct ${PD.correct} · served ${Math.max(0,PD.idx+(PD.state==='done'?1:0))}/${PD.tasks.length}`):'—';$('#ppDate').textContent=I18T`ДЕНЬ ${PP.day}`;$('#ppRank').textContent=ppRank();
   const cur=PD&&PD.cur;const canHint=PD&&PD.state==='asking'&&!PD.hinted&&cur&&cur.kind==='q'&&cur.q.o.length===4;$('#ppHint').disabled=!canHint;$('#ppHint').textContent=`50/50 · $${has('calc')?1:2}`;
   $('#ppBook').hidden=!has('book');$('#ppBook').disabled=!(PD&&PD.state==='asking');
   $('#ppNext').disabled=!(PD&&(PD.state==='idle'||PD.state==='done'))||!!(PD&&QS.people[PD.idx+1]&&QS.people[PD.idx+1].fallen);
-  {const nb=$('#ppNext'),la=!!(PD&&(PD.anim||PD.state==='event'));if(la&&!PD.anim){nb.disabled=EVSKIP;nb.textContent=LG('⏭ Следующий!','⏭ Next!');nb.classList.add('fastbtn')}else if(la){nb.disabled=false;nb.textContent=SPD>1?I18L('⏩ Ускорено ×3'):I18L('⏩ Ускорить');nb.classList.add('fastbtn')}else{if(SPD>1)SPD=1;nb.textContent=I18L('Следующий!');nb.classList.remove('fastbtn')}}
+  {const nb=$('#ppNext'),la=!!(PD&&(PD.anim||PD.state==='event'||PD.state==='arriving'));if(la&&!PD.anim){nb.disabled=EVSKIP;nb.textContent=LG('⏭ Следующий!','⏭ Next!');nb.classList.add('fastbtn')}else if(la){nb.disabled=false;nb.textContent=SPD>1?I18L('⏩ Ускорено ×3'):I18L('⏩ Ускорить');nb.classList.add('fastbtn')}else{if(SPD>1)SPD=1;nb.textContent=I18L('Следующий!');nb.classList.remove('fastbtn')}}
   $('#ppGun').textContent=I18T`Пистолет · ${PP.gun||0}`;$('#ppGun').disabled=!(PD&&PD.walking&&!PD.aim&&(PP.gun||0)>0);
   $('#ppDesk').style.setProperty('--pp-desk',(PPX.DESKS[PP.desk]||PPX.DESKS.oak)[1]);
   $('#ppTS').textContent=I18T`Таймстоп · ${PP.ts||0}`;$('#ppTS').disabled=!(PD&&PD.state==='asking'&&!PD.frozen&&(PP.ts||0)>0);
@@ -3141,7 +3142,13 @@ function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
 /* ---------- day flow ---------- */
 let PRE=null;const preKey=()=>[PP.day,PP.diff||1,PP.event,(PP.topics||[]).join(',')].join('|');
 function ppPre(){const k=preKey();if(!PRE||PRE.key!==k)PRE={key:k,tasks:makeTasks(ppCosts().n,PP.event)};return PRE.tasks}
-function ppDayIntro(){
+document.addEventListener('keydown',e=>{if($('#tab-mix').hidden||e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target;if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))return;if(document.querySelector('#ppOv:not([hidden])'))return;
+  const k=e.key.toLowerCase();const idx='123456'.indexOf(k)>=0?'123456'.indexOf(k):'abcdef'.indexOf(k);
+  if(idx>=0&&e.key.length===1){const bs=[...document.querySelectorAll('#ppPaper .pp-opt')].filter(b=>!b.disabled&&b.offsetParent);if(bs[idx]){bs[idx].click();e.preventDefault()}return}
+  if((k==='enter'||k===' ')&&!(t&&t.tagName==='BUTTON')){const nb=$('#ppNext');if(nb&&!nb.disabled&&nb.offsetParent){nb.click();e.preventDefault()}}});
+function ppBreakEven(){try{const CO=ppCosts(),pf=PP.pet?(petInfo().food||0):0,cost=CO.rent+CO.food+(has('heater')?1:CO.heat)+pf,need=Math.ceil(cost/CO.fee),n=CO.n,el=$('#ppNVis');if(!el||$('#ppBE'))return;
+  const short=PP.cash+n*CO.fee<cost;el.closest('p,div').insertAdjacentHTML('beforeend',`<br><span id="ppBE" style="color:${short?'#ff8a7a':'#bfe0a0'}">${LG(`Чтобы покрыть вечерние расходы ($${cost}), нужно примерно ${need} верных ответов.`,`To cover tonight's costs ($${cost}) you need about ${need} correct answers.`)}${short?LG(' Даже при всех верных ответах денег может не хватить, не трать лишнего.',' Even with all answers right you may fall short, so avoid extra spending.'):''}</span>`)}catch(e){}}
+function ppDayIntro(){setTimeout(ppBreakEven,0);
   PD=null;drawFace(null);FACE.talkUntil=0;$('#pp').classList.remove('slowmo','aiming');$('#ppDesk').innerHTML='';ppTalk(I18L('Бюро'),I18L('Окошко закрыто.'));$('#ppClock').textContent='06:00';
   if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':PP.day%7===0?'boss':pick(w);if((PP.diff||1)===1&&['boss','docs'].includes(PP.event))PP.event=pick(w.filter(x=>x!=='docs'&&x!=='boss'))||'normal';const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0,saleCash:0,saleBV:0,petFood:0};PP.petMsg=petNewDay();META.st.ev=META.st.ev||{};META.st.ev[PP.event]=1;metaSave();ppSave()}
   if(Math.round(PP.cash)===404)setTimeout(()=>{toast('404',I18L('Деньги не найдены. Но ты держись.'),'#e05a4a');eggFound('e404')},600);if(EGG.dec)setTimeout(()=>eggFound('december'),900);neonEggs();achCheck();
@@ -3250,7 +3257,7 @@ function ppRenderTask(){
   if(c.kind==='q'){const q=c.q,tf=q.o===TF;const order=(tf||q.t==='mini')?q.o.map((_,k)=>k):shuffle(q.o.map((_,k)=>k));
     h=`<div class="pp-paper" id="ppPaper">${ppHead(TOPICS[q.t]||I18L('Вопрос'))}<p class="pp-q" style="white-space:pre-line">${esc(q.q.replace(/^True or False:\s*/,''))}</p>${tf?`<div class="pp-stamps"><button class="pp-stamp t" data-k="0">TRUE</button><button class="pp-stamp f" data-k="1">FALSE</button></div>`:`<div class="pp-opts">${order.map((k,j)=>`<button class="pp-opt" data-k="${k}">${'ABCD'[j]}) ${esc(q.o[k])}</button>`).join('')}</div>`}${c.suspect?I18T`<p class="pp-q" style="font-size:12.5px;margin:10px 0 4px">Посетитель сам предлагает ответы. Если ни один не подходит, это подлог: арестуй (+$15, а если зря, то −$15).</p><div class="pp-stamps"><button class="pp-stamp f" data-sarrest="1">АРЕСТОВАТЬ</button></div>`:''}</div>`}
   else if(c.kind==='place'){const it=c.it;const opts=PD.step===1?Object.keys(STMTS).map(k=>[k,STMTS[k]]):CATS[it.s].map(x=>[x,x]);
-    h=`<div class="pp-paper" id="ppPaper">${ppHead(I18L('Где статья'))}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?'Step 1 of 2: which statement?':`Step 2 of 2: ${esc(STMTS[it.s])} — which category?`}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
+    h=`<div class="pp-paper" id="ppPaper">${ppHead(I18L('Где статья'))}<p class="pp-q"><b style="font-size:17px">${esc(it.n)}</b><br>${PD.step===1?LG('Шаг 1 из 2: какой отчёт?','Step 1 of 2: which statement?'):LG(`Шаг 2 из 2: ${esc(STMTS[it.s])}, какой раздел?`,`Step 2 of 2: ${esc(STMTS[it.s])}, which category?`)}</p><div class="pp-opts">${opts.map((o,j)=>`<button class="pp-opt" data-p="${esc(o[0])}">${'ABCDEF'[j]}) ${esc(o[1])}</button>`).join('')}</div></div>`}
   else if(c.kind==='order'||c.kind==='ofill'){h=`<div class="pp-paper" id="ppPaper">${ppHead(c.kind==='order'?I18L('Порядок строк · $')+c.fee:I18L('Порядок + заполнение · $')+c.fee)}<p class="pp-q"><b>${esc(c.kind==='order'?c.tpl.n:c.doc.title)}</b></p>${c.kind==='ofill'?`<div class="pp-given">${esc(c.doc.given)}</div>`:''}<div class="ord"></div></div>`;$('#ppDesk').innerHTML=h;ppRenderOrder();return}
   else if(c.kind==='build'){h=`<div class="pp-paper" id="ppPaper">${ppHead(I18L('Собери документ · $')+c.fee)}<p class="pp-q"><b>${esc(c.doc.title)}</b></p><div class="pp-given">${esc(c.doc.given)}</div><div class="bld"></div></div>`;$('#ppDesk').innerHTML=h;ppRenderBuild();return}
   else if(c.kind==='sort'){h=I18T`<div class="pp-paper" id="ppPaper">${ppHead(I18L('Категории · $')+c.fee)}<p class="pp-q"><b>${esc(c.title)}</b></p>${c.note?`<p class="pp-q" style="font-size:12.5px;margin:0 0 4px">${esc(c.note)}</p>`:''}${c.items.map((it,i)=>`<div class="pp-sortrow"><b>${esc(it[0])}</b><span class="chips">${c.cats.map(ct=>`<button class="pp-chip" data-si="${i}" data-sc="${esc(ct)}" title="${esc(ct)}">${esc(SHORTC[ct]||ct)}</button>`).join('')}</span></div>`).join('')}<div class="row" style="margin-top:10px"><button class="pp-btn horn" id="ppSSubmit" disabled>Подать</button></div></div>`}
@@ -4078,7 +4085,7 @@ function ppSuspectArrest(){
     setTimeout(ppScrollDesk,80);
     $('#ppDesk').insertAdjacentHTML('beforeend',right?I18T`<div class="pp-good"><b>+$15 · МОШЕННИК ЗАДЕРЖАН</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:I18T`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · АРЕСТ БЕЗ ОСНОВАНИЙ</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
     ppSave();ppBar()};
-  PD.state='anim';ppBar();ppArrestAnim(finish);
+  finish();PD.state='anim';ppBar();ppArrestAnim(()=>{if(PD){PD.state='done';ppBar();ppSave()}});
 }
 function ppClaim(arrest){
   const c=PD.cur,right=c.trader?(arrest||c.ok):arrest===!c.ok;arrCombo(arrest,right);document.querySelectorAll('#ppPaper [data-claim]').forEach(b=>b.disabled=true);
@@ -4091,7 +4098,7 @@ function ppClaim(arrest){
     setTimeout(ppScrollDesk,80);
     $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${c.trader&&arrest?LG('ТРЕЙДЕР В РОЗЫСКЕ','WANTED TRADER'):arrest?I18L('ЛЖЕЦ ЗАДЕРЖАН'):I18L('ВЕРНОЕ ОДОБРЕНИЕ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:I18T`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${c.trader?LG('ПРОПУЩЕНА ОШИБКА ТРЕЙДЕРА','TRADER\'S MISTAKE MISSED'):arrest?I18L('АРЕСТ БЕЗ ОСНОВАНИЙ'):I18L('ПРОПУЩЕНА ЛОЖЬ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
     ppSave();ppBar()};
-  if(arrest){PD.state='anim';ppBar();ppArrestAnim(finish)}else finish();
+  if(arrest){finish();PD.state='anim';ppBar();ppArrestAnim(()=>{if(PD){PD.state='done';ppBar();ppSave()}})}else finish();
 }
 function ppAudit(arrest){
   const c=PD.cur,a=c.au,hasErr=!!a.why;const right=arrest===hasErr;arrCombo(arrest,right);
@@ -4106,7 +4113,7 @@ function ppAudit(arrest){
     setTimeout(ppScrollDesk,80);
     $('#ppDesk').insertAdjacentHTML('beforeend',right?`<div class="pp-good"><b>+$15 · ${arrest?I18L('НАРУШИТЕЛЬ ЗАДЕРЖАН'):I18L('ВЕРНОЕ ОДОБРЕНИЕ')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`:I18T`<div class="pp-cite"><b>−$15 ИЗ ЗАРПЛАТЫ · ${arrest?I18L('АРЕСТ БЕЗ ОСНОВАНИЙ'):I18L('ПРОПУЩЕНА ОШИБКА')}</b><p>${esc(expl)}</p>${aiBox(ai)}</div>`);
     ppSave();ppBar()};
-  if(arrest){PD.state='anim';ppBar();ppArrestAnim(finish)}else finish();
+  if(arrest){finish();PD.state='anim';ppBar();ppArrestAnim(()=>{if(PD){PD.state='done';ppBar();ppSave()}})}else finish();
 }
 
 function ppHint(){const c=PD&&PD.cur;if(!c||PD.state!=='asking'||PD.hinted||c.kind!=='q'||c.q.o.length!==4)return;const q=c.q;const cost=has('calc')?1:2;PD.hinted=true;PD.hints+=cost;PP.cash-=cost;
@@ -4161,7 +4168,7 @@ function ppBook(){const t=ppBookText();if(t)ppTalk(I18L('Справочник'),
 function ppVerdict(){
   const n=PD.tasks.length,acc=PD.correct/n;
   const candy=PD.candyGiven&&(PP.candy||0)>0?.1:0;if(candy)PP.candy--;
-  const CO=ppCosts(),hi=CO.medal-candy;let verdict,bonus=0,fine=0,medal=null;
+  const CO=ppCosts();let hi=CO.medal-candy;if(n>=3&&n<5)hi=Math.min(hi,(n-1)/n-1e-9);let verdict,bonus=0,fine=0,medal=null;
   if(acc>=hi){medal=PPX.MEDALS[PP.medals.length%PPX.MEDALS.length];PP.medals.push([medal[0],medal[1],PP.day]);bonus=CO.bonus;verdict='medal'}
   else if(acc>=.6-candy)verdict='warn';else if(PP.god){verdict='warn';PP.god=false;PD.godUsed=true}else{fine=CO.fine;PP.fines++;verdict='fine'}
   PD.candyUsed=!!candy;
@@ -4246,8 +4253,9 @@ function ppSummary(){
    <table class="pp-is"><tr class="h"><td>Balance sheet</td><td></td></tr>${row('Cash',PP.cash)}${row('Office equipment',eq.cost)}${row('− Accum. depreciation',-(eq.acc+dep))}${row('Total assets',ta,'sub')}${row(I18L('Common stock (стартовый капитал)'),PP.capital)}${row('Retained earnings',reEnd)}${row('Total L & E',PP.capital+reEnd,'sub')}</table>
    </div>
    ${broke?I18L('<p><b>Cash ушёл в минус. Бюро закрыто за банкротство.</b></p><button class="pp-btn red" id="ppAgain">Новая игра</button>'):I18L('<button class="pp-btn horn" id="ppNextDay">Следующий день</button>')}`);
+  {const ms=PD.mist||[],tg=$('#ppNextDay')||$('#ppAgain');if(ms.length&&tg)tg.insertAdjacentHTML('beforebegin',`<div class="pp-mist" style="text-align:left;background:#2a2620;border:2px solid #15130f;padding:6px 8px;margin:8px 0;font-size:13px;line-height:1.35;max-height:220px;overflow:auto"><b>${LG('Разбор ошибок дня','Today\'s mistakes')} (${ms.length})</b>${ms.map(m=>`<div style="margin-top:5px">• ${esc(String(m[0]).slice(0,220))}${m[1]?`<br><span style="color:#bfe0a0">${LG('Верно','Correct')}: ${esc(String(m[1]).slice(0,220))}</span>`:''}</div>`).join('')}</div>`)}
   PP.best=Math.max(PP.best||0,d);if(typeof lbRecordDay==='function')lbRecordDay(PD,d,PP.medals.length);PD=null;store.set('ppShift',null);banner('');setTimeout(achCheck,400);
-  if(broke){$('#ppAgain').onclick=()=>{PP=ppNorm({best:PP.best});ppSave();ppDayIntro()}}
+  if(broke){$('#ppAgain').onclick=()=>{PP=ppNorm({best:PP.best});ppSave();ppDayIntro()};$('#ppAgain').insertAdjacentHTML('beforebegin',`<button class="pp-btn horn" id="ppLoan">${LG('Взять кредит $25 и продолжить','Take a $25 loan and continue')}</button> `);$('#ppLoan').onclick=()=>{PP.cash=25;PP.loans=(PP.loans||0)+1;PP.day++;ppSave();ppDayIntro()}}
   else $('#ppNextDay').onclick=()=>{PP.day++;ppSave();ppDayIntro()};
   ppSave();ppBar();
 }
@@ -4258,7 +4266,7 @@ function ppTimeStop(){if(!PD||PD.state!=='asking'||PD.frozen||!(PP.ts>0))return;
   setTimeout(()=>pp.classList.add('frozen'),350);setTimeout(()=>fx.remove(),1500);ppTalk(I18L('Таймстоп'),I18L('Часы стоят, пока ты не закончишь с этим посетителем.'));ppBar()}
 $('#ppSnd').onclick=()=>{SFX.on=!SFX.on;if(!SFX.on)SFX.amb(false);store.set('sfx',SFX.on);$('#ppSnd').textContent=I18L('Звук: ')+(SFX.on?I18L('вкл'):I18L('выкл'));if(SFX.on)SFX.click()};$('#ppSnd').textContent=I18L('Звук: ')+(SFX.on?I18L('вкл'):I18L('выкл'));
 $('#ppTS').onclick=ppTimeStop;$('#ppGun').onclick=ppGunArm;$('#ppQueue').addEventListener('click',e=>{UI.street();if(PD&&PP.event==='blackout'&&!PD.lightFixed){const Lb=qsToLogical(e);if(Lb.x>=404&&Lb.x<=426&&Lb.y>=84&&Lb.y<=108){PD.lightFixed=true;SFX.hit();PP.cash+=3;PD.fees+=3;setTimeout(()=>SFX.coinSt(),200);popText('+$3',416,80,'#ffe060',12);ppTalk(I18L('Электрик'),I18L('Ого, вы сами починили щиток! Свет есть, держите $3 за помощь.'));ppBar();ppSave();drawFace(FACE.L);return}}if(QS.onClick){QS.onClick(qsToLogical(e));return}const Lc=qsToLogical(e),fp=QS.people.find(q=>q.fallen&&!q.hide&&Lc.x>=q.x-4&&Lc.x<=q.x+30&&Lc.y>=q.y+14&&Lc.y<=q.y+32);if(fp){fp.fallen=false;fp.lying=false;SFX.click();popText(I18L('ОП!'),Math.round(fp.x+6),Math.round(fp.y-2),'#e0e0e0',11);if(!QS.people.some(q=>q.fallen)){banner('');ppTalk(I18L('Бюро'),I18L('Все на ногах. Землетрясений сегодня больше не будет.'))}ppBar();return}ppShoot(e)});
-$('#ppNext').onclick=()=>{if(PD&&PD.state==='event'&&!PD.anim){evSkip();ppBar();return}if(PD&&(PD.anim||PD.state==='event')){SPD=SPD>1?1:3;ppBar();return}ppCall()};$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
+$('#ppNext').onclick=()=>{if(PD&&PD.state==='event'&&!PD.anim){evSkip();ppBar();return}if(PD&&(PD.anim||PD.state==='event'||PD.state==='arriving')){SPD=SPD>1?1:3;ppBar();return}ppCall()};$('#ppHint').onclick=ppHint;$('#ppBook').onclick=ppBook;
 $('#ppPetBtn').onclick=()=>{if(!PP.pet)return;if(!PP.pet.fed){if(PP.cash<petInfo().food){toast(PP.pet&&PP.pet.type==='tank'?LG('Не хватает денег на топливо','Not enough money for fuel'):I18L('Не хватает денег на корм'),'','#e05a4a');return}petFeed()}else petPet()};
 $('#ppDesk').addEventListener('click',e=>{if(!PD||PD.state!=='asking')return;const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.oi!=null||b.dataset.os!=null||b.dataset.si!=null||b.dataset.bk!=null)SFX.click();
   if(b.dataset.oi!=null||b.dataset.os!=null)ppOrderClick(b);else if(b.id==='ppOReset'){const c=PD.cur;c.pool=shuffle(c.rows.map((_,i)=>i));c.seq=[];ppRenderOrder()}else if(b.id==='ppBSubmit')ppBuildSubmit();else if(b.id==='ppOSubmit')ppOrderSubmit();else if(b.id==='ppOFSubmit')ppOFSubmit();else if(b.dataset.si!=null)ppSortPick(b);else if(b.id==='ppSSubmit')ppSortSubmit();else if(b.dataset.bk!=null)ppPickB(b);else if(b.id==='ppSubmitB')ppSubmitBundle();else if(b.dataset.audit)ppAudit(b.dataset.audit==='arrest');else if(b.dataset.claim)ppClaim(b.dataset.claim==='arrest');else if(b.dataset.sarrest)ppSuspectArrest();else if(b.dataset.k!=null)ppAnswerQ(+b.dataset.k);else if(b.dataset.p!=null)ppAnswerPlace(b.dataset.p);else if(b.id==='ppSubmit')ppSubmitDoc()});
@@ -4267,7 +4275,7 @@ $('#ppDesk').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches
 document.addEventListener('wheel',e=>{const tab=$('#tab-mix');if(tab.hidden||!tab.contains(e.target))return;
   for(let el=e.target;el&&el!==document.body;el=el.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1){if((e.deltaY>0&&el.scrollTop+el.clientHeight<el.scrollHeight-1)||(e.deltaY<0&&el.scrollTop>0))return}if(el.id==='ppOv')break}
   e.preventDefault();const ov=$('#ppOv');if(!ov.hidden){const sr=ov.querySelector('.shop-r');(sr||ov).scrollTop+=e.deltaY}else $('#ppDesk').scrollTop+=e.deltaY},{passive:false});
-$('#ppReset').onclick=()=>{GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
+let RESETW=0;$('#ppReset').onclick=()=>{if(Date.now()-RESETW>5000){RESETW=Date.now();const b=$('#ppReset'),o=b.textContent;b.textContent=LG('Точно? Весь прогресс пропадёт. Нажми ещё раз','Sure? All progress will be lost. Click again');setTimeout(()=>{if(b.textContent!==o)b.textContent=o},5000);return}RESETW=0;GEN++;SFX._amb=null;try{if(ppThunk.ctx){ppThunk.ctx.close();ppThunk.ctx=null}}catch(e){}
   QS.actors=[];QS.fx=[];QS.decals=[];QS.car=null;QS.onClick=null;QS.flash=0;QS.door=0;QS.crater=null;QS.scorch=[];QS.prints=[];QS.slime=[];QS.stamps=[];QS.ice=[];QS.scraps=[];QS.shadows=[];QS.holes=[];QS.boothDmg=0;QS.debris=[];QS.clerkOut=false;QS.soot=false;FACE.tv=null;qsSetup([]);banner('');ppCloseOv();
   const w=document.querySelector('.pp-window');if(w){w.classList.remove('splat','shake');const b=w.querySelector('.bars');if(b)b.classList.remove('on')}$('#pp').classList.remove('shake','slowmo','aiming');
   PD=null;PRE=null;PP=ppNorm({best:PP.best||0});store.set('ppShift',null);ppSave();ppDayIntro();store.set('ppShift',null);qsDraw()};
