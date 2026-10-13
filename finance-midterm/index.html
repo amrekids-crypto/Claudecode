@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -286,7 +287,7 @@ table.pp-form td.okv{color:var(--pp-green)}
 .pp-talk{background:#23211a;border:3px solid var(--pp-line);padding:8px 10px;font-size:16px;line-height:1.3;min-height:84px;max-height:220px;overflow-y:auto}
 .pp-talk .who{color:var(--pp-gold);display:block}
 .pp-office{border:4px solid var(--pp-line)}
-.pp-btn{font:inherit;font-size:16px;cursor:pointer;background:#7b7155;color:#1b1914;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:7px 12px;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+.pp-btn{font:inherit;font-size:16px;cursor:pointer;background:#8f845f;color:#0e0d0a;border:3px solid var(--pp-line);box-shadow:inset -3px -3px 0 #574f3a,inset 3px 3px 0 #a79a74;padding:7px 12px;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
 .pp-btn:hover:not([disabled]){filter:brightness(1.1)}
 .pp-btn:active:not([disabled]){box-shadow:inset 3px 3px 0 #574f3a}
 .pp-btn[disabled]{opacity:.4;cursor:default}
@@ -355,7 +356,7 @@ table.pp-form .fix{display:block;font-size:12px;color:var(--pp-red)}
 @media (prefers-reduced-motion: reduce){.ink,.pp-cite{animation:none}}
 
 /* ---------- mobile game layout ---------- */
-@media (max-width:700px){
+@media (max-width:899px){
   body.mixwide header.top .brand{display:none}
   body.mixwide nav.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   body.mixwide nav.tabs::-webkit-scrollbar{display:none}
@@ -467,7 +468,7 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-petbox>div{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px}
 #ppPetBig{width:288px;height:192px;max-width:100%;aspect-ratio:3/2;image-rendering:pixelated;border:3px solid var(--pp-line);background:#4a4838}
 .pp-petc{width:144px;height:96px;max-width:100%;image-rendering:pixelated;background:#4a4838;border:2px solid var(--pp-line);align-self:center}
-@media (max-width:700px){.pp-avwrap{grid-template-columns:1fr;display:flex!important;flex-direction:column;gap:6px}.pp-avprev{flex:none;flex-direction:row!important;justify-content:center;gap:10px!important}.pp-avprev small{display:none}.pp-avopts{flex:1 1 auto;border-top:3px dashed #8f8360;padding-top:6px}.pp-avrow{grid-template-columns:1fr}#ppAvBig{width:128px;height:128px}#ppAvStreet{width:96px;height:96px}.pp-album{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-acard canvas,.pp-aq{width:64px;height:64px}.pp-mini{font-size:11px;padding:2px 5px}.pp-profbtn span{display:none}.pp-profbtn canvas{width:22px;height:22px}.pp-toasts{bottom:40px;right:4px}.pp-toast{padding:4px 7px}.pp-toast b{font-size:13px}.pp-achs{grid-template-columns:1fr}}
+@media (max-width:700px){.pp-avwrap{grid-template-columns:1fr;display:flex!important;flex-direction:column;gap:6px}.pp-avprev{flex:none;flex-direction:row!important;justify-content:center;gap:10px!important}.pp-avprev small{display:none}.pp-avopts{flex:1 1 auto;border-top:3px dashed #8f8360;padding-top:6px}.pp-avrow{grid-template-columns:1fr}#ppAvBig{width:128px;height:128px}#ppAvStreet{width:96px;height:96px}.pp-album{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-acard canvas,.pp-aq{width:64px;height:64px}.pp-mini{font-size:11px;padding:2px 5px}.pp-profbtn span{display:none}.pp-profbtn canvas{width:22px;height:22px}.pp-toasts{top:4px;bottom:auto;right:4px}.pp-toast{padding:4px 7px}.pp-toast b{font-size:13px}.pp-achs{grid-template-columns:1fr}}
 .lb-av{width:28px;height:28px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;border:1px solid #15130f}
 .pp-deskitems{background:rgba(20,16,12,.35);border:3px dashed #8f8360;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
 .pp-deskitems .pp-q{color:#f0e8c8;margin:0}
@@ -480,6 +481,13 @@ body.fsmode .wrap{padding:0!important;max-width:none!important}
 .pp-btn.pp-blink{animation:ppGlow .8s steps(2) infinite}
 @media (max-width:700px){.pp-item-desk canvas{width:64px;height:40px}.pp-item-desk{padding:6px 10px;font-size:12px}}
 #ppDesk.answered :is(#ppOReset,#ppBSubmit,#ppOSubmit,#ppOFSubmit,#ppSSubmit,#ppSubmitB,#ppSubmit){display:none}
+/* UX audit fixes */
+.pp-card .row:has(#ppGo){position:sticky;bottom:-24px;background:var(--pp-paper);padding:8px 0;z-index:2;box-shadow:0 -6px 8px -6px rgba(0,0,0,.35)}
+.pp-card .shop-top{position:sticky;top:-24px;background:var(--pp-paper);z-index:2;padding:6px 0}
+#tab-mix :focus-visible{outline:3px solid #e0b64a;outline-offset:2px}
+select{max-width:100%}
+@media (max-width:899px){.pp-side .pp-btn,.pp-booth .horn{min-height:40px}.pp-chip[data-diff]{min-width:40px;min-height:40px}nav.tabs button{min-height:40px}}
+@media (pointer:coarse){.iconbtn{min-width:32px;min-height:32px}}
 </style>
 
 <header class="top">
@@ -2384,7 +2392,7 @@ Object.assign(SFX,{
 
 const QS={people:[],tick:0,bld:null,fx:[],car:null,W:480,OX:0,door:0,decals:[]};
 function drawBlood(R,x,y){R(x+1,y+27,18,2,'#5a100c');R(x+4,y+26,12,1,'#7a1a14');R(x+18,y+28,5,1,'#5a100c');R(x-2,y+28,3,1,'#6a1410');R(x+8,y+29,6,1,'#4a0c08');R(x+6,y+26,2,1,'#9a2a20')}
-function qsResize(){const c=$('#ppQueue');if(!c)return;const hd=document.querySelector('header.top');if(hd)document.documentElement.style.setProperty('--hdr',hd.offsetHeight+'px');if(window.innerWidth<=700){window.scrollTo(0,0);const pp=$('#pp');if(pp){const top=pp.getBoundingClientRect().top;document.documentElement.style.setProperty('--ppH',Math.max(360,Math.floor(window.innerHeight-top-2))+'px')}}const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const mob=window.innerWidth<=700;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=mob?300:Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
+function qsResize(){const c=$('#ppQueue');if(!c)return;const hd=document.querySelector('header.top');if(hd)document.documentElement.style.setProperty('--hdr',hd.offsetHeight+'px');if(window.innerWidth<=899){window.scrollTo(0,0);const pp=$('#pp');if(pp){const top=pp.getBoundingClientRect().top;document.documentElement.style.setProperty('--ppH',Math.max(360,Math.floor(window.innerHeight-top-2))+'px')}}const cw=c.parentElement.clientWidth||960;const vh=window.innerHeight||800;const mob=window.innerWidth<=899;const tpx=window.innerWidth<900?Math.max(cw/4.2,90):Math.min(vh*.21,190);const W=mob?Math.max(300,Math.min(1200,Math.round(120*cw/(vh*.28)))):Math.max(480,Math.min(1200,Math.round(120*cw/tpx)));if(W!==c.width){c.width=W;c.height=120;QS.W=W;QS.OX=W-480;QS.bld=null;qsTargets();QS.people.forEach(p=>{if(p.state==='q'&&p.x<-QS.OX)p.x=-QS.OX-20});qsDraw()}}
 window.addEventListener('resize',()=>{if(!$('#tab-mix').hidden)qsResize()});
 function qsInitBld(){if(QS.bld)return;QS.bld=[];let x=0;while(x<QS.W){const w=rint(24,56),h=rint(10,34);const win=[];for(let yy=4;yy<h-3;yy+=6)for(let xx=4;xx<w-4;xx+=7)if(Math.random()<.35)win.push([xx,yy,Math.random()<.5]);QS.bld.push({x,w,h,win});x+=w+rint(0,6)}}
 function qsSetup(looks){QS.people=looks.map((look,i)=>({look,x:-QS.OX-20-i*18,y:92,tx:0,ty:92,state:'q'}));QS.car=null;QS.fx=[];QS.decals=[];QS.actors=[];QS.onClick=null;qsTargets()}
@@ -3134,7 +3142,7 @@ function ppBar(){
 }
 function ppTalk(who,text){if(who==='Полиция'||who==='Police')return;if(FACE.L&&PD&&PD.cur&&(who===PD.cur.role||(FACE.L===INSPECTOR&&/Инспектор|[Ii]nspector/.test(who))))FACE.talkUntil=Date.now()+Math.min(3000,500+String(text).length*40);$('#ppTalk').innerHTML=`<span class="who">${esc(who)}:</span>${esc(text)}`}
 function ppClock(){if(!PD)return;const h=Math.floor(PD.min/60),m=Math.floor(PD.min%60);$('#ppClock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
-function ppOverlay(html,cls){const o=$('#ppOv');o.className='pp-ov'+(cls?' ov-'+cls:'');o.innerHTML=`<div class="pp-card${cls?' '+cls:''}">${html}</div>`;o.hidden=false;o.scrollTop=0}
+function ppOverlay(html,cls){const o=$('#ppOv');o.className='pp-ov'+(cls?' ov-'+cls:'');o.innerHTML=`<div class="pp-card${cls?' '+cls:''}">${html}</div>`;o.hidden=false;o.scrollTop=0;o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');setTimeout(()=>{const f=o.querySelector('#ppGo,#ppNextDay,#ppResume,.pp-btn.horn');if(f&&!o.hidden)try{f.focus({preventScroll:true})}catch(_){}},50)}
 function ppCloseOv(){$('#ppOv').hidden=true}
 function ppThunk(){SFX.stamp();return;try{const a=sfxCtx();const o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.setValueAtTime(140,a.currentTime);o.frequency.exponentialRampToValueAtTime(50,a.currentTime+.09);g.gain.setValueAtTime(.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.13)}catch(e){}}
 function ppEvent(){return PPX.EVENTS.find(e=>e.id===PP.event)||PPX.EVENTS[0]}
@@ -3147,7 +3155,7 @@ document.addEventListener('keydown',e=>{if($('#tab-mix').hidden||e.ctrlKey||e.me
   if(idx>=0&&e.key.length===1){const bs=[...document.querySelectorAll('#ppPaper .pp-opt')].filter(b=>!b.disabled&&b.offsetParent);if(bs[idx]){bs[idx].click();e.preventDefault()}return}
   if((k==='enter'||k===' ')&&!(t&&t.tagName==='BUTTON')){const nb=$('#ppNext');if(nb&&!nb.disabled&&nb.offsetParent){nb.click();e.preventDefault()}}});
 function ppBreakEven(){try{const CO=ppCosts(),pf=PP.pet?(petInfo().food||0):0,cost=CO.rent+CO.food+(has('heater')?1:CO.heat)+pf,need=Math.ceil(cost/CO.fee),n=CO.n,el=$('#ppNVis');if(!el||$('#ppBE'))return;
-  const short=PP.cash+n*CO.fee<cost;el.closest('p,div').insertAdjacentHTML('beforeend',`<br><span id="ppBE" style="color:${short?'#ff8a7a':'#bfe0a0'}">${LG(`Чтобы покрыть вечерние расходы ($${cost}), нужно примерно ${need} верных ответов.`,`To cover tonight's costs ($${cost}) you need about ${need} correct answers.`)}${short?LG(' Даже при всех верных ответах денег может не хватить, не трать лишнего.',' Even with all answers right you may fall short, so avoid extra spending.'):''}</span>`)}catch(e){}}
+  const short=PP.cash+n*CO.fee<cost;el.closest('p,div').insertAdjacentHTML('beforeend',`<br><span id="ppBE" style="color:${short?'#a3302a':'#2f6a1e'};font-weight:600">${LG(`Чтобы покрыть вечерние расходы ($${cost}), нужно примерно ${need} верных ответов.`,`To cover tonight's costs ($${cost}) you need about ${need} correct answers.`)}${short?LG(' Даже при всех верных ответах денег может не хватить, не трать лишнего.',' Even with all answers right you may fall short, so avoid extra spending.'):''}</span>`)}catch(e){}}
 function ppDayIntro(){setTimeout(ppBreakEven,0);
   PD=null;drawFace(null);FACE.talkUntil=0;$('#pp').classList.remove('slowmo','aiming');$('#ppDesk').innerHTML='';ppTalk(I18L('Бюро'),I18L('Окошко закрыто.'));$('#ppClock').textContent='06:00';
   if(!PP.beg||PP.beg.day!==PP.day){const w=[];PPX.EVENTS.forEach(e=>{for(let i=0;i<e.w;i++)w.push(e.id)});PP.event=PP.day===1?'normal':PP.day%7===0?'boss':pick(w);if((PP.diff||1)===1&&['boss','docs'].includes(PP.event))PP.event=pick(w.filter(x=>x!=='docs'&&x!=='boss'))||'normal';const eq=equip(PP.day);PP.beg={day:PP.day,cash:PP.cash,net:eq.net};PP.pending={capex:0,repairs:0,supplies:0,saleCash:0,saleBV:0,petFood:0};PP.petMsg=petNewDay();META.st.ev=META.st.ev||{};META.st.ev[PP.event]=1;metaSave();ppSave()}
@@ -4297,7 +4305,7 @@ const META=Object.assign({album:{},ach:{},eggs:{},st:{},av:null},store.get('meta
 const metaSave=()=>store.set('meta',META);
 function stInc(k,v=1){META.st[k]=(META.st[k]||0)+v;metaSave()}
 function stMax(k,v){if(v>(META.st[k]||0)){META.st[k]=v;metaSave()}}
-function toast(title,sub,color){const pp=$('#pp');if(!pp)return;let box=pp.querySelector('.pp-toasts');if(!box){box=document.createElement('div');box.className='pp-toasts';pp.appendChild(box)}
+function toast(title,sub,color){const pp=$('#pp');if(!pp)return;let box=pp.querySelector('.pp-toasts');if(!box){box=document.createElement('div');box.className='pp-toasts';box.setAttribute('aria-live','polite');pp.appendChild(box)}
   const t=document.createElement('div');t.className='pp-toast';t.style.setProperty('--tc',color||'#e0b64a');t.innerHTML=`<b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}`;box.appendChild(t);
   while(box.children.length>4)box.firstChild.remove();setTimeout(()=>t.classList.add('out'),3800);setTimeout(()=>t.remove(),4400)}
 function chime(){sMuf(784,.18,'triangle',.05,null,0,2600);sMuf(1047,.22,'triangle',.05,null,.12,2600);sMuf(1319,.35,'triangle',.05,null,.24,2600)}
