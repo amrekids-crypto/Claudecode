@@ -106,9 +106,9 @@ tr.hintrow td{font-size:13px;color:var(--muted);background:var(--line2);padding:
 .probtext{max-width:78ch;display:flex;flex-direction:column;gap:10px}
 .probtext p{line-height:1.65}
 .mini-bs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 28px;font-size:14px}
-.mini-bs .col>div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
-.mini-bs .col>div.h{font-weight:700;border:none;padding-top:8px}
-.mini-bs .col>div.t{font-weight:600}
+.mini-bs div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
+.mini-bs div.h{font-weight:700;border:none;padding-top:8px}
+.mini-bs div.t{font-weight:600}
 .stmt-tabs{display:flex;gap:6px;flex-wrap:wrap}
 .stmt-tabs button{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
 .stmt-tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
@@ -832,16 +832,16 @@ function fmaText(p,original){
   const b=p.b,e=p.e;
   const tca=b.cash+b.ms+b.ar+b.inv, nfa=b.gpe-b.ad, ta=tca+nfa, tcl=b.ap+b.np;
   const L=(l,v,c='')=>`<div class="${c}"><span>${l}</span><span class="num">${money(v)}</span></div>`;
-  const table=`<div class="mini-bs"><div class="col">
+  const table=`<div class="mini-bs">
    <div class="h"><span>Current assets</span><span></span></div>
    ${L('Cash',b.cash)}${L('Marketable securities',b.ms)}${L('Accounts receivable',b.ar)}${L('Inventory',b.inv)}${L('Total current assets',tca,'t')}
    <div class="h"><span>Fixed assets</span><span></span></div>
-   ${L('Gross plant & equipment',b.gpe)}${L('Less: accumulated depreciation',b.ad)}${L('Net plant & equipment',nfa,'t')}${L('Total assets',ta,'t')}</div><div class="col">
+   ${L('Gross plant & equipment',b.gpe)}${L('Less: accumulated depreciation',b.ad)}${L('Net plant & equipment',nfa,'t')}${L('Total assets',ta,'t')}
    <div class="h"><span>Current liabilities</span><span></span></div>
    ${L('Accounts payable',b.ap)}${L('Notes payable',b.np)}${L('Total current liabilities',tcl,'t')}${L('Long-term bonds',b.bonds)}
    <div class="h"><span>Stockholders’ equity</span><span></span></div>
-   ${L('Common stock',b.cs)}${L('Capital paid in excess of par',b.pic)}${L('Retained earnings',b.re)}${L('Total liabilities & equity',ta,'t')}
-  </div></div>`;
+   ${L('Common stock',b.cs)}${L('Paid-in capital',b.pic)}${L('Retained earnings',b.re)}${L('Total liabilities & equity',ta,'t')}
+  </div>`;
   const v=solveFMA(p);
   const chg=(x,w1,w2)=>x<0?`${w1} by ${pct(-x)}`:`${w2} by ${pct(x)}`;
   return `<p class="eyebrow">${original?I18L('Оригинальный текст задачи (версия 2020)'):I18L('Сгенерированная задача в формате FMA')}</p>
