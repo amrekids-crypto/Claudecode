@@ -2408,6 +2408,7 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   R(px+5-arm,y+11,2,7,cd);
   R(px+3,y+9,6,12,c);R(px+3,y+9,1,12,cl);R(px+8,y+10,1,10,cd);if(L.chub){R(px+9,y+12,2,7,c);R(px+10,y+13,1,5,cd);R(px+2,y+11,1,8,cd)}R(px+7,y+9,2,3,L.shirt||'#d8d0c0');if(L.tie)R(px+8,y+10,1,4,L.tie);
   if(L.insp){R(px+3,y+9,6,1,'#e0b64a');R(px+4,y+13,4,2,'#a3302a')}
+  if(L.camo){R(px+4,y+10,2,2,'#3a4424');R(px+6,y+14,3,2,'#7a7a50');R(px+3,y+17,2,2,'#3a4424');R(px+7,y+18,2,1,'#2e3420')}
   if(L.hat==='police'){R(px+3,y+12,6,1,'#e0e0e0');R(px+7,y+11,1,2,'#e0b64a')}
   R(px+5+lg[0],y+20,2,7-bob,'#2a2620');R(px+5+lg[0],py+26,4,2,'#15130f');
   R(px+5+arm,y+11,2,7,shade(c,.9));R(px+5+arm,y+17,2,2,s);if(L.cash){R(px+6+arm,y+15,4,3,'#3e8a3e');R(px+6+arm,y+15,4,1,'#6ab86a');R(px+7+arm,y+16,1,1,'#d8f0c0')}
@@ -2425,6 +2426,7 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   if(L.beard==='goatee')R(px+8,y+7,2,1,H);else if(L.beard==='chin'){R(px+5,y+5,1,3,H);R(px+6,y+7,4,1,H)}else if(L.beard)R(px+6,y+6,4,2,H);if(L.stache==='walrus')R(px+7,y+5,3,1,H);else if(L.stache)R(px+8,y+5,2,1,L.stache==='pencil'?shade(H,.7):H);
   if(L.halo){R(px+3,y-4,7,1,'#ffe680');R(px+2,y-3,1,1,'#ffe680');R(px+10,y-3,1,1,'#ffe680')}if(L.horns){R(px+3,y-2,1,2,'#c0201a');R(px+9,y-2,1,2,'#c0201a')}if((L.ears||L.catgirl)&&!L.hat){R(px+3,y-2,2,2,H);R(px+8,y-2,2,2,H)}if(L.boss){R(px+10,y+6,3,1,'#6a4a2a');R(px+13,y+6,1,1,'#ff6a1a')}
   if(L.hat==='officer'){R(px+2,y-1,8,3,'#23241f');R(px+2,y+1,8,1,'#a3302a');R(px+8,y+2,4,1,'#100e0b');R(px+6,y-1,2,1,'#e0b64a')}
+  else if(L.hat==='mil'){R(px+2,y-2,9,4,'#4a5530');R(px+2,y-2,9,1,'#6a7548');R(px+4,y-1,2,1,'#3a4022');R(px+8,y,1,1,'#3a4022')}
   else if(L.hat==='helmet'){R(px+2,y-2,9,5,'#1e2226');R(px+2,y-2,9,1,'#3a4046');R(px+8,y+2,3,2,'#6a8aa0')}
   else if(L.hat==='kippah'){R(px+3,y-1,4,1,L.hatc);R(px+2,y,5,1,L.hatc)}
   else if(L.hat==='hasid'){R(px+3,y-3,7,3,'#15130f');R(px+1,y,11,1,'#15130f');if(L.payot){R(px+3,y+2,1,4,L.hair);R(px+2,y+5,1,1,L.hair)}}
@@ -3337,8 +3339,22 @@ function sTheremin(dur){try{const a=sfxCtx(),t=a.currentTime,o=a.createOscillato
   o.connect(g).connect(a.destination);o2.connect(g2).connect(a.destination);o.start(t);l.start(t);o2.start(t);o.stop(t+dur+.1);l.stop(t+dur+.1);o2.stop(t+dur+.1);
   return{stop(){try{const n=a.currentTime;g.gain.cancelScheduledValues(n);g.gain.setValueAtTime(g.gain.value,n);g.gain.exponentialRampToValueAtTime(.0001,n+.4);g2.gain.setValueAtTime(.0001,n+.1)}catch(e){}}}}catch(e){return{stop(){}}}}
 function kaijuRoar(v){sMuf(230,2.6,'sawtooth',.09*v,68,0,750);sMuf(172,2.6,'square',.05*v,52,.06,520);sMuf(310,1.6,'sawtooth',.04*v,120,.2,900);sNoise(2.3,.2*v,1300,180)}
+const MILL=()=>({g:'m',skin:pick(SKIN),hair:'#1f1812',coat:'#5a6a3a',shirt:'#4a5530',style:'short',hat:'mil',hatc:'#4a5530',beard:Math.random()<.4,stache:Math.random()<.5,glasses:false,guard:true,camo:true});
 const SWATL=()=>({g:'m',skin:'#2a2a2e',hair:'#15130f',coat:'#15130f',shirt:'#2a2a30',style:'short',hat:'helmet',hatc:'#1e2226',beard:false,stache:false,glasses:false,guard:true,swat:true});
 function drawArrestActor2(R0,a,x,y,t){
+  if(a.t==='uaz'){const OL='#15130f',G='#56703c',G2='#6e8a50',G1='#3f5229',fl=a.faceL,R=fl?(xx,yy,w,h,c)=>R0(2*x+52-xx-w,yy,w,h,c):R0;
+    const rows=[[0,5,47],[1,3,49],[2,2,50],[3,1,51]];for(let yy=4;yy<=20;yy++)rows.push([yy,0,51]);rows.push([21,1,51],[22,2,50]);
+    rows.forEach(([dy,a0,a1])=>{R(x+a0-1,y+dy,a1-a0+2,1,OL)});R(x+4,y-1,44,1,OL);
+    rows.forEach(([dy,a0,a1])=>{R(x+a0,y+dy,a1-a0,1,dy<3?G2:dy>18?G1:G)});R(x+6,y+1,38,1,'#86a066');
+    R(x+1,y+11,50,1,G1);
+    for(const [wx,ww] of [[4,7],[13,7]]){R(x+wx,y+4,ww,6,OL);R(x+wx+1,y+5,ww-2,4,'#7a9aa8');R(x+wx+1,y+5,2,1,'#c0d8e0')}
+    R(x+22,y+3,12,17,OL);if(a.door){R(x+23,y+4,10,15,'#050506')}else{R(x+23,y+4,10,15,G);R(x+24,y+5,8,4,'#7a9aa8');R(x+24,y+5,2,1,'#c0d8e0');R(x+31,y+12,2,1,'#c8c8c0')}
+    R(x+36,y+3,8,17,OL);R(x+37,y+4,6,15,G);R(x+37,y+5,6,5,'#7a9aa8');R(x+37,y+5,2,1,'#c0d8e0');R(x+41,y+12,2,1,'#c8c8c0');
+    R(x+45,y+4,6,7,OL);R(x+46,y+5,5,5,'#7a9aa8');R(x+46,y+5,2,1,'#c0d8e0');
+    R(x+49,y+13,3,3,OL);R(x+50,y+14,2,1,'#ffe8a0');R(x+46,y+16,6,1,OL);R(x-1,y+19,3,2,OL);R(x+50,y+19,3,2,OL);R(x+1,y+14,1,2,'#c0302a');
+    R(x+1,y+16,3,3,OL);R(x+2,y+17,1,1,'#2a2a2a');
+    for(const wx of [x+5,x+38]){R(wx-1,y+19,11,8,OL);R(wx,y+20,9,6,'#2a2a2a');R(wx+3,y+22,3,2,'#6a6a6a');R(wx+3+(t%2),y+22,1,1,'#9a9a9a')}
+    return true}
   if(a.t==='grinder'){const OL='#15130f',M='#8e949a',M1='#5e6268',M2='#c4c8cc',B=a.blood||0;
     for(let k=0;k<20;k++){const w=Math.round(22-k*.5);R0(x+22-w-1,y+k,w*2+2,1,OL);R0(x+22-w,y+k,w*2,1,k<2?M2:M);R0(x+22+w-4,y+k,4,1,M1)}
     R0(x+4,y,36,2,'#2a2a2e');if(B){R0(x+6,y+2,8,1+Math.min(4,B>>2),'#a3201a');R0(x+28,y+2,6,1+Math.min(6,B>>1),'#8a1010');R0(x+18,y+2,3,Math.min(14,B),'#a3201a')}
@@ -3423,9 +3439,9 @@ function drawArrestActor(R0,a,x,y,t){const OL='#15130f';if(drawArrestActor2(R0,a
     for(let yy=bot-14;yy<bot;yy++){const f=(yy-(bot-14))/14,w=Math.round(28+f*12);R0(x-w-1,yy,w*2+2,1,OL);R0(x-w,yy,w*2,1,G);R0(x+w-8,yy,8,1,Gd);R0(x-w,yy,3,1,Gl)}
     [[-38,-3],[-7,0],[24,-3]].forEach(([dx,dy])=>{R0(x+dx-1,bot+dy-4,14,5,OL);R0(x+dx,bot+dy-4,12,4,G);R0(x+dx+2,bot+dy-1,8,2,'#e8e4d0');R0(x+dx+3,bot+dy+1,6,1,'#c8c4b0')});
     for(let i=0;i<6;i++)R0(x-30+i*11,bot-18-(i%2)*3,4,3,'#2a4a20')}
-  else if(a.t==='van'){const B='#1c1e22',B2='#2e3238';R0(x-1,y-1,52,22,OL);R0(x,y,50,20,B);R0(x,y,50,2,B2);R0(x+2,y+3,10,7,'#5a7a8a');R0(x+3,y+4,4,2,'#9ab8c8');R0(x+14,y+3,1,14,'#0c0c0e');R0(x,y+11,50,2,'#c9a24a');
+  else if(a.t==='van'){const B=a.bus?'#c4c8c0':'#1c1e22',B2=a.bus?'#dfe2da':'#2e3238';R0(x-1,y-1,52,22,OL);R0(x,y,50,20,B);R0(x,y,50,2,B2);R0(x+2,y+3,10,7,'#5a7a8a');R0(x+3,y+4,4,2,'#9ab8c8');R0(x+14,y+3,1,14,'#0c0c0e');if(!a.bus)R0(x,y+11,50,2,'#c9a24a');else{R0(x+34,y+3,12,6,'#5a7a8a');R0(x+35,y+4,4,2,'#9ab8c8');R0(x,y+15,50,1,'#8a8e86')}
     if(a.door){R0(x+16,y+3,16,15,'#050506');R0(x+33,y+3,1,15,'#3a3e44')}else{R0(x+16,y+3,16,15,B2);R0(x+30,y+10,2,1,'#8a8a8a')}
-    const bl=Math.floor(t/2)%2;R0(x+20,y-4,5,3,bl?'#3a6aff':'#1a2a5a');R0(x+26,y-4,5,3,bl?'#5a1a1a':'#ff3a3a');if(bl){R0(x+16,y-6,14,1,'rgba(90,140,255,.5)')}else R0(x+26,y-6,12,1,'rgba(255,80,80,.5)');
+    const bl=Math.floor(t/2)%2;if(!a.bus){R0(x+20,y-4,5,3,bl?'#3a6aff':'#1a2a5a');R0(x+26,y-4,5,3,bl?'#5a1a1a':'#ff3a3a');if(bl){R0(x+16,y-6,14,1,'rgba(90,140,255,.5)')}else R0(x+26,y-6,12,1,'rgba(255,80,80,.5)')}
     for(const wx of [x+6,x+38]){R0(wx,y+17,9,6,OL);R0(wx+2,y+18,5,4,'#3a3a3a');R0(wx+3+(t%2),y+19,2,2,'#7a7a7a')}R0(x,y+13,3,3,'#ffe8a0');R0(x+48,y+13,2,3,'#c0302a')}
   else if(a.t==='fbang'){R0(x,y,3,5,'#3a4a2a');R0(x,y,3,1,'#6a7a4a');R0(x+1,y-2,1,2,'#9a9a8a');if(t%2)R0(x+1,y-3,1,1,'#ffe060')}
   else if(a.t==='hand'){const R=(xx,yy,w,h,c)=>R0(x+(xx-x)*2,y+(yy-y)*2,w*2,h*2,c);const S='#e3b98f',Sd='#c09070';
@@ -3676,6 +3692,29 @@ const ARRESTS=[
    ops.forEach(o=>{o.faceL=false;o.sp=2.6});ops[0].tx=van.x+2;ops[2].tx=van.x+28;ops[1].tx=van.x+14;ops.forEach(o=>o.ty=108);
    await tick(()=>{p.x=(ops[0].x+ops[2].x)/2-8;p.y=Math.min(ops[0].y,ops[2].y)-13+(QS.tick%4<2?0:1);p.tx=p.x;p.ty=p.y;return ops.every(near)});p.hide=true;if(p.loaded)p.loaded();sNoise(.2,.2,700,100);ops.forEach(o=>o.hide=true);van.door=0;sNoise(.25,.25,900,100);
    qs.forEach(q=>{q.lying=false});sMuf(70,1.3,'sawtooth',.06,90,0,500);let v=1;await tick(()=>{v=Math.min(14,v*1.25);van.x-=v;return van.x<-QS.OX-70});QS.actors=QS.actors.filter(a=>a!==van);ppTalk(I18L('Бюро'),I18L('Фургон уехал. Очередь поднимается и отряхивается.'))}},
+ {n:'busify',title:LG('Бусификация','Bus-ification'),desc:LG('Подъезжает зелёная буханка, из неё выскакивают двое в военной форме, ловят нарушителя, бьют его, затаскивают в бусик и увозят.','A green UAZ "loaf" van pulls up, two men in military uniform jump out, catch the offender, beat him up, drag him into the bus and drive off.'),price:30,noPolice:true,line:LG('Бусик выехал. Повестки при себе.','The minibus is on its way. Summonses in hand.'),async run(p){p.sp=2.2;
+   const L0=-QS.OX,R0=QS.W-QS.OX,sd=(R0-p.x)<(p.x-L0)?1:-1,gone=()=>p.hide||p.vanished||p.ash;
+   const bus={t:'uaz',x:sd>0?R0+30:L0-80,y:101,door:0,under:true,faceL:sd>0};QS.actors.push(bus);sMuf(70,1.4,'sawtooth',.06,60,0,500);sNoise(1.2,.06,500,60);ppTalk(I18L('Бюро'),LG('К будке подкатывает зелёная буханка без номеров…','A green UAZ "loaf" van with no plates rolls up to the booth…'));
+   const bx=()=>sd>0?Math.max(L0+10,Math.min(R0-60,p.x+40)):Math.min(R0-60,Math.max(L0+10,p.x-62));
+   await tick(()=>{const tx=bx();bus.x+=Math.sign(tx-bus.x)*Math.min(Math.abs(tx-bus.x),Math.max(6,Math.abs(tx-bus.x)*.2));if(QS.tick%2===0)QS.fx.push({t:'spark',x:Math.round(bus.x+(sd>0?50:0)),y:124,ttl:3,c:'#6a6254'});return Math.abs(bus.x-tx)<2});
+   sNoise(.7,.22,3500,900);popText(LG('СКРРРИП!','SKRRRT!'),Math.round(bus.x+24),96,'#e0e0e0',12);bus.door=1;sNoise(.2,.15,1200,200);
+   const ops=[0,1].map(i=>{const o={look:MILL(),x:bus.x+20,y:108,tx:bus.x+20-sd*(8+i*6),ty:[104,112][i],state:'x',sp:4.6,run:true};QS.people.push(o);return o});
+   ppTalk(LG('Военный','Soldier'),LG('Стоять! Мужчина, вам повестка!','Freeze! Sir, you have a summons!'));popText(LG('СТОЯТЬ!','FREEZE!'),Math.round(bus.x+20),84,'#ffe060',14);await sleep(250);
+   if(!gone()){ppTalk(PD.cur.role,pick([LG('Нет-нет, я инвалид! У меня справка!','No no, I\'m disabled! I have a certificate!'),LG('Я просто за справкой о доходах!','I only came for an income statement!'),LG('Отпустите, у меня отсрочка!','Let me go, I have a deferment!')]))}
+   await tick(()=>{ops.forEach((o,i)=>{o.tx=p.x+(i?14:-10);o.ty=p.y+(i?4:-2);o.sp=7;o.run=true});return gone()||ops.every(o=>Math.abs(o.x-o.tx)<6&&Math.abs(o.y-o.ty)<6)});
+   if(!gone()){p.panic=false;p.run=false;p.sp=0;p.tx=p.x;p.ty=p.y;popText(LG('ПОЙМАЛИ!','GOT HIM!'),Math.round(p.x+6),Math.round(p.y-6),'#ffe060',13);
+     ops.forEach((o,i)=>{o.tx=p.x+(i?13:-11);o.ty=p.y;o.faceL=i===1;o.dir=i===1?-1:1});await sleep(250);
+     const hits=[LG('БАХ!','BAM!'),LG('ХРЯСЬ!','CRACK!'),LG('БУМ!','BOOM!'),LG('ШМЯК!','SMACK!'),LG('ХРЯСЬ!','CRACK!'),LG('БАХ!','BAM!'),LG('НА!','TAKE THAT!')];
+     for(let h=0;h<hits.length&&!gone();h++){const o=ops[h%2],dx=h%2?-1:1;o.x+=dx*3;p.lying=h>=3;p.x+=dx*1.5;p.tx=p.x;QS.flash=1;shakePP();try{sNoise(.12,.35,600,120);sTone(90,.12,'square',.08,50)}catch(_){}
+       popText(hits[h],Math.round(p.x+6+rint(-6,6)),Math.round(p.y-4-rint(0,8)),h%2?'#ff9a6a':'#ffe060',12+(h%3));for(let i=0;i<7;i++)QS.fx.push({t:'spark',x:Math.round(p.x+6+rint(-6,6)),y:Math.round(p.y+rint(6,22)),ttl:3+i%3,c:i%3?'#a3201a':'#ffffff'});if(h%2)QS.decals.push({x:Math.round(p.x+rint(-6,6)),y:Math.round(p.y+rint(-1,1))});
+       await sleep(170);o.x-=dx*3}
+     p.blood=Math.max(p.blood||0,.3);p.lying=true;ppTalk(LG('Военный','Soldier'),LG('Всё, годен. Грузим.','Right, fit for service. Load him.'));await sleep(500)}
+   if(!gone()){ops.forEach((o,i)=>{o.tx=p.x+(i?20:-6);o.ty=p.y;o.sp=4.5});await tick(()=>gone()||ops.every(near));const y0=p.y,y1=Math.min(ops[0].y,ops[1].y)-13;let k=0;await tick(()=>{k++;p.y=y0+(y1-y0)*Math.min(1,k/6);p.ty=p.y;return gone()||k>=6});
+     ops.forEach(o=>{o.faceL=sd<0;o.sp=3.6;o.tx=bus.x+20+(o===ops[0]?-6:8);o.ty=108});
+     await tick(()=>{if(gone())return true;p.x=(ops[0].x+ops[1].x)/2-8;p.y=Math.min(ops[0].y,ops[1].y)-13+(QS.tick%4<2?0:1);p.tx=p.x;p.ty=p.y;if(QS.tick%5===0)QS.decals.push({x:Math.round(p.x+rint(0,10)),y:Math.round(p.y+14)});return ops.every(near)})}
+   if(!p.hide){p.hide=true;p.vanished=true}if(p.loaded)p.loaded();p.vanishMsg=LG('Бусик уехал. На асфальте следы крови и одна повестка.','The minibus is gone. Blood on the asphalt and one summons.');
+   ops.forEach(o=>{o.tx=bus.x+20;o.ty=108;o.sp=4});await tick(()=>ops.every(near));ops.forEach(o=>o.hide=true);bus.door=0;sNoise(.25,.25,900,100);popText(LG('ХЛОП','SLAM'),Math.round(bus.x+24),96,'#e0e0e0',11);
+   sMuf(70,1.3,'sawtooth',.06,90,0,500);let v=1;await tick(()=>{v=Math.min(14,v*1.25);bus.x+=sd*v;return sd>0?bus.x>R0+70:bus.x<L0-70});QS.actors=QS.actors.filter(a=>a!==bus);ppTalk(I18L('Бюро'),LG('Бусик скрылся за углом. Очередь заметно поредела.','The minibus disappears around the corner. The queue got noticeably shorter.'))}},
  {n:'stamp',title:I18L('Печать «ОТКЛОНЕНО»'),desc:I18L('С неба опускается огромная рука главного бухгалтера и с размаху ставит на нарушителя печать «ОТКЛОНЕНО», оставляя оттиск на асфальте.'),price:25,line:I18L('Главный бухгалтер берёт печать…'),async run(p){p.sp=.8;p.faceL=false;
    const h={t:'hand',x:Math.round(p.x+6),y:-40},s={t:'shadow',x:p.x,y:Math.round(p.y+27),w:6};QS.actors.push(s,h);sMuf(65,2.4,'sawtooth',.05,55,0,300);sMuf(98,2.4,'sawtooth',.03,82,0,300);
    ppTalk(I18L('Главный бухгалтер'),I18L('Так-так. Отчётность этого гражданина… на рассмотрении.'));
@@ -3878,9 +3917,9 @@ async function policeCleanup(p,onArrive){
   p.hide=true;cops.forEach(c=>{c.faceL=false;c.tx=car.x+22});await tick(()=>cops.every(near));cops.forEach(c=>c.hide=true);
   if(p.handler){const c=p.handler,sd=p.k9side||1;c.faceL=sd<0;c.tx=sd>0?QS.W-QS.OX+30:-QS.OX-40;c.sp=3.2}if(p.dog){const d=p.dog,sd=p.k9side||1;d.face=sd>0?'r':'l';d.sit=false;await tick(()=>{if(p.handler)p.handler.tx=sd>0?Math.max(p.handler.tx,d.x+20):Math.min(p.handler.tx,d.x-20);d.x+=sd*14;return sd>0?d.x>QS.W-QS.OX+10:d.x<-QS.OX-30});QS.actors=QS.actors.filter(a=>a!==d)}
   car.dir=-1;car.sp=Math.max(7,(car.x+QS.OX+90)/22);SFX.engine();await tick(()=>car.x<-QS.OX-90);QS.car=null;QS.actors=QS.actors.filter(a=>a.t!=='smoke')}
-const PANIC_T=new Set(['dog','van','tank','pig','petrun','apple','heli','dragon','tornado','rocket','devil','bigrock']);
+const PANIC_T=new Set(['uaz','dog','van','tank','pig','petrun','apple','heli','dragon','tornado','rocket','devil','bigrock']);
 function panicThreat(p){let best=null,bd=1e9;const add=x=>{const d=Math.abs(x-p.x);if(d<bd&&d<240){bd=d;best=x}};
-  (QS.actors||[]).forEach(a=>{if(PANIC_T.has(a.t)&&!a.gone&&!a.fly)add(a.x+(a.t==='tank'?48:a.t==='van'?30:a.t==='heli'?24:a.t==='pig'?26:6))});
+  (QS.actors||[]).forEach(a=>{if(PANIC_T.has(a.t)&&!a.gone&&!a.fly)add(a.x+(a.t==='tank'?48:a.t==='van'||a.t==='uaz'?30:a.t==='heli'?24:a.t==='pig'?26:6))});
   if(QS.car)add(QS.car.x+23);QS.people.forEach(q=>{if(q!==p&&q.state==='x'&&!q.hide&&!q.lying)add(q.x)});return best}
 function panicNext(p){const lo=-QS.OX+14,hi=Math.max(lo+40,Math.min(QS.W-QS.OX-40,360));
   const th=panicThreat(p);if(th!=null){const away=p.x>=th?1:-1;p.pdir=away;
