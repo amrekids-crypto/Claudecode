@@ -2071,7 +2071,7 @@ function newLook(){const f=Math.random()<.5;const old=Math.random()<.18;const ha
   return{fs:Math.random(),g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25?pick([true,true,'goatee','chin']):false,stache:!f&&Math.random()<.25?pick([true,true,'walrus','pencil']):false,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
 const ROLES_M=[I18L('Пекарь'),I18L('Таксист'),I18L('Стартапер'),I18L('Рыбак'),I18L('Строитель'),I18L('Сантехник'),I18L('Учитель'),I18L('Хозяин автомойки'),I18L('Почтальон'),I18L('Студент 1 курса'),I18L('Стажёр-бухгалтер'),I18L('Кассир банка'),I18L('Фермер'),I18L('Владелец кафе')];
 const ROLES_F=[I18L('Фермерша'),I18L('Владелица кафе'),I18L('Цветочница'),I18L('Блогерша'),I18L('Библиотекарша'),I18L('Студентка 1 курса'),I18L('Учительница'),I18L('Кассирша банка'),I18L('Стажёрка-бухгалтер'),I18L('Пекарша'),I18L('Парикмахерша'),I18L('Владелица автомойки')];
-const FLAGS={pride:['#e40303','#ff8c00','#ffed00','#008026','#24408e','#732982'],ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700'],ps:['#15130f','#15130f','#f4f4ec','#f4f4ec','#007a3d','#007a3d']};
+const FLAGS={ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700'],ps:['#15130f','#15130f','#f4f4ec','#f4f4ec','#007a3d','#007a3d']};
 function drawFlag(R,x,y,f,w){const s=FLAGS[f];for(let i=0;i<6;i++)R(x,y+i,w,1,s[i]);if(f==='ps'){for(let i=0;i<3;i++)R(x,y+i,3-i,1,'#ce1126');for(let i=3;i<6;i++)R(x,y+i,i-2,1,'#ce1126')}}
 function jewLook(){const L=newLook();const h=Math.random()<.45;Object.assign(L,{g:'m',style:'short',tie:null,brow:1,stache:false,hat:h?'hasid':'kippah',hatc:h?'#15130f':pick(['#1c2a44','#15130f','#e8e4d8','#3a2a5a'])});
   if(h)Object.assign(L,{coat:'#1c1c20',shirt:'#e8e4d8',beard:true,payot:true,hair:'#1a1612'});else L.beard=Math.random()<.4;return L}
@@ -4384,8 +4384,6 @@ const ALBUM=[
  ['wheel',[I18L('Скоростной колясочник'),I18L('Скоростная колясочница')],I18L('Не хочется арестовывать'),L=>L.sp==='wheel',[I18L('Приехал раньше всех. Пандуса у будки так и нет.'),I18L('Приехала раньше всех. Пандуса у будки так и нет.')]],
  ['kippah',I18L('В кипе'),I18L('Встречается нечасто'),L=>L.hat==='kippah',[I18L('Пришёл уточнить один пункт договора. Уточняет третий час.'),I18L('Пришла уточнить один пункт договора. Уточняет третий час.')]],
  ['hasid',I18L('Хасид'),I18L('Чёрная шляпа и пейсы'),L=>L.hat==='hasid',I18L('Спорит о каждой запятой в договоре и всегда оказывается прав.')],
- ['flag_pride',I18L('Гейша'),I18L('Флаг носят только те, кого можно арестовать'),L=>L.flag==='pride',I18L('Радуга на флаге, красный цвет в балансе.')],
- ['pride_mom',I18L('Гейша с прицепом'),I18L('Очень редкая гостья'),L=>L.flag==='pride'&&L.sp==='mom',I18L('Радужный флаг в одной руке, ребёнок в другой. Отчёт держит зубами.')],
  ['flag_ua',I18L('С флагом Украины'),I18L('Флаг носят только те, кого можно арестовать'),L=>L.flag==='ua',[I18L('Пришёл с флагом даже за справкой о доходах.'),I18L('Пришла с флагом даже за справкой о доходах.')]],
  ['flag_ps',I18L('Взрывоопасный'),I18L('Флаг носят только те, кого можно арестовать'),L=>L.flag==='ps',I18L('Держит флаг крепче, чем свой бюджет.')],
  ['catgirl',I18L('Кошкодевочка'),I18L('Очень редкая гостья'),L=>!!L.catgirl,I18L('Мяу. Требует оплату рыбой. Бухгалтерия в замешательстве.')],
@@ -4406,7 +4404,7 @@ const ALBUM=[
 const lookClone=L=>JSON.parse(JSON.stringify(L));
 const gtxt=(v,L)=>Array.isArray(v)?v[L&&L.g==='f'?1:0]:(v||'');
 const RARITY=[[I18L('Обычный'),'#8f8360'],[I18L('Необычный'),'#4a9a4a'],[I18L('Редкий'),'#3a7ac8'],[I18L('Эпический'),'#9a4ac8'],[I18L('Легендарный'),'#e0a020']];
-const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_pride:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,trader:3,pride_mom:3,golden:4,ghost:4,deep:4};
+const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,trader:3,golden:4,ghost:4,deep:4};
 const albR=k=>ALB_R[k]||0;
 function albumSee(L){if(!L)return;if(L.celeb&&!META.st['cel_'+L.celeb]){stInc('cel_'+L.celeb);achCheck()}const F=faceOf(L);const got=[];const m=ALBUM.filter(([k,,,t])=>!META.album[k]&&t(L,F)).sort((a,b)=>albR(b[0])-albR(a[0]))[0];
   if(m){META.album[m[0]]={L:lookClone(L),d:PP.day};got.push(gtxt(m[1],L))}
