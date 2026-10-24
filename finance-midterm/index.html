@@ -2114,8 +2114,8 @@ function newLook(){const f=Math.random()<.5;const old=Math.random()<.18;const ha
   return{fs:Math.random(),g:f?'f':'m',old,skin:pick(SKIN),hair,coat:pick(COAT),shirt:pick(['#d8d0c0','#b8c0c8','#c8b890','#e0d0d0']),style:f?pick(['long','long','bun','curly','short']):pick(['short','short','bald','curly']),hat,hatc:pick(['#3a3a30','#5a3a24','#2d3b4a','#6a2a2a','#4a5a3a']),beard:!f&&Math.random()<.25?pick([true,true,'goatee','chin']):false,stache:!f&&Math.random()<.25?pick([true,true,'walrus','pencil']):false,glasses:Math.random()<.22+(old?.3:0),tie:!f&&Math.random()<.5?pick(['#8a2a22','#2a3a6a','#3a5a2a']):null,brow:f?0:(Math.random()<.5?1:0)}}
 const ROLES_M=[I18L('Пекарь'),I18L('Таксист'),I18L('Стартапер'),I18L('Рыбак'),I18L('Строитель'),I18L('Сантехник'),I18L('Учитель'),I18L('Хозяин автомойки'),I18L('Почтальон'),I18L('Студент 1 курса'),I18L('Стажёр-бухгалтер'),I18L('Кассир банка'),I18L('Фермер'),I18L('Владелец кафе')];
 const ROLES_F=[I18L('Фермерша'),I18L('Владелица кафе'),I18L('Цветочница'),I18L('Блогерша'),I18L('Библиотекарша'),I18L('Студентка 1 курса'),I18L('Учительница'),I18L('Кассирша банка'),I18L('Стажёрка-бухгалтер'),I18L('Пекарша'),I18L('Парикмахерша'),I18L('Владелица автомойки')];
-const FLAGS={ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700'],ps:['#15130f','#15130f','#f4f4ec','#f4f4ec','#007a3d','#007a3d']};
-function drawFlag(R,x,y,f,w){const s=FLAGS[f];for(let i=0;i<6;i++)R(x,y+i,w,1,s[i]);if(f==='ps'){for(let i=0;i<3;i++)R(x,y+i,3-i,1,'#ce1126');for(let i=3;i<6;i++)R(x,y+i,i-2,1,'#ce1126')}}
+const FLAGS={ua:['#0057b7','#0057b7','#0057b7','#ffd700','#ffd700','#ffd700']};
+function drawFlag(R,x,y,f,w){const s=FLAGS[f];if(!s)return;for(let i=0;i<6;i++)R(x,y+i,w,1,s[i]);if(f==='ps'){for(let i=0;i<3;i++)R(x,y+i,3-i,1,'#ce1126');for(let i=3;i<6;i++)R(x,y+i,i-2,1,'#ce1126')}}
 function jewLook(){const L=newLook();const h=Math.random()<.45;Object.assign(L,{g:'m',style:'short',tie:null,brow:1,stache:false,hat:h?'hasid':'kippah',hatc:h?'#15130f':pick(['#1c2a44','#15130f','#e8e4d8','#3a2a5a'])});
   if(h)Object.assign(L,{coat:'#1c1c20',shirt:'#e8e4d8',beard:true,payot:true,hair:'#1a1612'});else L.beard=Math.random()<.4;return L}
 function sympLook(){const L=newLook(),sp=pick(['granny','mom','wheel','cat']);L.sp=sp==='cat'?'granny':sp;if(sp==='cat'){const cc=pick([['#e08a3a','#f0d0a0'],['#2a2a2e','#f0ece0'],['#9a9a9a','#5a5a5e'],['#f0ece0','#e08a3a'],['#6a4a2a','#2a1a10'],['#c8b8a0','#5a4030'],['#8a8a9a','#f0ece0'],['#d8a060','#8a5020']]);L.cat=cc[0];L.cat2=cc[1];L.catp=pick(['plain','tabby','spots','socks'])}
@@ -2334,6 +2334,7 @@ function drawFace(L,cv,ov){
   if(L.horns){const Hr='#c0201a',Hd='#7a1010';const HW8=[4,4,3,3,2,2,1,1],by=(hairOn?11:12)+ADY;for(const [hx,dir] of [[22-ADX,-1],[41+ADX,1]]){Rh(hx-(dir<0?4:0)-1,by+1,6,1,hairOn?H1:sd);for(let k=0;k<8;k++){const w=HW8[k],x0=hx+dir*Math.floor(k/2)-(dir<0?w:0),y=by-k;Rh(x0-1,y,1,1,OL);Rh(x0+w,y,1,1,OL);Rh(x0,y,w,1,k<2?Hd:Hr);if(w>1&&k>1)Rh(dir<0?x0+w-1:x0,y,1,1,'#e04a3a')}const tx=hx+dir*3-(dir<0?1:0);Rh(tx,by-8,1,1,OL)}}
   if(L.insp&&EGG.dec){for(let y=3;y<=12;y++){const w=Math.round(4+(y-3)*1.3),cx=32+Math.round((12-y)*.9);row(y,cx-w-1,cx+w+1,OL);row(y,cx-w,cx+w,'#c0201a');Rh(cx-w,y,2,1,'#e04a3a');Rh(cx+w-2,y,2,1,'#8a1010')}
     row(12,14,50,OL);row(13,14,50,'#f4f0e4');row(14,14,50,'#e8e2d4');row(15,15,49,'#d8d2c0');row(16,16,48,OL);Rh(43,3,6,6,OL);Rh(44,4,4,4,'#f4f0e4');Rh(44,4,2,1,'#ffffff')}
+  if(L.bomb){for(let i=0;i<6;i++){const sx=21+i*4;R(sx-1,55,4,9,'#15130f');R(sx,56,2,8,'#b02a22');R(sx,56,1,8,'#e05a4a')}R(20,58,26,1,'#3a3a3a');R(29,57,7,5,'#15130f');R(30,58,5,3,'#2a2e2a');R(31,59,3,1,tk%8<4?'#ff3a2a':'#5a1a1a');R(28,55,1,3,'#ffe060');R(36,55,1,3,'#3a6aff');R(34,54,4,1,'#ffe060')}
   if(L.badge&&L.badge!=='none'){const bx=20,by=51;if(L.badge==='star'){R(bx+2,by,1,1,'#e0b64a');R(bx,by+1,5,1,'#e0b64a');R(bx+1,by+2,3,1,'#e0b64a');R(bx,by+3,2,1,'#e0b64a');R(bx+3,by+3,2,1,'#e0b64a');R(bx+2,by+1,1,1,'#fff0a0')}
     else if(L.badge==='medal'){R(bx,by-2,2,3,'#a3302a');R(bx+2,by-2,2,3,'#f4f0e4');R(bx,by+1,4,4,'#e0b64a');R(bx+1,by+2,2,2,'#fff0a0')}
     else if(L.badge==='heart'){R(bx,by,2,1,'#e04a5a');R(bx+3,by,2,1,'#e04a5a');R(bx,by+1,5,1,'#e04a5a');R(bx+1,by+2,3,1,'#e04a5a');R(bx+2,by+3,1,1,'#e04a5a');R(bx,by,1,1,'#ff9aa8')}
@@ -2359,7 +2360,7 @@ function drawFace(L,cv,ov){
     if((tk+29)%47<2){R(41,47,3,1,OL);R(48,47,3,1,OL)}else{R(41,46,3,3,'#7ac070');R(48,46,3,3,'#7ac070');R(42,46,1,3,'#15130f');R(49,46,1,3,'#15130f');R(41,46,1,1,'#e8f0d8');R(48,46,1,1,'#e8f0d8')}
     R(45,50,2,1,pink);R(44,51,1,1,Cd);R(47,51,1,1,Cd);R(45,51,2,1,Cd);R(35,49,5,1,shade(C,.6));R(35,51,5,1,shade(C,.6));R(53,49,5,1,shade(C,.6));R(53,51,5,1,shade(C,.6));
     if(L.catp==='socks')R(41,56,11,4,C2);}
-  if(L.flag){R(60,2,2,62,'#6a4a2a');R(60,1,2,1,'#e0b64a');const wv=Math.floor(tk/5)%2;for(let c2=0;c2<14;c2++){const dy=(c2+wv)%4<2?0:1;const s2=FLAGS[L.flag];for(let i=0;i<6;i++)R(46+c2,3+dy+i*2,1,2,s2[i]);if(L.flag==='ps'){const row=Math.abs(c2-13);if(row<7){for(let i=0;i<12;i++){const hy=Math.abs(i-5.5);if(hy+.5<=6-row)R(46+c2,3+dy+i,1,1,'#ce1126')}}}}}
+  if(L.flag&&FLAGS[L.flag]){R(60,2,2,62,'#6a4a2a');R(60,1,2,1,'#e0b64a');const wv=Math.floor(tk/5)%2;for(let c2=0;c2<14;c2++){const dy=(c2+wv)%4<2?0:1;const s2=FLAGS[L.flag];for(let i=0;i<6;i++)R(46+c2,3+dy+i*2,1,2,s2[i]);if(L.flag==='ps'){const row=Math.abs(c2-13);if(row<7){for(let i=0;i<12;i++){const hy=Math.abs(i-5.5);if(hy+.5<=6-row)R(46+c2,3+dy+i,1,1,'#ce1126')}}}}}
   x.restore();
   if(!cv&&PP.event==='blackout'&&!(PD&&PD.lightFixed)){x.fillStyle='rgba(6,8,18,.42)';x.fillRect(0,0,64,64);x.fillStyle='rgba(255,220,150,.10)';x.beginPath();x.arc(32,30,18,0,Math.PI*2);x.fill()}
 }
@@ -2451,6 +2452,7 @@ function drawPerson(R,px,py,L,frame,moving){if(L&&!L._f)try{faceOf(L)}catch(e){}
   R(px+5-arm,y+11,2,7,cd);
   R(px+3,y+9,6,12,c);R(px+3,y+9,1,12,cl);R(px+8,y+10,1,10,cd);if(L.chub){R(px+9,y+12,2,7,c);R(px+10,y+13,1,5,cd);R(px+2,y+11,1,8,cd)}R(px+7,y+9,2,3,L.shirt||'#d8d0c0');if(L.tie)R(px+8,y+10,1,4,L.tie);
   if(L.insp){R(px+3,y+9,6,1,'#e0b64a');R(px+4,y+13,4,2,'#a3302a')}
+  if(L.bomb){R(px+3,y+15,6,3,'#a3201a');R(px+4,y+15,1,3,'#e04a3a');R(px+6,y+15,1,3,'#e04a3a');R(px+8,y+15,1,3,'#e04a3a');R(px+5,y+16,2,1,'#15130f');if(QS.tick%6<3)R(px+5,y+16,1,1,'#ff3a2a');R(px+8,y+14,1,1,'#ffe060');R(px+2,y+17,1,1,'#3a6aff')}
   if(L.camo){R(px+4,y+10,2,2,'#3a4424');R(px+6,y+14,3,2,'#7a7a50');R(px+3,y+17,2,2,'#3a4424');R(px+7,y+18,2,1,'#2e3420')}
   if(L.hat==='police'){R(px+3,y+12,6,1,'#e0e0e0');R(px+7,y+11,1,2,'#e0b64a')}
   R(px+5+lg[0],y+20,2,7-bob,'#2a2620');R(px+5+lg[0],py+26,4,2,'#15130f');
@@ -2579,7 +2581,7 @@ function qsDraw(cv,ov){
     if(p.lying)return;
     const Rb=p.clipY!=null?(x0,y0,w,h,cc)=>{if(y0>=p.clipY)return;R(x0,y0,w,Math.min(h,p.clipY-y0),cc)}:R;const LK=decayLook(p);const Rd=decayR(Rb,p,px,py,false);const Rm=p.dir<0?(x0,y0,w,h,cc)=>Rd(2*px+12-x0-w,y0,w,h,cc):Rd;if(LK.ghost)x.globalAlpha=.55;drawPerson(Rm,px,py,LK,p.run?QS.tick:Math.floor(QS.tick/(PD&&PD.slow?6:2)),p.moving&&LK.sp!=='wheel');x.globalAlpha=1;
     const sp=LK.sp;
-    if(LK.flag){Rm(px+10,py-9,1,24,'#6a4a2a');const wv=p.moving&&Math.floor(QS.tick/2)%2?1:0;drawFlag((x0,y0,w,h,cc)=>Rm(x0,y0+(x0>px+15?wv:0),w,h,cc),px+11,py-9,LK.flag,9)}
+    if(LK.flag&&FLAGS[LK.flag]){Rm(px+10,py-9,1,24,'#6a4a2a');const wv=p.moving&&Math.floor(QS.tick/2)%2?1:0;drawFlag((x0,y0,w,h,cc)=>Rm(x0,y0+(x0>px+15?wv:0),w,h,cc),px+11,py-9,LK.flag,9)}
     if(LK.cat){const cx=px-10,cy=py+21,f=p.moving&&Math.floor(QS.tick/2)%2,C=LK.cat,Cd=shade(C,.7);Rm(cx,cy+1,7,3,C);Rm(cx+6,cy-1,3,3,C);Rm(cx+6,cy-2,1,1,C);Rm(cx+8,cy-2,1,1,C);Rm(cx+8,cy,1,1,'#3a8a3a');Rm(cx-2,cy-1+(f?1:0),2,1,C);Rm(cx-1,cy,1,2,C);Rm(cx+1+(f?1:0),cy+4,1,2,Cd);Rm(cx+5-(f?1:0),cy+4,1,2,Cd);const C2=LK.cat2||Cd,pt=LK.catp;if(pt==='tabby'){Rm(cx+1,cy+1,1,2,C2);Rm(cx+3,cy+1,1,2,C2);Rm(cx+5,cy+1,1,2,C2)}else if(pt==='spots'){Rm(cx+1,cy+2,2,1,C2);Rm(cx+4,cy+1,2,2,C2);Rm(cx+7,cy-1,1,1,C2)}else if(pt==='socks'){Rm(cx+1+(f?1:0),cy+5,1,1,C2);Rm(cx+5-(f?1:0),cy+5,1,1,C2);Rm(cx+7,cy+1,2,1,C2)}}
     if(sp==='granny'){Rm(px+11,py+13,1,14,'#5a3a24');Rm(px+10,py+13,2,1,'#5a3a24')}
     else if(sp==='mom'){const kx=px-6,ky=py+12,kb=p.moving&&Math.floor(QS.tick/2)%2?-1:0;Rm(kx+1,ky+kb,4,4,LK.kid);Rm(kx+1,ky-1+kb,4,2,LK.kidh||'#6a4526');Rm(kx+4,ky+1+kb,1,1,'#1b1914');Rm(kx,ky+4+kb,6,6,LK.kidc);Rm(kx+1,ky+10,1,5,'#2a2620');Rm(kx+4,ky+10,1,5,'#2a2620');Rm(kx+5,ky+5+kb,3,1,LK.kidc);Rm(kx+8,ky+5+kb,1,1,LK.kid);
@@ -3089,6 +3091,7 @@ function ppTraitLines(L,kind){const F=faceOf(L),o=L.old||F.age==='o',y=F.age==='
     if(L.sp==='wheel')A('Хорошо хоть окошко на моей высоте.','At least the window is at my height.');
     if(L.catgirl)A('Мяу. То есть добрый день. Вот бумаги.','Meow. I mean, good afternoon. Here are the papers.');
     if(L.flag)A('Флаг не мешает считать, не волнуйтесь.','The flag won\'t get in the way of the math, don\'t worry.');
+    if(L.bomb){A('Не трогайте мой пояс. Просто проверьте документ.','Don\'t touch my belt. Just check the document.');A('Тик-так. Давайте побыстрее.','Tick-tock. Let\'s hurry this up.')}
     if(L.hat==='kippah'||L.hat==='hasid')A('Давайте сверим каждую цифру. Каждую.','Let\'s check every number. Every single one.');
     if(L.glasses)A('Я уже трижды перечитал, но давайте ещё раз.','I\'ve read it three times already, but let\'s do it again.');
     if(L.beard===true)A('Пока я тут стоял, борода отросла ещё на сантиметр.','While I stood in line my beard grew another centimeter.');
@@ -3170,7 +3173,7 @@ function heavySpread(t){const RP=ppRamp();if(!RP.spread)return t;const H=x=>isHe
   if(RP.early){const nh=t.filter(H),lt=t.filter(x=>!H(x));if(nh.length&&lt.length){const out=[];const lead=Math.max(0,Math.min(lt.length-(nh.length-1),PP.day<5?2:1));for(let i=0;i<lead;i++)out.push(lt.shift());const gap=Math.max(1,Math.floor(lt.length/Math.max(1,nh.length)));while(nh.length||lt.length){if(nh.length&&(!out.length||!H(out[out.length-1])))out.push(nh.shift());for(let g=0;g<gap&&lt.length;g++)out.push(lt.shift());if(!lt.length&&nh.length)out.push(nh.shift())}return out}}
   for(let k=0;k<30;k++){let moved=false;for(let i=1;i<t.length;i++){if(!(H(t[i])&&H(t[i-1])))continue;const j=t.findIndex((x,jj)=>!H(x)&&(jj===0||!H(t[jj-1])||jj-1===i)&&(jj+1>=t.length||!H(t[jj+1])||jj+1===i)&&jj!==i-1);if(j>=0){[t[i],t[j]]=[t[j],t[i]];moved=true}}if(!moved)break}return t}
 function ppFinishTasks(t){
-  let flagUsed=false;return heavySpread(docSpread(shuffle(t))).map(x=>{const look=Math.random()<.07?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&!flagUsed&&Math.random()<.3){look.flag=pick(Object.keys(FLAGS));flagUsed=true}if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};if(look.celeb==='trader')x=traderTask();if(look.celeb==='stalin'){const q=stalinGen();x=Math.random()<.5?claimQ(q):{kind:'q',q}}return Object.assign(x,{look,role:roleFor(look)})});
+  let flagUsed=false;return heavySpread(docSpread(shuffle(t))).map(x=>{const look=Math.random()<.07?celebLook():Math.random()<.04?catLook():Math.random()<.16?sympLook():newLook();if(!look.celeb&&!look.catgirl&&(x.suspect||x.kind==='claim'||x.kind==='audit')&&!flagUsed&&Math.random()<.3){if(Math.random()<.5)look.bomb=true;else look.flag='ua';flagUsed=true}if(!look.sp&&!look.celeb&&!look.catgirl&&!look.flag&&Math.random()<.08)Object.assign(look,jewLook());faceOf(look);if(look.celeb==='agent')x={kind:'q',q:foodGen()};if(look.celeb==='trader')x=traderTask();if(look.celeb==='stalin'){const q=stalinGen();x=Math.random()<.5?claimQ(q):{kind:'q',q}}return Object.assign(x,{look,role:roleFor(look)})});
 }
 /* ---------- ui helpers ---------- */
 function ppBar(){
@@ -4428,7 +4431,7 @@ const ALBUM=[
  ['kippah',I18L('В кипе'),I18L('Встречается нечасто'),L=>L.hat==='kippah',[I18L('Пришёл уточнить один пункт договора. Уточняет третий час.'),I18L('Пришла уточнить один пункт договора. Уточняет третий час.')]],
  ['hasid',I18L('Хасид'),I18L('Чёрная шляпа и пейсы'),L=>L.hat==='hasid',I18L('Спорит о каждой запятой в договоре и всегда оказывается прав.')],
  ['flag_ua',I18L('С флагом Украины'),I18L('Флаг носят только те, кого можно арестовать'),L=>L.flag==='ua',[I18L('Пришёл с флагом даже за справкой о доходах.'),I18L('Пришла с флагом даже за справкой о доходах.')]],
- ['flag_ps',I18L('Взрывоопасный'),I18L('Флаг носят только те, кого можно арестовать'),L=>L.flag==='ps',I18L('Держит флаг крепче, чем свой бюджет.')],
+ ['bomb',LG('Взрывоопасный','Explosive'),LG('Пояс носят только те, кого можно арестовать','Only arrestable visitors wear the belt'),L=>!!L.bomb,LG('Под пиджаком пояс с динамитом. Таймер тикает быстрее, чем движется очередь.','A dynamite belt under the jacket. The timer ticks faster than the queue moves.')],
  ['catgirl',I18L('Кошкодевочка'),I18L('Очень редкая гостья'),L=>!!L.catgirl,I18L('Мяу. Требует оплату рыбой. Бухгалтерия в замешательстве.')],
  ['biden',I18L('Джо Байден'),I18L('Знаменитость, приходит редко'),L=>L.celeb==='biden',I18L('Вышел не в ту дверь и оказался в очереди. Остался из вежливости.')],
  ['hitler',I18L('Адольф Гитлер'),I18L('Знаменитость, приходит редко'),L=>L.celeb==='hitler',I18L('Не прошёл в академию художеств. Теперь не может пройти даже проверку отчёта о движении денежных средств.')],
@@ -4447,7 +4450,7 @@ const ALBUM=[
 const lookClone=L=>JSON.parse(JSON.stringify(L));
 const gtxt=(v,L)=>Array.isArray(v)?v[L&&L.g==='f'?1:0]:(v||'');
 const RARITY=[[I18L('Обычный'),'#8f8360'],[I18L('Необычный'),'#4a9a4a'],[I18L('Редкий'),'#3a7ac8'],[I18L('Эпический'),'#9a4ac8'],[I18L('Легендарный'),'#e0a020']];
-const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_ua:1,flag_ps:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,trader:3,golden:4,ghost:4,deep:4};
+const ALB_R={pretty_f:1,pretty_m:1,mom2:1,wheel:1,kippah:1,flag_ua:1,bomb:1,hasid:2,granny_cat:2,mom3:2,boss:2,catgirl:3,biden:3,hitler:3,zelensky:3,kirk:3,floyd:3,bibi:3,agent:3,trader:3,golden:4,ghost:4,deep:4};
 const albR=k=>ALB_R[k]||0;
 function albumSee(L){if(!L)return;if(L.celeb&&!META.st['cel_'+L.celeb]){stInc('cel_'+L.celeb);achCheck()}const F=faceOf(L);const got=[];const m=ALBUM.filter(([k,,,t])=>!META.album[k]&&t(L,F)).sort((a,b)=>albR(b[0])-albR(a[0]))[0];
   if(m){META.album[m[0]]={L:lookClone(L),d:PP.day};got.push(gtxt(m[1],L))}
