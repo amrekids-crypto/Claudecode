@@ -55,6 +55,7 @@ main{padding-top:18px;padding-bottom:28px}
 .btn.primary:hover:not([disabled]){filter:brightness(1.04)}
 .btn.small{padding:6px 12px;min-height:36px;font-size:13.5px}
 .btn.ghost{background:none;border-color:transparent;text-decoration:underline;text-underline-offset:3px;padding-left:4px;padding-right:4px}
+.btn.ghost:hover:not([disabled]){border-color:transparent}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .btn.block{width:100%}
 a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--ink)}
@@ -120,6 +121,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
 .blank{display:inline;padding:1px 6px;border-radius:6px;background:var(--route-soft);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .blank.ok{color:var(--ok);background:var(--ok-soft)}.blank.bad{color:var(--bad);background:var(--bad-soft)}
 .hint{font-size:15px;margin:6px 0}
+.rv{border:1px dashed var(--line);background:none;border-radius:99px;padding:0 10px;font-size:12.5px;line-height:1.75;color:var(--muted);cursor:pointer;vertical-align:1px}
+.rv:hover{border-color:var(--route);color:var(--ink)}
+.rv-t{color:var(--muted);font-size:13.5px}
 .hint b{font-weight:600}
 .ru{font-size:13.5px;color:var(--muted);margin-bottom:12px}
 .opts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
@@ -748,6 +752,10 @@ function numItem(s){
 
 /* ============ task builders ============ */
 let SET=store.get('set',{mode:'auto',sound:true});
+// Russian translations stay hidden behind a tap unless the player turns them on in settings
+function rv(text){if(!text)return'';return SET.showTr?`<span class="rv-t">${esc(text)}</span>`:`<button type="button" class="rv" data-t="${esc(text)}" aria-label="Показать перевод">перевод</button>`}
+function revealAll(root){root.querySelectorAll('.rv').forEach(b=>{const x=document.createElement('span');x.className='rv-t';x.textContent=b.dataset.t;b.replaceWith(x)})}
+document.addEventListener('click',e=>{const b=e.target.closest('.rv');if(!b)return;e.preventDefault();const x=document.createElement('span');x.className='rv-t';x.textContent=b.dataset.t;b.replaceWith(x)});
 function decideTyping(s){if(s.t==='d')return false;if(SET.mode==='choice')return false;if(SET.mode==='type')return true;const k=specKey(s);const st=SRS[k];return!!(st&&st.n>=3&&st.st>=2)}
 function specKey(s){
  if(s.t==='n'){const T=TBY[s.T],w=WBY[s.w];return`n:${PARA[w.p].row}:${T.c}:${s.num}`}
@@ -769,7 +777,7 @@ function buildTask(spec){
   let d=pickDistractors(ans,near,2);d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
   const palt=part?[f[num][1]]:[];
   t={type:'n',lt,ru:tplRu(T,w),answer:ans,alts:(w.pre?[ans.slice(w.pre.length)]:[]).concat(palt),partNote:part?f[num][1]:null,options:shuffle([ans,...d]),
-   hint:`<b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">(${esc(w.ru)}) · ${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,
+   hint:`<b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,gloss:`${(w.pre||'')+w.lem} = ${w.ru}`,
    explain:given=>{const me=given&&norm(given)!==norm(ans)?whichForms(w,given):null;const e=endingOf(w,c,num);
     return`<div>${chip(c)} <span class="small">${NUMRU[num]}</span></div><p style="margin-top:6px">${WHY[T.why](T)}${part&&f[num][1]?` Форма kilmininkas «${esc(f[num][1])}» тоже возможна, если имеется в виду «немного, часть» (partityvas), но здесь тренируем galininkas.`:''}</p><p><b>${esc((w.pre||'')+w.lem)}</b> (${esc(w.ru)}): ${descW(w)}. ${CASE[c].lt} ${NUMLT[num]}${e?`: окончание <b>-${esc(e)}</b>`:''} → <b>${esc(ans)}</b>.</p>${me?`<p>Ваш ответ «${esc(given)}» ${me.length?'это '+me.map(m=>CASE[m[0]].lt.toLowerCase()+' '+NUMRU[m[1]]).join(' / '):'не является формой этого слова.'}</p>`:''}<details><summary>Все формы слова</summary>${parTable(w,[c,num],me)}</details>`},
    ai:given=>`Объясни простыми словами по-русски, почему в литовском предложении нужна именно эта форма слова. Я учу литовский до уровня B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлово: ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни правило (падеж, род, окончание) и дай 3 похожих примера с переводом.`}}
@@ -779,7 +787,7 @@ function buildTask(spec){
   const cands=[af(g,c)+' '+nf(near),af(g,near)+' '+nf(c),af(og,c)+' '+nf(c),af(g,near)+' '+nf(near),af(g,c)+' '+nf(near2),af(g,near2)+' '+nf(c),af(og,near)+' '+nf(near)];
   const d=pickDistractors(ans,cands,3);
   t={type:'a',lt,ru:tplRu(T,w),answer:ans,alts:(w.pre?[af(g,c)+' '+nf(c).slice(w.pre.length)]:[]).concat(part?[af(g,'G')+' '+nf('G')]:[]),options:shuffle([ans,...d]),
-   hint:`<b>${esc(a.lem)}</b> + <b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">(${esc(a.ru)} ${esc(w.ru)}) · ${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,
+   hint:`<b>${esc(a.lem)}</b> + <b>${esc((w.pre||'')+w.lem)}</b> <span class="muted small">${num==='pl'?'мн.ч.':'ед.ч.'}</span>`,gloss:`${a.lem} = ${a.ru}, ${(w.pre||'')+w.lem} = ${w.ru}`,
    explain:given=>`<div>${chip(c)} <span class="small">${NUMRU[num]}, ${g==='m'?'мужской':'женский'} род</span></div><p style="margin-top:6px">${WHY[T.why](T)}</p><p>Прилагательное согласуется с существительным в роде, числе и падеже. ${esc(w.lem)} (${descW(w)}) → прилагательное ${esc(a.lem)} в ${g==='m'?'м.р.':'ж.р.'} ${NUMLT[num]} ${CASE[c].lt.toLowerCase()}: <b>${esc(af(g,c))}</b>.</p><details><summary>Формы прилагательного ${esc(a.lem)}</summary><div class="scroll">${adjTable(a,[g,num,c])}</div></details><details><summary>Формы слова ${esc(w.lem)}</summary>${parTable(w,[c,num])}</details>`,
    ai:given=>`Объясни простыми словами по-русски согласование прилагательного и существительного в литовском. Я учу литовский до B1.\n\nПредложение: ${lt.replace('{X}','___')}\nПеревод: ${tplRu(T,w)}\nСлова: ${a.lem} (${a.ru}) + ${(w.pre||'')+w.lem} (${w.ru}), ${num==='pl'?'мн.ч.':'ед.ч.'}\nПравильно: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Почему такие окончания? Дай 3 похожих примера с переводом.`}}
  else if(s.t==='v'){const v=VBY[s.v],pe=PERS.find(p=>p[0]===s.pr),pi=pe[1],f=verbForms(v,s.ten),ans=f[pi];
@@ -787,7 +795,7 @@ function buildTask(spec){
   const same=f.filter((x,i)=>i!==pi),other=TENSES.filter(t=>t!==s.ten).map(t=>verbForms(v,t)).filter(Boolean).map(ff=>ff[pi]);
   let d=pickDistractors(ans,same,2);d=d.concat(pickDistractors(ans,other.filter(x=>!d.includes(x)),1));if(d.length<3)d=d.concat(pickDistractors(ans,same.concat(other).filter(x=>!d.includes(x)),3-d.length));
   t={type:'v',lt,ru:`${v.ru} · ${TENSERU[s.ten]}`,answer:ans,alts:[],options:shuffle([ans,...d]),
-   hint:`<b>${esc(v.inf)}</b> <span class="muted small">(${esc(v.ru)})</span>`,
+   hint:`<b>${esc(v.inf)}</b>`,
    explain:given=>{let me='';if(given&&norm(given)!==norm(ans)){const hits=[];TENSES.forEach(t=>{const ff=verbForms(v,t);if(ff)ff.forEach((x,i)=>{if(norm(x)===norm(given))hits.push(TENSERU[t]+', '+PLAB[i])})});me=`<p>Ваш ответ «${esc(given)}» это ${hits.length?uniq(hits).join(' / '):'не форма этого глагола'}.</p>`}
     return`<p><b>${TENSELT[s.ten]}</b> (${TENSERU[s.ten]})${s.tm?`: на время указывает «${esc(s.tm)}»`:''}. Лицо: <b>${esc(s.pr)}</b>.</p>${me}${verbTable(v,s.ten,pi)}<p class="small muted" style="margin-top:6px">${verbRule(s.ten)}</p>`},
    ai:given=>`Объясни простыми словами по-русски, какая форма литовского глагола тут нужна и почему. Я учу литовский до B1.\n\nПредложение: ${lt.replace('{X}','___')}\nГлагол: ${v.inf} (${v.ru})\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни время и окончание, дай все формы этого времени и 3 примера.`}}
@@ -797,7 +805,7 @@ function buildTask(spec){
   const c1=shuffle(all.filter(x=>x.p===1).map(x=>x.s)),c2=shuffle(all.filter(x=>x.p===2).map(x=>x.s));let d=pickDistractors(ans,c1,3);if(d.length<3)d=d.concat(pickDistractors(ans,c2.filter(x=>!d.includes(x)),3-d.length));
   const disp=ruN(it.d,n);
   t={type:'num',lt:it.lt,ru:ruN(it.ru,n),answer:ans,alts:[],options:shuffle([ans,...d]),
-   hint:`<b>${esc(disp)}</b> <span class="muted small">словами · ${esc(w.lem)} (${esc(w.ru)}), ${g==='m'?'м.р.':'ж.р.'}</span>`,
+   hint:`<b>${esc(disp)}</b> <span class="muted small">словами · ${esc(w.lem)}, ${g==='m'?'м.р.':'ж.р.'}</span>`,
    explain:()=>`<div>${chip(c)}</div><p style="margin-top:6px">${c==='A'?'Купил что? Galininkas: числительные 1–9 тоже склоняются (vieną, du/dvi, tris, keturis/keturias…).':'Подлежащее или «сколько стоит»: vardininkas.'}</p><p>Правило числа: <b>1, 21, 31…</b> → ед.ч. (vienas euras); <b>2–9, 22–29…</b> → мн.ч. (du eurai, dvi minutės); <b>10–20 и круглые десятки</b> → kilmininkas мн.ч. (dešimt eurų, penkiolika minučių). Род: du/dvi, keturi/keturios, vienas/viena.</p><p>${n} → <b>${esc(ans)}</b>.</p>`,
    ai:given=>`Объясни простыми словами по-русски, как в литовском согласовать число и существительное. Я учу литовский до B1.\n\nПредложение: ${it.lt.replace('{X}','___')} (${disp})\nПравильный ответ: ${ans}\n${given&&norm(given)!==norm(ans)?'Мой ответ: '+given+'\n':''}Объясни правило 1 / 2–9 / 10–20 и род числительных, дай 3 примера.`}}
  else if(s.t==='p'){const T=TBY_P[s.T],c=T.c,ans=PRON[s.pr][c];
@@ -836,8 +844,8 @@ function progHtml(){return`<div class="prog">${RUN.specs.map((x,i)=>`<i class="$
 function renderRun(){
  const h=runHost();const t=RUN.task;const D=t.dlg;
  let body='';
- if(D){body+=D.sit?`<div class="sit">Ситуация: ${esc(D.sit)}</div>`:`<div class="npc"><div class="who">${esc(D.who)}:</div><div class="bub">„${esc(D.npc)}“</div><div class="tr">${esc(D.ru)}</div></div>`;body+='<div class="small muted">Выберите правильный ответ:</div>'}
- else{const[a,b]=sentenceParts(t.lt);body+=`<div class="sent">${esc(a)}<span class="blank" id="blank">${a===''?'___':'___'}</span>${esc(b)}</div><div class="hint">${t.hint}</div><div class="ru">${esc(t.ru)}</div>`}
+ if(D){body+=D.sit?`<div class="sit">Ситуация: ${esc(D.sit)}</div>`:`<div class="npc"><div class="who">${esc(D.who)}:</div><div class="bub">„${esc(D.npc)}“</div><div class="tr">${rv(D.ru)}</div></div>`;body+='<div class="small muted">Выберите правильный ответ:</div>'}
+ else{const[a,b]=sentenceParts(t.lt);body+=`<div class="sent">${esc(a)}<span class="blank" id="blank">${a===''?'___':'___'}</span>${esc(b)}</div><div class="hint">${t.hint}</div><div class="ru">${rv([t.gloss,t.ru].filter(Boolean).join(" · "))}</div>`}
  if(t.typing){body+=`<input class="inp" id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Впишите форму"><div class="kb">${LTKEYS.map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('')}</div><div class="row"><button class="btn primary" id="chk">Проверить</button><button class="btn ghost small" id="idk">Не знаю</button>${RUN.kind==='game'?'':'<button class="btn ghost small" id="tochoice">Показать варианты</button>'}</div>`}
  else body+=`<div class="opts">${t.options.map((o,i)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
  h.innerHTML=`<div class="runwrap"><div class="task">${RUN.header||''}<div class="tickethead"><div><b>${esc(RUN.title)}</b>${RUN.sub?`<div class="tiny muted">${esc(RUN.sub)}</div>`:''}</div><div class="tiny muted" style="text-align:right">${RUN.i+1} / ${RUN.specs.length}${t.typing?' · ввод':''}${streakOf(RUN.res)>=2?`<div class="streak">серия ${streakOf(RUN.res)}</div>`:''}</div></div>${progHtml()}${body}<div id="fb"></div></div>${RUN.quit?'<div class="row"><button class="btn ghost small" id="quit">Закончить тренировку</button></div>':''}</div>`;
@@ -854,7 +862,7 @@ function answer(given){
  if(RUN.answered)return;RUN.answered=true;const t=RUN.task;const h=runHost();
  const ok=[t.answer,...t.alts].some(a=>norm(a)===norm(given));
  const almost=!ok&&given&&[t.answer,...t.alts].some(a=>deacc(norm(a))===deacc(norm(given)));
- RUN.res.push(ok);record(t,ok,given);ok?SFX.ok():SFX.bad();
+ RUN.res.push(ok);record(t,ok,given);revealAll(h);ok?SFX.ok():SFX.bad();
  h.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(norm(b.dataset.o)===norm(t.answer))b.classList.add('right');else if(norm(b.dataset.o)===norm(given))b.classList.add('wrong')});
  const inp=h.querySelector('#inp');if(inp)inp.disabled=true;
  const bl=h.querySelector('#blank');if(bl){bl.textContent=t.lt.startsWith('{X}')?cap(t.answer):t.answer;bl.classList.add(ok?'ok':'bad')}
@@ -1150,7 +1158,7 @@ function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
  <div class="panel"><div class="row" style="margin-bottom:8px"><div class="seg pills" id="views">${[['n','Существительные'],['a','Прилагательные'],['v','Глаголы'],['num','Числа'],['p','Местоимения'],['d','Диалоги']].map(([k,l])=>`<button data-v="${k}" aria-pressed="${v===k}">${l}</button>`).join('')}</div></div>
  <div class="legend"><span><i style="background:var(--line2)"></i>не было</span><span><i style="background:var(--bad)"></i>много ошибок</span><span><i style="background:var(--warn)"></i>учится</span><span><i style="background:var(--ok)"></i>освоено</span><span>· такой формы в заданиях нет</span></div>${mx}
  ${v!=='d'?`<div class="row" style="margin-top:10px"><button class="btn small" id="typeGo">Тренировать этот раздел</button></div>`:''}</div>
- <div class="panel"><h3>Настройки</h3><p class="small">Режим ответа:</p><div class="seg" id="modeSeg">${[['auto','Авто'],['choice','Выбор'],['type','Ввод']].map(([k,l])=>`<button data-m="${k}" aria-pressed="${SET.mode===k}">${l}</button>`).join('')}</div><p class="tiny muted" style="margin-top:6px">Авто: сначала варианты, а когда комбинация начинает получаться, надо вписывать форму самому. Так варианты нельзя угадать.</p><div class="row" style="margin-top:8px"><label class="small"><input type="checkbox" id="snd" ${SET.sound?'checked':''}> Звук</label></div><details><summary>Сброс</summary><div class="row" style="margin-top:8px"><button class="btn small" id="rstG">Сбросить игру</button><button class="btn small" id="rstS">Сбросить прогресс грамматики</button></div></details></div>`;
+ <div class="panel"><h3>Настройки</h3><p class="small">Режим ответа:</p><div class="seg" id="modeSeg">${[['auto','Авто'],['choice','Выбор'],['type','Ввод']].map(([k,l])=>`<button data-m="${k}" aria-pressed="${SET.mode===k}">${l}</button>`).join('')}</div><p class="tiny muted" style="margin-top:6px">Авто: сначала варианты, а когда комбинация начинает получаться, надо вписывать форму самому. Так варианты нельзя угадать.</p><div class="row" style="margin-top:8px"><label class="small"><input type="checkbox" id="snd" ${SET.sound?'checked':''}> Звук</label><label class="small"><input type="checkbox" id="trOpen" ${SET.showTr?'checked':''}> Сразу показывать перевод на русский</label></div><details><summary>Сброс</summary><div class="row" style="margin-top:8px"><button class="btn small" id="rstG">Сбросить игру</button><button class="btn small" id="rstS">Сбросить прогресс грамматики</button></div></details></div>`;
  h.querySelectorAll('[data-num]').forEach(b=>b.onclick=()=>{TRV.num=b.dataset.num;store.set('trv',TRV);renderTrain()});
  h.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{TRV.view=b.dataset.v;store.set('trv',TRV);renderTrain()});
  h.querySelectorAll('td[data-key]').forEach(td=>td.onclick=()=>practice({lv:9,key:td.dataset.key},8,td.title));
@@ -1159,7 +1167,7 @@ function renderTrain(){const h=$('#tab-train');const P=poolFor({lv:9});
  const dg=$('#dlgGo');if(dg)dg.onclick=()=>practice({lv:9,mix:{d:1}},10,'Диалоги');
  const tg=$('#typeGo');if(tg)tg.onclick=()=>practice({lv:9,mix:{[v]:1}},12,'Тренировка раздела');
  h.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SET.mode=b.dataset.m;store.set('set',SET);renderTrain()});
- $('#snd').onchange=e=>{SET.sound=e.target.checked;store.set('set',SET)};
+ $('#snd').onchange=e=>{SET.sound=e.target.checked;store.set('set',SET)};$('#trOpen').onchange=e=>{SET.showTr=e.target.checked;store.set('set',SET)};
  $('#rstG').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно сбросить игру?';return}G=null;save();renderGame();toast('Игра сброшена');renderTrain()};
  $('#rstS').onclick=e=>{const b=e.currentTarget;if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно стереть статистику?';return}{SRS={};ITEM={};MIST=[];store.set('srs',SRS);store.set('item',ITEM);store.set('mist',MIST);renderTrain();toast('Прогресс сброшен')}}}
 function redoMistakes(){if(!MIST.length)return;const specs=MIST.slice(0,15).map(m=>({...m.spec,typing:undefined})).map(s=>{s.typing=decideTyping(s);return s});showTab('train');
